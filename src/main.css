@@ -1,0 +1,201 @@
+:root {
+  --color-bg: #000000;
+  --color-text: #f0f0f0;
+  --color-accent: #39ff14;
+  --font-sans: 'Helvetica Neue', Arial, sans-serif;
+  --font-tty: 'Courier New', monospace;
+  --base-spacing: 1rem;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.2;
+  font-family: var(--font-tty);
+  color: var(--color-text);
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: calc(var(--base-spacing) * 0.25);
+}
+
+.mt-2 {
+  margin-top: calc(var(--base-spacing) * 0.5);
+}
+
+.mt-3 {
+  margin-top: var(--base-spacing);
+}
+
+.mt-4 {
+  margin-top: calc(var(--base-spacing) * 2);
+}
+
+.mb-1 {
+  margin-bottom: calc(var(--base-spacing) * 0.25);
+}
+
+.mb-2 {
+  margin-bottom: calc(var(--base-spacing) * 0.5);
+}
+
+.mb-3 {
+  margin-bottom: var(--base-spacing);
+}
+
+.mb-4 {
+  margin-bottom: calc(var(--base-spacing) * 2);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5em 1em;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn:hover {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  background-color: #111111;
+  color: var(--color-text);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.accent {
+  color: var(--color-accent);
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 0.9rem;
+  }
+  .container {
+    width: 95%;
+  }
+}
+
+/* CLI-style typing effect */
+@keyframes typing {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* Fade-in animation for sections */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Utility class to apply the typing effect */
+.typing-animation {
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  animation: typing 2s steps(40, end) forwards;
+}
+
+/* Utility class to fade elements in */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Override any hard-coded SVG fills to use the accent color */
+svg [fill] {
+  fill: var(--color-accent) !important;
+}
+
+svg text.accent {
+  fill: var(--color-accent) !important;
+}

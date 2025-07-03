@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:ci": "npm run build && start-server-and-test preview http://localhost:4173 test:e2e"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
   "description": "",
   "devDependencies": {
     "@playwright/test": "^1.53.2",
+    "start-server-and-test": "^2.0.12",
     "vite": "^7.0.0"
   }
 }

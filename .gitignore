@@ -60,7 +60,6 @@ bin/
 obj/
 coverage/
 .nyc_output/
-public/
 
 # Python
 __pycache__/

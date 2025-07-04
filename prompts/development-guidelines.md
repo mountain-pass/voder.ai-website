@@ -14,3 +14,4 @@ Git Repo: https://github.com/mountain-pass/voder.ai-website.git
 9. You MUST capture screenshots as part of the tests.
 10. YOU ARE NOT DONE UNTIL ALL THE CHANGES ARE COMMITTED AND PUSHED
 11. YOU ARE NOT DONE UNTIL THE SCREENSHOTS MATCH THE REQUIREMENTS
+12. YOU ARE NOT DONE UNTIL THE CI PIPELINE IS PASSING.

@@ -9,6 +9,7 @@ The website is a digital experience—not just a landing page. Its role is to:
 
 - Create curiosity
 - Introduce a new paradigm (source prompts → source code)
+- Highlight Voder’s unique ability to intelligently modify code when prompts change
 - Deliver an emotionally compelling, visually immersive story
 - Impress founders, product leaders, and visionaries with brand confidence
 
@@ -61,8 +62,9 @@ The homepage is **not built with Reveal.js**, but rather a **custom scroll or in
 | **3. Problem Space** | Show chaos, bottlenecks, fragmentation | Abstract 3D or layered composition with noise and breakup |
 | **4. Metaphor** | GPS vs Directions narrative | Visual of a car + route planning vs manual zig-zag paths |
 | **5. Vision Flow** | Source Prompts → Voder → Code → Working Product | Flow diagram that animates or morphs step by step |
-| **6. Outcome Focus** | What this enables: clarity, speed, alignment | Cards or tiles animating in, scroll-triggered |
-| **7. Closing Moment** | “The Compiler for Prompts.” + “Coming Soon.” | Fade to black, visual signature, audio cue (optional) |
+| **6. Prompt-Driven Iteration** | Highlight Voder’s ability to regenerate only what changes when prompts are modified | Visual diff or animated scene showing stable structure with key pieces adapting |
+| **7. Outcome Focus** | What this enables: clarity, speed, alignment | Cards or tiles animating in, scroll-triggered |
+| **8. Closing Moment** | “The Compiler for Prompts.” + “Coming Soon.” | Fade to black, visual signature, audio cue (optional) |
 
 ## 🚫 Explicit Exclusions
 

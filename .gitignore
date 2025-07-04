@@ -1,7 +1,12 @@
-OK
 # ignore environment and build artifacts
 .env
 dist/
 node_modules/
 outputs/
-.voder-processes.json
+
+# ignore Voder process tracking files
+.voder/.processes.json
+
+# ignore local server logs
+dev-server.log
+preview.log

@@ -47,7 +47,7 @@ Later, as the product matures, this deck can be moved to `/deck` and a more conv
 | **Typography** | Modern, clean sans-serif fonts with strong hierarchy. Headings feel strategic. |
 | **Imagery** | Conceptual vector graphics, abstract flows, roadmap visuals. |
 | **Animation** | Professional and subtle. Smooth fades, slide-ins, and progress animations. |
-| **Layout** | Slide-based (Reveal.js). Each idea gets its own slide, with generous spacing and visual contrast. |
+| **Layout** | Slide-based (Reveal.js). Each idea gets its own slide, with generous spacing and visual contrast. Use https://mont-fort.com/ for inspiration (3d animations and animated transitions) |
 
 ## 🏗️ Slide Architecture (Reveal.js)
 

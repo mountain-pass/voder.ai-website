@@ -10,7 +10,9 @@ module.exports = defineConfig({
     headless: true,
     viewport: { width: 1280, height: 720 },
     actionTimeout: 5000,
-    ignoreHTTPSErrors: true
+    ignoreHTTPSErrors: true,
+    screenshot: 'only-on-failure',
+    trace: 'retain-on-failure'
   },
   projects: [
     {

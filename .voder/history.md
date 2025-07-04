@@ -1,70 +1,77 @@
-Here’s a concise recap of what’s been done so far:
+Here’s a concise history of what’s been done so far in the project:
 
-• Project initialization  
-  – Set up a Vite-based ESM npm package with build/dev/preview/test scripts, neon-terminal demo, and bundle-size/timing benchmarks.  
+• Project Initialization  
+  – Scaffolded a Vite-based ESM npm package with build/dev/preview/test scripts  
+  – Added a neon-terminal demo and bundle-size/timing benchmarks  
 
-• Testing & CI  
-  – Added Playwright smoke tests and a GitHub Actions workflow (build → preview → E2E). Documented ADR-0001 through ADR-0003.  
+• Testing & CI Setup  
+  – Introduced Playwright smoke tests (mobile/tablet) and a full E2E suite  
+  – Configured GitHub Actions (build → preview → E2E)  
+  – Documented architectural decisions in ADR-0001 through ADR-0004  
 
-• Code & documentation overhaul  
-  – Removed legacy files. Revamped README with styling guidelines, auto-injected breakpoints, global-style snippets, and refined CSS accents/media queries.  
+• Cleanup & Documentation  
+  – Removed legacy files, tightened .gitignore, cleaned up markup  
+  – Expanded README with styling guidelines, breakpoints, global styles, CSS examples, and navigation/E2E instructions  
 
-• Responsive-design verification  
-  – Added Playwright tests for container padding and typography at 640×800 and 1024×768 viewports, capturing screenshots in CI.  
+• Reveal.js Integration  
+  – Installed Reveal.js, created sample slides, patched index.html for local bundling  
 
-• Reveal.js integration  
-  – Installed Reveal.js, updated initialization, and created four sample slides.  
+• E2E Coverage Expansion  
+  – Pruned unused markup and flaky assertions  
+  – Added Playwright checks for headers, meta/OG tags, content blocks, SVG counts, footer elements, and visual effects  
+  – Stabilized tests with retries; count grew from 15 to 18 across Chromium, Firefox, and WebKit  
 
-• Expanded E2E coverage  
-  – Cleaned unused markup/scripts, replaced a flaky SVG assertion, and added checks for hero <h1>, meta tags, text blocks, SVG count, effects, OG image, title/metadata, and footer. Stabilized nine smoke tests with retry logic.  
+• Performance & Build Metrics  
+  – Production builds in ~250 ms; CI installs 85 packages in 10–12 s with 0 vulnerabilities  
+  – E2E suite runs in ~8.8 s; previews served on ports 4173–4179  
 
-• Cross-browser navigation suite  
-  – Verified keyboard navigation, deep-link hashes, and URL assertions across Chromium, Firefox, and WebKit (15 tests, ~10–12s).  
+• Final Verifications & Tweaks  
+  – Removed external CDN references from dist/index.html  
+  – Added console-error smoke test; fixed “OK is not defined” error  
+  – Updated .gitignore for logs/server files; enabled on-failure screenshots and trace retention  
 
-• Documentation & ADR update  
-  – Expanded README’s E2E section with navigation details and recorded ADR-0004.  
+• Git & Process Management  
+  – Resolved git-add failures on ignored paths and terminated stray background servers  
 
-• Log cleanup & .gitignore tweaks  
-  – Purged old logs/output files, created outputs/ folder, set Playwright’s outputDir, and updated .gitignore.  
+• CI & npm Verifications  
+  – `npm run test:ci` now builds for production, serves a preview, and runs 18 passing E2E tests on all three browsers  
+  – `npm ci` installs 85 packages, audits dependencies, and reports 0 vulnerabilities  
 
-• Production build & CI run  
-  – Executed npm run build (295ms → dist/ with HTML/JS/CSS/fonts/assets) and npm run test:ci (build → preview → Playwright). All 15 tests passed in ~12s; artifacts saved.  
+• Test Enhancements  
+  – Updated smoke and console tests to capture full-page screenshots with dynamic filenames  
+  – Added screenshot steps for keyboard navigation and deep-linking  
+  – Standardized new screenshot locations; removed the old folder structure  
 
-• Final housekeeping  
-  – Deleted obsolete test-results/ directory; added `.env`, `dist/`, `node_modules/`, `outputs/`, and `.voder-processes.json` to .gitignore.  
+• Most Recent Changes  
+  – Patched tests (smoke.spec.js, console.spec.js, responsive.spec.js) for dynamic screenshot paths under `outputs/screenshots/`  
+  – Validated full CI pipeline: production build, preview serve, and 18 passing E2E tests across Chromium, Firefox, and WebKit  
+  – Removed the entire `tests/screenshots/` directory  
 
-• Installation & audit  
-  – Ran npm ci (85 packages in 2s, 0 vulnerabilities).  
-
-• Most recent test run  
-  – Ran npm run test:e2e: 15 Playwright tests across Chromium, Firefox, and WebKit—all passed in ~10.4s.  
-
-• Latest action & outcome  
-  – Attempted to stage updated/new files with  
-     `git add .gitignore README.md playwright.config.js docs/prompt-guidelines.md .voder/`  
-  – Received error:  
-     fatal: pathspec 'docs/prompt-guidelines.md' did not match any files.
+• Latest Action & Result  
+  – Ran `npm run test:ci`, which:  
+    • Built the site with vite in ~289 ms (dist/index.html ~2.85 kB gzip)  
+    • Served a preview (ports tried 4173–4179)  
+    • Executed 18 Playwright tests across Chromium, Firefox, and WebKit in ~13.2 s, all passing (exit code 0)  
+  – Regenerated screenshots under `outputs/screenshots/` successfully.
 
 **Most recently we've executed the following action:**
 
 ---
-Open the file at `.voder/plan.md`.  
-Find every instance of
+In the project root, run the following command to locate all references to the old screenshots folder:
 
+```bash
+grep -R 'tests/screenshots' .
 ```
-docs/prompt-guidelines.md
-```
-
-and replace it with
-
-```
-prompts/development-guidelines.md
-```
-
-Save the changes to `.voder/plan.md`.
 ---
 
 **This was the result:**
 ---
-Successfully generated file: .voder/plan.md
+`grep -R tests/screenshots .` completed.
+Output:
+./.voder/history.md:  – Modified tests/responsive.spec.js to update screenshot paths from `tests/screenshots/` to `outputs/screenshots/`  
+./.voder/history.md:  – Ran `rm -rf tests/screenshots/`, resulting in the removal of the entire `tests/screenshots` directory.
+./.voder/plan.md:Search the project for any leftover references to `tests/screenshots` (for example with `grep -R 'tests/screenshots' .`) and remove or update them so that all screenshot paths point to `outputs/screenshots/`.
+./.voder/plan.md:- Delete the deprecated `tests/screenshots/` folder if it still exists.
+./.voder/plan.md:- Remove any documentation or comments (in `README.md`, ADRs, etc.) that mention `tests/screenshots`.
+
 ---

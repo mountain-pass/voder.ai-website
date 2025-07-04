@@ -1,16 +1,15 @@
----
 ## NOW
 
-Stage and commit all current changes (including `.gitignore`, `.voder/history.md`, `.voder/plan.md`, `README.md`, `playwright.config.js`, and `prompts/development-guidelines.md`) with a descriptive message such as “Update plan references and configuration adjustments”.
+Stage and commit all current working-directory changes with a clear message so the repository is clean and up to date.
 
 ## NEXT
 
-- Push the new commit to `origin/main`.  
-- Run the full CI test suite locally via `npm run test:ci` to verify all Playwright tests still pass.  
-- If any tests fail, fix the underlying code or tests in the affected files and commit those fixes.
+- Review each test in `tests/` (`console.spec.js`, `navigation.spec.js`, `responsive.spec.js`, `smoke.spec.js`) to ensure every `page.screenshot` call writes into `outputs/screenshots/`.  
+- Search documentation (`README.md`, `docs/decisions/*.md`) for any lingering references to `tests/screenshots` and remove or update them.  
+- Confirm that the `tests/screenshots/` directory no longer exists in the project.
 
 ## LATER
 
-- Review and refine the `.gitignore` entries to ensure no necessary files are being excluded.  
-- Plan and implement any outstanding UI or content updates to the Reveal.js deck in `src/index.html` and `src/main.css`.  
-- Prepare for production deployment by verifying performance, accessibility (color contrast), and SEO optimizations.
+- Add Playwright visual-regression (snapshot) tests for robust UI change detection.  
+- Integrate an automated accessibility audit (e.g., axe-core) into the end-to-end suite.  
+- Begin designing a conventional landing page to replace or supplement the Reveal.js deck after launch.

@@ -1,84 +1,90 @@
 
 # Voder Pre-Launch Website Specification
 
-The **voder.ai** website is a **minimalist, single-page, pre-launch site** designed to generate intrigue without revealing detailed product information.
+The **voder.ai** website is a **high-concept, cinematic pre-launch site** designed to generate intrigue and signal a category-defining shift in how software is created.
 
 ## 🎯 Purpose
 
-The website exists to signal that something significant is coming in the world of software creation and delivery. It creates a sense of mystery and anticipation while hinting at a fundamental shift in how applications will be built in the future.
+The website is a digital experience—not just a landing page. Its role is to:
+
+- Create curiosity
+- Introduce a new paradigm (source prompts → source code)
+- Deliver an emotionally compelling, visually immersive story
+- Impress founders, product leaders, and visionaries with brand confidence
 
 ## 👥 Audience
 
-The website is intended for:
-
 - Founders and Product Leaders
 - CTOs and Engineering Managers
-- Creators, innovators, and problem solvers who fund or shape software projects
-- Decision-makers who care about speed to market, quality, and alignment between business vision and software delivery
+- Innovation sponsors and investors
+- Strategic thinkers and system architects
 
-The tone and content are crafted to resonate with people who **pay for software to get built**, not necessarily the developers themselves.
+The experience is designed for people who fund or influence the creation of software—not necessarily the engineers themselves.
 
 ## ✨ Tone and Feel
 
-The tone of the site is:
-
 - Visionary  
-- Outcome-focused  
 - Strategic  
 - Minimalist  
-- Conceptual  
+- Cinematic  
+- High trust / premium  
+- Inspired by [mont-fort.com](https://mont-fort.com/)
 
-The language is declarative, crisp, and designed to speak to business needs, not technical features.
+The experience should feel like a product teaser, film intro, and design manifesto in one.
 
-## 🧭 Homepage Format: Pitch Deck
+## 🧭 Format: Custom-Built Interactive Homepage
 
-The homepage **is a linear pitch deck**, built using [Reveal.js](https://revealjs.com/).  
-This format is intentionally chosen for the pre-launch phase, allowing tight narrative control, deep intrigue, and a presentation-style reveal of the Voder vision.
+The homepage is **not built with Reveal.js**, but rather a **custom scroll or interaction-based website**, likely using:
 
-This replaces a traditional scroll-based homepage.
+- **Framework**: SvelteKit (preferred) or Next.js
+- **Animation**: GSAP for scroll-tied transitions and rhythm
+- **3D / Motion**: Three.js or Threlte (for immersive conceptual scenes)
+- **Visual Assets**: SVG, .glb/.gltf models, or layered compositing
 
-Later, as the product matures, this deck can be moved to `/deck` and a more conventional landing page introduced.
-
-## 🎨 Visual Design (Optimised for Decision Makers + Mont-Fort 3D Influence)
+## 🎨 Visual Design
 
 | Element | Specification |
 |---|---|
-| **Colour palette** | Dark mode is default. Black or deep grey backgrounds with executive accents: deep blues, metallic greys, or muted purples. |
-| **Typography** | Modern, clean sans-serif fonts with strong hierarchy. Headings feel strategic. |
-| **Imagery** | Conceptual vector graphics, abstract flows, roadmap visuals. |
-| **Animation** | Inspired by [mont-fort.com](https://mont-fort.com/):<br>- Subtle camera pans or slide transitions<br>- 3D visual metaphors (e.g. flowing prompts into structured outputs)<br>- Abstract motion to enhance clarity and rhythm |
-| **Layout** | Slide-based (Reveal.js). Each idea gets its own slide, with generous spacing and visual contrast. |
+| **Colours** | Dark mode default. Charcoal or black backgrounds with soft neon or metallic accent tones (green, blue, purple). |
+| **Typography** | Strategic, modern sans-serif (e.g., Inter, Suisse, custom). Use heavy weight for emphasis. |
+| **Imagery** | Abstract 3D objects, evolving flows, conceptual metaphors (e.g. prompt transforms, route planning). |
+| **Animation** | Cinematic pacing. GSAP-powered transitions, camera moves, morphs. Use inertia and easing for elegance. |
+| **Audio (optional)** | Subtle ambient tones or synthetic chimes to mark moments (like final reveal). |
+| **Spacing** | Large whitespace, balanced layout, slide-like flow without obvious “slides.” |
 
-## 🏗️ Slide Architecture (Reveal.js)
+## 🏗️ Narrative Structure (Scroll or Scene-Based)
 
-| Slide | Description |
-|---|---|
-| **1. Title** | Voder logo + subtitle (e.g., “From Intent to Implementation”)<br>*Mont-Fort-style 3D intro animation optional* |
-| **2. The Why** | “We believe software should start with intent, not syntax...” |
-| **3. The Problem** | Current pain points of translating vision into code |
-| **4. The Metaphor** | GPS vs Passenger Seat metaphor (destination vs directions)<br>*3D animation of route planning vs manual driving optional* |
-| **5. The Vision** | Prompt → Voder → Application Source Code → Working App<br>*Use animated flow or abstract 3D model showing compilation process* |
-| **6. How Voder Is Different** | Not another code generator. Works from your intent. |
-| **7. What This Enables** | Focus on outcomes, speed to market, brand integrity |
-| **8. Closing Slide** | “Coming Soon. voder.ai” or simply “Voder. 2025.”<br>*Mont-Fort-style fading horizon or minimal 3D effect optional* |
+| Section | Content | Interaction |
+|---|---|---|
+| **1. Brand Entry** | Voder logo intro with glowing motion or orbiting 3D object | Auto-play or scroll-triggered 3D scene |
+| **2. The Why** | “We believe software should start with intent...” | Text fade-in, cinematic pacing |
+| **3. Problem Space** | Show chaos, bottlenecks, fragmentation | Abstract 3D or layered composition with noise and breakup |
+| **4. Metaphor** | GPS vs Directions narrative | Visual of a car + route planning vs manual zig-zag paths |
+| **5. Vision Flow** | Source Prompts → Voder → Code → Working Product | Flow diagram that animates or morphs step by step |
+| **6. Outcome Focus** | What this enables: clarity, speed, alignment | Cards or tiles animating in, scroll-triggered |
+| **7. Closing Moment** | “The Compiler for Prompts.” + “Coming Soon.” | Fade to black, visual signature, audio cue (optional) |
 
 ## 🚫 Explicit Exclusions
 
-The voder.ai website does not include:
+- No email form
+- No social links
+- No pricing or signup
+- No navigation menu
+- No technical docs or screenshots
 
-- Email capture forms  
-- Waitlist or sign-up calls-to-action  
-- Social media links  
-- Product screenshots  
-- Pricing information  
-- Navigation menus  
+This is a **narrative-first experience**.
 
 ## 🛠️ Technical Implementation Notes
 
-The website is:
+- Use **SvelteKit + Threlte + GSAP** (or React + Three.js + GSAP as an alternative)
+- All transitions and animations tied to scroll or scene load
+- Lightweight assets optimised for mobile and performance
+- Hosting via Vercel or Netlify
+- SEO-ready with Open Graph tags, meta description, favicon
 
-- Built with Reveal.js (self-contained HTML)
-- Fast-loading (static hosting recommended)
-- Fully mobile responsive (Reveal.js config adjusted)
-- SEO-primed with basic meta tags: title, description, Open Graph preview
-- Select 3D and animated elements may be implemented via Three.js, Lottie, or GSAP
+## ✅ Future Adaptation
+
+When Voder reaches launch:
+
+- This cinematic homepage can live at `/pitch` or `/about`
+- A more functional, conversion-focused landing page can be introduced at `/`

@@ -32,13 +32,17 @@ npm ci
   - Includes navigation tests for keyboard controls (Arrow keys) and deep-linking via URL hash.  
   - Verifies slide transitions, URL hashes, and the “present” slide selection.  
 - `npm run test:ci`  
-  Builds, previews, and runs CI tests (used in GitHub Actions).  
+  Builds, previews, and runs CI tests (used in GitHub Actions).
+
+## Test Artifacts
+
+After running end-to-end tests, all screenshots, videos, traces, logs, and test result summaries are generated in the `outputs/` directory.
 
 ## Project Structure
 
 ```
 .
-├── outputs             # Generated artifacts (e.g., screenshots, logs)
+├── outputs             # Generated artifacts: screenshots, videos, traces, logs
 ├── public
 │   └── assets           # Static assets (images, icons, etc.)
 ├── src                  # Application entry point, styles, and markup

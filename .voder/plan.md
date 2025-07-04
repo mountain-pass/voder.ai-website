@@ -1,23 +1,15 @@
 ## NOW
 
-Edit `README.md` and under the “## Build & Preview” heading remove the two-step build/preview instructions and replace them with a single line:
-
-```
-## Build & Preview
-
-Run `npm run test:ci` to build the site, start a preview server, and execute end-to-end tests in one command.
-```
+Create a commit that captures all current changes (including the removal of `src/main.js`) with a clear, descriptive message.
 
 ## NEXT
 
-- In your terminal, run `npm run test:ci` from the project root and verify that:
-  - The production build is generated without errors.
-  - The preview server starts on port 4173.
-  - Playwright smoke tests pass against the preview.
-- If any step fails, inspect the error output and fix code or configuration as needed.
+- Run the full CI suite locally with `npm run test:ci` to verify the site builds, previews, and that all Playwright tests (smoke, responsive, navigation) pass across Chromium, Firefox, and WebKit.
+- If any tests fail or errors occur, update code, configuration, or tests to restore a green build.
 
 ## LATER
 
-- Add automated Lighthouse performance and accessibility audits into the GitHub Actions CI workflow.
-- Expand Playwright coverage to additional browsers, devices, and viewports.
-- Integrate bundle-size tracking and performance-regression alerts into CI.
+- Add visual-regression snapshot tests for key slides at multiple viewports.
+- Integrate automated accessibility audits (e.g. axe-core) into the CI pipeline.
+- Refactor the Reveal.js deck into a dedicated `/deck` directory and introduce a standard landing page at `/`.
+- Clean up obsolete draft files (e.g. the `.voder` folder and any outdated prompt drafts).

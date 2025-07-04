@@ -1,43 +1,71 @@
-# voder.ai
+# voder.ai Pre-Launch Website
 
-![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg?branch=main)
+A minimalist, single-page, pre-launch site designed to spark intrigue around Voder’s revolutionary approach to software creation and delivery.
 
-## Continuous Integration
+[![CI & Playwright multi-browser tests passing](https://github.com/mountain-pass/voder.ai-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mountain-pass/voder.ai-website/actions)
 
-All pushes and pull requests targeting the `main` branch trigger our GitHub Actions workflow defined in `.github/workflows/ci.yml`.  
-The CI pipeline runs linting, builds the project, and executes unit and integration tests to ensure that every change remains stable.
+## Prerequisites
 
-## Project Overview
+- Node.js ≥ 18  
+- npm ≥ 8  
+- Running `npm run test:ci` (or `npx playwright install --with-deps`) will automatically download and install the Playwright browser binaries required for cross-browser end-to-end tests.  
+- GitHub Actions now caches Playwright browser binaries between runs, speeding up CI.  
 
-A minimalist, single-page pre-launch site signaling a new paradigm: “The Compiler for Prompts.”
+## Installation
 
-## Tech Stack
+```bash
+git clone https://github.com/mountain-pass/voder.ai-website.git
+cd voder.ai-website
+npm ci
+```
 
-- Vite (ESM)  
-- Plain HTML, CSS, and JavaScript  
-- Playwright for end-to-end tests  
+## Available Scripts
 
-## Setup & Development
+- `npm run dev`  
+  Starts the development server with hot reload (http://localhost:4173).  
+- `npm run build`  
+  Bundles the app for production into `dist/`.  
+- `npm run preview`  
+  Serves the production build locally for testing.  
+- `npm run test:e2e`  
+  Runs end-to-end tests with Playwright:  
+  - Includes navigation tests for keyboard controls (Arrow keys) and deep-linking via URL hash.  
+  - Verifies slide transitions, URL hashes, and the “present” slide selection.  
+- `npm run test:ci`  
+  Builds, previews, and runs CI tests (used in GitHub Actions).  
 
-1. Install dependencies  
-   npm install  
-2. Start development server  
-   npm run dev  
+## Project Structure
 
-## Build & Preview
+```
+.
+├── public
+│   └── assets           # Static assets (images, icons, etc.)
+├── src                  # Application entry point, styles, and markup
+├── tests                # Playwright end-to-end test suites
+├── docs
+│   └── decisions        # Architectural Decision Records (MADR format)
+├── dist                 # Production build output
+├── .github
+│   └── workflows        # CI workflows
+├── vite.config.js       # Vite configuration
+├── playwright.config.js # Playwright configuration
+├── package.json
+└── README.md
+```
 
-Run `npm run test:ci` to build the site, start a preview server, and execute end-to-end tests in one command.
+## Architectural Decision Records
 
-## Tests
+- ADR 0001: Use Vite — accepted  
+- ADR 0002: Use Playwright — accepted  
+- ADR 0003: Cache Playwright browser binaries — accepted  
+- ADR 0004: Use Reveal.js for the Pre-launch Deck — accepted  
 
-- npm run test:ci – Builds the site, starts a preview server on port 4173, waits for it to respond, then runs the Playwright end-to-end tests.
+## Styling & Animations
 
-## Directory Structure
+• Accent color  
+  • CSS variable: `--color-accent`  
+  • Value: `#4f46e5`
 
-.  
-├── package.json  
-├── vite.config.js  
-├── README.md  
-├── src/          # source files (HTML, CSS, JS)  
-├── tests/        # Playwright test specs  
-└── dist/         # production build output
+• Enabled animations  
+  • `.fade-in` – content fade-in on load  
+  • `.typing-animation` – typewriter text effect

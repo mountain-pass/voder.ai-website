@@ -1,5 +1,5 @@
 
-# Voder Pre-Launch Website Specification (Audience Shift: Decision Makers, Founders, Product Leaders)
+# Voder Pre-Launch Website Specification
 
 The **voder.ai** website is a **minimalist, single-page, pre-launch site** designed to generate intrigue without revealing detailed product information.
 
@@ -30,29 +30,37 @@ The tone of the site is:
 
 The language is declarative, crisp, and designed to speak to business needs, not technical features.
 
-## 🎨 Visual Design (Updated for Decision Makers)
+## 🧭 Homepage Format: Pitch Deck
+
+The homepage **is a linear pitch deck**, built using [Reveal.js](https://revealjs.com/).  
+This format is intentionally chosen for the pre-launch phase, allowing tight narrative control, deep intrigue, and a presentation-style reveal of the Voder vision.
+
+This replaces a traditional scroll-based homepage.
+
+Later, as the product matures, this deck can be moved to `/deck` and a more conventional landing page introduced.
+
+## 🎨 Visual Design (Optimised for Decision Makers)
 
 | Element | Specification |
 |---|---|
-| **Colour palette** | Dark mode remains the default. Backgrounds in black or deep grey with executive-level accent colours: deep blues, metallic greys, or muted purples. Neon tones (if used) should be minimal and subtle. |
-| **Typography** | Modern, clean sans-serif fonts with strong typographic hierarchy. Headings should feel bold and strategic. |
-| **Imagery** | Conceptual vector graphics and abstract flow diagrams that represent business value flows, strategic alignment, or "vision-to-execution" pathways. |
-| **Animation** | Professional and subtle. Smooth fades, slide-ins, progress animations. Avoid glitch or terminal-style effects that feel overly technical. |
-| **Spacing and Layout** | Generous whitespace. Balanced layout that feels premium and intentional. |
-| **Tone of Dark Mode** | Executive, SaaS-like, and product innovation-oriented. Not hacker or CLI-themed. |
+| **Colour palette** | Dark mode is default. Black or deep grey backgrounds with executive accents: deep blues, metallic greys, or muted purples. |
+| **Typography** | Modern, clean sans-serif fonts with strong hierarchy. Headings feel strategic. |
+| **Imagery** | Conceptual vector graphics, abstract flows, roadmap visuals. |
+| **Animation** | Professional and subtle. Smooth fades, slide-ins, and progress animations. |
+| **Layout** | Slide-based (Reveal.js). Each idea gets its own slide, with generous spacing and visual contrast. |
 
-## 🏗️ Information Architecture (Single-Page Layout - Decision Maker Focus)
+## 🏗️ Slide Architecture (Reveal.js)
 
-| Section | Description |
+| Slide | Description |
 |---|---|
-| **Hero Section (Above the fold)** | A visionary, declarative headline (e.g., “From Intent to Implementation.” or “Tell Us What You Want. Let Voder Build It.”)<br>Optional subtitle clarifying the value proposition: “Voder turns your business intent into working software—automatically.” |
-| **Conceptual Teaser** | Two to three lines introducing the core idea:<br>“With Voder, you don’t write source code. You describe what your application should do. Voder compiles your intent into production-ready code.” |
-| **Metaphor Section** | Business-focused metaphor:<br>“Most AI coding tools are like giving directions from the passenger seat: ‘Turn left here’, ‘Go right at the lights’. Voder is different. It’s like setting a destination in GPS. You define where you want to go. Voder plans the route and drives you there.” |
-| **Problem Framing (Business Pain Point)** | Focus on delivery bottlenecks:<br>“Today, teams spend too much time translating business intent into technical implementation. Voder reduces time-to-market and ensures product outcomes stay aligned with business goals.” |
-| **The Why (Philosophy Section)** | **Our Why:**<br>“We believe building software should start with intent, not syntax.<br><br>We believe that creators and problem solvers shouldn’t have to get bogged down in implementation details just to bring their ideas to life.<br><br>Your time is better spent defining behaviour, outcomes, and user experience—not wrangling with frameworks, languages, or boilerplate.<br><br>Where others give you faster ways to write code, Voder gives you a better way to describe w...
-| **Visual Element** | A conceptual diagram showing business vision flowing through Voder into a working application:<br>“Business Intent → Source Prompts → Voder → Working Software” |
-| **Footer** | Minimal. Contains:<br>- “Voder. 2025.”<br>- Copyright |
-| **(Optional Future Section Placeholder)** | If needed in future: Light "About" or "Vision Roadmap" section. For now, keep excluded. |
+| **1. Title** | Voder logo + subtitle (e.g., “From Intent to Implementation”) |
+| **2. The Why** | “We believe software should start with intent, not syntax...” |
+| **3. The Problem** | Current pain points of translating vision into code |
+| **4. The Metaphor** | GPS vs Passenger Seat metaphor (destination vs directions) |
+| **5. The Vision** | Prompt → Voder → Application Source Code → Working App |
+| **6. How Voder Is Different** | Not another code generator. Works from your intent. |
+| **7. What This Enables** | Focus on outcomes, speed to market, brand integrity |
+| **8. Closing Slide** | “Coming Soon. voder.ai” or simply “Voder. 2025.” |
 
 ## 🚫 Explicit Exclusions
 
@@ -69,7 +77,7 @@ The voder.ai website does not include:
 
 The website is:
 
-- Fast-loading (static or server-side rendered)
-- Fully mobile responsive
-- Lightweight in JavaScript usage
+- Built with Reveal.js (self-contained HTML)
+- Fast-loading (static hosting recommended)
+- Fully mobile responsive (Reveal.js config adjusted)
 - SEO-primed with basic meta tags: title, description, Open Graph preview

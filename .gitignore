@@ -108,3 +108,5 @@ docker-compose.override.yml
 .voder-processes.json
 e2e-test-output.txt
 test-results
+
+outputs/

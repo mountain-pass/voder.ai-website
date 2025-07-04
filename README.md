@@ -38,6 +38,7 @@ npm ci
 
 ```
 .
+├── outputs             # Generated artifacts (e.g., screenshots, logs)
 ├── public
 │   └── assets           # Static assets (images, icons, etc.)
 ├── src                  # Application entry point, styles, and markup

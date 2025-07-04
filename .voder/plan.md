@@ -1,15 +1,22 @@
+---
 ## NOW
 
-Create a commit that captures all current changes (including the removal of `src/main.js`) with a clear, descriptive message.
+Run a single commit to capture all staged and unstaged changes in tracked files:
+
+Command:
+```
+git commit -a -m "chore: commit outstanding updates (outputs dir, .gitignore, README, .voder changes, removed old logs)"
+```
 
 ## NEXT
 
-- Run the full CI suite locally with `npm run test:ci` to verify the site builds, previews, and that all Playwright tests (smoke, responsive, navigation) pass across Chromium, Firefox, and WebKit.
-- If any tests fail or errors occur, update code, configuration, or tests to restore a green build.
+- Update `README.md` Installation section to state that generated artifacts (screenshots, logs, traces, videos, test-results) will be placed under `outputs/`.  
+- Modify `playwright.config.js` so that all Playwright artifacts (`outputDir` for screenshots, traces, videos, testResults) point to `outputs/` instead of `test-results/`.  
+- Run `npm run build` then `npm run test:ci`, and verify that the production build succeeds, end-to-end tests pass, and new artifacts land under `outputs/`.
 
 ## LATER
 
-- Add visual-regression snapshot tests for key slides at multiple viewports.
-- Integrate automated accessibility audits (e.g. axe-core) into the CI pipeline.
-- Refactor the Reveal.js deck into a dedicated `/deck` directory and introduce a standard landing page at `/`.
-- Clean up obsolete draft files (e.g. the `.voder` folder and any outdated prompt drafts).
+- Add visual-regression snapshot tests for key slides at multiple viewports, storing baselines and diffs in `outputs/`.  
+- Integrate automated accessibility audits (e.g., axe-core) into the CI pipeline, outputting results to `outputs/`.  
+- Refactor the Reveal.js deck into its own `/deck` directory and introduce a standard landing page at `/`.  
+- Clean up or remove any remaining draft files in `.voder/` and finalize project documentation.

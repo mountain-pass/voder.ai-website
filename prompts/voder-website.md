@@ -39,28 +39,28 @@ This replaces a traditional scroll-based homepage.
 
 Later, as the product matures, this deck can be moved to `/deck` and a more conventional landing page introduced.
 
-## 🎨 Visual Design (Optimised for Decision Makers)
+## 🎨 Visual Design (Optimised for Decision Makers + Mont-Fort 3D Influence)
 
 | Element | Specification |
 |---|---|
 | **Colour palette** | Dark mode is default. Black or deep grey backgrounds with executive accents: deep blues, metallic greys, or muted purples. |
 | **Typography** | Modern, clean sans-serif fonts with strong hierarchy. Headings feel strategic. |
 | **Imagery** | Conceptual vector graphics, abstract flows, roadmap visuals. |
-| **Animation** | Professional and subtle. Smooth fades, slide-ins, and progress animations. |
-| **Layout** | Slide-based (Reveal.js). Each idea gets its own slide, with generous spacing and visual contrast. Use https://mont-fort.com/ for inspiration (3d animations and animated transitions) |
+| **Animation** | Inspired by [mont-fort.com](https://mont-fort.com/):<br>- Subtle camera pans or slide transitions<br>- 3D visual metaphors (e.g. flowing prompts into structured outputs)<br>- Abstract motion to enhance clarity and rhythm |
+| **Layout** | Slide-based (Reveal.js). Each idea gets its own slide, with generous spacing and visual contrast. |
 
 ## 🏗️ Slide Architecture (Reveal.js)
 
 | Slide | Description |
 |---|---|
-| **1. Title** | Voder logo + subtitle (e.g., “From Intent to Implementation”) |
+| **1. Title** | Voder logo + subtitle (e.g., “From Intent to Implementation”)<br>*Mont-Fort-style 3D intro animation optional* |
 | **2. The Why** | “We believe software should start with intent, not syntax...” |
 | **3. The Problem** | Current pain points of translating vision into code |
-| **4. The Metaphor** | GPS vs Passenger Seat metaphor (destination vs directions) |
-| **5. The Vision** | Prompt → Voder → Application Source Code → Working App |
+| **4. The Metaphor** | GPS vs Passenger Seat metaphor (destination vs directions)<br>*3D animation of route planning vs manual driving optional* |
+| **5. The Vision** | Prompt → Voder → Application Source Code → Working App<br>*Use animated flow or abstract 3D model showing compilation process* |
 | **6. How Voder Is Different** | Not another code generator. Works from your intent. |
 | **7. What This Enables** | Focus on outcomes, speed to market, brand integrity |
-| **8. Closing Slide** | “Coming Soon. voder.ai” or simply “Voder. 2025.” |
+| **8. Closing Slide** | “Coming Soon. voder.ai” or simply “Voder. 2025.”<br>*Mont-Fort-style fading horizon or minimal 3D effect optional* |
 
 ## 🚫 Explicit Exclusions
 
@@ -81,3 +81,4 @@ The website is:
 - Fast-loading (static hosting recommended)
 - Fully mobile responsive (Reveal.js config adjusted)
 - SEO-primed with basic meta tags: title, description, Open Graph preview
+- Select 3D and animated elements may be implemented via Three.js, Lottie, or GSAP

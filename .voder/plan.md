@@ -1,15 +1,17 @@
 ## NOW
 
-Stage and commit all current working-directory changes with a clear message so the repository is clean and up to date.
+Commit the local edits in `.voder/history.md`, `.voder/plan.md`, `prompts/development-guidelines.md`, and `prompts/voder-website.md` so that the working directory is clean.
 
 ## NEXT
 
-- Review each test in `tests/` (`console.spec.js`, `navigation.spec.js`, `responsive.spec.js`, `smoke.spec.js`) to ensure every `page.screenshot` call writes into `outputs/screenshots/`.  
-- Search documentation (`README.md`, `docs/decisions/*.md`) for any lingering references to `tests/screenshots` and remove or update them.  
-- Confirm that the `tests/screenshots/` directory no longer exists in the project.
+- Install all Node.js dependencies by running `npm ci`.  
+- Ensure Playwright’s browsers are installed with `npx playwright install --with-deps`.  
+- Run the full end-to-end suite locally via `npm run test:ci` to verify that all tests pass and the `outputs/screenshots/` artifacts are up to date.
 
 ## LATER
 
-- Add Playwright visual-regression (snapshot) tests for robust UI change detection.  
-- Integrate an automated accessibility audit (e.g., axe-core) into the end-to-end suite.  
-- Begin designing a conventional landing page to replace or supplement the Reveal.js deck after launch.
+- Audit and improve accessibility (verify text/background contrast ≥ 4.5:1 and refine any failing elements).  
+- Refactor styling: consider moving `src/main.css` into a `src/styles/` directory and breaking it into focused modules.  
+- Update `vite.config.js` to explicitly set `publicDir: 'public'` for clarity.  
+- Polish the Reveal.js slides to match the spec exactly and lay groundwork for Mont-Fort–style 3D/GSAP animations.  
+- Plan for a post-launch landing page by componentizing slides and preparing a conventional homepage at `/`.

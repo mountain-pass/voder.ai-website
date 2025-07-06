@@ -1,6 +1,6 @@
 # voder.ai Pre-Launch Website
 
-A minimalist, single-page, pre-launch site designed to spark intrigue around Voder’s revolutionary approach to software creation and delivery.
+A minimalist, interactive pre-launch site designed to spark intrigue around Voder’s revolutionary approach to software creation and delivery.
 
 [![CI & Playwright multi-browser tests passing](https://github.com/mountain-pass/voder.ai-website/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mountain-pass/voder.ai-website/actions)
 
@@ -8,8 +8,8 @@ A minimalist, single-page, pre-launch site designed to spark intrigue around Vod
 
 - Node.js ≥ 18  
 - npm ≥ 8  
-- Running `npm run test:ci` (or `npx playwright install --with-deps`) will automatically download and install the Playwright browser binaries required for cross-browser end-to-end tests.  
-- GitHub Actions now caches Playwright browser binaries between runs, speeding up CI.  
+- `npx playwright install --with-deps` to download required browser binaries for cross-browser end-to-end tests.  
+- GitHub Actions caches Playwright browser binaries between runs, speeding up CI.
 
 ## Installation
 
@@ -21,22 +21,27 @@ npm ci
 
 ## Available Scripts
 
+npm run test:e2e    # Runs end-to-end tests and captures full-page screenshots into the outputs/ directory.
+
 - `npm run dev`  
-  Starts the development server with hot reload (http://localhost:5173).  
+  Starts the development server with hot reload (http://localhost:5173)
+
 - `npm run build`  
-  Bundles the app for production into `dist/`.  
+  Bundles the app for production into `dist/`
+
 - `npm run preview`  
-  Serves the production build locally for testing.  
+  Serves the production build locally for testing on port 4173
+
 - `npm run test:e2e`  
-  Runs end-to-end tests with Playwright:  
-  - Includes navigation tests for keyboard controls (Arrow keys) and deep-linking via URL hash.  
-  - Verifies slide transitions, URL hashes, and the “present” slide selection.  
+  Runs end-to-end tests with Playwright and captures full-page screenshots into the `outputs/` directory
+
 - `npm run test:ci`  
-  Builds, previews, and runs CI tests (used in GitHub Actions).
+  Builds, previews, and runs CI tests (used in GitHub Actions)
 
 ## Test Artifacts
 
-After running end-to-end tests, all screenshots, videos, traces, logs, and test result summaries are generated in the `outputs/` directory.
+Playwright captures full-page screenshots on every run (`screenshot: 'on'`).  
+Generated screenshots (and any videos) are stored in the `outputs/` directory at the project root.
 
 ## Project Structure
 
@@ -44,16 +49,16 @@ After running end-to-end tests, all screenshots, videos, traces, logs, and test 
 .
 ├── outputs             # Generated artifacts: screenshots, videos, traces, logs
 ├── public
-│   └── assets           # Static assets (images, icons, etc.)
-├── src                  # Application entry point, styles, and markup
-├── tests                # Playwright end-to-end test suites
+│   └── assets          # Static assets (images, icons, etc.)
+├── src                 # Application code: routes, components, styles
+├── tests               # Playwright end-to-end test suites
 ├── docs
-│   └── decisions        # Architectural Decision Records (MADR format)
-├── dist                 # Production build output
+│   └── decisions       # Architectural Decision Records (MADR format)
+├── dist                # Production build output
 ├── .github
-│   └── workflows        # CI workflows
-├── vite.config.js       # Vite configuration
-├── playwright.config.js # Playwright configuration
+│   └── workflows       # CI workflows
+├── vite.config.js      # Vite configuration
+├── playwright.config.js# Playwright configuration
 ├── package.json
 └── README.md
 ```
@@ -64,25 +69,24 @@ After running end-to-end tests, all screenshots, videos, traces, logs, and test 
 - ADR 0002: Use Playwright — accepted  
 - ADR 0003: Cache Playwright browser binaries — accepted  
 - ADR 0004: Use Reveal.js for the Pre-launch Deck — deprecated  
+- ADR 0005: Adopt Threlte and Three.js for 3D Scenes — accepted  
 
 ## Styling & Animations
 
-• Accent color  
-  • CSS variable: `--color-accent`  
-  • Value: `#4f46e5`
+- Accent color  
+  - CSS variable: `--color-accent`  
+  - Value: `#4f46e5`
 
-• Enabled animations  
-  • `.fade-in` – content fade-in on load  
-  • `.typing-animation` – typewriter text effect
+- Enabled animations  
+  - `.fade-in` – content fade-in on scroll  
+  - `.typing-animation` – typewriter text effect
 
 ## BrandEntry Demo
 
-To preview the new 3D rotating hexagon component:
+To preview the rotating 3D hexagon component:
 
-1. Start the development server:
-   ```bash
-   npm run dev
-   ```
-2. In your browser, navigate to http://localhost:5173/brandentry
+```bash
+npm run dev
+```
 
-This will display the live BrandEntry demo with the rotating hexagon.
+Then visit http://localhost:5173/brandentry to see the live BrandEntry demo.

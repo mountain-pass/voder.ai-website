@@ -3,10 +3,14 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
   optimizeDeps: {
-    include: ['gsap', 'gsap/ScrollTrigger']
+    include: ['gsap', 'gsap/ScrollTrigger', '@threlte/core', 'three']
   },
   ssr: {
-    noExternal: [/^gsap/]
+    noExternal: [
+      /^gsap/,
+      '@threlte/core',
+      'three'
+    ]
   },
   plugins: [sveltekit()]
 });

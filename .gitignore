@@ -12,3 +12,8 @@ dev-server.log
 preview.log
 
 .svelte-kit/
+*.log
+
+# ignore CI and build logs
+build-output.log
+test-ci.log

@@ -2,7 +2,7 @@
   // Prompt-Driven Iteration narrative block
 </script>
 
-<section class="fade-in">
+<section id="research" class="slide-prompt-iteration fade-in">
   <h2>Prompt-Driven Iteration</h2>
   <p>
     Only the parts you change will regenerate—preserving structure and speed.

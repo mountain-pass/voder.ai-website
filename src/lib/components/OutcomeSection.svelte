@@ -2,7 +2,7 @@
   // Outcome narrative block
 </script>
 
-<section class="fade-in">
+<section class="slide-outcome-focus fade-in">
   <h2>The Outcome</h2>
   <ul>
     <li>Clarity</li>

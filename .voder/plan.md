@@ -1,16 +1,18 @@
----
 ## NOW
 
-Commit the newly created Svelte narrative components (ProblemSection, GpsVsDirectionsSection, HowItWorksSection, PromptIterationSection, OutcomeSection, ClosingMomentSection), the `src/lib/assets/flow.svg` asset, the `src/routes/brandentry/+page.css` and `+page.server.ts` route files, and the updates to `.voder/history.md` and `.voder/plan.md` in a single commit with a descriptive message.
+Stage and commit all pending modifications—including updates to `.gitignore`, `README.md`, `playwright.config.js`, the various `src/lib/components/*.svelte` files, `tsconfig.json`, `vite.config.js`, and any other changed files—so that the repository is in a clean, up-to-date state with zero uncommitted changes.
 
 ## NEXT
 
-- Run `npm ci` to install and verify dependencies.  
-- Execute `npm run sync && npm run build` to ensure the production build succeeds without errors or warnings.  
-- Run `npm run test:ci` to build, start the preview server, and execute all Playwright tests; address any failures.
+1. Install dependencies and sync SvelteKit:  
+   Run `npm ci && npm run sync`.  
+2. Execute the full end-to-end test suite locally:  
+   Run `npm run test:e2e` and confirm all Playwright tests pass across Chromium, Firefox, and WebKit.  
+3. Address any failures or warnings uncovered by the tests (fix code or update tests as needed).
 
 ## LATER
 
-- Develop the animated diff scene inside `src/lib/components/PromptIterationSection.svelte` using GSAP.  
-- Add WebGL capability detection in `BrandEntry.svelte` and provide an image fallback for unsupported environments.  
-- Conduct a thorough accessibility audit: verify color-contrast ratios, ARIA roles/attributes, and full keyboard navigation support.
+- Tackle remaining accessibility warnings (e.g., invalid href patterns, redundant roles) and improve color-contrast where necessary.  
+- Enhance performance (lazy-load heavy modules, optimize StarfieldBackground draw logic, implement code-splitting/manualChunks in Vite).  
+- Refine cinematic scroll animations with GSAP timelines and Three.js camera moves.  
+- Expand documentation: update README with usage examples, add contribution guidelines, and finalize ADRs for any new architectural decisions.

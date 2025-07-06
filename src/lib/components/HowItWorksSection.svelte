@@ -2,7 +2,7 @@
   import flow from '$lib/assets/flow.svg';
 </script>
 
-<section class="fade-in">
+<section id="media" class="fade-in">
   <h2>How It Works</h2>
   <img
     src={flow}

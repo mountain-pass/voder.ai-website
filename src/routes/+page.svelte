@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import BrandEntry from '$lib/components/BrandEntry.svelte';
+  import HeroSection from '$lib/components/HeroSection.svelte';
   import ProblemSection from '$lib/components/ProblemSection.svelte';
   import GpsVsDirectionsSection from '$lib/components/GpsVsDirectionsSection.svelte';
   import HowItWorksSection from '$lib/components/HowItWorksSection.svelte';
@@ -16,13 +17,7 @@
 
 <main>
   <BrandEntry />
-
-  <h1 class="typing-animation fade-in">
-    Tell Us What You Want. Let Voder Build It.
-  </h1>
-  <p class="fade-in">
-    Define your vision in prompts, watch it become code.
-  </p>
+  <HeroSection />
 
   <ProblemSection />
   <GpsVsDirectionsSection />

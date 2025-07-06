@@ -2,7 +2,7 @@
   // This component renders the “The Problem” narrative block.
 </script>
 
-<section class="fade-in">
+<section id="about" class="fade-in">
   <h2>The Problem</h2>
   <p>
     Today’s code generation tools still leave you stuck fiddling with source code.

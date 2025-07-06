@@ -1,49 +1,57 @@
-Here’s a streamlined history of what’s been done so far:
+Here’s a concise recap of everything completed so far in the project:
 
-1. Project setup  
-   • Initialized a static, ESM-only SvelteKit app with SSR disabled and migrated to TypeScript  
-   • Replaced Reveal.js slides with GSAP/ScrollTrigger animations and added responsive dark mode  
+• Project Initialization  
+  – Scaffolded a SvelteKit ESM-only TypeScript app (SSR disabled)  
+  – Replaced Reveal.js slides with GSAP/ScrollTrigger animations and responsive dark mode  
 
-2. Testing & CI  
-   • Added cross-browser Playwright E2E tests (Chromium, Firefox, WebKit)  
-   • Organized GitHub Actions into Build, Preview, and Test jobs, achieving 18 reliable test passes  
+• Testing & CI  
+  – Author​ed cross-browser Playwright E2E tests (Chromium, Firefox, WebKit) covering console errors, hero section, responsive layouts, BrandEntry, smoke tests, and narrative sections  
+  – Configured GitHub Actions (Build, Preview, Test jobs)  
+  – Achieved consistent test results (18 passes initially; 21 passes in latest run)  
 
-3. Dependency audit & upgrades  
-   • Reviewed ~134 packages, patched 17 vulnerabilities  
-   • Upgraded Vite, Svelte, SvelteKit; reprovisioned @threlte/core; pinned key dependencies  
-   • Fixed dev-server errors and restored nine broken E2E tests  
+• Dependency Audit & Upgrades  
+  – Reviewed ~134 npm packages; patched 17 vulnerabilities, later auditing again to find 6 (3 low, 3 high)  
+  – Upgraded Vite, Svelte, SvelteKit; reprovisioned @threlte/core; pinned key dependencies  
+  – Fixed dev-server errors and restored nine broken tests  
 
-4. Performance & demos  
-   • Optimized CSS delivery and deferred GSAP loading  
-   • Built two Threlte demos: scroll-triggered hexagon fades and a full-viewport Three.js/Threlte scene  
+• Performance Optimizations & Demos  
+  – Deferred GSAP loading; optimized CSS delivery  
+  – Built two Threlte demos: scroll-triggered hexagon fades and a full-viewport Three.js/Threlte scene  
 
-5. Configuration, docs & cleanup  
-   • Regenerated and tightened configs (svelte.config.js, tsconfig.json, vite.config.js)  
-   • Streamlined imports, added an SVG flow diagram to the README  
-   • Created HeroSection and StarfieldBackground components with ARIA roles and removed legacy code  
+• Configuration, Documentation & Cleanup  
+  – Regenerated and tightened svelte.config.js, tsconfig.json, vite.config.js  
+  – Streamlined imports; added an SVG flow diagram to README  
+  – Created HeroSection and StarfieldBackground components with ARIA roles; removed legacy code  
 
-6. CI artifacts & verification  
-   • Produced SSR and client bundles (~444 modules) and served the site on port 4173  
-   • Configured Playwright full-page screenshots and documented artifact locations  
-   • Updated “Available Scripts” in README (including npm run test:e2e) and verified via grep  
+• CI Artifacts & Verification  
+  – Produced SSR and client bundles (~444 modules) on port 4173  
+  – Captured full-page Playwright screenshots; documented artifact paths  
+  – Updated “Available Scripts” in README and verified via grep  
 
-7. Most recent developments  
-   • Updated project-root package.json with final scripts, dependencies, and engine versions  
-   • Ran npm run test:ci (build → preview → test:e2e): all 18 Playwright tests passed in ~10.5 s  
-   • Committed 25 files changed (510 insertions, 343 deletions)  
-   • Then committed .voder/history.md and .voder/plan.md (2 files changed, 54 insertions, 71 deletions)
+• Most Recent Commits  
+  – Finalized project-root package.json (scripts, deps, node engine)  
+  – Ran `npm run test:ci` (build → preview → test:e2e): all 18 tests passed in ~10.5 s  
+  – Committed 27 files (510 insertions, 343 deletions), including .voder/history.md and .voder/plan.md  
+
+• Latest Action & Results  
+  – Executed `npm ci`; audited 134 packages (6 vulnerabilities)  
+  – Ran `npm run sync` to reconcile SvelteKit file-based routing  
+  – Ran `npm run test:e2e`: 21 tests passed across Chromium, Firefox, WebKit in ~12 s; screenshots output to ./outputs/  
+  – Added tests/sections.spec.js to verify six narrative section headings on the homepage
 
 **Most recently we've executed the following action:**
 
 ---
-Ensure you’re in the project root, then run:
+In the project root directory, run:
 
-  git add .voder/history.md
+```
+git add -A
+```
 ---
 
 **This was the result:**
 ---
-`git add .voder/history.md` completed.
+`git add -A` completed.
 Output:
 
 ---

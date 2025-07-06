@@ -1,17 +1,15 @@
 ## NOW
 
-Commit the updated `.voder/history.md` and `.voder/plan.md` files with a clear commit message (e.g. “chore(internal): update history and plan”).
+Save the current work by recording all outstanding modifications to establish a clean baseline (ensuring tests/sections.spec.js and the updated `.voder/` files are included).
 
 ## NEXT
 
-- Install and synchronize dependencies: run `npm ci` then `npm run sync`.  
-- Execute the full end-to-end suite: `npm run test:e2e` and confirm all tests pass in Chromium, Firefox, and WebKit.  
-- Examine the freshly generated screenshots in `outputs/` to ensure there are no visual regressions.
+- In `src/lib/components/HeroSection.svelte`, replace each `href="#"` with either a real fragment target (e.g. `href="#about"`) or convert the link into a `<button>` if it’s not true navigation, and remove the redundant `role="region"`.  
+- Run your color-contrast checks and, if needed, tweak placeholder and link colors in `src/app.css` or component-scoped styles to meet WCAG AA.  
+- Execute your end-to-end suite (`npm run test:e2e`) and confirm there are zero console errors and that all accessibility/access lint warnings are resolved.
 
 ## LATER
 
-- Address remaining accessibility issues (invalid `href="#"`, redundant roles, color-contrast auditing).  
-- Fine-tune performance (roll up manualChunks, optimize starfield canvas).  
-- Enhance narrative animations (refine GSAP timelines, consider audio cues).  
-- Update documentation and ADRs to reflect any new decisions.  
-- Prepare for production deployment (bundle‐size audits, asset compression, CI/CD configuration).
+- Introduce manual chunking in `vite.config.js` (via `build.rollupOptions.output.manualChunks`) to trim large bundle warnings.  
+- Lazy-load non-critical modules (e.g. GSAP, Threlte scenes) to improve initial load performance.  
+- Update documentation and ADRs to reflect any new accessibility or performance decisions.

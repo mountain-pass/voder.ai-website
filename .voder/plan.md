@@ -1,23 +1,17 @@
----
 ## NOW
 
-Commit the modified `.voder/history.md` and `.voder/plan.md` files so that the working directory is clean.
+Commit the updated `.voder/history.md` and `.voder/plan.md` files with a clear commit message (e.g. “chore(internal): update history and plan”).
 
 ## NEXT
 
-1. Install and sync project dependencies:  
-   - Run `npm ci`  
-   - Run `npm run sync`  
-
-2. Execute the full end-to-end test suite locally:  
-   - Run `npm run test:e2e` and verify that all tests pass in Chromium, Firefox, and WebKit.  
-
-3. Review console output and test screenshots in `outputs/` for any unexpected errors or regressions.
+- Install and synchronize dependencies: run `npm ci` then `npm run sync`.  
+- Execute the full end-to-end suite: `npm run test:e2e` and confirm all tests pass in Chromium, Firefox, and WebKit.  
+- Examine the freshly generated screenshots in `outputs/` to ensure there are no visual regressions.
 
 ## LATER
 
-- Address remaining accessibility issues (invalid `href="#"`, redundant roles, color-contrast checks).  
-- Optimize performance by code-splitting heavy chunks (`vite.config.js` manualChunks) and refining the starfield rendering.  
-- Enhance narrative animations (GSAP timelines, scroll-tied camera moves) and add optional ambient audio cues.  
-- Expand documentation and ADRs (update README usage examples, record any new architectural decisions).  
-- Prepare for production deployment: bundle size audits, asset compression, and CI/CD deployment configuration.
+- Address remaining accessibility issues (invalid `href="#"`, redundant roles, color-contrast auditing).  
+- Fine-tune performance (roll up manualChunks, optimize starfield canvas).  
+- Enhance narrative animations (refine GSAP timelines, consider audio cues).  
+- Update documentation and ADRs to reflect any new decisions.  
+- Prepare for production deployment (bundle‐size audits, asset compression, CI/CD configuration).

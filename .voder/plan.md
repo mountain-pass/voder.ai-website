@@ -1,28 +1,15 @@
 ## NOW
 
-Update the `lint` script in `package.json` to drop the explicit `--config .eslintrc.cjs` flag so ESLint will load the legacy config automatically.  
-- Edit `package.json`, under `"scripts"`, change  
-  ```json
-  "lint": "eslint --config .eslintrc.cjs \"src/**/*.{js,ts,svelte}\""
-  ```  
-  to  
-  ```json
-  "lint": "eslint \"src/**/*.{js,ts,svelte}\""
-  ```
+Finalize and commit the updated plan in `.voder/plan.md`.
 
 ## NEXT
 
-- Run `npm run lint` to see all remaining lint errors under `src/`.  
-- Fix each reported issue in the code (e.g. replace invalid `href="#"`, remove redundant roles, correct accessibility violations) until `npm run lint` exits with status 0.  
-- Once lint is clean, add Prettier support:  
-  - Create `prettier.config.cjs` with your preferred rules.  
-  - Update `.eslintrc.cjs` to extend `"plugin:prettier/recommended"`.  
-  - Install `prettier` and `eslint-plugin-prettier`.  
-  - Add a `"format"` script in `package.json` (e.g. `prettier --write "src/**/*.{js,ts,svelte,css,md,json}"`).  
+- Run `npm run lint` and fix any remaining ESLint warnings or errors in the `src/` directory.  
+- Run `npm run build` and verify that the production build completes without errors.  
+- Run `npm run test:ci` to confirm all end-to-end tests pass on Chromium, Firefox, and WebKit.
 
 ## LATER
 
-- Integrate lint and format checks into the CI workflow (`.github/workflows/ci.yml`).  
-- Add pre-commit hooks (e.g. Husky + lint-staged) to auto-format and lint on staged files.  
-- Finalize and accept ADR-0006 (manual chunk splitting) and ADR-0007 (ESLint & Prettier).  
-- Expand test coverage with unit/component tests and enforce quality gates.
+- Introduce Prettier: add a Prettier configuration file, install and configure `eslint-plugin-prettier` and `eslint-config-prettier`.  
+- Add a `format` script to `package.json` and enforce formatting in CI (and optionally via a pre-commit hook).  
+- Finalize ADR-0007 (ESLint & Prettier adoption) and revisit ADR-0006 (manual chunk splitting) for further bundle-size optimizations.

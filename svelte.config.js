@@ -3,10 +3,15 @@ import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
+  preprocess: preprocess(),
   kit: {
-    adapter: adapter()
-  },
-  preprocess: preprocess()
+    adapter: adapter({
+      fallback: 'index.html'
+    }),
+    files: {
+      assets: 'public'
+    }
+  }
 };
 
 export default config;

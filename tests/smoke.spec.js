@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test('homepage smoke test', async ({ page }, testInfo) => {
   await page.goto('/');
@@ -60,10 +60,4 @@ test('homepage smoke test', async ({ page }, testInfo) => {
   // Footer text
   const footer = page.locator('footer');
   await expect(footer).toHaveText('Voder. 2025.');
-
-  // capture full-page screenshot for smoke test
-  await page.screenshot({
-    path: `outputs/screenshots/smoke-${testInfo.project.name}.png`,
-    fullPage: true
-  });
 });

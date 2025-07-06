@@ -1,20 +1,17 @@
----
 ## NOW
 
-Commit all current changes as a stabilization checkpoint to preserve the cleaned and updated project state, including removal of legacy files and the addition of the new `svelte.config.js` configuration file.
+Capture and commit all current code changes (including updated dependencies, configuration files, new `src/lib/`, new `src/routes/+page.css`, and removal of Reveal.js artifacts) so that the project state is fully saved before rerunning CI.
 
 ## NEXT
 
-- Begin replacing the placeholder content in `src/routes/+layout.svelte` and `src/routes/+page.svelte` with the actual minimalist site structure.  
-- Add footer text "Voder. 2025." and set up all necessary SEO meta tags including description and Open Graph in the layout or page files as appropriate.  
-- Start building the narrative pitch deck experience leveraging Reveal.js in `src/routes/+page.svelte`, implementing content sections and visual styles as per the project specification and ADRs.  
-- Update or verify Playwright end-to-end tests reflect any new content or structural changes.  
-- Run and validate the full E2E test suite locally using `npm run test:ci` ensuring all tests pass and screenshots conform to requirements.
+- Install all dependencies with `npm ci`.  
+- Run a clean build (`npm run build`) and ensure there are no SSR or preprocessing errors (the missing-`typescript` issue should now be resolved).  
+- Execute the full CI test suite via `npm run test:ci` and verify that Playwright tests pass in Chromium, Firefox, and WebKit.  
+- If tests fail, adjust configuration or code (for example, tweak `svelte.config.js` or the preprocess settings) and repeat the build/test cycle until green.  
+- Finally, start the dev server (`npm run dev`), inspect `dev-server.log` for errors, and manually scroll through each section to confirm GSAP-powered animations run without console errors.
 
 ## LATER
 
-- Integrate advanced scroll-tied animations using GSAP and immersive 3D scenes with Threlte as described in the project vision.  
-- Add subtle audio cue effects at key moments to enhance cinematic pacing.  
-- Optimize all assets and bundle for mobile, tablet, and desktop performance.  
-- Configure and finalize CI/CD deployment workflows on Vercel or Netlify.  
-- Prepare the cinematic homepage for migration to `/pitch` or `/about` after launch and develop a conversion-focused landing page at root (`/`) with full marketing content.
+- Add a Playwright suite that programmatically scrolls to each section and asserts that animations trigger (`tests/scroll.spec.js`).  
+- Replace placeholder SVG and diff visuals with production-ready Three.js/Threlte scenes.  
+- Conduct formal accessibility (contrast, ARIA) and performance (bundle size, CLS) audits and resolve any issues.

@@ -1,6 +1,6 @@
-const { defineConfig, devices } = require('@playwright/test');
+import { defineConfig, devices } from '@playwright/test';
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: 'tests',
   outputDir: 'outputs',
   timeout: 30000,
@@ -12,7 +12,6 @@ module.exports = defineConfig({
     actionTimeout: 5000,
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
-    trace: 'retain-on-failure'
   },
   projects: [
     {

@@ -1,4 +1,4 @@
-/* Global Styles */
+/ * Global Styles */
 body {
   margin: 0;
   background-color: #000;
@@ -57,6 +57,16 @@ body {
   white-space: nowrap;
   border-right: 2px solid var(--color-accent);
   animation: typing 2s steps(30, end), blink-caret 0.5s step-end infinite;
+}
+
+/* Initially hide elements to be animated */
+section h1,
+section h2,
+section p,
+section li,
+section svg text {
+  opacity: 0;
+  transform: translateY(20px);
 }
 
 /* Accent styling for inline SVG text */

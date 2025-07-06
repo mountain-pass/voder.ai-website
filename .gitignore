@@ -10,3 +10,5 @@ outputs/
 # ignore local server logs
 dev-server.log
 preview.log
+
+.svelte-kit/

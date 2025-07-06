@@ -25,12 +25,12 @@
 </style>
 
 <Canvas>
-  <ambientLight intensity={0.5} />
-  <directionalLight position={[2, 2, 2]} intensity={1} />
+  <ambientLight intensity={0.5}></ambientLight>
+  <directionalLight position={[2, 2, 2]} intensity={1}></directionalLight>
 
   <mesh bind:this={hexMesh}>
-    <cylinderGeometry args={[1, 1, 0.5, 6]} />
-    <meshStandardMaterial color="#5555ff" attach="material-1" />
-    <meshStandardMaterial color="#4f46e5" />
+    <cylinderGeometry args={[1, 1, 0.5, 6]}></cylinderGeometry>
+    <meshStandardMaterial color="#5555ff" attach="material-1"></meshStandardMaterial>
+    <meshStandardMaterial color="#4f46e5"></meshStandardMaterial>
   </mesh>
 </Canvas>

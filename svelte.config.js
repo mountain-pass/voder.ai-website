@@ -3,7 +3,8 @@ import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  preprocess: preprocess({ typescript: false }),
+  preprocess: preprocess(),
+
   kit: {
     adapter: adapter({
       fallback: 'index.html'

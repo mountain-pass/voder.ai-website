@@ -1,18 +1,23 @@
+---
 ## NOW
 
-Stage and commit all pending modifications—including updates to `.gitignore`, `README.md`, `playwright.config.js`, the various `src/lib/components/*.svelte` files, `tsconfig.json`, `vite.config.js`, and any other changed files—so that the repository is in a clean, up-to-date state with zero uncommitted changes.
+Commit the modified `.voder/history.md` and `.voder/plan.md` files so that the working directory is clean.
 
 ## NEXT
 
-1. Install dependencies and sync SvelteKit:  
-   Run `npm ci && npm run sync`.  
+1. Install and sync project dependencies:  
+   - Run `npm ci`  
+   - Run `npm run sync`  
+
 2. Execute the full end-to-end test suite locally:  
-   Run `npm run test:e2e` and confirm all Playwright tests pass across Chromium, Firefox, and WebKit.  
-3. Address any failures or warnings uncovered by the tests (fix code or update tests as needed).
+   - Run `npm run test:e2e` and verify that all tests pass in Chromium, Firefox, and WebKit.  
+
+3. Review console output and test screenshots in `outputs/` for any unexpected errors or regressions.
 
 ## LATER
 
-- Tackle remaining accessibility warnings (e.g., invalid href patterns, redundant roles) and improve color-contrast where necessary.  
-- Enhance performance (lazy-load heavy modules, optimize StarfieldBackground draw logic, implement code-splitting/manualChunks in Vite).  
-- Refine cinematic scroll animations with GSAP timelines and Three.js camera moves.  
-- Expand documentation: update README with usage examples, add contribution guidelines, and finalize ADRs for any new architectural decisions.
+- Address remaining accessibility issues (invalid `href="#"`, redundant roles, color-contrast checks).  
+- Optimize performance by code-splitting heavy chunks (`vite.config.js` manualChunks) and refining the starfield rendering.  
+- Enhance narrative animations (GSAP timelines, scroll-tied camera moves) and add optional ambient audio cues.  
+- Expand documentation and ADRs (update README usage examples, record any new architectural decisions).  
+- Prepare for production deployment: bundle size audits, asset compression, and CI/CD deployment configuration.

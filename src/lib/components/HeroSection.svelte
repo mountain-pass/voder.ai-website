@@ -38,6 +38,16 @@
     gap: 1rem;
   }
 
+  .prompt-bar input::placeholder {
+    color: #D1D5DB;
+    opacity: 1;
+  }
+
+  .prompt-bar input::-webkit-input-placeholder {
+    color: #D1D5DB;
+    opacity: 1;
+  }
+
   .prompt-bar button.vibe {
     background-color: #2563eb;
     color: #fff;
@@ -135,11 +145,11 @@
     </div>
 
     <nav aria-label="Main navigation">
-      <a href="#about">About</a>
-      <a href="#philosophy">Philosophy</a>
-      <a href="#media">Media</a>
-      <a href="#research">Research</a>
-      <a href="#founders">Founders</a>
+      <a href="/#about">About</a>
+      <a href="/#philosophy">Philosophy</a>
+      <a href="/#media">Media</a>
+      <a href="/#research">Research</a>
+      <a href="/#founders">Founders</a>
     </nav>
   </section>
 

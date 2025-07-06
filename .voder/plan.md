@@ -1,15 +1,15 @@
+---
 ## NOW
 
-Save the current work by recording all outstanding modifications to establish a clean baseline (ensuring tests/sections.spec.js and the updated `.voder/` files are included).
+Commit all outstanding unstaged modifications—including updates to `package.json`, `package-lock.json`, `src/lib/components/HeroSection.svelte`, and the internal `.voder/` metadata files—with a descriptive message such as “Finalize dependency and HeroSection updates.”
 
 ## NEXT
 
-- In `src/lib/components/HeroSection.svelte`, replace each `href="#"` with either a real fragment target (e.g. `href="#about"`) or convert the link into a `<button>` if it’s not true navigation, and remove the redundant `role="region"`.  
-- Run your color-contrast checks and, if needed, tweak placeholder and link colors in `src/app.css` or component-scoped styles to meet WCAG AA.  
-- Execute your end-to-end suite (`npm run test:e2e`) and confirm there are zero console errors and that all accessibility/access lint warnings are resolved.
+- Push your local commits to `origin/main`.  
+- Run the full CI pipeline locally via `npm run test:ci` and verify that the build, preview, and end-to-end tests all pass.
 
 ## LATER
 
-- Introduce manual chunking in `vite.config.js` (via `build.rollupOptions.output.manualChunks`) to trim large bundle warnings.  
-- Lazy-load non-critical modules (e.g. GSAP, Threlte scenes) to improve initial load performance.  
-- Update documentation and ADRs to reflect any new accessibility or performance decisions.
+- Draft an ADR documenting the integration of Axe accessibility checks.  
+- Enhance the GitHub Actions workflow to report accessibility violations in CI.  
+- Define and schedule recurring automated accessibility audits as part of the development process.

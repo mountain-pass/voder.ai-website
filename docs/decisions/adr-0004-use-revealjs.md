@@ -1,5 +1,5 @@
 ---
-status: "accepted"
+status: "deprecated"
 date: 2024-06-07
 decision-makers: voder.ai website team
 ---

@@ -63,7 +63,7 @@ After running end-to-end tests, all screenshots, videos, traces, logs, and test 
 - ADR 0001: Use Vite — accepted  
 - ADR 0002: Use Playwright — accepted  
 - ADR 0003: Cache Playwright browser binaries — accepted  
-- ADR 0004: Use Reveal.js for the Pre-launch Deck — accepted  
+- ADR 0004: Use Reveal.js for the Pre-launch Deck — deprecated  
 
 ## Styling & Animations
 

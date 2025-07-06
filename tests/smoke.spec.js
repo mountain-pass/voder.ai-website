@@ -4,7 +4,7 @@ test('homepage smoke test', async ({ page }, testInfo) => {
   await page.goto('/');
 
   // Hero heading
-  const header = page.locator('h1');
+  const header = page.locator('h1.typing-animation');
   await expect(header).toHaveText('Tell Us What You Want. Let Voder Build It.');
 
   // Description meta tag

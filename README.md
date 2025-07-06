@@ -22,7 +22,7 @@ npm ci
 ## Available Scripts
 
 - `npm run dev`  
-  Starts the development server with hot reload (http://localhost:4173).  
+  Starts the development server with hot reload (http://localhost:5173).  
 - `npm run build`  
   Bundles the app for production into `dist/`.  
 - `npm run preview`  
@@ -74,3 +74,15 @@ After running end-to-end tests, all screenshots, videos, traces, logs, and test 
 • Enabled animations  
   • `.fade-in` – content fade-in on load  
   • `.typing-animation` – typewriter text effect
+
+## BrandEntry Demo
+
+To preview the new 3D rotating hexagon component:
+
+1. Start the development server:
+   ```bash
+   npm run dev
+   ```
+2. In your browser, navigate to http://localhost:5173/brandentry
+
+This will display the live BrandEntry demo with the rotating hexagon.

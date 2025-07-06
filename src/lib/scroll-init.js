@@ -1,10 +1,12 @@
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { animateSlide } from './animations.js';
 
-gsap.registerPlugin(ScrollTrigger);
+export async function initScrollAnimations() {
+  if (typeof window === 'undefined') return;
 
-export function initScrollAnimations() {
+  const { gsap } = await import('gsap');
+  const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+  gsap.registerPlugin(ScrollTrigger);
+
   document.querySelectorAll('main section').forEach((section) => {
     ScrollTrigger.create({
       trigger: section,

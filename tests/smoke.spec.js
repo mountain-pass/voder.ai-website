@@ -26,11 +26,11 @@ test('homepage smoke test', async ({ page }, testInfo) => {
   });
   await expect(problem).toBeVisible();
 
-  // Visual flow SVG text
-  const svgText = page.locator('svg text', {
-    hasText: 'Business Intent → Source Prompts → Voder → Working Software'
-  });
-  await expect(svgText).toHaveCount(1);
+  // Flow diagram image verification
+  const flowImage = page.locator(
+    'img[alt="Business Intent → Source Prompts → Voder → Working Software flow diagram"]'
+  );
+  await expect(flowImage).toHaveCount(1);
 
   // OG image meta
   const ogImageMeta = page.locator('meta[property="og:image"]');

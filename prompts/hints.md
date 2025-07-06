@@ -13,6 +13,7 @@
    3. @sveltejs/vite-plugin-svelte "^3.0.0 || ^4.0.0-next.1 || ^5.0.0 || ^6.0.0-next.0"
    4. vite "^5.0.3 || ^6.0.0 || ^7.0.0-beta.0"
 8. The current version of three and @types/three is 0.178.0
+9. The `gh` CLI can be used to get the pipeline status.
 
 
 

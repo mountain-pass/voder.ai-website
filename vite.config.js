@@ -6,11 +6,27 @@ export default defineConfig({
     include: ['gsap', 'gsap/ScrollTrigger', '@threlte/core', 'three']
   },
   ssr: {
-    noExternal: [
-      /^gsap/,
-      '@threlte/core',
-      'three'
-    ]
+    noExternal: [/^gsap/, '@threlte/core', 'three']
   },
-  plugins: [sveltekit()]
+  plugins: [sveltekit()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/three') || id.includes('node_modules/@threlte')) {
+            return 'vendor';
+          }
+          if (id.includes('node_modules/gsap')) {
+            return 'gsap';
+          }
+          if (id.includes('src/lib/components')) {
+            return 'components';
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        }
+      }
+    }
+  }
 });

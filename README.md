@@ -19,21 +19,25 @@ cd voder.ai-website
 npm ci
 ```
 
+> Note: The `dev`, `build`, and `preview` scripts automatically run  
+> `npm run sync` (i.e. `svelte-kit sync`) before invoking Vite.
+
 ## Available Scripts
 
-npm run test:e2e    # Runs end-to-end tests and captures full-page screenshots into the outputs/ directory.
+> Each script wraps a sync step: it runs `npm run sync` (which calls  
+> `svelte-kit sync`) before invoking Vite.
 
 - `npm run dev`  
   Starts the development server with hot reload (http://localhost:5173)
 
 - `npm run build`  
-  Bundles the app for production into `dist/`
+  Bundles the app for production into the `dist/` directory
 
 - `npm run preview`  
   Serves the production build locally for testing on port 4173
 
 - `npm run test:e2e`  
-  Runs end-to-end tests with Playwright and captures full-page screenshots into the `outputs/` directory
+  Runs end-to-end tests and captures full-page screenshots into the `outputs/` directory
 
 - `npm run test:ci`  
   Builds, previews, and runs CI tests (used in GitHub Actions)
@@ -73,11 +77,11 @@ Generated screenshots (and any videos) are stored in the `outputs/` directory at
 
 ## Styling & Animations
 
-- Accent color  
+- **Accent color**  
   - CSS variable: `--color-accent`  
   - Value: `#4f46e5`
 
-- Enabled animations  
+- **Enabled animations**  
   - `.fade-in` – content fade-in on scroll  
   - `.typing-animation` – typewriter text effect
 

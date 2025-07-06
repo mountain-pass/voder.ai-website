@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="750" height="60" viewBox="0 0 750 60" role="img" aria-labelledby="flowTitle">
+  <title id="flowTitle">Business Intent → Source Prompts → Voder → Working Software</title>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 Z" fill="#374151"/>
+    </marker>
+    <style>
+      .box { fill: #F3F4F6; stroke: #D1D5DB; stroke-width: 1; }
+      .label { font-family: system-ui, sans-serif; font-size: 12px; fill: #374151; text-anchor: middle; dominant-baseline: middle; }
+      .arrow { fill: none; stroke: #6B7280; stroke-width: 2; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <!-- Business Intent -->
+  <rect class="box" x="0"   y="10" width="150" height="40" rx="4"/>
+  <text class="label"   x="75"  y="30">Business Intent</text>
+  <path class="arrow" d="M150,30 L200,30"/>
+
+  <!-- Source Prompts -->
+  <rect class="box" x="200" y="10" width="150" height="40" rx="4"/>
+  <text class="label"   x="275" y="30">Source Prompts</text>
+  <path class="arrow" d="M350,30 L400,30"/>
+
+  <!-- Voder -->
+  <rect class="box" x="400" y="10" width="150" height="40" rx="4"/>
+  <text class="label"   x="475" y="30">Voder</text>
+  <path class="arrow" d="M550,30 L600,30"/>
+
+  <!-- Working Software -->
+  <rect class="box" x="600" y="10" width="150" height="40" rx="4"/>
+  <text class="label"   x="675" y="30">Working Software</text>
+</svg>

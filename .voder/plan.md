@@ -1,15 +1,16 @@
 ---
 ## NOW
 
-Commit and push the updated CI workflow file (.github/workflows/ci.yml) to the remote main branch.
+Commit the newly created Svelte narrative components (ProblemSection, GpsVsDirectionsSection, HowItWorksSection, PromptIterationSection, OutcomeSection, ClosingMomentSection), the `src/lib/assets/flow.svg` asset, the `src/routes/brandentry/+page.css` and `+page.server.ts` route files, and the updates to `.voder/history.md` and `.voder/plan.md` in a single commit with a descriptive message.
 
 ## NEXT
 
-- Run `npm ci` and then `npm run test:ci` locally to confirm that the new “build → preview → test:e2e” workflow passes all 15 Playwright tests (including the brandentry canvas test) on Chromium, Firefox, and WebKit.  
-- Review the GitHub Actions page for the main branch to ensure the new CI job succeeds across all browsers.
+- Run `npm ci` to install and verify dependencies.  
+- Execute `npm run sync && npm run build` to ensure the production build succeeds without errors or warnings.  
+- Run `npm run test:ci` to build, start the preview server, and execute all Playwright tests; address any failures.
 
 ## LATER
 
-- Implement the animated diff scene in `src/lib/components/PromptIterationSection.svelte` using GSAP.  
-- Enhance `src/lib/components/BrandEntry.svelte` with WebGL feature detection and provide an `<img>` fallback if the Threlte canvas cannot initialize.  
-- Perform a full accessibility audit: add necessary ARIA roles/labels, verify color-contrast ratios, and ensure keyboard navigation across all components.
+- Develop the animated diff scene inside `src/lib/components/PromptIterationSection.svelte` using GSAP.  
+- Add WebGL capability detection in `BrandEntry.svelte` and provide an image fallback for unsupported environments.  
+- Conduct a thorough accessibility audit: verify color-contrast ratios, ARIA roles/attributes, and full keyboard navigation support.

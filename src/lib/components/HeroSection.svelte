@@ -3,6 +3,49 @@
   // No reactive logic for HeroSection yet
 </script>
 
+<div class="hero-container">
+  <StarfieldBackground />
+
+  <section class="hero-section">
+    <div class="hero-logo">
+      <img src="/favicon.ico" alt="voder logo" />
+      <span class="brand-name">voder</span>
+    </div>
+
+    <h1 class="typing-animation fade-in">
+      Tell Us What You Want. Let Voder Build It.
+    </h1>
+
+    <p class="fade-in">Now it’s time to version our prompts.</p>
+
+    <div class="prompt-bar fade-in" role="form" aria-label="Prompt creation">
+      <input
+        type="text"
+        placeholder="Start to create."
+        aria-label="Prompt input"
+      />
+
+      <button type="button" class="vibe">Vibe</button>
+      <button type="button" class="code">Code</button>
+
+      <img class="icon" src="/assets/gear.svg" alt="gear" />
+      <img class="icon" src="/assets/globe.svg" alt="globe" />
+      <img class="icon" src="/assets/paperclip.svg" alt="paperclip" />
+      <img class="icon" src="/assets/microphone.svg" alt="microphone" />
+    </div>
+
+    <nav aria-label="Main navigation">
+      <a href="/#about">About</a>
+      <a href="/#philosophy">Philosophy</a>
+      <a href="/#media">Media</a>
+      <a href="/#research">Research</a>
+      <a href="/#founders">Founders</a>
+    </nav>
+  </section>
+
+  <div class="horizon"></div>
+</div>
+
 <style>
   .hero-container {
     position: relative;
@@ -39,12 +82,12 @@
   }
 
   .prompt-bar input::placeholder {
-    color: #D1D5DB;
+    color: #d1d5db;
     opacity: 1;
   }
 
   .prompt-bar input::-webkit-input-placeholder {
-    color: #D1D5DB;
+    color: #d1d5db;
     opacity: 1;
   }
 
@@ -112,46 +155,3 @@
     }
   }
 </style>
-
-<div class="hero-container">
-  <StarfieldBackground />
-
-  <section class="hero-section">
-    <div class="hero-logo">
-      <img src="/favicon.ico" alt="voder logo" />
-      <span class="brand-name">voder</span>
-    </div>
-
-    <h1 class="typing-animation fade-in">
-      Tell Us What You Want. Let Voder Build It.
-    </h1>
-
-    <p class="fade-in">Now it’s time to version our prompts.</p>
-
-    <div class="prompt-bar fade-in" role="form" aria-label="Prompt creation">
-      <input
-        type="text"
-        placeholder="Start to create."
-        aria-label="Prompt input"
-      />
-
-      <button type="button" class="vibe">Vibe</button>
-      <button type="button" class="code">Code</button>
-
-      <img class="icon" src="/assets/gear.svg" alt="gear" />
-      <img class="icon" src="/assets/globe.svg" alt="globe" />
-      <img class="icon" src="/assets/paperclip.svg" alt="paperclip" />
-      <img class="icon" src="/assets/microphone.svg" alt="microphone" />
-    </div>
-
-    <nav aria-label="Main navigation">
-      <a href="/#about">About</a>
-      <a href="/#philosophy">Philosophy</a>
-      <a href="/#media">Media</a>
-      <a href="/#research">Research</a>
-      <a href="/#founders">Founders</a>
-    </nav>
-  </section>
-
-  <div class="horizon"></div>
-</div>

@@ -1,5 +1,95 @@
 # 🎬 Transition: Outcome Focus → Closing Moment
 
+## 🎨 Brand & Accessibility Integration for Closing Moment
+
+### Brand Implementation
+
+- **Final Typography**: Inter/Satoshi semi-bold for "The Compiler for Prompts"
+- **Color Transition**: Fade from current background to Voder Black (#0A0A0A)
+- **Logo Treatment**: Soft Teal Glow (#24D1D5) subtle pulse, calm confidence
+- **Spacing**: Generous whitespace, minimalist final statement
+- **Brand Voice**: "Quietly confident close" - like the brand personality in black hoodie
+
+### Accessibility Requirements
+
+```html
+<section role="contentinfo" aria-labelledby="closing-heading">
+  <div aria-live="polite" aria-atomic="true">
+    <!-- Announces transition phases to screen readers -->
+  </div>
+
+  <h2 id="closing-heading" class="visually-hidden">Voder brand conclusion</h2>
+
+  <!-- Final brand statement -->
+  <div class="closing-statement">
+    <h3 class="tagline">The Compiler for Prompts</h3>
+    <p class="coming-soon">Coming Soon</p>
+    <p class="built-with" aria-label="Website attribution">
+      Built with Voder. (Of course.)
+    </p>
+  </div>
+
+  <!-- Logo marked as brand signature -->
+  <div class="logo-signature" aria-label="Voder logo signature">
+    <img src="/voder-logo.svg" alt="Voder" />
+  </div>
+</section>
+```
+
+### Motion & Transition Accessibility
+
+```css
+/* Respect motion preferences for final transition */
+@media (prefers-reduced-motion: reduce) {
+  .fade-to-black,
+  .logo-pulse,
+  .text-fade-sequence {
+    animation: none !important;
+    transition: opacity 0.3s ease-out; /* Simple fade only */
+  }
+
+  .curtain-fall {
+    display: none; /* Skip complex background animation */
+  }
+}
+
+/* Gentle transitions for motion-tolerant users */
+.fade-to-black {
+  animation: curtain-fall 3s ease-in-out;
+}
+
+.logo-pulse {
+  animation: gentle-pulse 4s ease-in-out infinite;
+}
+
+/* No flashing or strobing effects */
+.gentle-pulse {
+  animation-timing-function: ease-in-out;
+  opacity: 0.8;
+}
+```
+
+### Screen Reader Experience
+
+- Clear content hierarchy with proper heading structure
+- Final brand statement announced with appropriate emphasis
+- Logo described as "brand signature" rather than decorative
+- Transition completion announced: "Voder presentation complete"
+- All essential brand information available without visual effects
+
+### Keyboard Navigation
+
+- Logical tab order through final elements
+- Focus trapped appropriately during transition
+- ESC key available to skip to final state
+- No keyboard traps at presentation end
+
+### Touch Accessibility
+
+- Final elements respect 44px minimum touch target sizing
+- Adequate spacing (8px minimum) between any interactive elements
+- Swipe gestures work consistently with scroll behavior
+
 ## Last Outcome Settles
 
 Final line fades in:

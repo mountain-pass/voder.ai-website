@@ -58,3 +58,30 @@ Intentional
 Slightly alien
 
 Like opening sequence of a sci-fi title or an OS boot from the future
+
+## ♿ Accessibility Implementation
+
+### ARIA Requirements
+
+- Canvas element: `aria-hidden="true"` (decorative 3D content)
+- Section wrapper: `aria-label="Voder brand introduction"`
+- Loading state: `aria-live="polite"` with "Loading Voder experience"
+- Brand text: Semantic `h1` tag for "Voder" and `p` tag for tagline
+
+### Screen Reader Experience
+
+- Alternative text: "Voder - The Compiler for Prompts. Loading interactive brand experience."
+- Skip link provided: "Skip to main content" for users who want to bypass animation
+- Essential brand information available without 3D rendering
+
+### Motion Sensitivity
+
+- Respect `prefers-reduced-motion`: Show static logo and fade-in text only
+- Provide pause control for animation (ESC key or focus trap)
+- No flashing or strobing effects above 3Hz threshold
+
+### Keyboard Navigation
+
+- Focus trap during intro sequence
+- ESC key allows immediate skip to main content
+- TAB key navigation available once intro completes

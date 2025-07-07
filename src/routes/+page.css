@@ -1,30 +1,15 @@
-.slide-prompt-iteration,
-.slide-outcome-focus,
-.slide-closing-moment {
-  background-color: #111;
-  color: #fff;
-  padding: 4rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 75vh;
-  text-align: center;
+/* page-wide styles */
+body {
+  margin: 0;
 }
 
-@media (min-width: 640px) {
-  .slide-prompt-iteration,
-  .slide-outcome-focus,
-  .slide-closing-moment {
-    padding: 6rem 3rem;
-    min-height: 85vh;
-  }
+/* entering slide state only */
+.slide-entering-moment {
+  transform: translateX(-100%);
+  transition: transform 300ms ease-in;
 }
 
-.slide-prompt-iteration h2,
-.slide-outcome-focus h2,
-.slide-closing-moment h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
+.slide-entering-moment {
+  transform: translateX(0);
+  transition: transform 300ms ease-out;
 }

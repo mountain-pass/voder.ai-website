@@ -11,7 +11,7 @@ export async function initScrollAnimations() {
     ScrollTrigger.create({
       trigger: section,
       start: 'top center',
-      onEnter: () => animateSlide(section)
+      onEnter: () => animateSlide(section),
     });
   });
 }

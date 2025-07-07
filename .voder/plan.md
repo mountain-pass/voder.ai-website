@@ -1,15 +1,16 @@
+---
+
 ## NOW
 
-Finalize and commit the updated plan in `.voder/plan.md`.
+- Run `npm run lint` to confirm that the `no-undef` errors for `window` and `document` are resolved.
 
 ## NEXT
 
-- Run `npm run lint` and fix any remaining ESLint warnings or errors in the `src/` directory.  
-- Run `npm run build` and verify that the production build completes without errors.  
-- Run `npm run test:ci` to confirm all end-to-end tests pass on Chromium, Firefox, and WebKit.
+- If lint still reports undefined globals, add specific `globals` entries or adjust the override block until lint exits with code 0.
+- Execute `npm run test:ci` to verify the full CI pipeline (including the lint step) completes successfully.
 
 ## LATER
 
-- Introduce Prettier: add a Prettier configuration file, install and configure `eslint-plugin-prettier` and `eslint-config-prettier`.  
-- Add a `format` script to `package.json` and enforce formatting in CI (and optionally via a pre-commit hook).  
-- Finalize ADR-0007 (ESLint & Prettier adoption) and revisit ADR-0006 (manual chunk splitting) for further bundle-size optimizations.
+- Integrate Prettier into the workflow, add a `format` script, and update ADR 0007 accordingly.
+- Add a Git pre-commit hook (e.g., via Husky) to auto-run formatting and lint fixes on staged files.
+- Expand Playwright tests to cover ARIA roles, keyboard navigation, and `prefers-reduced-motion` scenarios.x

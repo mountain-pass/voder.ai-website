@@ -7,5 +7,4 @@
   <p>
     Only the parts you change will regenerate—preserving structure and speed.
   </p>
-  <p>[Animated diff scene]</p>
 </section>

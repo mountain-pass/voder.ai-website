@@ -7,12 +7,12 @@ const config = {
 
   kit: {
     adapter: adapter({
-      fallback: 'index.html'
+      fallback: 'index.html',
     }),
     files: {
-      assets: 'public'
-    }
-  }
+      assets: 'public',
+    },
+  },
 };
 
 export default config;

@@ -6,7 +6,7 @@ const sections = [
   'How It Works',
   'Prompt-Driven Iteration',
   'The Outcome',
-  'The Compiler for Prompts.'
+  'The Compiler for Prompts.',
 ];
 
 test('homepage narrative sections are visible', async ({ page }) => {

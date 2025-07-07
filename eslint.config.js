@@ -1,47 +1,47 @@
-// eslint.config.cjs
-const { FlatCompat } = require('@eslint/eslintrc');
+import eslint from '@eslint/js';
+import parser from 'svelte-eslint-parser';
+import svelte from 'eslint-plugin-svelte';
+import { fileURLToPath } from 'url';
+import path from 'path';
+import tseslint from 'typescript-eslint';
+import globals from 'globals';
+import prettier from 'eslint-config-prettier';
 
-// Load our existing .eslintrc.cjs via FlatCompat
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendationMode: 'recommended'
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-module.exports = [
-  // Extend configs from .eslintrc.cjs
-  ...compat.extends(
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:svelte/recommended',
-    'prettier'
-  ),
-
-  // Plugins
-  ...compat.plugins('svelte', '@typescript-eslint'),
-
-  // Parser and parser options
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
+  ...svelte.configs.recommended,
   {
+    files: ['**/*.svelte'],
     languageOptions: {
-      parser: 'svelte-eslint-parser',
+      parser: parser,
       parserOptions: {
-        parser: '@typescript-eslint/parser',
-        ecmaVersion: 2020,
-        sourceType: 'module',
-        extraFileExtensions: ['.svelte']
-      }
-    }
+        parser: tseslint.parser,
+        extraFileExtensions: ['.svelte'],
+      },
+    },
   },
-
-  // Svelte file processor
   {
-    files: ['*.svelte'],
-    processor: 'svelte/svelte'
-  },
-
-  // Custom rules
-  {
+    files: ['**/*.{js,ts,svelte}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+    plugins: {
+      svelte,
+    },
     rules: {
-      'no-console': 'warn'
-    }
-  }
-];
+      'no-console': 'warn',
+      // Add any custom Svelte rules here
+      'svelte/no-at-debug-tags': 'warn',
+      'svelte/no-target-blank': 'error',
+      'svelte/no-at-html-tags': 'warn',
+    },
+  },
+  // Prettier config should be last to override any conflicting rules
+  prettier
+);

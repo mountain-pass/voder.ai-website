@@ -72,9 +72,7 @@ Warm, focused lighting on UI
 
 Background darkens subtly again to isolate the moment
 
-Optional hover reveals for other prompt examples:
-    - "Dark mode" → auto theme shift
-    - "Use our new logo" → logo swaps instantly
+Optional hover reveals for other prompt examples: - "Dark mode" → auto theme shift - "Use our new logo" → logo swaps instantly
 
 ## ✨ Emotional Arc
 

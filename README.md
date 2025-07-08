@@ -6,9 +6,15 @@ A minimalist, interactive pre-launch site designed to spark intrigue around Vode
 
 ## Prerequisites
 
-- Node.js ≥ 18
-- npm ≥ 8
-- `npx playwright install --with-deps` to download required browser binaries for cross-browser end-to-end tests.
+- Node.js ≥ 18  
+- npm ≥ 8  
+- Copy `.env.example` to `.env` and set your Sentry DSN:
+  ```bash
+  cp .env.example .env
+  # then open .env and set:
+  # VITE_SENTRY_DSN=your_sentry_dsn_here
+  ```
+- `npx playwright install --with-deps` to download required browser binaries for cross-browser end-to-end tests.  
 - GitHub Actions caches Playwright browser binaries between runs, speeding up CI.
 
 ## Installation
@@ -69,21 +75,21 @@ Generated screenshots (and any videos) are stored in the `outputs/` directory at
 
 ## Architectural Decision Records
 
-- ADR 0001: Use Vite — accepted
-- ADR 0002: Use Playwright — accepted
-- ADR 0003: Cache Playwright browser binaries — accepted
-- ADR 0004: Use Reveal.js for the Pre-launch Deck — deprecated
-- ADR 0005: Adopt Threlte and Three.js for 3D Scenes — accepted
+- ADR 0001: Use Vite — accepted  
+- ADR 0002: Use Playwright — accepted  
+- ADR 0003: Cache Playwright browser binaries — accepted  
+- ADR 0004: Use Reveal.js for the Pre-launch Deck — deprecated  
+- ADR 0005: Adopt Threlte and Three.js for 3D Scenes — accepted  
 
 ## Styling & Animations
 
-- **Accent color**
-  - CSS variable: `--color-accent`
+- **Accent color**  
+  - CSS variable: `--color-accent`  
   - Value: `#4f46e5`
 
-- **Enabled animations**
-  - `.fade-in` – content fade-in on scroll
-  - `.typing-animation` – typewriter text effect
+- **Enabled animations**  
+  - `.fade-in` – content fade-in on scroll  
+  - `.typing-animation` – typewriter text effect  
 
 ## BrandEntry Demo
 

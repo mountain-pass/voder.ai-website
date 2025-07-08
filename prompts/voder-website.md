@@ -34,11 +34,11 @@ The experience should feel like a product teaser, film intro, and design manifes
 
 ## 🧭 Format: Custom-Built Interactive Homepage
 
-The homepage is **not built with Reveal.js**, but rather a **custom scroll or interaction-based website** using:
+The homepage is a **custom scroll or interaction-based website** using:
 
-- **Framework**: SvelteKit with Threlte for 3D
+- **Framework**: Vite + Vanilla TypeScript for maximum LLM compatibility and developer familiarity
 - **Animation**: GSAP for scroll-tied transitions and rhythm
-- **3D / Motion**: Three.js via Threlte (for immersive conceptual scenes)
+- **3D / Motion**: Three.js for immersive conceptual scenes
 - **Visual Assets**: SVG, .glb/.gltf models, or layered compositing
 
 ## 🎨 Visual Design
@@ -71,19 +71,20 @@ The homepage is **not built with Reveal.js**, but rather a **custom scroll or in
 - No social links
 - No pricing or signup
 - No navigation menu
+- No help buttons
 - No technical docs or screenshots
 
 This is a **narrative-first experience**.
 
 ## 🛠️ Technical Implementation Notes
 
-- Use **SvelteKit + Threlte + GSAP** as confirmed technology stack
-- Follow version constraints: @threlte/core 8.0.5, @sveltejs/kit 2.22.2, three.js 0.178.0
+- Use **Vite + Vanilla TypeScript + GSAP + Three.js** as confirmed technology stack (see ADR 0006)
+- Component architecture using TypeScript classes and functions
 - All transitions and animations tied to scroll or scene load
 - Lightweight assets optimised for mobile and performance
 - Hosting via Vercel or Netlify
 - SEO-ready with Open Graph tags, meta description, favicon
-- Must run `svelte-kit sync` and avoid committing `.svelte-kit/` directory
+- Static file serving from `public/` directory
 - Ensure accessibility with sufficient color contrast
 - Must display correctly on mobile, tablet and desktop
 
@@ -113,7 +114,7 @@ This is a **narrative-first experience**.
 
 ### 3D Content Accessibility
 
-- Threlte Canvas components marked with `aria-hidden="true"` for decorative content
+- Three.js Canvas components marked with `aria-hidden="true"` for decorative content
 - Essential information from 3D scenes provided in accessible text form
 - Alternative text descriptions for key visual metaphors
 - No essential content delivered only through 3D interactions

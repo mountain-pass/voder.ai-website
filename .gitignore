@@ -17,3 +17,5 @@ preview.log
 # ignore CI and build logs
 build-output.log
 test-ci.log
+
+.lighthouseci

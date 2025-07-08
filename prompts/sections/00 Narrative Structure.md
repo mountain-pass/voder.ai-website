@@ -13,9 +13,9 @@
 
 ## 🎨 Integrated Brand & Accessibility Specifications
 
-| Section                        | Brand Elements                                                                             | Accessibility Requirements                                                      | Implementation                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------------------- |
-| **1. Brand Entry**             | Inter/Satoshi typography, Voder Black (#0A0A0A), Soft Teal Glow (#24D1D5), calm confidence | `aria-label="Voder brand introduction"`, Canvas `aria-hidden="true"`, Skip link | `BrandEntry` class with Three.js Canvas |
+| Section                        | Brand Elements                                                                             | Accessibility Requirements                                                      | Implementation                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- | ----------------------------------------- |
+| **1. Brand Entry**             | Inter/Satoshi typography, Voder Black (#0A0A0A), Soft Teal Glow (#24D1D5), calm confidence | `aria-label="Voder brand introduction"`, Canvas `aria-hidden="true"`, Skip link | `BrandEntry` class with Three.js Canvas   |
 | **2. The Why**                 | Paper White (#FFFFFF) on Deep Navy (#0F1A2E), 15.8:1 contrast, minimal voice               | Semantic `h1`, logical hierarchy, `prefers-reduced-motion` support              | `HeroSection` class with typing animation |
 | **3. Problem Space**           | Cool Grey (#C6CBD4) secondary text, 11.7:1 contrast, strategic tone                        | Complex animations `aria-hidden="true"`, accessible text content                | `ProblemSection` class with GSAP chaos    |
 | **4. Metaphor**                | Soft Teal Glow for interactive elements, journey metaphor                                  | `role="img"` for diagrams, `aria-describedby` descriptions                      | `GpsVsDirectionsSection` class            |

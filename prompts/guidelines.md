@@ -46,9 +46,14 @@
    - All interactive elements must be keyboard accessible
    - Respect `prefers-reduced-motion` for animations
    - Screen reader compatibility is mandatory
-
 2. **Responsive Design**
    - The site MUST display correctly on mobile, tablet and desktop
+
+## Libraries
+
+- For each library depended on, you MUST maintain a copy it's README.md into in `docs/libraries`.
+- The README.md must match the correct version from the dependency
+- The preferred way of doing this is to create a symbolic link to the dependency's README.md in the `node_modules` directory
 
 ## Definition of Done
 

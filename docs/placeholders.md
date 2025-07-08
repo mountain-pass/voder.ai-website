@@ -1,0 +1,11 @@
+- assets/mockups/brand-entry.png → BrandEntry
+- assets/mockups/the-why.png → WhySection
+- assets/mockups/problem-space.png → ProblemSection
+- assets/mockups/metaphor.png → MetaphorSection
+- assets/mockups/vision-flow.png → HowItWorksSection
+- assets/mockups/prompt-driven-iteration.png → PromptIterationSection
+- assets/mockups/outcome-focus.png → OutcomeSection
+- assets/mockups/closing-moment.png → ClosingMomentSection
+
+- assets/mockups/cube.glb → Placeholder 3D model for BrandEntry
+- <PRODUCTION_MODEL_URL>.glb → Final 3D model to replace cube.glb when available

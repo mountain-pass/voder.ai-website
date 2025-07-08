@@ -17,10 +17,9 @@
     4. Extends: eslint:recommended, typescript-eslint:recommended
     5. The `eslint.config.js` file is extremely fragile. Avoid modifying it unless absolutely necessary
 12. WORKING CODE THAT MEETS THE SPECIFICATION IS FAR MORE IMPORTANT THAN LINTING
-13. The `web-vitals` library exports onLCP, onINP & onCLS, not getCLS, getFID, getLCP
-14. The site is static. DO NOT CREATE POST, PATCH, PUT, or DELETE OPERATIONS
-15. YOU MUST RUN `npm run build` before `vite preview`
-16. Vite serves static files from the `public/` folder
-17. Component architecture follows TypeScript class patterns (see examples in `examples/` directory)
-18. Use semantic HTML with proper ARIA attributes for accessibility
-19. Maintain existing GSAP animations and Three.js demos during migration
+13. The site is static. DO NOT CREATE POST, PATCH, PUT, or DELETE OPERATIONS
+14. YOU MUST RUN `npm run build` before `vite preview`
+15. Vite serves static files from the `public/` folder
+16. Component architecture follows TypeScript class patterns (see examples in `examples/` directory)
+17. Use semantic HTML with proper ARIA attributes for accessibility
+18. `@axe-core/playwright` only exports `AxeBuilder`, not `injectAxe` or `getViolations`

@@ -18,7 +18,7 @@ export class HeroSection {
     const section = document.createElement('section');
     section.className = 'hero-section';
     section.setAttribute('aria-labelledby', 'hero-heading');
-    
+
     section.innerHTML = `
       <div class="hero-container">
         <header class="hero-content">
@@ -44,14 +44,14 @@ export class HeroSection {
         </div>
       </div>
     `;
-    
+
     return section;
   }
 
   private setupEventListeners(): void {
     const primaryButton = this.element.querySelector('.cta-button.primary');
     const secondaryButton = this.element.querySelector('.cta-button.secondary');
-    
+
     primaryButton?.addEventListener('click', this.handleGetStarted.bind(this));
     secondaryButton?.addEventListener('click', this.handleLearnMore.bind(this));
   }
@@ -69,41 +69,53 @@ export class HeroSection {
 
   private initAnimations(): void {
     if (this.isAnimated) return;
-    
+
     const title = this.element.querySelector('.hero-title');
     const description = this.element.querySelector('.hero-description');
     const actions = this.element.querySelector('.hero-actions');
     const visual = this.element.querySelector('.hero-visual');
-    
+
     // Create timeline for coordinated animations
     const tl = gsap.timeline();
-    
+
     // Animate elements in sequence
     tl.from(title, {
       duration: 1,
       y: 50,
       opacity: 0,
-      ease: 'power3.out'
+      ease: 'power3.out',
     })
-    .from(description, {
-      duration: 0.8,
-      y: 30,
-      opacity: 0,
-      ease: 'power3.out'
-    }, '-=0.5')
-    .from(actions, {
-      duration: 0.6,
-      y: 20,
-      opacity: 0,
-      ease: 'power3.out'
-    }, '-=0.3')
-    .from(visual, {
-      duration: 1.2,
-      scale: 0.8,
-      opacity: 0,
-      ease: 'back.out(1.7)'
-    }, '-=0.8');
-    
+      .from(
+        description,
+        {
+          duration: 0.8,
+          y: 30,
+          opacity: 0,
+          ease: 'power3.out',
+        },
+        '-=0.5'
+      )
+      .from(
+        actions,
+        {
+          duration: 0.6,
+          y: 20,
+          opacity: 0,
+          ease: 'power3.out',
+        },
+        '-=0.3'
+      )
+      .from(
+        visual,
+        {
+          duration: 1.2,
+          scale: 0.8,
+          opacity: 0,
+          ease: 'back.out(1.7)',
+        },
+        '-=0.8'
+      );
+
     this.isAnimated = true;
   }
 

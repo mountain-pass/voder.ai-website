@@ -2,9 +2,9 @@ name: CI & Playwright multi-browser tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -38,7 +38,7 @@ jobs:
 
       - name: Assert Lighthouse budgets
         run: npm run lhci assert --assert.configPath=lighthouserc.json
-      
+
       - name: Run Lighthouse CI
         run: |
           npm run lhci -- \

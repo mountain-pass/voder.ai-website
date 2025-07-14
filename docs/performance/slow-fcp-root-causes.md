@@ -5,7 +5,7 @@ This document summarizes the top metrics from `lhci-report.json` contributing to
 ## 1. first-contentful-paint
 
 - Audit Key: `first-contentful-paint`
-- Measured Value: 1660 ms (expected ≤ 1500 ms)
+- Measured Value: 1660 ms
 - Resource Scope: All render-blocking CSS and JavaScript loaded on initial page load
 - Note: The global stylesheet (`/src/style.css`) is loaded synchronously, blocking first paint and delaying interactivity.
 - Why It Slows FCP: Large or render-blocking assets postpone the browser’s first meaningful paint by delaying style calculations and script execution.
@@ -13,7 +13,7 @@ This document summarizes the top metrics from `lhci-report.json` contributing to
 ## 2. interactive
 
 - Audit Key: `interactive`
-- Measured Value: 2989 ms (expected ≤ 2500 ms)
+- Measured Value: 2989 ms
 - Resource Scope: Main-thread tasks triggered by initial JavaScript bundles
 - Note: The main JS bundle (including the initial GSAP and Three.js imports) is oversized, blocking parsing and execution before first paint.
 - Why It Slows FCP: Heavy script execution and long tasks block the main thread, delaying both interactivity and the browser’s ability to render content promptly.

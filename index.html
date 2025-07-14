@@ -36,22 +36,28 @@
         font-family: Inter, sans-serif;
       }
     </style>
-    <link
-      rel="stylesheet"
-      href="/src/style.css"
-      media="print"
-      onload="this.media='all'"
-    />
+    
+    
     <link
       rel="stylesheet"
       href="/src/noncritical.css"
       media="print"
       onload="this.media='all'"
     />
+    <meta name="description" content="Voder – The Compiler for Prompts. High-concept cinematic pre-launch experience.">
+    <meta property="og:title" content="Voder – The Compiler for Prompts">
+    <meta property="og:description" content="What if your prompts were the source?">
+    <meta property="og:image" content="/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="/voder-favicon.png">
     <noscript><link rel="stylesheet" href="/src/noncritical.css" /></noscript>
-    <noscript><link rel="stylesheet" href="/src/style.css" /></noscript>
+    
   </head>
   <body>
-    <script type="module" defer src="/src/main.ts"></script>
+    <script>
+  window.THREE = {};
+  window.gsap = {};
+</script>
+<script type="module" defer src="/src/main.ts"></script>
   </body>
 </html>

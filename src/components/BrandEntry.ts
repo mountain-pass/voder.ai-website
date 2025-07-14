@@ -29,12 +29,5 @@ export function BrandEntry(): HTMLElement {
   skipLink.classList.add('skip-link');
   skipLink.textContent = 'Skip to main content';
   section.appendChild(skipLink);
-
-  // Scroll hint arrow prompting users to scroll
-  const hint = document.createElement('div');
-  hint.classList.add('scroll-hint');
-  hint.textContent = '⌄';
-  section.appendChild(hint);
-
   return section;
 }

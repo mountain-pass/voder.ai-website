@@ -1,10 +1,17 @@
 :root {
+  /* CSS Custom Properties */
   --color-voder-black: #0a0a0a;
   --color-deep-navy: #0f1a2e;
   --color-paper-white: #ffffff;
   --color-cool-grey: #c6cbd4;
   --color-soft-teal-glow: #24d1d5;
   --color-accent-green: #9aef00;
+}
+
+/* Ensure deep-navy background and white text for the “Why” section */
+#main-content {
+  background-color: var(--color-deep-navy) !important;
+  color: var(--color-paper-white) !important;
 }
 
 /* Essential resets/utilities */

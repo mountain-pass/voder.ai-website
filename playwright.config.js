@@ -23,9 +23,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'vite preview --port=4173 --strictPort',
+    
+        command: 'npm run preview',
     port: 4173,
     reuseExistingServer: true,
-    timeout: 120000, // wait up to 2 minutes for the server to start
+    timeout: 180000, // wait up to 2 minutes for the server to start
   },
 });

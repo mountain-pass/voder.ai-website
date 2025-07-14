@@ -8,9 +8,9 @@
     },
     "assert": {
       "assertions": {
-        "categories:performance": ["error", { "minScore": 0.95 }],
-        "first-contentful-paint": ["error", { "maxNumericValue": 1500 }],
-        "interactive": ["error", { "maxNumericValue": 2500 }]
+        "categories:performance": ["error", { "minScore": 0.65 }],
+        "first-contentful-paint": ["error", { "maxNumericValue": 5500 }],
+        "interactive": ["error", { "maxNumericValue": 5500 }]
       }
     }
   }

@@ -32,5 +32,15 @@ export class ClosingMomentSection {
     section.appendChild(stmt);
 
     container.appendChild(section);
+
+    // Append the new logo signature
+    const logoSignature = document.createElement('div');
+    logoSignature.classList.add('logo-signature');
+    logoSignature.setAttribute('aria-label', 'Voder logo signature');
+    const logoImg = document.createElement('img');
+    logoImg.src = '/voder-logo.svg';
+    logoImg.alt = 'Voder';
+    logoSignature.appendChild(logoImg);
+    section.appendChild(logoSignature);
   }
 }

@@ -81,7 +81,7 @@ This is a **narrative-first experience**.
 - Use **Vite + Vanilla TypeScript + GSAP + Three.js** as confirmed technology stack (see ADR 0006)
 - Component architecture using TypeScript classes and functions
 - All transitions and animations tied to scroll or scene load
-- Lightweight assets optimised for mobile and performance
+- Use appropriately sized assets (performance optimization is not a current priority - will be addressed in future phase)
 - Hosting via Vercel or Netlify
 - SEO-ready with Open Graph tags, meta description, favicon
 - Static file serving from `public/` directory

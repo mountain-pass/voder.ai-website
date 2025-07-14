@@ -1,5 +1,5 @@
 - assets/mockups/brand-entry.png → BrandEntry
-- public/voder-logo-final.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
+- docs/libraries/beasties-README.md → Symlink to node_modules/beasties/README.md for Beasties plugin documentation
 
 - assets/mockups/the-why.png → WhySection
 - public/voder-logo-final.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
@@ -8,7 +8,6 @@
 - public/voder-logo-final.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
 
 - assets/mockups/metaphor.png → MetaphorSection
-- public/voder-logo.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
 
 - assets/mockups/vision-flow.png → HowItWorksSection
 - public/voder-logo.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
@@ -24,10 +23,9 @@
 
 - public/voder-logo.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
 
-- public/assets/production-cube.glb → Temporary placeholder 3D model for BrandEntry; replace with <PRODUCTION_MODEL_URL>.glb when available
+
 - public/voder-logo.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
 
-- public/assets/cube.glb: placeholder 3D model used by the BrandEntry component
 - public/voder-logo.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available
 
 - public/voder-logo.svg → Temporary placeholder for Voder wordmark; replace with final SVG when available

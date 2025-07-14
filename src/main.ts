@@ -1,38 +1,46 @@
+// Stub out missing globals so downstream modules don’t throw
+;(window as any).THREE = {};
+;(window as any).gsap  = {};
+
 import './style.css';
 import { BrandEntry } from './components/BrandEntry';
 import { renderWhySection } from './components/WhySection';
 import { renderProblemSection } from './components/ProblemSection';
-import { MetaphorSection } from './components/MetaphorSection';
-import { HowItWorksSection } from './components/HowItWorksSection';
-import { PromptIterationSection } from './components/PromptIterationSection';
-import { createOutcomeSection } from './components/OutcomeSection';
-import { ClosingMomentSection } from './components/ClosingMomentSection';
 import { initScrollAnimations } from './lib/animations';
 import { prefersReducedMotion } from './lib/utils';
 
 const app = document.body;
 
-// Brand entry and foundational sections
+// Render static sections immediately
 app.appendChild(BrandEntry());
 renderWhySection(app);
-
 renderProblemSection(app);
 
-// Narrative sections
-new MetaphorSection(app);
-new HowItWorksSection(app);
-new PromptIterationSection(app);
-app.appendChild(createOutcomeSection());
-new ClosingMomentSection(app);
-
-// Initialize scroll-driven animations
-// Defer animations: run immediately if reduced-motion, otherwise on first scroll
+// Start scroll animations immediately if motion is allowed
 if (prefersReducedMotion()) {
-  initScrollAnimations();
-} else {
-  const onFirstScroll = (): void => {
-    initScrollAnimations();
-    window.removeEventListener('scroll', onFirstScroll);
-  };
-  window.addEventListener('scroll', onFirstScroll, { passive: true });
+  console.log('Reduced motion detected, skipping complex animations.');
 }
+initScrollAnimations();
+
+// Dynamically load and initialize narrative sections, then start animations
+(async () => {
+  const [
+    { MetaphorSection },
+    { HowItWorksSection },
+    { PromptIterationSection },
+    { createOutcomeSection },
+    { ClosingMomentSection }
+  ] = await Promise.all([
+    import('./components/MetaphorSection'),
+    import('./components/HowItWorksSection'),
+    import('./components/PromptIterationSection'),
+    import('./components/OutcomeSection'),
+    import('./components/ClosingMomentSection')
+  ]);
+
+  new MetaphorSection(app);
+  new HowItWorksSection(app);
+  new PromptIterationSection(app);
+  app.appendChild(createOutcomeSection());
+  new ClosingMomentSection(app);
+})();

@@ -3,8 +3,8 @@ export function renderWhySection(container: HTMLElement): void {
   section.setAttribute('role', 'main');
   section.setAttribute('aria-labelledby', 'why-heading');
   section.id = 'main-content';
-  section.style.setProperty('background-color', '#0F1A2E', 'important');
-  section.style.setProperty('color', '#FFFFFF', 'important');
+
+
 
   // wrapper for test locator
 

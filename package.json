@@ -11,6 +11,7 @@
     "preview": "npm run build && vite preview --port=4173 --strictPort",
     "test:e2e": "playwright test",
     "test:ci": "npm run build && npx playwright test --project=chromium --project=firefox --project=webkit",
+    "test:performance": "./scripts/test-performance.sh",
     "lint": "eslint \"src/**/*.{js,ts,svelte}\"",
     "assert:lhci": "lhci autorun --config=lighthouserc.json",
     "format": "prettier --write .",

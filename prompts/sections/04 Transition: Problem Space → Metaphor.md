@@ -111,3 +111,51 @@ Below or beside the path:
 | Fragmented layers | Singular metaphorical element |
 | Noise and clutter | Calm, minimalist clarity      |
 | System fatigue    | Focused intelligence          |
+
+## ✅ Implementation Requirements
+
+### Trigger & Timing
+
+- **Trigger**: Scroll to 60% of problem section viewport
+- **Total Duration**: 4 seconds (chaos → collapse → metaphor)
+- **Phases**:
+  - Chaos peak (1s)
+  - Collapse animation (1.5s)
+  - Void moment (0.5s)
+  - Metaphor emergence (1s)
+
+### Measurable Animation States
+
+- **Start**: Chaos elements at `opacity: 1`, random positions
+- **Peak**: All fragments visible, maximum motion intensity
+- **Collapse**: Elements converge to center point `transform: scale(0.1)`
+- **Void**: All elements at `opacity: 0`, screen near-black
+- **Metaphor**: Road/path visible at `opacity: 1`, labels positioned
+
+### Required Animation Properties
+
+- Chaos fragments: `transform: translate3d(x, y, 0) rotate(deg)` with easing
+- Collapse effect: `transform: scale()` from 1 to 0.1, then opacity fade
+- Glitch/vibration: `filter: blur()` and position jitter (max 2px)
+- Road emergence: `stroke-dasharray` animation for drawing effect
+- Color transitions: Background from chaos greys to teal accent
+
+### Accessibility Implementation
+
+- Chaos section marked `aria-hidden="true"`
+- Key message "The gap between ideas and implementation" always visible
+- Screen reader announcement: "Transitioning from problem to solution"
+- Reduced motion: Show static before/after states only
+
+### Testing Assertions Required
+
+```typescript
+// Before transition
+await expect(page.locator('[data-testid="chaos-container"]')).toBeVisible();
+await expect(page.locator('[data-testid="key-message"]')).toContainText('gap between ideas');
+
+// After transition  
+await expect(page.locator('[data-testid="road-metaphor"]')).toBeVisible();
+await expect(page.locator('[data-testid="passenger-headline"]')).toContainText('passenger seat');
+await page.waitForSelector('[data-testid="metaphor-labels"]', { state: 'visible' });
+```

@@ -157,3 +157,64 @@ Or, a scroll back-to-top cue appears after a delay
 | Logo + headline    | Brand imprint and clarity                  |
 | “Built with Voder” | Proof point, credibility, and elegance     |
 | Stillness          | Space for reflection, minimal CTA          |
+
+## ✅ Implementation Requirements
+
+### Trigger & Timing
+
+- **Trigger**: Scroll to 85% of outcome focus section viewport
+- **Total Duration**: 5 seconds
+- **Phases**:
+  - Benefits fade out (1s)
+  - Background transition to black (2s)
+  - Tagline emergence (1s)
+  - Final elements positioning (1s)
+
+### Measurable Animation States
+
+- **Start**: Outcome benefits visible, current background color
+- **1s**: Benefits at `opacity: 0`, background darkening begins
+- **3s**: Background at Voder Black (#0A0A0A), tagline emerging
+- **4s**: "The Compiler for Prompts" fully visible with teal glow
+- **5s**: "Coming Soon" and attribution visible, logo pulsing
+
+### Required Elements & Animations
+
+- Benefits fade-out with opacity transition
+- Background color transition to Voder Black
+- Tagline text with dramatic reveal animation
+- Logo with subtle pulse effect (Soft Teal Glow #24D1D5)
+- "Coming Soon" text with delayed fade-in
+- Optional: "Built with Voder" attribution
+
+### Content Requirements
+
+- **Main tagline**: "The Compiler for Prompts"
+- **Status**: "Coming Soon"
+- **Optional attribution**: "Built with Voder. (Of course.)"
+- **Logo**: Voder wordmark with subtle glow effect
+
+### Implementation Accessibility
+
+- Section marked with `role="contentinfo"`
+- Transition announced: "Reaching final brand statement"
+- Essential brand info available without animation
+- Tagline maintains semantic hierarchy (`h3` or `h2`)
+- Logo marked with appropriate `alt` text
+
+### Testing Assertions Required
+
+```typescript
+// Initial state
+await expect(page.locator('[data-testid="outcome-benefits"]')).toBeVisible();
+
+// Trigger transition
+await page.evaluate(() => window.scrollBy(0, window.innerHeight * 0.85));
+await waitForAnimationsComplete(page);
+
+// Final state
+await expect(page.locator('[data-testid="voder-black-background"]')).toHaveCSS('background-color', 'rgb(10, 10, 10)');
+await expect(page.locator('[data-testid="compiler-tagline"]')).toContainText('The Compiler for Prompts');
+await expect(page.locator('[data-testid="coming-soon"]')).toContainText('Coming Soon');
+await expect(page.locator('[data-testid="voder-logo"]')).toBeVisible();
+```

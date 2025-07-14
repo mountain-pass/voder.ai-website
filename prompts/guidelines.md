@@ -75,6 +75,35 @@
 3. **Responsive Design**
    - The site MUST display correctly on mobile, tablet and desktop
 
+## Layout, Animation & Transition Implementation
+
+1. **Transition Requirements**
+   - All transitions must follow the patterns specified in `prompts/transition-patterns.md`
+   - Each section transition file in `prompts/sections/` contains specific requirements
+   - MUST answer all 6 verification questions before implementing any transition
+   - Required elements: trigger mechanism, measurable states, accessibility support, test selectors
+
+2. **Implementation Standards**
+   - Use TypeScript classes following the `TransitionController` pattern
+   - Add `data-testid` attributes for all interactive and testable elements
+   - Implement `prefers-reduced-motion` fallbacks for all animations
+   - Provide skip functionality (ESC key or skip button) for accessibility
+   - Include ARIA live regions for screen reader announcements
+
+3. **Testing Requirements**
+   - Write Playwright tests that verify initial state, transition trigger, and final state
+   - Test both animated and reduced-motion versions
+   - Verify timing matches specification within ±100ms tolerance
+   - Use `waitForAnimationsComplete` helper before assertions
+   - Test keyboard accessibility (ESC to skip, TAB navigation)
+
+4. **Performance & Accessibility Standards**
+   - Maintain 60fps during animations (monitor frame drops)
+   - Essential content must be accessible without animations
+   - Complex animations marked with `aria-hidden="true"`
+   - Screen reader users get equivalent information through text
+   - No flashing or strobing effects above 3Hz threshold
+
 ## Performance
 
 **IMPORTANT: Performance optimization is NOT a current priority and will be addressed in a future development phase.**
@@ -100,7 +129,7 @@
 ## Deployment
 
 1. **Build & Preview**
-   - Always run `npm run build` before deployment to ensure production build works
+   - `npm run preview` automatically builds and serves the production build
    - Test production build locally with `npm run preview` before pushing
    - Verify all assets load correctly in production build
    - Check that static files are properly served from `public/` directory
@@ -119,6 +148,9 @@
    - Check performance metrics and Core Web Vitals (for monitoring only - performance optimization will be addressed in a future phase)
    - Validate HTTPS and security headers are properly configured
    - **CRITICAL: MUST stop preview server before running `npm run assert:lhci`** - Lighthouse CI will fail if preview server is already running on port 4173
+   - **Lighthouse CI automatically builds**: `npm run assert:lhci` uses `npm run preview` which includes the build step
+   - **For detailed performance analysis**: Use `npm run test:performance` which runs multiple tests and provides comprehensive metrics
+   - **Performance testing can be inconsistent** - Lighthouse CI now runs 3 tests and uses median scores for more reliability
 
 4. **Rollback Plan**
    - Keep previous working deployment readily available for rollback

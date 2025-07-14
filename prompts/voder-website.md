@@ -88,6 +88,45 @@ This is a **narrative-first experience**.
 - Ensure accessibility with sufficient color contrast
 - Must display correctly on mobile, tablet and desktop
 
+## 🎯 Implementation Guidelines for Transitions
+
+### Before Implementing Any Transition
+
+1. **Review Section Requirements**: Read the specific transition file in `prompts/sections/`
+2. **Check Implementation Checklist**: Verify you can answer all 6 verification questions
+3. **Understand Testing Requirements**: Know what Playwright assertions you'll need to write
+4. **Plan Data Attributes**: Add `data-testid` attributes for all interactive elements
+
+### Required Implementation Pattern
+
+Each transition must include:
+
+```typescript
+class TransitionController {
+  trigger: ScrollTrigger | TimeBasedTrigger | InteractionTrigger;
+  duration: number; // in milliseconds
+  phases: AnimationPhase[];
+  accessibilityHandler: A11yHandler;
+  testSelectors: TestSelector[];
+}
+```
+
+### Measurable Success Criteria
+
+- **Visual**: All elements reach specified opacity/transform values
+- **Timing**: Transitions complete within specified duration ±100ms
+- **Accessibility**: Screen readers receive appropriate announcements
+- **Testing**: All required test assertions pass
+- **Interaction**: User can skip/pause animations as needed
+
+### Common Anti-Patterns to Avoid
+
+- Transitions without defined end states
+- Animations without `prefers-reduced-motion` fallbacks  
+- Complex motion without skip options
+- Missing `data-testid` attributes for testing
+- Transitions that block essential content access
+
 ## ♿ Accessibility & ARIA Requirements
 
 ### Component-Specific ARIA Implementation

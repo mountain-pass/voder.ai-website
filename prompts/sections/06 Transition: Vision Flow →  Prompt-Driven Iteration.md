@@ -82,3 +82,52 @@ Optional hover reveals for other prompt examples: - "Dark mode" → auto theme s
 | System flow            | Real product adaptation |
 | Conceptual power       | Strategic usefulness    |
 | Curiosity              | Conviction              |
+
+## ✅ Implementation Requirements
+
+### Trigger & Timing
+
+- **Trigger**: Scroll to 80% of vision flow section
+- **Total Duration**: 5 seconds
+- **Phases**:
+  - Diagram zoom out (1s)
+  - Prompt panel fade in (1.5s)
+  - Live update demo (2s)
+  - Headline reveal (0.5s)
+
+### Measurable Animation States
+
+- **Start**: Vision flow diagram at `scale(1)`, full opacity
+- **1s**: Diagram at `scale(0.8)`, `opacity: 0.3`, blurred
+- **2.5s**: Prompt panel visible at `opacity: 1`, positioned left
+- **4.5s**: UI morphing complete, new headline visible
+- **5s**: All animations settled, interactive state enabled
+
+### Required Interactive Elements
+
+- Prompt panel with syntax highlighting (Monaco Editor or CodeMirror)
+- Live UI preview showing before/after states
+- Smooth morphing between UI variations (color, typography, spacing)
+- Hover reveals for additional prompt examples
+
+### Content Requirements
+
+- Initial prompt: "Tone: Casual, confident, modern."
+- Updated prompt: "Tone: Premium, minimalist."
+- UI changes: Headline text, button style, color palette
+- Additional examples: "Dark mode", "Use our new logo"
+
+### Testing Assertions Required
+
+```typescript
+// Initial state
+await expect(page.locator('[data-testid="vision-diagram"]')).toBeVisible();
+
+// Transition triggered
+await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight * 0.6));
+
+// Final state
+await expect(page.locator('[data-testid="prompt-panel"]')).toBeVisible();
+await expect(page.locator('[data-testid="ui-preview"]')).toBeVisible();
+await expect(page.locator('[data-testid="iteration-headline"]')).toContainText('Change the prompt');
+```

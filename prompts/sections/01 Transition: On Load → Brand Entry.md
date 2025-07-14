@@ -85,3 +85,45 @@ Like opening sequence of a sci-fi title or an OS boot from the future
 - Focus trap during intro sequence
 - ESC key allows immediate skip to main content
 - TAB key navigation available once intro completes
+
+## ✅ Implementation Requirements
+
+### Trigger & Timing
+
+- **Trigger**: Page load completion (DOMContentLoaded + 100ms buffer)
+- **Total Duration**: 6 seconds (0-6s)
+- **Scroll Behavior**: Disable scroll until sequence completes
+
+### Measurable Animation States
+
+- **0s**: `opacity: 0` on all elements, canvas initialized
+- **0.5s**: Light pulse appears at `transform: scale(1)`, `opacity: 1`
+- **1.5s**: 3D object visible at `opacity: 1`, rotation begins
+- **3s**: Logo text fully revealed, tagline visible
+- **4s**: Background elements at final opacity values
+- **6s**: All animations complete, scroll enabled
+
+### Required Elements & Animations
+
+- Canvas element with Three.js scene (WebGL required)
+- Logo text with typing or fade animation
+- Tagline with delayed fade-in
+- Background particles/texture with subtle movement
+- Rotation animation on 3D object (continuous, 0.02 radians/frame)
+
+### Accessibility Implementation
+
+- Provide "Skip intro" button focused on load
+- Announce "Voder brand introduction loading" to screen readers
+- Static fallback for `prefers-reduced-motion`
+- ESC key to skip to main content
+
+### Testing Assertions Required
+
+```typescript
+// Essential tests for this transition
+await expect(page.locator('[data-testid="voder-logo"]')).toBeVisible();
+await expect(page.locator('[data-testid="brand-tagline"]')).toContainText('The Compiler for Prompts');
+await expect(page.locator('[data-testid="three-canvas"]')).toBeVisible();
+await expect(page.locator('[data-testid="skip-intro"]')).toBeFocused();
+```

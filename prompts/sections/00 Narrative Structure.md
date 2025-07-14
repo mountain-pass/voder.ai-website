@@ -1,5 +1,18 @@
 # 🏗️ Narrative Structure (Scroll or Scene-Based)
 
+## ✅ Implementation Verification Checklist
+
+Before implementing any transition, verify you can answer:
+
+1. **What triggers this transition?** (scroll position, time, user interaction)
+2. **What are the measurable start/end states?** (opacity values, positions, content visibility)
+3. **How long should this transition take?** (specific duration in ms)
+4. **What elements animate and how?** (transform properties, easing functions)
+5. **How is this accessible?** (screen reader announcements, reduced motion alternatives)
+6. **How do we test this transition?** (specific Playwright assertions to write)
+
+## 📋 Section Overview & Testing Requirements
+
 | Section                        | Description                                                                                           |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
 | **1. Brand Entry**             | Voder logo intro with glowing motion or orbiting 3D object (e.g. prompt cube). No CTA, just intrigue. |

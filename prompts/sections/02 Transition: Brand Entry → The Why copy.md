@@ -95,3 +95,52 @@ Precision
 Confidence
 
 “We’re not in a dev tool anymore”
+
+## ✅ Implementation Requirements
+
+### Trigger & Timing
+
+- **Trigger**: First scroll event after brand entry completion (scroll Y > 50px)
+- **Total Duration**: 3 seconds
+- **Phases**:
+  - Camera pull/3D dissolve (1s)
+  - Logo repositioning (1s)
+  - Headline typing animation (1s)
+
+### Measurable Animation States
+
+- **Start**: Brand elements at center screen, 3D object at `opacity: 1`
+- **1s**: 3D object dissolving (`opacity: 0.3`, particles dispersing)
+- **2s**: Logo repositioned to top-left at `transform: translate(-40%, -60%) scale(0.7)`
+- **3s**: Headline fully revealed, background at Deep Navy (#0F1A2E)
+
+### Required Elements & Animations
+
+- 3D object with particle dissolve effect using Three.js
+- Logo with smooth translate/scale transformation
+- Background color transition using GSAP ColorProps
+- Typing animation for headline text (letter-by-letter reveal)
+- Camera movement simulation with transform3d
+
+### Implementation Accessibility
+
+- Skip button available: "Skip to main content"
+- ARIA live region announces: "Moving to main message"
+- Typing animation respects `prefers-reduced-motion` (show text immediately)
+- Essential message available as fallback text
+
+### Testing Assertions Required
+
+```typescript
+// Initial state
+await expect(page.locator('[data-testid="brand-object"]')).toBeVisible();
+
+// Trigger transition
+await page.mouse.wheel(0, 100);
+await waitForAnimationsComplete(page);
+
+// Final state
+await expect(page.locator('[data-testid="logo-repositioned"]')).toBeVisible();
+await expect(page.locator('[data-testid="why-headline"]')).toContainText('We believe software should start with intent');
+await expect(page.locator('[data-testid="background-navy"]')).toHaveCSS('background-color', 'rgb(15, 26, 46)');
+```

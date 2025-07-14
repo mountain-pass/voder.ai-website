@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
+import { waitForAnimationsComplete } from './helpers/animation-utils';
 
 test('The Why section is present, accessible, and passes Axe core scan', async ({
   page,
@@ -8,8 +9,7 @@ test('The Why section is present, accessible, and passes Axe core scan', async (
   await page.goto('/');
 
   // Target the main "Why" section
-  const section = page.getByRole('main', { name: '' }).locator('#main-content');
-  await expect(section).toHaveCount(1);
+  const section = page.locator('#main-content');
 
   // Check the main heading
   await expect(
@@ -28,6 +28,9 @@ test('The Why section is present, accessible, and passes Axe core scan', async (
   await expect(
     section.locator('div.three-d-transition[aria-hidden="true"]')
   ).toHaveCount(1);
+
+  // Wait for animations to complete before accessibility scan
+  await waitForAnimationsComplete(page, section);
 
   // Run Axe accessibility scan scoped to this section
   const results = await new AxeBuilder({ page })

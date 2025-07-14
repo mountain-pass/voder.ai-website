@@ -1,30 +1,57 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/voder-favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      :root {
+        --color-voder-black: #0a0a0a;
+        --color-paper-white: #ffffff;
+        --color-deep-navy: #0f1a2e;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--color-voder-black);
+        color: var(--color-paper-white);
+      }
+      section[role='banner'] {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-voder-black);
+      }
+      section[role='banner'] h1 {
+        color: var(--color-paper-white);
+        font-family: Satoshi, sans-serif;
+        font-size: 2.5rem;
+        font-weight: 900;
+      }
+      #main-content {
+        background: var(--color-deep-navy);
+      }
+      #main-content h1 {
+        color: var(--color-paper-white);
+        font-family: Inter, sans-serif;
+      }
+    </style>
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Satoshi:wght@600&display=swap"
+      href="/src/style.css"
+      media="print"
+      onload="this.media='all'"
     />
-    <title>Vite + TS</title>
-<meta name="description" content="Turn simple prompts into production-ready software with Voder.">
-
-<!-- Open Graph -->
-<meta property="og:title" content="Voder — The Compiler for Prompts">
-<meta property="og:description" content="Turn simple prompts into production-ready software with Voder.">
-<meta property="og:image" content="/assets/og-image.png">
-<meta property="og:type" content="website">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Voder — The Compiler for Prompts">
-<meta name="twitter:description" content="Turn simple prompts into production-ready software with Voder.">
-<meta name="twitter:image" content="/assets/twitter-card.png">
+    <link
+      rel="stylesheet"
+      href="/src/noncritical.css"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript><link rel="stylesheet" href="/src/noncritical.css" /></noscript>
+    <noscript><link rel="stylesheet" href="/src/style.css" /></noscript>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" defer src="/src/main.ts"></script>
   </body>
 </html>

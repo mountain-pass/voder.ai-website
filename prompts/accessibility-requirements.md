@@ -192,6 +192,58 @@
 - **HTML validation** for semantic correctness
 - **Keyboard navigation** automated tests
 
+#### Animation & Timing Considerations
+
+**CRITICAL**: Accessibility tests MUST scroll to target sections and wait for animations to complete before scanning.
+
+```typescript
+// REQUIRED: Scroll to target section to trigger scroll-based animations
+await targetSection.scrollIntoViewIfNeeded();
+await page.waitForTimeout(500); // Give time for scroll to complete
+
+// Wait for GSAP and scroll-triggered animations to complete
+await page.waitForFunction(
+  () => {
+    // Check if GSAP is loaded and has active animations
+    if (typeof window.gsap !== 'undefined') {
+      const activeTweens = window.gsap
+        .getTweensOf('*')
+        .filter((tween) => tween.isActive());
+      if (activeTweens.length > 0) {
+        return false;
+      }
+    }
+
+    // Check for elements with animation classes
+    const animatingElements = document.querySelectorAll(
+      '.animating, [data-animating="true"]'
+    );
+    return animatingElements.length === 0;
+  },
+  { timeout: 5000 }
+);
+
+// Then run accessibility scan
+const results = await new AxeBuilder({ page })
+  .include('section[data-test-id="target-section"]')
+  .analyze();
+```
+
+**Why Scrolling is Required**:
+
+- GSAP ScrollTrigger animations only activate when elements enter viewport
+- Scroll-based animations remain in initial state until triggered
+- Static accessibility scans miss the final animated state
+- Color transitions and positioning depend on scroll events
+
+**Best Practices**:
+
+1. **Scroll to target first**: `await targetSection.scrollIntoViewIfNeeded()`
+2. **Wait for network idle**: `await page.waitForLoadState('networkidle')`
+3. **Wait for specific animations**: Use custom data attributes to track animation state
+4. **Wait for GSAP completion**: Use GSAP's `onComplete` callbacks in tests
+5. **Verify final state**: Check computed styles match expected values before scanning
+
 ### Manual Testing
 
 - **Screen reader testing** (NVDA, JAWS, VoiceOver)
@@ -201,16 +253,18 @@
 
 ### Testing Checklist
 
-- [ ] All text meets minimum contrast ratios
-- [ ] All interactive elements keyboard accessible
+- [ ] **Tests scroll to target sections before scanning** (required for scroll-triggered animations)
+- [ ] All text meets minimum contrast ratios **after animations complete**
+- [ ] All interactive elements keyboard accessible **in final state**
 - [ ] Skip links functional and properly hidden
 - [ ] Screen reader announces content logically
-- [ ] Focus indicators visible and persistent
+- [ ] Focus indicators visible and persistent **post-animation**
 - [ ] Animations respect `prefers-reduced-motion`
 - [ ] Essential content available without JavaScript
-- [ ] Touch targets meet minimum size requirements
+- [ ] Touch targets meet minimum size requirements **after layout animations**
 - [ ] 200% zoom doesn't break layout
 - [ ] No keyboard traps or focus issues
+- [ ] **Accessibility tests wait for GSAP and scroll animations to complete**
 
 ## 📋 Implementation Priority
 

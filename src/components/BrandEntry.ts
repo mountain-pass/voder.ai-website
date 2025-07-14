@@ -6,6 +6,8 @@ export function BrandEntry(): HTMLElement {
   section.setAttribute('aria-label', 'Voder brand introduction');
 
   const canvas = document.createElement('canvas');
+  // ensure canvas is visible before rendering anything
+  canvas.style.backgroundColor = '#FFFFFF';
   canvas.setAttribute('aria-hidden', 'true');
   section.appendChild(canvas);
 
@@ -27,6 +29,12 @@ export function BrandEntry(): HTMLElement {
   skipLink.classList.add('skip-link');
   skipLink.textContent = 'Skip to main content';
   section.appendChild(skipLink);
+
+  // Scroll hint arrow prompting users to scroll
+  const hint = document.createElement('div');
+  hint.classList.add('scroll-hint');
+  hint.textContent = '⌄';
+  section.appendChild(hint);
 
   return section;
 }

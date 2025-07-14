@@ -1,21 +1,13 @@
 ## NOW
-Copy the placeholder 3D model into the public assets directory:
-  ```
-  cp assets/mockups/cube.glb public/assets/cube.glb
-  ```
+Run the full CI test suite to verify everything still passes:
+```
+npm run test:ci
+```
 
 ## NEXT
-- Open `docs/placeholders.md` and update its entry to:
-  ```
-  - public/assets/cube.glb → Placeholder 3D model for BrandEntry
-  ```
-- Run the full production build and CI checks:
-  ```
-  npm run build
-  npm run test:ci
-  ```
+If any tests fail, update the impacted component or test until all tests pass.
 
 ## LATER
-- Refine GSAP scroll-trigger animation timings, easing curves, and add pause/skip controls for users with `prefers-reduced-motion`.  
-- Enhance responsive layouts, keyboard navigation, and focus management to fully satisfy WCAG 2.1 AA/AAA.  
-- When the final production GLB arrives, update the loader path in `src/lib/animations.ts` and record the new filename in `docs/placeholders.md`.
+- Swap out placeholder assets in `public/assets/` (e.g. `cube.glb`, `voder-logo.svg`) with final production files and document updates in `docs/placeholders.md`.
+- Deploy to a staging environment, run live Lighthouse & Axe audits, and gather feedback.
+- After stakeholder review and audit sign-off, promote the site to production.

@@ -1,36 +1,31 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  // Include both JS and TS spec files
-  testMatch: '**/*.spec.{js,ts}',
-  testDir: 'tests',
-  outputDir: 'outputs',
-  timeout: 30000,
-  retries: 1,
+  testDir: './tests',
+  timeout: 30 * 1000,
+  retries: 0,
   use: {
     baseURL: 'http://localhost:4173',
     headless: true,
-    viewport: { width: 1280, height: 720 },
-    actionTimeout: 5000,
-    ignoreHTTPSErrors: true,
   },
   projects: [
     {
-      name: 'Chromium',
+      name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-      {
-        name: 'Firefox',
-        use: { ...devices['Desktop Firefox'] },
-      },
-      {
-        name: 'WebKit',
-        use: { ...devices['Desktop Safari'] },
-      },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
   ],
   webServer: {
-    command: 'npm run preview',
+    command: 'vite preview --port=4173 --strictPort',
     port: 4173,
     reuseExistingServer: true,
+    timeout: 120000, // wait up to 2 minutes for the server to start
   },
 });

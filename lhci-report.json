@@ -1,0 +1,42 @@
+✅  .lighthouseci/ directory writable
+✅  Configuration file found
+✅  Chrome installation found
+Healthcheck passed!
+
+Started a web server with "npm run preview"...
+Running Lighthouse 1 time(s) on http://localhost:4173
+Run #1...(node:26972) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+done.
+Done running Lighthouse!
+
+Checking assertions against 1 URL(s), 1 total run(s)
+
+3 result(s) for [1mhttp://localhost:4173/[0m :
+
+  [31m✘[0m  [1mcategories[0m.performance failure for [1mminScore[0m assertion
+        expected: >=[32m0.95[0m
+           found: [31m0.61[0m
+      [2mall values: 0.61[0m
+
+
+  [31m✘[0m  [1mfirst-contentful-paint[0m failure for [1mmaxNumericValue[0m assertion
+       First Contentful Paint
+       https://developer.chrome.com/docs/lighthouse/performance/first-contentful-paint/
+
+        expected: <=[32m1500[0m
+           found: [31m1660.4350000000002[0m
+      [2mall values: 1660.4350000000002[0m
+
+
+  [31m✘[0m  [1minteractive[0m failure for [1mmaxNumericValue[0m assertion
+       Time to Interactive
+       https://developer.chrome.com/docs/lighthouse/performance/interactive/
+
+        expected: <=[32m2500[0m
+           found: [31m2989.0663000000004[0m
+      [2mall values: 2989.0663000000004[0m
+
+Assertion failed. Exiting with status code 1.
+
+assert command failed. Exiting with status code 1.

@@ -25,8 +25,6 @@ export function createOutcomeSection(): HTMLElement {
   const container = document.createElement('div');
   container.classList.add('benefit-container');
 
-
-
   section.appendChild(container);
 
   // Benefit data
@@ -44,10 +42,12 @@ export function createOutcomeSection(): HTMLElement {
     const item = document.createElement('div');
     item.classList.add('benefit-item');
     item.setAttribute('role', 'complementary');
-    item.tabIndex = 0;const icon = document.createElement('span');
+    item.tabIndex = 0;
+    const icon = document.createElement('span');
     icon.classList.add('benefit-icon');
     icon.setAttribute('aria-hidden', 'true');
-    icon.textContent = emoji;const label = document.createElement('span');
+    icon.textContent = emoji;
+    const label = document.createElement('span');
     label.textContent = text;
 
     item.append(icon, label);

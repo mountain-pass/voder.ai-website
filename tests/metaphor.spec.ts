@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
+import { waitForAnimationsComplete } from './helpers/animation-utils';
 
 test.describe('Metaphor Section', () => {
   test('should render and have no accessibility violations', async ({
@@ -13,6 +14,9 @@ test.describe('Metaphor Section', () => {
       'section[data-testid="metaphor-section"]'
     );
     await expect(metaphorSection).toBeVisible();
+
+    // Wait for animations to complete before accessibility scan
+    await waitForAnimationsComplete(page, metaphorSection);
 
     // 3. Accessibility scan with AxeBuilder
     const results = await new AxeBuilder({ page })

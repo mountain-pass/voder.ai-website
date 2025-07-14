@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
+import { waitForAnimationsComplete } from './helpers/animation-utils';
 
 test('Closing Moment section is present, accessible, and passes Axe core scan', async ({
   page,
@@ -24,6 +25,9 @@ test('Closing Moment section is present, accessible, and passes Axe core scan', 
   await expect(
     section.getByText('Built with Voder. (Of course.)')
   ).toBeVisible();
+
+  // Wait for animations to complete before accessibility scan
+  await waitForAnimationsComplete(page, section);
 
   const results = await new AxeBuilder({ page })
     .include('section[role="contentinfo"]')

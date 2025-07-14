@@ -1,10 +1,12 @@
 export function renderWhySection(container: HTMLElement): void {
   const section = document.createElement('section');
   section.setAttribute('role', 'main');
+  section.setAttribute('aria-labelledby', 'why-heading');
+  section.id = 'main-content';
+  section.style.setProperty('background-color', '#0F1A2E', 'important');
+  section.style.setProperty('color', '#FFFFFF', 'important');
 
   // wrapper for test locator
-  const wrapper = document.createElement('div');
-  wrapper.id = 'main-content';
 
   // 3D transition overlay
   const threeD = document.createElement('div');
@@ -16,19 +18,22 @@ export function renderWhySection(container: HTMLElement): void {
   heading.id = 'why-heading';
   heading.className = 'typing-animation';
   heading.textContent = 'We believe software should start with intent.';
+  heading.style.setProperty('color', '#FFFFFF', 'important');
 
   // subheading
   const subheading = document.createElement('p');
   subheading.className = 'subheading';
   subheading.textContent =
     'Not code. Not files. Not frameworks. But the spark behind them all.';
+  subheading.style.setProperty('color', '#FFFFFF', 'important');
+  // ensure full contrast for WCAG
 
   // live region
   const liveRegion = document.createElement('div');
   liveRegion.setAttribute('aria-live', 'polite');
   liveRegion.setAttribute('aria-atomic', 'true');
 
-  wrapper.append(threeD, heading, subheading, liveRegion);
-  section.appendChild(wrapper);
+  section.append(threeD, heading, subheading, liveRegion);
+
   container.appendChild(section);
 }

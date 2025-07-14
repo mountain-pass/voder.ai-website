@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
+import { waitForAnimationsComplete } from './helpers/animation-utils';
 
 test('Outcome Focus section is present, accessible, and passes Axe core scan', async ({
   page,
@@ -30,6 +31,9 @@ test('Outcome Focus section is present, accessible, and passes Axe core scan', a
     const item = items.nth(i);
     await expect(item.locator('span[aria-hidden="true"]')).toHaveCount(1);
   }
+
+  // Wait for animations to complete before accessibility scan
+  await waitForAnimationsComplete(page, section);
 
   const results = await new AxeBuilder({ page })
     .include('section[aria-labelledby="outcome-focus-heading"]')

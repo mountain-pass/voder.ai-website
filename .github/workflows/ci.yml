@@ -28,16 +28,11 @@ jobs:
             ${{ runner.os }}-playwright-browsers-
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Run end-to-end tests
-        run: npm run test:e2e
+        run: npm ci      - name: Run E2E tests
+        run: npm run test:ci
 
       - name: Assert Lighthouse budgets
-        run: npm run lhci assert --assert.configPath=lighthouserc.json
+        run: npm run assert:lhci
 
       - name: Run Lighthouse CI
         run: |

@@ -3,6 +3,9 @@
 export class HowItWorksSection {
   constructor(container: HTMLElement) {
     const section = document.createElement('section');
+
+    // Hide until activated by animations
+
     section.setAttribute('role', 'region');
     section.setAttribute('aria-labelledby', 'flow-heading');
     section.id = 'vision-flow';

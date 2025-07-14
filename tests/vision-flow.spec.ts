@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { AxeBuilder } from '@axe-core/playwright';
+import { waitForAnimationsComplete } from './helpers/animation-utils';
 
 test('How It Works section is accessible', async ({ page }) => {
   // 1. Navigate to the home page
@@ -12,6 +13,9 @@ test('How It Works section is accessible', async ({ page }) => {
   // 3. Verify the heading text
   const heading = section.locator('h2');
   await expect(heading).toHaveText('How It Works');
+
+  // Wait for animations to complete before accessibility scan
+  await waitForAnimationsComplete(page, section);
 
   // 4. Run Axe accessibility scan scoped to this section
   const accessibilityScanResults = await new AxeBuilder({ page })

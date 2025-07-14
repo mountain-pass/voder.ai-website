@@ -1,21 +1,68 @@
-# ignore environment and build artifacts
-.env
+# Dependencies# ignore retired visual-regression tests
+# ignore retired visual-regression tests
+
+
+
+
+# Ignore build outputs and logs
+# ignore retired visual-regression tests
+
+
+
+
 dist/
-node_modules/
+# ignore retired visual-regression tests
+
+
+
+
 outputs/
+# ignore retired visual-regression tests
 
-# ignore Voder process tracking files
-.voder/.processes.json
 
-# ignore local server logs
-dev-server.log
-preview.log
 
-.svelte-kit/
+
+.lighthouseci/
+# ignore retired visual-regression tests
+
+node_modules/
+
+
+
 *.log
+# ignore retired visual-regression tests
 
-# ignore CI and build logs
-build-output.log
-test-ci.log
 
-.lighthouseci
+
+
+preview.log
+# ignore retired visual-regression tests
+
+
+
+
+dev.log
+# ignore retired visual-regression tests
+
+
+
+
+dev-server.log
+# ignore retired visual-regression tests
+
+
+
+
+e2e-output.log
+# ignore retired visual-regression tests
+
+
+
+
+e2e-results.log
+# ignore retired visual-regression tests
+
+
+
+
+

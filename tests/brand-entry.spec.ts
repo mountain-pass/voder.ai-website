@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
+import { waitForAnimationsComplete } from './helpers/animation-utils';
 
 test('brand introduction banner is present, accessible, and passes Axe core scan', async ({
   page,
@@ -20,6 +21,9 @@ test('brand introduction banner is present, accessible, and passes Axe core scan
   await expect(skipLink).toHaveCount(1);
   await skipLink.focus();
   await expect(skipLink).toBeFocused();
+
+  // Wait for animations to complete before accessibility scan
+  await waitForAnimationsComplete(page, banner);
 
   // Accessibility scan
   const results = await new AxeBuilder({ page })

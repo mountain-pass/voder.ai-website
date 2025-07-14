@@ -31,16 +31,6 @@ export class ClosingMomentSection {
     `;
     section.appendChild(stmt);
 
-    // Logo signature
-    const logoWrap = document.createElement('div');
-    logoWrap.classList.add('logo-signature');
-    logoWrap.setAttribute('aria-label', 'Voder logo signature');
-    const img = document.createElement('img');
-    img.src = '/voder-logo.svg';
-    img.alt = 'Voder';
-    logoWrap.appendChild(img);
-    section.appendChild(logoWrap);
-
     container.appendChild(section);
   }
 }

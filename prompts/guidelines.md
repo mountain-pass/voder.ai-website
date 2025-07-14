@@ -118,6 +118,7 @@
    - Run accessibility scans against production environment
    - Check performance metrics and Core Web Vitals (for monitoring only - performance optimization will be addressed in a future phase)
    - Validate HTTPS and security headers are properly configured
+   - **CRITICAL: MUST stop preview server before running `npm run assert:lhci`** - Lighthouse CI will fail if preview server is already running on port 4173
 
 4. **Rollback Plan**
    - Keep previous working deployment readily available for rollback

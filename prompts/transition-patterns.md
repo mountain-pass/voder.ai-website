@@ -2,6 +2,36 @@
 
 This file provides actionable templates and patterns for implementing the transitions specified in the section files. Use these as starting points to ensure consistent, testable, and accessible implementations.
 
+## 🚨 CRITICAL REQUIREMENT: Bidirectional Scroll Transitions
+
+**ALL scroll-triggered transitions MUST play both forward (scroll down) AND in reverse (scroll up).** This is essential for the narrative experience.
+
+### ❌ WRONG: Forward-only implementation
+```typescript
+scrollTrigger: {
+  trigger: element,
+  start: "top 80%",
+  onEnter: () => animation.play() // Only plays on scroll down!
+}
+```
+
+### ✅ CORRECT: Bidirectional implementation
+```typescript
+scrollTrigger: {
+  trigger: element,
+  start: "top 80%",
+  end: "bottom 20%",
+  toggleActions: "play reverse play reverse", // Plays AND reverses
+  // Optional: scrub: true for scroll-linked animation
+}
+```
+
+**Key Points:**
+- Use `toggleActions: "play reverse play reverse"` for all scroll transitions
+- Set both `start` and `end` points to define the scroll range
+- Test both scroll directions: down (forward) and up (reverse)
+- Ensure accessibility announcements work for both directions
+
 ## 🎯 Core Implementation Template
 
 ### TypeScript Class Structure
@@ -108,7 +138,7 @@ test.describe('Transition: [Name]', () => {
 
 ## 🎨 GSAP Animation Patterns
 
-### Scroll-Triggered Transition
+### ⚠️ CRITICAL: Bidirectional Scroll-Triggered Transition
 
 ```typescript
 import { gsap } from 'gsap';
@@ -125,9 +155,11 @@ class ScrollTriggeredTransition {
         trigger: this.config.triggerValue,
         start: "top 80%",
         end: "bottom 20%",
-        toggleActions: "play none none reverse",
+        // CRITICAL: Must be bidirectional - plays forward and reverse
+        toggleActions: "play reverse play reverse",
         onStart: () => this.announceToScreenReader("Transition starting"),
-        onComplete: () => this.announceToScreenReader("Transition complete")
+        onComplete: () => this.announceToScreenReader("Transition complete"),
+        onReverseComplete: () => this.announceToScreenReader("Transition reversed")
       }
     });
     

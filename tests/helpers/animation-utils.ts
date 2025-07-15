@@ -22,14 +22,14 @@ export async function waitForAnimationsComplete(
   await page.waitForFunction(
     () => {
       // Check if GSAP is loaded and has active animations
-      if (typeof window.gsap !== 'undefined') {
-        // Check if any GSAP tweens are active
-        const activeTweens = window.gsap
-          .getTweensOf('*')
-          .filter((tween) => tween.isActive());
+      // guard against missing getTweensOf
+      if (typeof window.gsap?.getTweensOf === 'function') {
+        const activeTweens = window.gsap.getTweensOf('*').filter((tween) => tween.isActive());
         if (activeTweens.length > 0) {
           return false;
-        }
+
+      }
+      // fall through when gsap or getTweensOf isn’t available
       }
 
       // Check for elements with animation classes

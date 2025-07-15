@@ -13,6 +13,7 @@ export function createOutcomeSection(): HTMLElement {
   h2.textContent = 'Outcomes, not overhead.';
   h2.style.textAlign = 'center';
   section.appendChild(h2);
+  h2.setAttribute('data-testid', 'outcomes-headline');
 
   // Supporting paragraph
   const p = document.createElement('p');
@@ -24,6 +25,7 @@ export function createOutcomeSection(): HTMLElement {
   // Container for benefit items
   const container = document.createElement('div');
   container.classList.add('benefit-container');
+  container.setAttribute('data-testid', 'outcome-benefits');
 
   section.appendChild(container);
 
@@ -38,11 +40,12 @@ export function createOutcomeSection(): HTMLElement {
     },
   ];
 
-  benefits.forEach(({ emoji, text }) => {
+  benefits.forEach(({ emoji, text }, index) => {
     const item = document.createElement('div');
     item.classList.add('benefit-item');
     item.setAttribute('role', 'complementary');
     item.tabIndex = 0;
+    item.setAttribute('data-testid', `benefit-${index + 1}`);
     const icon = document.createElement('span');
     icon.classList.add('benefit-icon');
     icon.setAttribute('aria-hidden', 'true');

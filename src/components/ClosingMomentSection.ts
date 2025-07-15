@@ -3,7 +3,9 @@
 export class ClosingMomentSection {
   constructor(container: HTMLElement) {
     const section = document.createElement('section');
+    section.style.backgroundColor = 'var(--color-voder-black)';
     section.setAttribute('role', 'contentinfo');
+    section.setAttribute('data-testid', 'voder-black-background');
     section.setAttribute('aria-labelledby', 'closing-heading');
 
     // Live region for screen readers
@@ -24,12 +26,14 @@ export class ClosingMomentSection {
     stmt.classList.add('closing-statement');
     stmt.innerHTML = `
       <h3 class="tagline">The Compiler for Prompts</h3>
-      <p class="coming-soon">Coming Soon</p>
+      <p class="coming-soon" data-testid="coming-soon">Coming Soon</p>
       <p class="built-with" aria-label="Website attribution">
         Built with Voder. (Of course.)
       </p>
     `;
     section.appendChild(stmt);
+    const taglineEl = section.querySelector('.tagline');
+    if (taglineEl) taglineEl.setAttribute('data-testid', 'compiler-tagline');
 
     container.appendChild(section);
 
@@ -40,6 +44,7 @@ export class ClosingMomentSection {
     const logoImg = document.createElement('img');
     logoImg.src = '/voder-logo.svg';
     logoImg.alt = 'Voder';
+    logoImg.setAttribute('data-testid', 'voder-logo');
     logoSignature.appendChild(logoImg);
     section.appendChild(logoSignature);
   }

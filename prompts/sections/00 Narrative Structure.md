@@ -10,6 +10,17 @@ Before implementing any transition, verify you can answer:
 4. **What elements animate and how?** (transform properties, easing functions)
 5. **How is this accessible?** (screen reader announcements, reduced motion alternatives)
 6. **How do we test this transition?** (specific Playwright assertions to write)
+7. **How does this work in reverse?** (scroll up behavior, reverse animation timing)
+
+## 🔄 Critical Bidirectional Scroll Requirements
+
+**ALL TRANSITIONS MUST BE BIDIRECTIONAL:**
+
+- **Forward (scroll down)**: Transition plays from start to end state
+- **Reverse (scroll up)**: Transition plays from end back to start state
+- **GSAP ScrollTrigger**: Use `toggleActions: "play reverse play reverse"` or similar
+- **State Management**: Each transition must track and restore previous state
+- **Testing**: Test both scroll directions for every transition
 
 ## 📋 Section Overview & Testing Requirements
 

@@ -1,11 +1,17 @@
-:root {
-  /* CSS Custom Properties */
-  --color-voder-black: #0a0a0a;
-  --color-deep-navy: #0f1a2e;
-  --color-paper-white: #ffffff;
-  --color-cool-grey: #c6cbd4;
-  --color-soft-teal-glow: #24d1d5;
-  --color-accent-green: #9aef00;
+
+
+/* focus-visible outline for skip links and benefit items */
+.skip-link:focus-visible,
+.benefit-item[role="complementary"]:focus-visible {
+  outline: 2px solid var(--color-paper-white);
+  outline-offset: 4px;
+}
+
+
+/* Prompt-Driven Iteration contrast overrides */
+section[aria-labelledby="prompt-iteration-heading"] {
+  --on-surface: rgba(0, 0, 0, 0.87);
+  --on-surface-inverse: white;
 }
 
 /* Ensure deep-navy background and white text for the “Why” section */

@@ -11,7 +11,7 @@ export class PromptIterationSection {
     section.innerHTML = `
   <h2 id="prompt-iteration-heading">Change the prompt. Not the team.</h2>
   <div class="prompt-panel" role="img" aria-label="Prompt input showing Tone: Casual, confident, modern.">
-    <pre class="prompt-content">Casual, confident, modern.</pre>
+    <div aria-live="polite"><pre class="prompt-content">Casual, confident, modern.</pre></div>
   </div>
   <div class="ui-mockup" role="img" aria-label="Product UI showing heading ‘Let’s get you started!’">
     <h3>Let’s get you started!</h3>

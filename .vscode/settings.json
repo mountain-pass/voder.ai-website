@@ -1,0 +1,6 @@
+{
+    "chat.instructionsFilesLocations": {
+        "prompts": true,
+        ".voder": true
+    }
+}

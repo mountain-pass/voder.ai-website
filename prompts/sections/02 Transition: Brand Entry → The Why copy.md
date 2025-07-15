@@ -144,3 +144,46 @@ await expect(page.locator('[data-testid="logo-repositioned"]')).toBeVisible();
 await expect(page.locator('[data-testid="why-headline"]')).toContainText('We believe software should start with intent');
 await expect(page.locator('[data-testid="background-navy"]')).toHaveCSS('background-color', 'rgb(15, 26, 46)');
 ```
+
+### 🔄 Bidirectional Scroll Behavior (CRITICAL)
+
+**This transition must work in BOTH directions:**
+
+#### Forward (Scroll Down: Brand Entry → Why)
+- 3D object dissolves and disperses
+- Logo moves to top-left and scales down
+- Background transitions to Deep Navy
+- Headline types in character by character
+
+#### Reverse (Scroll Up: Why → Brand Entry)  
+- Headline text fades out (reverse typing or immediate fade)
+- Background transitions back to Voder Black
+- Logo scales up and returns to center position
+- 3D object reassembles and becomes fully opaque
+
+#### GSAP ScrollTrigger Implementation
+```typescript
+ScrollTrigger.create({
+  trigger: "#main-content",
+  start: "top 80%",
+  end: "bottom 20%",
+  toggleActions: "play reverse play reverse", // CRITICAL: bidirectional
+  onStart: () => announceToScreenReader("Moving to main message"),
+  onComplete: () => announceToScreenReader("Main message visible"),
+  onReverseComplete: () => announceToScreenReader("Returning to brand introduction")
+});
+```
+
+#### Testing Both Directions
+```typescript
+// Test forward transition
+await page.mouse.wheel(0, 100);
+await waitForAnimationsComplete(page);
+await expect(page.locator('[data-testid="why-headline"]')).toBeVisible();
+
+// Test reverse transition  
+await page.mouse.wheel(0, -100);
+await waitForAnimationsComplete(page);
+await expect(page.locator('[data-testid="brand-object"]')).toBeVisible();
+await expect(page.locator('[data-testid="why-headline"]')).not.toBeVisible();
+```

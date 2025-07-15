@@ -93,15 +93,9 @@ export class TransitionController {
 
   private setupTrigger(): void {
     if (this.config.trigger === 'scroll') {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: this.config.triggerValue as string,
-          start: 'top 80%',
-          end: 'bottom 20%',
-          toggleActions: 'play reverse play reverse',
-        },
-      });
+      const tl = gsap.timeline();
 
+      // Build the timeline with all phases
       this.config.phases.forEach(phase => {
         const fromVars: GSAPVars = {};
         const toVars: GSAPVars = { duration: phase.duration / 1000, ease: phase.properties[0]?.easing || 'none' };
@@ -112,31 +106,33 @@ export class TransitionController {
         tl.fromTo(phase.elements, fromVars, toVars, phase.startTime / 1000);
       });
 
+      // Create ScrollTrigger with bidirectional control
+      ScrollTrigger.create({
+        trigger: this.config.triggerValue as string,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        animation: tl,
+        toggleActions: 'play none reverse none',
+        scrub: false,
+        onEnter: () => this.announce(this.config.accessibility.announceOnStart || ''),
+        onLeave: () => this.announce(this.config.accessibility.announceOnComplete || ''),
+        onEnterBack: () => this.announce('Transition reversed'),
+        onLeaveBack: () => this.announce('Returning to previous section'),
+      });
+
       this.timeline = tl;
     }
   }
 
   private setupAccessibility(): void {
-    const { announceOnStart, announceOnComplete, skipTriggerSelector } = this.config.accessibility;
+    const { skipTriggerSelector } = this.config.accessibility;
 
     if (skipTriggerSelector) {
       const skipBtn = document.querySelector(skipTriggerSelector);
       skipBtn?.addEventListener('click', () => this.skip());
     }
 
-    // Set up bidirectional accessibility announcements
-    if (this.timeline) {
-      if (announceOnStart) {
-        this.timeline.eventCallback('onStart', () => this.announce(announceOnStart));
-      }
-      if (announceOnComplete) {
-        this.timeline.eventCallback('onComplete', () => this.announce(announceOnComplete));
-      }
-      // Add reverse completion announcement
-      this.timeline.eventCallback('onReverseComplete', () => {
-        this.announce('Transition reversed');
-      });
-    }
+    // Note: Accessibility announcements are now handled directly in ScrollTrigger callbacks
   }
 
   private addTestSelectors(): void {

@@ -1,10 +1,22 @@
-import { problemSpaceToMetaphorConfig } from './transitions/ProblemSpaceToMetaphorConfig';
-// Stub out missing globals so downstream modules don’t throw
-;(window as any).THREE = {};
-;(window as any).gsap  = {};
-
 import './style.css';
+// Import GSAP first
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
+// Setup global access for GSAP
+declare global {
+  interface Window {
+    gsap: typeof gsap;
+  }
+}
+
+window.gsap = gsap;
+
 import { TransitionController } from './lib/TransitionController';
+import { problemSpaceToMetaphorConfig } from './transitions/ProblemSpaceToMetaphorConfig';
 import { brandEntryToWhyConfig } from './transitions/BrandEntryToWhyConfig';
 import { whyToProblemSpaceConfig } from './transitions/WhyToProblemSpaceConfig';
 import { outcomeFocusToClosingMomentConfig } from './transitions/OutcomeFocusToClosingMomentConfig';
@@ -27,13 +39,13 @@ renderProblemSection(app);
 
 // Start scroll animations immediately if motion is allowed
 if (prefersReducedMotion()) {
+  // eslint-disable-next-line no-console
   console.log('Reduced motion detected, skipping complex animations.');
 }
 initScrollAnimations();
 new TransitionController(brandEntryToWhyConfig).init();
 new TransitionController(whyToProblemSpaceConfig).init();
 new TransitionController(problemSpaceToMetaphorConfig).init();
-
 
 // Render dynamic narrative sections and wire their transitions
 (async () => {
@@ -66,5 +78,5 @@ new TransitionController(problemSpaceToMetaphorConfig).init();
   // 4. Outcome Focus Section and its transition
   app.appendChild(createOutcomeSection());
   new TransitionController(outcomeFocusToClosingMomentConfig).init();
-    new ClosingMomentSection(app);
+  new ClosingMomentSection(app);
 })();

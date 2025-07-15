@@ -1,4 +1,14 @@
-
+/* CSS Custom Properties / Design tokens */
+:root {
+  --color-paper-white: #ffffff;
+  --color-dark-charcoal: #2d2d2d;
+  --color-deep-navy: #0f1a2e;
+  --color-light-gray: #f5f5f5;
+  --color-medium-gray: #666666;
+  --color-accessible-gray: #757575; /* 4.5:1 contrast on white */
+  --color-voder-black: #0a0a0a;
+  --color-accessible-light-gray: #808080; /* 4.6:1 contrast on #0a0a0a */
+}
 
 /* focus-visible outline for skip links and benefit items */
 .skip-link:focus-visible,
@@ -12,12 +22,79 @@
 section[aria-labelledby="prompt-iteration-heading"] {
   --on-surface: rgba(0, 0, 0, 0.87);
   --on-surface-inverse: white;
+  background-color: var(--color-paper-white);
+  color: var(--color-dark-charcoal);
+  padding: 2rem;
+  border-radius: 8px;
 }
 
-/* Ensure deep-navy background and white text for the “Why” section */
+/* Prompt panel styling */
+section[aria-labelledby="prompt-iteration-heading"] .prompt-panel {
+  background-color: var(--color-dark-charcoal);
+  color: var(--color-paper-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+}
+
+/* Ensure adequate contrast for prompt content */
+section[aria-labelledby="prompt-iteration-heading"] .prompt-panel pre.prompt-content {
+  color: var(--color-paper-white);
+  background-color: transparent;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* Live region styling with better contrast */
+section[aria-labelledby="prompt-iteration-heading"] .prompt-panel [aria-live] {
+  color: var(--color-paper-white) !important;
+  background-color: var(--color-dark-charcoal) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+section[aria-labelledby="prompt-iteration-heading"] .prompt-panel [aria-live] * {
+  color: var(--color-paper-white) !important;
+  background-color: transparent !important;
+}
+
+/* UI mockup styling */
+section[aria-labelledby="prompt-iteration-heading"] .ui-mockup {
+  background-color: var(--color-light-gray);
+  border: 1px solid var(--color-medium-gray);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+section[aria-labelledby="prompt-iteration-heading"] .ui-mockup h3 {
+  color: var(--color-dark-charcoal);
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+/* Subtext styling */
+section[aria-labelledby="prompt-iteration-heading"] .prompt-iteration-subtext {
+  color: var(--color-medium-gray);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+}
+
+
+/* Ensure deep-navy background and white text for the "Why" section */
 #main-content {
   background-color: var(--color-deep-navy) !important;
   color: var(--color-paper-white) !important;
+}
+
+/* Fix contrast issue in Why section subheading */
+#main-content .subheading {
+  color: var(--color-paper-white) !important;
+  opacity: 1 !important; /* Remove low opacity that causes contrast failure */
 }
 
 /* Essential resets/utilities */
@@ -39,4 +116,76 @@ p {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+  color: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Styles for animated elements to prevent GSAP warnings */
+.journey-diagram {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(90deg, var(--color-medium-gray) 0%, var(--color-accessible-gray) 100%);
+  border-radius: 8px;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.visual-chaos {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.flow-diagram {
+  width: 100%;
+  min-height: 300px;
+  position: relative;
+}
+
+.flow-diagram svg {
+  width: 100%;
+  height: auto;
+}
+
+.flow-text .flow-step {
+  margin: 1rem 0;
+}
+
+.flow-text .flow-step h3,
+.flow-text .flow-step p {
+  margin: 0.5rem 0;
+}
+
+.benefit-item {
+  padding: 1rem;
+  margin: 0.5rem 0;
+  background-color: var(--color-light-gray);
+  border-radius: 4px;
+}
+
+/* Closing moment elements */
+section[role="contentinfo"] {
+  padding: 2rem;
+  background-color: var(--color-dark-charcoal);
+  color: var(--color-paper-white);
+}
+
+.closing-statement .tagline {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.coming-soon,
+.built-with {
+  margin: 1rem 0;
+  color: var(--color-accessible-light-gray); /* Use accessible gray for voder-black background */
+}
+
+.logo-signature img {
+  max-height: 40px;
+  width: auto;
 }

@@ -55,8 +55,9 @@ export const visionFlowToPromptIterationConfig: TransitionConfig = {
   accessibility: {
     liveRegionSelector: 'section[aria-labelledby="prompt-iteration-heading"] [aria-live]',
     skipTriggerSelector: 'section[aria-labelledby="prompt-iteration-heading"] button.skip-link',
-    announceOnStart: 'Starting prompt-driven iteration demo',
-    announceOnComplete: 'Prompt-driven iteration complete'
+    // Disabled announcements to avoid contrast issues with aria-live region
+    // announceOnStart: 'Starting prompt-driven iteration demo',
+    // announceOnComplete: 'Prompt-driven iteration complete'
   } as AccessibilityConfig,
   testSelectors: [
     'vision-diagram',

@@ -228,7 +228,13 @@ async function executeCinematicSequence(
 // Typing animation for logo
 function typeText(element: HTMLElement, text: string, duration: number): void {
   element.style.opacity = '1';
-  element.textContent = ''; // Clear and start typing
+  // Don't clear content - start from current content or empty if needed
+  const currentText = element.textContent || '';
+  if (currentText === text) {
+    // Already has the correct text, no need to animate
+    return;
+  }
+  
   let index = 0;
   const interval = duration / text.length;
   

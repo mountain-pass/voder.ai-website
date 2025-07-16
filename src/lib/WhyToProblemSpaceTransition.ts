@@ -11,6 +11,8 @@ export class WhyToProblemSpaceTransition {
 
   constructor() {
     gsap.registerPlugin(ScrollTrigger);
+    // eslint-disable-next-line no-console
+    console.log('Creating WhyToProblemSpaceTransition instance');
   }
 
   /**
@@ -20,6 +22,13 @@ export class WhyToProblemSpaceTransition {
     // Wait a bit for elements to be rendered
     setTimeout(() => {
       this.setupTransition();
+      
+      // Add test function to window for debug tests
+      (window as Window & { __testTimeline?: () => void }).__testTimeline = () => {
+        // eslint-disable-next-line no-console
+        console.log('Testing timeline execution');
+        this.testTransition();
+      };
     }, 1000);
   }
 
@@ -148,6 +157,33 @@ export class WhyToProblemSpaceTransition {
     const liveRegion = document.querySelector('#why-problem-transition-live-region');
     if (liveRegion) {
       liveRegion.textContent = message;
+    }
+  }
+
+  /**
+   * Test method for debug timeline test
+   */
+  public testTransition(): void {
+    // eslint-disable-next-line no-console
+    console.log('Before: transition test starting');
+    
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      const beforeBg = getComputedStyle(mainContent).backgroundColor;
+      // eslint-disable-next-line no-console
+      console.log('Before:', beforeBg);
+      
+      // Force the transition to run
+      if (this.timeline) {
+        this.timeline.restart();
+      }
+      
+      // Check after a delay
+      setTimeout(() => {
+        const afterBg = getComputedStyle(mainContent).backgroundColor;
+        // eslint-disable-next-line no-console
+        console.log('After:', afterBg);
+      }, 100);
     }
   }
 }

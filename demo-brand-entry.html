@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Entry Demo - Enhanced Cinematic Experience</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0A0A0A;
+            color: white;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .demo-container {
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .demo-header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #24D1D5;
+            backdrop-filter: blur(10px);
+        }
+        
+        .demo-title {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #24D1D5;
+        }
+        
+        .demo-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .demo-features li {
+            margin: 3px 0;
+            color: #C6CBD4;
+        }
+        
+        .demo-features li:before {
+            content: "✨ ";
+            color: #24D1D5;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #24D1D5;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-button {
+            background: #24D1D5;
+            color: #0A0A0A;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .control-button:hover {
+            background: #1a9da1;
+            transform: translateY(-1px);
+        }
+        
+        .description {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid #24D1D5;
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #C6CBD4;
+        }
+        
+        /* Brand Entry section will be injected here */
+        #brand-entry-demo {
+            height: 100vh;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1 class="demo-title">Enhanced Brand Entry Demo</h1>
+            <ul class="demo-features">
+                <li>Sophisticated ignition pulse effect</li>
+                <li>Beam-of-light logo reveal animation</li>
+                <li>Atmospheric particle system with depth</li>
+                <li>Cinematic 3D objects (faceted cube)</li>
+                <li>Advanced lighting system</li>
+                <li>Living object with breathing effects</li>
+                <li>Multi-layered particle complexity</li>
+                <li>6-second choreographed sequence</li>
+            </ul>
+        </div>
+        
+        <div class="controls">
+            <button class="control-button" onclick="restartSequence()">Restart Animation</button>
+            <button class="control-button" onclick="skipToStillness()">Skip to Stillness</button>
+        </div>
+        
+        <div class="description">
+            <strong>Enhanced Features:</strong><br>
+            • Sophisticated 3D faceted cube with text fragments<br>
+            • Multi-ring ignition pulse system<br>
+            • Advanced lighting with rim effects<br>
+            • Three-layer atmospheric particles<br>
+            • Real-time breathing and orbital motions<br>
+            • Professional tone mapping and shadows
+        </div>
+        
+        <div id="brand-entry-demo"></div>
+    </div>
+    
+    <script type="module">
+        import { BrandEntry } from '/src/components/BrandEntry.ts';
+        
+        let brandEntrySection;
+        let currentBrandEntry3D;
+        
+        function initDemo() {
+            const demoContainer = document.getElementById('brand-entry-demo');
+            brandEntrySection = BrandEntry();
+            demoContainer.appendChild(brandEntrySection);
+            
+            // Store reference to the 3D system for controls
+            setTimeout(() => {
+                const canvas = brandEntrySection.querySelector('canvas');
+                if (canvas && canvas.__brandEntry3D) {
+                    currentBrandEntry3D = canvas.__brandEntry3D;
+                }
+            }, 500);
+        }
+        
+        window.restartSequence = function() {
+            if (currentBrandEntry3D) {
+                currentBrandEntry3D.dispose();
+            }
+            
+            // Remove existing section
+            const demoContainer = document.getElementById('brand-entry-demo');
+            demoContainer.innerHTML = '';
+            
+            // Recreate
+            setTimeout(() => {
+                initDemo();
+            }, 100);
+        };
+        
+        window.skipToStillness = function() {
+            if (currentBrandEntry3D) {
+                // Simulate time passage to stillness phase
+                currentBrandEntry3D.startTime = Date.now() - 4500; // Jump to stillness phase
+            }
+        };
+        
+        // Initialize on load
+        initDemo();
+    </script>
+</body>
+</html>

@@ -16,8 +16,10 @@ export class BrandEntry3D {
   private textFragments: THREE.Mesh[] = [];
   private pulseRings: THREE.Mesh[] = [];
   private atmosphericLayers: THREE.Points[] = [];
+  private qualityPreset: 'high' | 'medium' | 'low' = 'high';
 
   constructor(private canvas: HTMLCanvasElement) {
+    this.detectQualityPreset();
     this.initScene();
     this.createAdvancedLighting();
     this.createCinematicObject();
@@ -26,10 +28,48 @@ export class BrandEntry3D {
     this.createAmbientParticleLayer();
   }
 
+  private detectQualityPreset(): void {
+    // Device-specific quality presets for consistent experience
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+    
+    if (!gl) {
+      this.qualityPreset = 'low';
+      return;
+    }
+
+    // Detect device capabilities
+    const renderer = gl.getParameter(gl.RENDERER) || '';
+    const vendor = gl.getParameter(gl.VENDOR) || '';
+    const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+    const maxVertexUniforms = gl.getParameter(gl.MAX_VERTEX_UNIFORM_VECTORS);
+    
+    // Mobile device detection
+    const isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
+    const isLowPowerGPU = renderer.includes('Mali') || renderer.includes('Adreno') || 
+                         renderer.includes('PowerVR') || vendor.includes('Qualcomm');
+    
+    // Quality preset determination
+    if (isMobile || isLowPowerGPU || maxTextureSize < 4096 || maxVertexUniforms < 256) {
+      this.qualityPreset = 'low';
+    } else if (maxTextureSize < 8192 || maxVertexUniforms < 512) {
+      this.qualityPreset = 'medium';
+    } else {
+      this.qualityPreset = 'high';
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`Brand Entry 3D Quality Preset: ${this.qualityPreset}`);
+  }
+
   private initScene(): void {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color('#0A0A0A');
-    this.scene.fog = new THREE.Fog('#0A0A0A', 5, 25);
+    
+    // Quality-based fog settings
+    const fogNear = this.qualityPreset === 'low' ? 8 : 5;
+    const fogFar = this.qualityPreset === 'low' ? 20 : 25;
+    this.scene.fog = new THREE.Fog('#0A0A0A', fogNear, fogFar);
 
     this.camera = new THREE.PerspectiveCamera(
       75,
@@ -39,16 +79,25 @@ export class BrandEntry3D {
     );
     this.camera.position.set(0, 0, 6);
 
+    // Quality-based renderer settings
+    const antialias = this.qualityPreset !== 'low';
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: true,
+      antialias,
       alpha: true,
-      powerPreference: 'high-performance'
+      powerPreference: this.qualityPreset === 'high' ? 'high-performance' : 'default'
     });
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+    // Quality-based pixel ratio
+    const maxPixelRatio = this.qualityPreset === 'high' ? 2 : this.qualityPreset === 'medium' ? 1.5 : 1;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio));
+    
+    // Quality-based shadow settings
+    this.renderer.shadowMap.enabled = this.qualityPreset !== 'low';
+    this.renderer.shadowMap.type = this.qualityPreset === 'high' ? 
+      THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
+    
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.2;
   }
@@ -56,41 +105,73 @@ export class BrandEntry3D {
   private createAdvancedLighting(): void {
     this.advancedLighting = new THREE.Group();
     
-    // Ambient lighting with dynamic intensity
-    const ambientLight = new THREE.AmbientLight('#24D1D5', 0.05);
+    // Enhanced ambient lighting with refined intensity
+    const ambientLight = new THREE.AmbientLight('#24D1D5', 0.04); // Slightly reduced for better contrast
     ambientLight.name = 'ambientLight';
     this.advancedLighting.add(ambientLight);
 
-    // Main dramatic light
+    // Perfected main dramatic light with enhanced shadow mapping
     const dramaticLight = new THREE.DirectionalLight('#24D1D5', 0);
-    dramaticLight.position.set(2, 3, 5);
-    dramaticLight.castShadow = true;
-    dramaticLight.shadow.mapSize.width = 2048;
-    dramaticLight.shadow.mapSize.height = 2048;
+    dramaticLight.position.set(2.5, 3.5, 5.5); // Optimized position for better shadow casting
+    dramaticLight.castShadow = this.qualityPreset !== 'low';
+    
+    if (dramaticLight.castShadow) {
+      // Quality-based shadow mapping settings
+      const shadowMapSize = this.qualityPreset === 'high' ? 4096 : 
+                           this.qualityPreset === 'medium' ? 2048 : 1024;
+      dramaticLight.shadow.mapSize.width = shadowMapSize;
+      dramaticLight.shadow.mapSize.height = shadowMapSize;
+      dramaticLight.shadow.camera.near = 0.1;
+      dramaticLight.shadow.camera.far = 25;
+      dramaticLight.shadow.camera.left = -10;
+      dramaticLight.shadow.camera.right = 10;
+      dramaticLight.shadow.camera.top = 10;
+      dramaticLight.shadow.camera.bottom = -10;
+      dramaticLight.shadow.bias = -0.0001;
+      dramaticLight.shadow.normalBias = 0.02;
+    }
     dramaticLight.name = 'dramaticLight';
     this.advancedLighting.add(dramaticLight);
 
-    // Rim lighting for depth
+    // Enhanced rim lighting for superior depth perception
     const rimLight1 = new THREE.DirectionalLight('#1a9da1', 0);
-    rimLight1.position.set(-2, -1, -3);
+    rimLight1.position.set(-2.2, -1.2, -3.2); // Optimized for better rim effect
+    rimLight1.castShadow = false; // Rim lights don't need shadows
     rimLight1.name = 'rimLight1';
     this.advancedLighting.add(rimLight1);
 
     const rimLight2 = new THREE.DirectionalLight('#0f7173', 0);
-    rimLight2.position.set(1, -2, 4);
+    rimLight2.position.set(1.2, -2.2, 4.2); // Enhanced positioning
+    rimLight2.castShadow = false;
     rimLight2.name = 'rimLight2';
     this.advancedLighting.add(rimLight2);
 
-    // Center pulse light for ignition
-    const pulseLight = new THREE.PointLight('#24D1D5', 0, 15, 0.8);
+    // Perfected center pulse light for ignition with optimized falloff
+    const pulseLight = new THREE.PointLight('#24D1D5', 0, 18, 0.6); // Improved range and decay
     pulseLight.position.set(0, 0, 0);
+    pulseLight.castShadow = this.qualityPreset === 'high';
+    
+    if (pulseLight.castShadow) {
+      const shadowMapSize = this.qualityPreset === 'high' ? 1024 : 512;
+      pulseLight.shadow.mapSize.width = shadowMapSize;
+      pulseLight.shadow.mapSize.height = shadowMapSize;
+    }
     pulseLight.name = 'pulseLight';
     this.advancedLighting.add(pulseLight);
 
-    // Atmospheric volume light
-    const volumeLight = new THREE.SpotLight('#24D1D5', 0, 20, Math.PI * 0.3, 0.5, 1);
-    volumeLight.position.set(0, 5, 8);
+    // Enhanced atmospheric volume light with precision targeting
+    const volumeLight = new THREE.SpotLight('#24D1D5', 0, 25, Math.PI * 0.25, 0.4, 1.2);
+    volumeLight.position.set(0, 6, 9); // Optimized for better beam effect
     volumeLight.target.position.set(0, 0, 0);
+    volumeLight.castShadow = this.qualityPreset !== 'low';
+    
+    if (volumeLight.castShadow) {
+      const shadowMapSize = this.qualityPreset === 'high' ? 2048 : 1024;
+      volumeLight.shadow.mapSize.width = shadowMapSize;
+      volumeLight.shadow.mapSize.height = shadowMapSize;
+      volumeLight.shadow.camera.near = 0.1;
+      volumeLight.shadow.camera.far = 30;
+    }
     volumeLight.name = 'volumeLight';
     this.advancedLighting.add(volumeLight);
     this.advancedLighting.add(volumeLight.target);
@@ -240,9 +321,12 @@ export class BrandEntry3D {
   private createAtmosphericParticleSystem(): void {
     this.atmosphericParticles = new THREE.Group();
 
-    // Multiple particle layers for depth and complexity
-    for (let layer = 0; layer < 3; layer++) {
-      const particleCount = 80 + layer * 40;
+    // Quality-based particle layer configuration
+    const layerCount = this.qualityPreset === 'high' ? 3 : this.qualityPreset === 'medium' ? 2 : 1;
+    const baseParticleCount = this.qualityPreset === 'high' ? 80 : this.qualityPreset === 'medium' ? 50 : 30;
+    
+    for (let layer = 0; layer < layerCount; layer++) {
+      const particleCount = baseParticleCount + layer * (this.qualityPreset === 'high' ? 40 : 20);
       const positions = new Float32Array(particleCount * 3);
       const velocities = new Float32Array(particleCount * 3);
       const sizes = new Float32Array(particleCount);
@@ -266,7 +350,7 @@ export class BrandEntry3D {
 
         sizes[i] = 0.02 + Math.random() * 0.08;
 
-        // Color variation in teal spectrum
+        // Enhanced color variation in teal spectrum with quality-based complexity
         const colorVariation = 0.7 + Math.random() * 0.3;
         colors[i3] = 0.14 * colorVariation;     // R
         colors[i3 + 1] = 0.82 * colorVariation; // G
@@ -357,16 +441,17 @@ export class BrandEntry3D {
   };
 
   private updateCinematicPhase(elapsed: number): void {
+    // Fine-tuned 6-second choreographed sequence timing
     if (elapsed < 0.5) {
-      this.cinematicPhase = 'preload';
+      this.cinematicPhase = 'preload';      // 0.0-0.5s: Preload phase
     } else if (elapsed < 1.5) {
-      this.cinematicPhase = 'ignition';
+      this.cinematicPhase = 'ignition';     // 0.5-1.5s: 1.0s ignition pulse
     } else if (elapsed < 3.0) {
-      this.cinematicPhase = 'reveal';
+      this.cinematicPhase = 'reveal';       // 1.5-3.0s: 1.5s logo reveal with typing
     } else if (elapsed < 4.0) {
-      this.cinematicPhase = 'atmosphere';
+      this.cinematicPhase = 'atmosphere';   // 3.0-4.0s: 1.0s atmosphere fill
     } else if (elapsed < 6.0) {
-      this.cinematicPhase = 'stillness';
+      this.cinematicPhase = 'stillness';    // 4.0-6.0s: 2.0s stillness with breathing
     } else {
       this.cinematicPhase = 'complete';
     }
@@ -375,27 +460,44 @@ export class BrandEntry3D {
   private updateCinematicObject(elapsed: number): void {
     if (this.cinematicPhase === 'preload') return;
 
-    // Sophisticated rotation with living feel
-    const breathingSpeed = 1.2;
-    const rotationSpeed = 0.002;
+    // Enhanced sophisticated rotation with polished living feel
+    const breathingSpeed = 1.1; // Slightly slower for more cinematic feel
+    const rotationSpeed = 0.0025; // Increased for better visibility
     
-    this.cinematicObject.rotation.x += rotationSpeed * (1 + Math.sin(elapsed * breathingSpeed) * 0.3);
-    this.cinematicObject.rotation.y += rotationSpeed * 1.8 * (1 + Math.cos(elapsed * breathingSpeed * 0.7) * 0.2);
-    this.cinematicObject.rotation.z += rotationSpeed * 0.8 * (1 + Math.sin(elapsed * breathingSpeed * 1.3) * 0.4);
+    // Multi-layered breathing effects for more complex motion
+    const primaryBreathing = Math.sin(elapsed * breathingSpeed) * 0.35;
+    const secondaryBreathing = Math.cos(elapsed * breathingSpeed * 0.6) * 0.15;
+    const tertiaryBreathing = Math.sin(elapsed * breathingSpeed * 1.4) * 0.08;
+    
+    this.cinematicObject.rotation.x += rotationSpeed * (1 + primaryBreathing + tertiaryBreathing);
+    this.cinematicObject.rotation.y += rotationSpeed * 1.6 * (1 + secondaryBreathing + primaryBreathing * 0.5);
+    this.cinematicObject.rotation.z += rotationSpeed * 0.9 * (1 + tertiaryBreathing + secondaryBreathing * 0.7);
 
-    // Breathing scale effect during stillness
+    // Enhanced breathing scale effect with more sophisticated animation
     if (this.cinematicPhase === 'stillness' || this.cinematicPhase === 'complete') {
-      const breathe = 1 + Math.sin(elapsed * 1.5) * 0.05;
+      // Complex breathing pattern with multiple harmonics
+      const primaryBreathe = Math.sin(elapsed * 1.3) * 0.04;
+      const secondaryBreathe = Math.sin(elapsed * 2.1) * 0.02;
+      const tertiaryBreathe = Math.cos(elapsed * 0.8) * 0.015;
+      const breathe = 1 + primaryBreathe + secondaryBreathe + tertiaryBreathe;
       this.cinematicObject.scale.setScalar(breathe);
     }
 
-    // Update text fragments with floating motion
+    // Enhanced text fragments with improved floating motion and depth
     this.textFragments.forEach((fragment, index) => {
-      const time = elapsed + index * 0.5;
-      fragment.rotation.x += 0.01;
-      fragment.rotation.y += 0.008;
-      fragment.position.y += Math.sin(time * 2) * 0.002;
-      fragment.position.x += Math.cos(time * 1.5) * 0.001;
+      const time = elapsed + index * 0.4; // Adjusted phase offset
+      const depthFactor = 1 + index * 0.1; // Different motion intensity per fragment
+      
+      // Enhanced rotation with varied speeds
+      fragment.rotation.x += 0.012 * depthFactor;
+      fragment.rotation.y += 0.009 * depthFactor;
+      fragment.rotation.z += 0.006 * depthFactor;
+      
+      // Improved floating motion with orbital characteristics
+      const orbitRadius = 0.003 * depthFactor;
+      fragment.position.y += Math.sin(time * 2.2) * orbitRadius;
+      fragment.position.x += Math.cos(time * 1.7) * orbitRadius;
+      fragment.position.z += Math.sin(time * 1.9) * orbitRadius * 0.5;
     });
   }
 
@@ -403,34 +505,46 @@ export class BrandEntry3D {
     if (this.cinematicPhase !== 'ignition') return;
 
     const ignitionProgress = (elapsed - 0.5) / 1.0;
-    const pulseIntensity = Math.sin(ignitionProgress * Math.PI * 6) * 2;
+    // Enhanced intensity scaling with proper synchronization
+    const pulseIntensity = Math.sin(ignitionProgress * Math.PI * 8) * 3.5 * (1 - ignitionProgress * 0.3);
 
-    // Update pulse light
+    // Update pulse light with enhanced intensity scaling
     const pulseLight = this.advancedLighting.getObjectByName('pulseLight') as THREE.PointLight;
     if (pulseLight) {
-      pulseLight.intensity = Math.max(0, pulseIntensity);
+      pulseLight.intensity = Math.max(0, pulseIntensity * 2);
+      // Add pulsing color temperature variation
+      const colorIntensity = 0.8 + Math.sin(elapsed * 12) * 0.2;
+      pulseLight.color.setRGB(0.14 * colorIntensity, 0.82 * colorIntensity, 0.84 * colorIntensity);
     }
 
-    // Update pulse rings with expanding waves
+    // Enhanced pulse rings with proper ring synchronization
     this.pulseRings.forEach((ring, index) => {
       const ringMaterial = ring.material as THREE.MeshBasicMaterial;
-      const delay = index * 0.1;
+      const delay = index * 0.08; // Tighter synchronization
       const progress = Math.max(0, ignitionProgress - delay);
       
       if (progress > 0) {
-        const scale = 1 + progress * 3;
+        // Enhanced ring expansion with intensity scaling
+        const scale = 1 + progress * 4.5; // Increased expansion for better visibility
         ring.scale.setScalar(scale);
-        ringMaterial.opacity = Math.max(0, (1 - progress) * 0.8);
+        
+        // Improved opacity decay with proper synchronization
+        const opacity = Math.max(0, (1 - progress) * 0.8 * Math.max(0.2, pulseIntensity * 0.5));
+        ringMaterial.opacity = opacity;
+        
+        // Enhanced ring rotation for dynamic effect
+        ring.rotation.z += 0.02 * (index + 1);
       }
     });
 
-    // Center burst effect
+    // Enhanced center burst effect
     const centerBurst = this.ignitionPulse.getObjectByName('centerBurst') as THREE.Mesh;
     if (centerBurst) {
       const burstMaterial = centerBurst.material as THREE.MeshBasicMaterial;
-      const burstScale = 1 + ignitionProgress * 15;
+      // Improved burst scaling with intensity synchronization
+      const burstScale = 1 + Math.max(0, pulseIntensity) * 0.4;
       centerBurst.scale.setScalar(burstScale);
-      burstMaterial.opacity = Math.max(0, (1 - ignitionProgress) * 1.5);
+      burstMaterial.opacity = Math.max(0, Math.abs(pulseIntensity) * 0.7);
     }
   }
 
@@ -470,42 +584,55 @@ export class BrandEntry3D {
       case 'reveal': {
         const revealProgress = (elapsed - 1.5) / 1.5;
         
-        // Faceted cube reveal with beam-of-light effect
+        // Enhanced faceted cube reveal with refined beam-of-light effect
         const facetedCube = this.cinematicObject.getObjectByName('facetedCube') as THREE.Mesh;
         if (facetedCube?.material) {
           const material = facetedCube.material as THREE.MeshPhysicalMaterial;
-          material.opacity = revealProgress * 0.8;
-          material.emissiveIntensity = revealProgress * 0.3;
+          // Refined opacity curve for smoother reveal
+          material.opacity = Math.min(0.9, revealProgress * revealProgress * 1.2);
+          // Enhanced emissive intensity with pulsing effect
+          const pulseEffect = 1 + Math.sin(elapsed * 3) * 0.1;
+          material.emissiveIntensity = revealProgress * 0.4 * pulseEffect;
         }
 
-        // Outer wireframe structure
+        // Outer wireframe structure with dynamic intensity
         const outerWireframe = this.cinematicObject.getObjectByName('outerWireframe') as THREE.LineSegments;
         if (outerWireframe?.material) {
           const material = outerWireframe.material as THREE.LineBasicMaterial;
-          material.opacity = revealProgress * 0.6;
+          // Enhanced wireframe visibility with breathing effect
+          const breathingEffect = 1 + Math.sin(elapsed * 2.5) * 0.15;
+          material.opacity = revealProgress * 0.7 * breathingEffect;
         }
 
-        // Text fragments reveal
+        // Enhanced text fragments reveal with staggered timing
         this.textFragments.forEach((fragment, index) => {
           if (fragment.material) {
             const material = fragment.material as THREE.MeshPhysicalMaterial;
-            const delay = index * 0.08;
+            const delay = index * 0.06; // Tighter staggering for smoother effect
             const progress = Math.max(0, revealProgress - delay);
-            material.opacity = progress * 0.7;
-            material.emissiveIntensity = progress * 0.4;
+            // Improved opacity curve with better emissive coordination
+            material.opacity = Math.min(0.8, progress * progress * 1.3);
+            material.emissiveIntensity = progress * 0.5 * (1 + Math.sin(elapsed * 4 + index) * 0.2);
           }
         });
 
-        // Volume light for dramatic effect
+        // Enhanced volumetric lighting precision
         const volumeLight = this.advancedLighting.getObjectByName('volumeLight') as THREE.SpotLight;
         if (volumeLight) {
-          volumeLight.intensity = revealProgress * 0.8;
+          // Improved volumetric light intensity with beam precision
+          const beamIntensity = revealProgress * 1.2 * (1 + Math.sin(elapsed * 1.8) * 0.1);
+          volumeLight.intensity = Math.min(1.5, beamIntensity);
+          // Enhanced beam focus for precise logo reveal
+          volumeLight.angle = Math.PI * 0.25 * (1 - revealProgress * 0.3);
+          volumeLight.penumbra = 0.3 + revealProgress * 0.4;
         }
 
-        // Rim lighting
+        // Enhanced rim lighting with directional precision
         const rimLight1 = this.advancedLighting.getObjectByName('rimLight1') as THREE.DirectionalLight;
         const rimLight2 = this.advancedLighting.getObjectByName('rimLight2') as THREE.DirectionalLight;
-        if (rimLight1) rimLight1.intensity = revealProgress * 0.3;
+        if (rimLight1) {
+          rimLight1.intensity = revealProgress * 0.4 * (1 + Math.cos(elapsed * 2) * 0.15);
+        }
         if (rimLight2) rimLight2.intensity = revealProgress * 0.2;
         break;
       }
@@ -561,18 +688,39 @@ export class BrandEntry3D {
   private updateAtmosphericParticles(elapsed: number): void {
     if (this.cinematicPhase === 'preload' || this.cinematicPhase === 'ignition') return;
 
+    // Performance optimization: Update particles at reduced frequency
+    const updateFrequency = Math.floor(elapsed * 60) % 2 === 0; // Update every other frame
+    
     this.atmosphericLayers.forEach((layer, layerIndex) => {
       const positions = layer.geometry.attributes.position.array as Float32Array;
       const velocities = layer.geometry.attributes.velocity?.array as Float32Array;
+      const colors = layer.geometry.attributes.color?.array as Float32Array;
       
-      if (!velocities) return;
+      if (!velocities || !colors) return;
+
+      // Enhanced visual depth with layered motion
+      const layerDepthFactor = 1 + layerIndex * 0.3;
+      const phaseOffset = layerIndex * Math.PI * 0.4;
 
       for (let i = 0; i < positions.length; i += 3) {
-        // Apply velocities with breathing motion
-        const breathingInfluence = Math.sin(elapsed * 1.5 + layerIndex) * 0.001;
-        positions[i] += velocities[i] + breathingInfluence;
-        positions[i + 1] += velocities[i + 1] + breathingInfluence * 0.5;
-        positions[i + 2] += velocities[i + 2] + breathingInfluence * 0.8;
+        if (updateFrequency) {
+          // Enhanced breathing motion with depth variation
+          const breathingInfluence = Math.sin(elapsed * 1.2 + phaseOffset) * 0.0015 * layerDepthFactor;
+          const orbitalMotion = Math.cos(elapsed * 0.8 + i * 0.01) * 0.001;
+          
+          // Apply enhanced velocities with atmospheric depth
+          positions[i] += velocities[i] + breathingInfluence + orbitalMotion;
+          positions[i + 1] += velocities[i + 1] + breathingInfluence * 0.6;
+          positions[i + 2] += velocities[i + 2] + breathingInfluence * 0.9 + orbitalMotion * 0.5;
+        }
+
+        // Enhanced color variation with atmospheric depth
+        const depthInfluence = 0.8 + layerIndex * 0.1;
+        const colorPulse = 0.9 + Math.sin(elapsed * 2 + i * 0.05) * 0.1;
+        
+        colors[i] = 0.14 * depthInfluence * colorPulse;     // R - Enhanced teal variation
+        colors[i + 1] = 0.82 * depthInfluence * colorPulse; // G - Improved depth color
+        colors[i + 2] = 0.84 * depthInfluence * colorPulse; // B - Sophisticated layering
 
         // Orbital motion around center
         const centerX = positions[i];
@@ -602,7 +750,7 @@ export class BrandEntry3D {
     });
   }
 
-  private updateAmbientParticles(_elapsed: number): void {
+  private updateAmbientParticles(elapsed: number): void {
     if (this.cinematicPhase === 'preload') return;
 
     const ambientSystem = this.ambientParticles.getObjectByName('ambientParticles') as THREE.Points;
@@ -614,11 +762,17 @@ export class BrandEntry3D {
 
     if (!velocities || !life) return;
 
+    // Quality-based update frequency for performance optimization
+    const updateFrequency = this.qualityPreset === 'high' ? 1 : 
+                           this.qualityPreset === 'medium' ? 2 : 3;
+    const shouldUpdate = Math.floor(elapsed * 60) % updateFrequency === 0;
+
     for (let i = 0; i < positions.length; i += 3) {
       const lifeIndex = i / 3;
       
-      // Update life cycle
-      life[lifeIndex] += 0.005;
+      // Update life cycle with elapsed time consideration
+      const lifeIncrement = 0.005 * (1 + Math.sin(elapsed * 0.1) * 0.2);
+      life[lifeIndex] += lifeIncrement;
       if (life[lifeIndex] > 1) {
         life[lifeIndex] = 0;
         // Respawn particle
@@ -627,13 +781,18 @@ export class BrandEntry3D {
         positions[i + 2] = (Math.random() - 0.5) * 20;
       }
 
-      // Apply gentle drift
-      positions[i] += velocities[i];
-      positions[i + 1] += velocities[i + 1];
-      positions[i + 2] += velocities[i + 2];
+      // Apply gentle drift with quality-based frequency
+      if (shouldUpdate) {
+        positions[i] += velocities[i];
+        positions[i + 1] += velocities[i + 1];
+        positions[i + 2] += velocities[i + 2];
+      }
     }
 
-    ambientSystem.geometry.attributes.position.needsUpdate = true;
+    // Update geometry only when needed for performance
+    if (shouldUpdate) {
+      ambientSystem.geometry.attributes.position.needsUpdate = true;
+    }
     ambientSystem.geometry.attributes.life.needsUpdate = true;
   }
 

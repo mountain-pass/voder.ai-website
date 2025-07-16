@@ -87,7 +87,7 @@ section[aria-labelledby="prompt-iteration-heading"] .prompt-iteration-subtext {
 
 /* Ensure deep-navy background and white text for the "Why" section */
 #main-content {
-  background-color: var(--color-deep-navy) !important;
+  background-color: var(--color-deep-navy);
   color: var(--color-paper-white) !important;
 }
 

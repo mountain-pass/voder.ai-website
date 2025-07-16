@@ -29,19 +29,20 @@ export const whyToProblemSpaceConfig: TransitionConfig = {
       name: 'dissolve-why-text',
       startTime: 1000,
       duration: 1000,
-      elements: ['#why-heading'],
+      elements: ['#why-heading', '.subheading'],
       properties: [
         { property: 'opacity', from: 1, to: 0, easing: 'power2.out' },
+        { property: 'filter', from: 'blur(0px)', to: 'blur(10px)', easing: 'power2.out' },
         {
           property: 'transform',
           from: 'translateY(0px)',
-          to: 'translateY(-100px)',
+          to: 'translateY(-50px)',
           easing: 'power2.out'
         }
       ] as AnimationProperty[]
     } as AnimationPhase,
     {
-      name: 'show-chaos',
+      name: 'emerge-chaos',
       startTime: 2000,
       duration: 1500,
       elements: ['.visual-chaos'],
@@ -50,24 +51,30 @@ export const whyToProblemSpaceConfig: TransitionConfig = {
       ] as AnimationProperty[]
     } as AnimationPhase,
     {
-      name: 'reveal-problem-text',
+      name: 'reveal-problem-content',
       startTime: 3500,
       duration: 500,
-      elements: ['h2#problem-heading', 'p.secondary-heading', 'p.secondary-copy'],
+      elements: ['#problem-heading', '.secondary-heading', '.secondary-copy'],
       properties: [
-        { property: 'opacity', from: 0, to: 1, easing: 'power2.out' }
+        { property: 'opacity', from: 0, to: 1, easing: 'power2.out' },
+        {
+          property: 'transform',
+          from: 'translateY(30px)',
+          to: 'translateY(0px)',
+          easing: 'power2.out'
+        }
       ] as AnimationProperty[]
     } as AnimationPhase
   ],
   accessibility: {
-    liveRegionSelector: '.visual-chaos ~ div[aria-live]',
-    skipTriggerSelector: 'section[role="main"] .skip-link',
-    announceOnStart: 'Transitioning to problem identification',
-    announceOnComplete: 'Problem space revealed'
+    liveRegionSelector: '#main-content div[aria-live]',
+    skipTriggerSelector: '',
+    announceOnStart: 'Transitioning from Why section to Problem Space',
+    announceOnComplete: 'Problem Space section revealed'
   } as AccessibilityConfig,
   testSelectors: [
-    'why-statement',
-    'code-fragments',
-    'problem-headline'
+    '#main-content',
+    '#problem-heading',
+    '.visual-chaos'
   ]
 };

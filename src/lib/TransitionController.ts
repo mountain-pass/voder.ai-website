@@ -93,31 +93,52 @@ export class TransitionController {
 
   private setupTrigger(): void {
     if (this.config.trigger === 'scroll') {
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({ paused: true });
 
       // Build the timeline with all phases
       this.config.phases.forEach(phase => {
         const fromVars: GSAPVars = {};
         const toVars: GSAPVars = { duration: phase.duration / 1000, ease: phase.properties[0]?.easing || 'none' };
+        
         phase.properties.forEach(prop => {
           fromVars[prop.property] = prop.from;
           toVars[prop.property] = prop.to;
         });
-        tl.fromTo(phase.elements, fromVars, toVars, phase.startTime / 1000);
+        
+        // Check if elements exist before animating
+        const elementString = Array.isArray(phase.elements) ? phase.elements.join(',') : phase.elements;
+        const elements = document.querySelectorAll(elementString);
+        
+        if (elements.length > 0) {
+          tl.fromTo(elementString, fromVars, toVars, phase.startTime / 1000);
+        } else {
+          // Skip animation for missing elements (useful for reduced motion scenarios)
+          // Elements might not exist due to conditional rendering
+        }
       });
 
-      // Create ScrollTrigger with bidirectional control
+      // Create ScrollTrigger with progressive scrub control
       ScrollTrigger.create({
         trigger: this.config.triggerValue as string,
-        start: 'top 80%',
-        end: 'bottom 20%',
+        start: 'top center',
+        end: 'bottom center', 
         animation: tl,
-        toggleActions: 'play none reverse none',
-        scrub: false,
-        onEnter: () => this.announce(this.config.accessibility.announceOnStart || ''),
-        onLeave: () => this.announce(this.config.accessibility.announceOnComplete || ''),
-        onEnterBack: () => this.announce('Transition reversed'),
-        onLeaveBack: () => this.announce('Returning to previous section'),
+        toggleActions: 'play none none reverse',
+        scrub: 1,
+        onEnter: () => {
+          this.announce(this.config.accessibility.announceOnStart || '');
+          tl.play();
+        },
+        onLeave: () => {
+          this.announce(this.config.accessibility.announceOnComplete || '');
+        },
+        onEnterBack: () => {
+          this.announce('Returning to Why section');
+          tl.reverse();
+        },
+        onLeaveBack: () => {
+          this.announce('Back to brand entry');
+        },
       });
 
       this.timeline = tl;

@@ -16,9 +16,9 @@ declare global {
 window.gsap = gsap;
 
 import { TransitionController } from './lib/TransitionController';
+import { WhyToProblemSpaceTransition } from './lib/WhyToProblemSpaceTransition';
 import { problemSpaceToMetaphorConfig } from './transitions/ProblemSpaceToMetaphorConfig';
 import { brandEntryToWhyConfig } from './transitions/BrandEntryToWhyConfig';
-import { whyToProblemSpaceConfig } from './transitions/WhyToProblemSpaceConfig';
 import { outcomeFocusToClosingMomentConfig } from './transitions/OutcomeFocusToClosingMomentConfig';
 import { metaphorToVisionFlowConfig } from './transitions/MetaphorToVisionFlowConfig';
 import { visionFlowToPromptIterationConfig } from './transitions/VisionFlowToPromptIterationConfig';
@@ -44,7 +44,11 @@ if (prefersReducedMotion()) {
 }
 initScrollAnimations();
 new TransitionController(brandEntryToWhyConfig).init();
-new TransitionController(whyToProblemSpaceConfig).init();
+
+// Initialize the new 4-second choreographed transition
+const whyToProblemTransition = new WhyToProblemSpaceTransition();
+whyToProblemTransition.init();
+
 new TransitionController(problemSpaceToMetaphorConfig).init();
 
 // Render dynamic narrative sections and wire their transitions

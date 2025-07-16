@@ -23,6 +23,7 @@ export function renderProblemSection(container: HTMLElement): void {
   // Create 3D canvas for visual chaos only if not reduced motion
   if (!prefersReducedMotion) {
     const canvas = document.createElement('canvas');
+    canvas.className = 'visual-chaos'; // Add class for GSAP transitions
     canvas.style.position = 'absolute';
     canvas.style.top = '0';
     canvas.style.left = '0';
@@ -30,6 +31,7 @@ export function renderProblemSection(container: HTMLElement): void {
     canvas.style.height = '100%';
     canvas.style.zIndex = '1';
     canvas.style.pointerEvents = 'none';
+    canvas.style.opacity = '0'; // Start hidden for transition
     canvas.setAttribute('aria-hidden', 'true');
     section.appendChild(canvas);
 
@@ -100,6 +102,8 @@ export function renderProblemSection(container: HTMLElement): void {
   heading.style.fontWeight = '600';
   heading.style.margin = '0 0 2rem 0';
   heading.style.textAlign = 'center';
+  heading.style.opacity = '0'; // Start hidden for transition
+  heading.style.transform = 'translateY(30px)'; // Start offset for smooth reveal
 
   // Create the secondary heading
   const secondary = document.createElement('p');
@@ -110,6 +114,8 @@ export function renderProblemSection(container: HTMLElement): void {
   secondary.style.fontSize = '1.5rem';
   secondary.style.margin = '0 0 2rem 0';
   secondary.style.textAlign = 'center';
+  secondary.style.opacity = '0'; // Start hidden for transition
+  secondary.style.transform = 'translateY(30px)'; // Start offset for smooth reveal
 
   // Create the paragraph copy
   const copy = document.createElement('p');
@@ -121,6 +127,8 @@ export function renderProblemSection(container: HTMLElement): void {
   copy.style.lineHeight = '1.6';
   copy.style.textAlign = 'center';
   copy.style.margin = '0';
+  copy.style.opacity = '0'; // Start hidden for transition
+  copy.style.transform = 'translateY(30px)'; // Start offset for smooth reveal
 
   // Assemble content
   contentWrapper.append(heading, secondary, copy);

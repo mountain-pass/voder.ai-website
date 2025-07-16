@@ -1,6 +1,5 @@
 // src/components/ProblemSection.ts
-// Temporarily disabled for debugging
-// import { VisualChaos } from '../lib/VisualChaos';
+import { VisualChaos } from '../lib/VisualChaos';
 
 export function renderProblemSection(container: HTMLElement): void {
   // Section wrapper
@@ -18,7 +17,73 @@ export function renderProblemSection(container: HTMLElement): void {
   section.style.backgroundColor = '#0A0A0A'; // Voder Black
   section.style.padding = '2rem';
 
-  // Content wrapper (simplified - no 3D canvas for now)
+  // Check for reduced motion preference
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Create 3D canvas for visual chaos only if not reduced motion
+  if (!prefersReducedMotion) {
+    const canvas = document.createElement('canvas');
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.zIndex = '1';
+    canvas.style.pointerEvents = 'none';
+    canvas.setAttribute('aria-hidden', 'true');
+    section.appendChild(canvas);
+
+    // Initialize Visual Chaos system
+    const visualChaos = new VisualChaos(canvas);
+
+    // Add grain overlay for atmospheric friction
+    const grainOverlay = document.createElement('div');
+    grainOverlay.style.position = 'absolute';
+    grainOverlay.style.top = '0';
+    grainOverlay.style.left = '0';
+    grainOverlay.style.width = '100%';
+    grainOverlay.style.height = '100%';
+    grainOverlay.style.zIndex = '1';
+    grainOverlay.style.pointerEvents = 'none';
+    grainOverlay.style.background = `
+      radial-gradient(ellipse at center, transparent 40%, rgba(10, 10, 10, 0.1) 100%),
+      repeating-linear-gradient(
+        0deg, 
+        transparent, 
+        transparent 2px, 
+        rgba(255, 255, 255, 0.01) 2px, 
+        rgba(255, 255, 255, 0.01) 3px
+      )
+    `;
+    grainOverlay.style.opacity = '0.3';
+    grainOverlay.setAttribute('aria-hidden', 'true');
+    section.appendChild(grainOverlay);
+
+    // Add mouse movement for parallax effect
+    const handleMouseMove = (event: MouseEvent) => {
+      const rect = section.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width;
+      const y = (event.clientY - rect.top) / rect.height;
+      
+      // Apply subtle parallax to canvas
+      const offsetX = (x - 0.5) * 20;
+      const offsetY = (y - 0.5) * 20;
+      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    };
+
+    section.addEventListener('mousemove', handleMouseMove);
+
+    // Cleanup function for proper lifecycle management
+    const cleanup = () => {
+      section.removeEventListener('mousemove', handleMouseMove);
+      visualChaos.dispose();
+    };
+
+    // Store cleanup function on section for later access
+    (section as HTMLElement & { __cleanup?: () => void }).__cleanup = cleanup;
+  }
+
+  // Content wrapper
   const contentWrapper = document.createElement('div');
   contentWrapper.style.position = 'relative';
   contentWrapper.style.zIndex = '2';

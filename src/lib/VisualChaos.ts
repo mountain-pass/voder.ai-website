@@ -9,6 +9,13 @@ interface ParticleData {
   opacity: number;
 }
 
+interface CodeFragment {
+  mesh: THREE.Mesh;
+  velocity: THREE.Vector3;
+  rotationSpeed: THREE.Vector3;
+  text: string;
+}
+
 export class VisualChaos {
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -18,6 +25,7 @@ export class VisualChaos {
   private isAnimating = false;
   private fragmentedGeometry!: THREE.Group;
   private bottleneckLine!: THREE.Line;
+  private codeFragments: CodeFragment[] = [];
 
   constructor(private canvas: HTMLCanvasElement) {
     this.initScene();
@@ -53,6 +61,7 @@ export class VisualChaos {
     this.createParticleSystem();
     this.createFragmentedObjects();
     this.createBottleneckVisualization();
+    this.createCodeFragments();
   }
 
   private createParticleSystem(): void {
@@ -161,6 +170,74 @@ export class VisualChaos {
     this.scene.add(this.bottleneckLine);
   }
 
+  private createCodeFragments(): void {
+    // Create floating code fragments representing development artifacts
+    const fragmentGeometry = new THREE.BoxGeometry(0.4, 0.15, 0.02);
+    const fragmentMaterial = new THREE.MeshBasicMaterial({
+      color: '#00E5FF', // Cyan for code fragments
+      wireframe: false,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    const codeFragmentTexts = [
+      'webpack.config.js',
+      'package.json',
+      'tsconfig.json',
+      'Component.tsx',
+      'App.stories.js',
+      'jest.config.js',
+      'Dockerfile',
+      '.eslintrc.json',
+      'README.md',
+      'style.css',
+      'index.html',
+      'vite.config.ts'
+    ];
+
+    codeFragmentTexts.forEach((text) => {
+      const mesh = new THREE.Mesh(fragmentGeometry, fragmentMaterial.clone());
+      
+      // Set different colors for different file types
+      const material = mesh.material as THREE.MeshBasicMaterial;
+      if (text.endsWith('.tsx') || text.endsWith('.ts')) {
+        material.color.setHex(0x007ACC); // TypeScript blue
+      } else if (text.endsWith('.json')) {
+        material.color.setHex(0xFFD700); // JSON gold
+      } else if (text.endsWith('.css')) {
+        material.color.setHex(0x1572B6); // CSS blue
+      } else if (text.endsWith('.js')) {
+        material.color.setHex(0xF7DF1E); // JavaScript yellow
+      }
+      
+      mesh.position.set(
+        (Math.random() - 0.5) * 15,
+        (Math.random() - 0.5) * 10,
+        (Math.random() - 0.5) * 8
+      );
+      mesh.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+      );
+
+      // Add floating motion with varying speeds
+      const velocity = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.02,
+        (Math.random() - 0.5) * 0.015
+      );
+      const rotationSpeed = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.015,
+        (Math.random() - 0.5) * 0.015,
+        (Math.random() - 0.5) * 0.01
+      );
+
+      this.codeFragments.push({ mesh, velocity, rotationSpeed, text });
+      this.scene.add(mesh);
+    });
+  }
+
   private updateParticles(): void {
     // Update existing particles
     this.particles.forEach((particle) => {
@@ -265,6 +342,29 @@ export class VisualChaos {
     const bottleneckPulse = Math.sin(time * 2) * 0.5 + 0.5;
     this.bottleneckLine.scale.y = 0.3 + bottleneckPulse * 0.7;
 
+    // Animate code fragments - floating and rotating
+    this.codeFragments.forEach((fragment) => {
+      fragment.mesh.position.add(fragment.velocity);
+      fragment.mesh.rotation.x += fragment.rotationSpeed.x;
+      fragment.mesh.rotation.y += fragment.rotationSpeed.y;
+      fragment.mesh.rotation.z += fragment.rotationSpeed.z;
+
+      // Keep code fragments within bounds
+      const bounds = 8;
+      if (Math.abs(fragment.mesh.position.x) > bounds) {
+        fragment.velocity.x *= -0.8;
+        fragment.mesh.position.x = Math.sign(fragment.mesh.position.x) * bounds;
+      }
+      if (Math.abs(fragment.mesh.position.y) > bounds) {
+        fragment.velocity.y *= -0.8;
+        fragment.mesh.position.y = Math.sign(fragment.mesh.position.y) * bounds;
+      }
+      if (Math.abs(fragment.mesh.position.z) > bounds) {
+        fragment.velocity.z *= -0.8;
+        fragment.mesh.position.z = Math.sign(fragment.mesh.position.z) * bounds;
+      }
+    });
+
     // Render the scene
     this.renderer.render(this.scene, this.camera);
   };
@@ -320,6 +420,12 @@ export class VisualChaos {
       };
       this.particles.push(particle);
     }
+
+    // Intensify code fragment movement
+    this.codeFragments.forEach(fragment => {
+      fragment.velocity.multiplyScalar(1.5);
+      fragment.rotationSpeed.multiplyScalar(1.2);
+    });
   }
 
   public calmChaos(): void {
@@ -327,6 +433,12 @@ export class VisualChaos {
     this.particles.splice(150);
     this.particles.forEach(particle => {
       particle.velocity.multiplyScalar(0.5);
+    });
+
+    // Calm code fragment movement
+    this.codeFragments.forEach(fragment => {
+      fragment.velocity.multiplyScalar(0.7);
+      fragment.rotationSpeed.multiplyScalar(0.8);
     });
   }
 }

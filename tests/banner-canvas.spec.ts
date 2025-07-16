@@ -1,16 +1,23 @@
 import { test, expect } from '@playwright/test';
 
-test('only one banner canvas is present', async ({ page }) => {
+test('canvas elements are properly distributed across sections', async ({ page }) => {
   await page.goto('/');
 
-  // Exactly one <canvas> element in the entire document
+  // Two canvas elements should exist: one for Brand Entry, one for Problem Section Visual Chaos
   const allCanvases = await page.$$('canvas');
-  expect(allCanvases.length).toBe(1);
+  expect(allCanvases.length).toBe(2);
 
-  // That canvas must live inside the banner section
+  // The banner section should have exactly one canvas (Brand Entry)
   const bannerCanvasCount = await page.$$eval(
     'section[role="banner"] canvas',
     (els) => els.length
   );
   expect(bannerCanvasCount).toBe(1);
+
+  // The problem section should have exactly one canvas (Visual Chaos)
+  const problemCanvasCount = await page.$$eval(
+    'section[data-test-id="problem-section"] canvas',
+    (els) => els.length
+  );
+  expect(problemCanvasCount).toBe(1);
 });

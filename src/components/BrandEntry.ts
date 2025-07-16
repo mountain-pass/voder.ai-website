@@ -5,6 +5,7 @@ export function BrandEntry(): HTMLElement {
   const section = document.createElement('section');
   section.setAttribute('role', 'banner');
   section.setAttribute('aria-label', 'Voder brand introduction');
+  section.setAttribute('data-testid', 'brand-entry-section');
   section.style.position = 'relative';
   section.style.height = '100vh';
   section.style.display = 'flex';
@@ -12,9 +13,11 @@ export function BrandEntry(): HTMLElement {
   section.style.justifyContent = 'center';
   section.style.alignItems = 'center';
   section.style.backgroundColor = '#0A0A0A'; // Voder Black
+  section.style.overflow = 'hidden'; // Prevent scroll during sequence
 
   const canvas = document.createElement('canvas');
   canvas.setAttribute('aria-hidden', 'true');
+  canvas.setAttribute('data-testid', 'three-canvas');
   canvas.style.position = 'absolute';
   canvas.style.top = '0';
   canvas.style.left = '0';
@@ -38,49 +41,71 @@ export function BrandEntry(): HTMLElement {
   contentWrapper.style.color = '#FFFFFF';
 
   const title = document.createElement('h1');
-  title.textContent = 'Voder';
+  title.setAttribute('data-testid', 'brand-entry-logo');
+  title.textContent = 'Voder'; // Start with text to avoid accessibility violations
   title.style.fontSize = '4rem';
   title.style.fontWeight = '600';
   title.style.margin = '0 0 1rem 0';
   title.style.color = '#FFFFFF';
+  title.style.opacity = '0';
+  title.style.fontFamily = 'Inter, Satoshi, "Neue Haas Grotesk", -apple-system, BlinkMacSystemFont, sans-serif';
   contentWrapper.appendChild(title);
 
   const subtitle = document.createElement('p');
+  subtitle.setAttribute('data-testid', 'brand-tagline');
   subtitle.textContent = 'The Compiler for Prompts';
   subtitle.style.fontSize = '1.5rem';
   subtitle.style.margin = '0';
-  subtitle.style.opacity = '0.8';
+  subtitle.style.opacity = '0';
   subtitle.style.color = '#C6CBD4'; // Cool Grey
+  subtitle.style.fontFamily = 'Inter, -apple-system, BlinkMacSystemFont, sans-serif';
+  subtitle.style.fontWeight = '300';
   contentWrapper.appendChild(subtitle);
 
+  // Skip link - focused on load for accessibility
   const skipLink = document.createElement('a');
   skipLink.setAttribute('href', '#main-content');
+  skipLink.setAttribute('data-testid', 'skip-intro');
   skipLink.classList.add('skip-link');
-  skipLink.textContent = 'Skip to main content';
+  skipLink.textContent = 'Skip to main content (ESC)';
   skipLink.style.position = 'absolute';
   skipLink.style.top = '1rem';
   skipLink.style.left = '1rem';
   skipLink.style.zIndex = '3';
   skipLink.style.color = '#24D1D5';
   skipLink.style.textDecoration = 'underline';
+  skipLink.style.padding = '0.5rem 1rem';
+  skipLink.style.backgroundColor = 'rgba(10, 10, 10, 0.9)';
+  skipLink.style.borderRadius = '4px';
+  skipLink.style.border = '1px solid #24D1D5';
   section.appendChild(skipLink);
 
   section.appendChild(contentWrapper);
 
-  // Initialize 3D scene after canvas is in DOM
+  // Disable scroll initially
+  document.body.style.overflow = 'hidden';
+
+  // Initialize the cinematic sequence after DOM is ready
   setTimeout(() => {
-    initBrandEntry3D(canvas, section);
+    initCinematicSequence(canvas, section, title, subtitle, liveDiv, skipLink);
   }, 100);
 
   return section;
 }
 
-// Enhanced 3D initialization with comprehensive error handling
-async function initBrandEntry3D(canvas: HTMLCanvasElement, section: HTMLElement): Promise<void> {
+// Main cinematic sequence controller
+async function initCinematicSequence(
+  canvas: HTMLCanvasElement, 
+  section: HTMLElement, 
+  title: HTMLElement, 
+  subtitle: HTMLElement, 
+  liveDiv: HTMLElement,
+  skipLink: HTMLElement
+): Promise<void> {
   try {
     // Device capability detection
     if (!isDeviceCapable()) {
-      showFallbackGraphic(canvas);
+      await showFallbackSequence(canvas, title, subtitle, liveDiv);
       return;
     }
 
@@ -93,7 +118,7 @@ async function initBrandEntry3D(canvas: HTMLCanvasElement, section: HTMLElement)
     const brandEntry3D = await initializeWithRetry(canvas);
     
     if (!brandEntry3D) {
-      showFallbackGraphic(canvas);
+      await showFallbackSequence(canvas, title, subtitle, liveDiv);
       return;
     }
     
@@ -108,19 +133,183 @@ async function initBrandEntry3D(canvas: HTMLCanvasElement, section: HTMLElement)
         canvas.height = rect.height;
         brandEntry3D.handleResize();
       } catch {
-        // Silently handle resize errors, fallback will continue working
+        // Silently handle resize errors
       }
     };
     
     window.addEventListener('resize', handleResize);
     (section as HTMLElement & { __resizeHandler?: () => void }).__resizeHandler = handleResize;
     
-    // Cinematic fadeIn sequence as specified
-    await brandEntry3D.fadeIn(2000);
+    // Set up ESC key and skip link handlers
+    const skipHandler = () => {
+      skipToMainContent();
+    };
+    
+    const escHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        skipToMainContent();
+      }
+    };
+    
+    skipLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      skipHandler();
+    });
+    
+    document.addEventListener('keydown', escHandler);
+    
+    // Store cleanup function
+    (section as HTMLElement & { __cleanup?: () => void }).__cleanup = () => {
+      document.removeEventListener('keydown', escHandler);
+      window.removeEventListener('resize', handleResize);
+    };
+    
+    // Focus skip link initially
+    skipLink.focus();
+    
+    // Announce loading to screen readers
+    liveDiv.textContent = 'Loading Voder brand introduction';
+    
+    // Start the 6-second cinematic sequence
+    await executeCinematicSequence(brandEntry3D, title, subtitle, liveDiv);
     
   } catch {
-    showFallbackGraphic(canvas);
+    await showFallbackSequence(canvas, title, subtitle, liveDiv);
   }
+}
+
+// Execute the full 6-second cinematic sequence
+async function executeCinematicSequence(
+  brandEntry3D: BrandEntry3D, 
+  title: HTMLElement, 
+  subtitle: HTMLElement, 
+  liveDiv: HTMLElement
+): Promise<void> {
+  
+  // Start 3D animation
+  brandEntry3D.beginCinematicSequence();
+  
+  // Phase 1: Preload (0-0.5s) - already handled by 3D system
+  
+  // Phase 2: Ignition (0.5-1.5s) - handled by 3D system
+  
+  // Phase 3: Logo Reveal (1.5-3s)
+  setTimeout(() => {
+    typeText(title, 'Voder', 800); // Type over 0.8 seconds
+    liveDiv.textContent = 'Voder';
+  }, 1500);
+  
+  // Phase 4: Tagline Reveal (2.8-3.5s)
+  setTimeout(() => {
+    fadeInElement(subtitle, 700);
+    liveDiv.textContent = 'Voder - The Compiler for Prompts';
+  }, 2800);
+  
+  // Phase 5: Atmosphere (3-4s) - handled by 3D system
+  
+  // Phase 6: Stillness (4-6s) - handled by 3D system
+  
+  // Sequence complete - enable scroll and remove focus trap
+  setTimeout(() => {
+    document.body.style.overflow = '';
+    
+    // Announce completion
+    liveDiv.textContent = 'Brand introduction complete. Welcome to Voder.';
+    
+    // Clear announcement after 3 seconds
+    setTimeout(() => {
+      liveDiv.textContent = '';
+    }, 3000);
+    
+  }, 6000);
+}
+
+// Typing animation for logo
+function typeText(element: HTMLElement, text: string, duration: number): void {
+  element.style.opacity = '1';
+  element.textContent = ''; // Clear and start typing
+  let index = 0;
+  const interval = duration / text.length;
+  
+  const typeInterval = setInterval(() => {
+    element.textContent = text.substring(0, index + 1);
+    index++;
+    
+    if (index >= text.length) {
+      clearInterval(typeInterval);
+    }
+  }, interval);
+}
+
+// Fade in animation
+function fadeInElement(element: HTMLElement, duration: number): void {
+  element.style.transition = `opacity ${duration}ms ease-out`;
+  element.style.opacity = '1';
+}
+
+// Skip to main content functionality
+function skipToMainContent(): void {
+  // Stop all animations
+  document.body.style.overflow = '';
+  
+  // Show final state immediately
+  const title = document.querySelector('[data-testid="voder-logo"]') as HTMLElement;
+  const subtitle = document.querySelector('[data-testid="brand-tagline"]') as HTMLElement;
+  
+  if (title) {
+    title.textContent = 'Voder';
+    title.style.opacity = '1';
+    title.style.transition = 'none';
+  }
+  
+  if (subtitle) {
+    subtitle.style.opacity = '1';
+    subtitle.style.transition = 'none';
+  }
+  
+  // Focus main content
+  const mainContent = document.getElementById('main-content') || document.querySelector('main');
+  if (mainContent) {
+    mainContent.focus();
+    mainContent.scrollIntoView();
+  }
+}
+
+// Fallback sequence for reduced motion or incapable devices
+async function showFallbackSequence(
+  canvas: HTMLCanvasElement, 
+  title: HTMLElement, 
+  subtitle: HTMLElement, 
+  liveDiv: HTMLElement
+): Promise<void> {
+  
+  // Show static fallback graphic
+  showFallbackGraphic(canvas);
+  
+  // Simple fade-in for text elements
+  setTimeout(() => {
+    title.textContent = 'Voder';
+    title.style.transition = 'opacity 1s ease-out';
+    title.style.opacity = '1';
+    liveDiv.textContent = 'Voder';
+  }, 500);
+  
+  setTimeout(() => {
+    subtitle.style.transition = 'opacity 1s ease-out';
+    subtitle.style.opacity = '1';
+    liveDiv.textContent = 'Voder - The Compiler for Prompts';
+  }, 1200);
+  
+  // Enable scroll after 2 seconds
+  setTimeout(() => {
+    document.body.style.overflow = '';
+    liveDiv.textContent = 'Brand introduction complete. Welcome to Voder.';
+    
+    setTimeout(() => {
+      liveDiv.textContent = '';
+    }, 3000);
+  }, 2000);
 }
 
 // Device capability detection
@@ -175,7 +364,7 @@ async function initializeWithRetry(canvas: HTMLCanvasElement, maxRetries: number
       });
       
       return brandEntry3D;
-    } catch (error) {
+    } catch {
       
       if (attempt === maxRetries) {
         return null;

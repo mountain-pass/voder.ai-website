@@ -1,6 +1,6 @@
 # Voder Pre-Launch Website Specification
 
-The **voder.ai** website is a **high-concept, cinematic pre-launch site** designed to generate intrigue and signal a category-defining shift in how software is created.
+The **vo- **Animation**        | Cinematic pacing. GSAP ScrollTrigger with `scrub` property - animations progress with scroll position, pause when scroll pauses, reverse when scroll reverses. Use inertia and easing for elegance. |er.ai** website is a **high-concept, cinematic pre-launch site** designed to generate intrigue and signal a category-defining shift in how software is created.
 
 ## 🎯 Purpose
 
@@ -37,7 +37,7 @@ The experience should feel like a product teaser, film intro, and design manifes
 The homepage is a **custom scroll or interaction-based website** using:
 
 - **Framework**: Vite + Vanilla TypeScript for maximum LLM compatibility and developer familiarity
-- **Animation**: GSAP for scroll-tied transitions and rhythm
+- **Animation**: GSAP ScrollTrigger with `scrub` property for scroll-tied transitions. All animations must be scrubbed by scroll position (not triggered by scroll events)
 - **3D / Motion**: Three.js for immersive conceptual scenes
 - **Visual Assets**: SVG, .glb/.gltf models, or layered compositing
 
@@ -80,7 +80,8 @@ This is a **narrative-first experience**.
 
 - Use **Vite + Vanilla TypeScript + GSAP + Three.js** as confirmed technology stack (see ADR 0006)
 - Component architecture using TypeScript classes and functions
-- All transitions and animations tied to scroll or scene load
+- **All animations must use GSAP ScrollTrigger with `scrub` property** - animations progress with scroll position, not triggered by scroll events
+- **Scroll-tied behavior required**: Animations pause when scrolling pauses, reverse when scrolling reverses, progress smoothly with scroll velocity
 - Use appropriately sized assets (performance optimization is not a current priority - will be addressed in future phase)
 - Hosting via Vercel or Netlify
 - SEO-ready with Open Graph tags, meta description, favicon
@@ -103,24 +104,67 @@ Each transition must include:
 
 ```typescript
 class TransitionController {
-  trigger: ScrollTrigger | TimeBasedTrigger | InteractionTrigger;
-  duration: number; // in milliseconds
+  trigger: ScrollTrigger; // Must use ScrollTrigger with scrub property
+  scrubValue: number | boolean; // e.g., scrub: 1 for smooth scroll-tied animation
+  duration: number; // in milliseconds  
   phases: AnimationPhase[];
   accessibilityHandler: A11yHandler;
   testSelectors: TestSelector[];
 }
 ```
 
+### Scroll-Tied Animation Requirements
+
+**CRITICAL**: All animations must be **scrubbed by scroll position**, not triggered by scroll events.
+
+- ✅ **Correct**: `ScrollTrigger.create({ scrub: 1, ... })` - Animation progress tied to scroll progress
+- ❌ **Incorrect**: `ScrollTrigger.create({ onEnter: () => animation.play() })` - Animation triggered by scroll events
+
+**Expected Behavior**:
+
+- Animation progresses smoothly as user scrolls
+- Animation pauses immediately when scrolling stops
+- Animation reverses when user scrolls backwards
+- Animation speed matches scroll velocity when using `scrub: true`
+- Animation speed is smoothed when using `scrub: 1` (or other numeric values)
+
+**Implementation Example**:
+
+```typescript
+// ✅ CORRECT - Scroll-tied animation
+const scrollTrigger = ScrollTrigger.create({
+  trigger: element,
+  start: "top bottom",
+  end: "bottom top", 
+  scrub: 1, // Animation scrubbed by scroll position
+  animation: gsap.timeline()
+    .to(element, { opacity: 1, duration: 1 })
+    .to(element, { y: -100, duration: 1 })
+});
+
+// ❌ INCORRECT - Trigger-based animation  
+const scrollTrigger = ScrollTrigger.create({
+  trigger: element,
+  start: "top 80%",
+  onEnter: () => {
+    gsap.to(element, { opacity: 1, y: -100, duration: 2 });
+  }
+});
+```
+
 ### Measurable Success Criteria
 
 - **Visual**: All elements reach specified opacity/transform values
-- **Timing**: Transitions complete within specified duration ±100ms
+- **Scroll-Tied Behavior**: Animations pause when scrolling stops, reverse when scrolling reverses
+- **Timing**: Animation progress matches scroll progress (not time-based duration)
 - **Accessibility**: Screen readers receive appropriate announcements
-- **Testing**: All required test assertions pass
+- **Testing**: All required test assertions pass including scroll-tied behavior
 - **Interaction**: User can skip/pause animations as needed
 
 ### Common Anti-Patterns to Avoid
 
+- **Trigger-based animations** using `onEnter`, `onLeave`, `onEnterBack`, `onLeaveBack` callbacks
+- Animations that play independently of scroll position after being triggered
 - Transitions without defined end states
 - Animations without `prefers-reduced-motion` fallbacks  
 - Complex motion without skip options

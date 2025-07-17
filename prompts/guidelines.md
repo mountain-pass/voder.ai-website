@@ -104,6 +104,55 @@
    - Screen reader users get equivalent information through text
    - No flashing or strobing effects above 3Hz threshold
 
+## Implementation Progress Assessment
+
+1. **Visual Assessment Process**
+   - **MANDATORY:** Use Playwright tests to capture screenshots of current implementation
+   - **MANDATORY:** Compare screenshots against specifications in `prompts/` directory
+   - **MANDATORY:** Document visual gaps and implementation progress in implementation-progress.md
+   - Create dedicated screenshot tests that capture:
+     - Full page overview for overall visual assessment
+     - Individual section states (Brand Entry, Vision Flow, Problem Space, etc.)
+     - Transition states and animation sequences
+     - Interactive states (hover, focus, different modes)
+     - Mobile and desktop viewports
+     - Browser-specific rendering differences
+
+2. **Specification Comparison Process**
+   - **PRIMARY REFERENCE:** Use `prompts/voder-website.md` as the main specification document
+   - **VISUAL REQUIREMENTS:** Check `prompts/brand-guide.md` for color, typography, and visual standards
+   - **SECTION DETAILS:** Review individual section files in `prompts/sections/` for specific requirements
+   - **MOCKUP REFERENCE:** Use `assets/mockups/` for visual style reference (NOT pixel-perfect matching)
+   - **ANALYSIS REQUIRED:** For each screenshot, identify:
+     - What matches the specification (implementation completeness %)
+     - What is missing or different from specifications
+     - Priority level of gaps (critical, high, medium, low)
+     - Estimated effort to close gaps
+
+3. **Screenshot Test Implementation**
+   - Create comprehensive screenshot tests in `tests/visual-screenshots.spec.ts`
+   - Capture multiple states: initial, mid-animation, post-animation, interactive
+   - Use consistent viewport sizes and timing for comparison
+   - Save screenshots with descriptive names indicating state and section
+   - Run across multiple browsers (Chrome, Firefox, Safari) to identify rendering differences
+   - Include mobile viewport testing for responsive design validation
+
+4. **Progress Documentation Standards**
+   - **UPDATE REQUIRED:** After taking screenshots, MUST update implementation-progress.md with:
+     - Current implementation percentages by section (based on visual analysis)
+     - Gap analysis comparing screenshots to specifications
+     - Priority ranking of missing features
+     - Realistic effort estimates for completion
+     - Production readiness assessment based on visual sophistication
+   - **EVIDENCE-BASED:** All progress assessments MUST be backed by screenshot analysis
+   - **HONEST EVALUATION:** Do not overstate implementation progress - base assessments on visual evidence
+
+5. **Quality Gates**
+   - **BEFORE CLAIMING COMPLETION:** Take screenshots and verify against specifications
+   - **BEFORE UPDATING PROGRESS:** Visual analysis must support any progress percentage claims
+   - **BEFORE PRODUCTION READINESS:** Screenshots must demonstrate specification compliance
+   - **REGULAR ASSESSMENT:** Re-capture screenshots after significant implementation changes
+
 ## Performance
 
 **IMPORTANT: Performance optimization is NOT a current priority and will be addressed in a future development phase.**
@@ -162,8 +211,17 @@
 
 1. **Completion Criteria**
    - YOU ARE NOT DONE UNTIL ALL THE CHANGES ARE COMMITTED AND PUSHED
+   - **YOU ARE NOT DONE UNTIL SCREENSHOTS ARE CAPTURED AND ANALYZED AGAINST SPECIFICATIONS**
+   - **YOU ARE NOT DONE UNTIL IMPLEMENTATION PROGRESS IS DOCUMENTED WITH VISUAL EVIDENCE**
    - YOU ARE NOT DONE UNTIL THE SCREENSHOTS MATCH THE REQUIREMENTS
    - YOU ARE NOT DONE UNTIL THE CI PIPELINE IS PASSING
+
+2. **Visual Validation Requirements**
+   - **MANDATORY:** Run screenshot tests and capture current implementation state
+   - **MANDATORY:** Compare screenshots against `prompts/` specifications and document gaps
+   - **MANDATORY:** Update implementation-progress.md with evidence-based assessment
+   - **MANDATORY:** Identify and prioritize remaining work based on visual analysis
+   - Screenshots must demonstrate functional implementation, not just presence of elements
 
 
 NOTE: The `timeout` and `gtimeout` shell commands are not available in this environment.

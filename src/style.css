@@ -1,3 +1,6 @@
+/* Import Live Prompt Interaction System styles */
+@import './styles/live-prompt-interaction.css';
+
 /* CSS Custom Properties / Design tokens */
 :root {
   --color-paper-white: #ffffff;

@@ -1,5 +1,17 @@
 # 🎬 Transition: Vision Flow → Prompt-Driven Iteration
 
+## 🎯 Implementation Note: Curated Demonstration System
+
+**CRITICAL**: This section implements a **curated demonstration**, not a free-form editor:
+
+- **Pre-defined prompts only**: Use only the specified prompt examples listed below
+- **Scripted transitions**: Changes occur through automated animation sequences, not user input
+- **Hover interactions**: Reveal additional pre-defined examples, but users cannot edit or type
+- **No user input capability**: Users cannot type their own prompts - this is a polished showcase of Voder's capability
+- **Demonstration purpose**: Show intelligent UI adaptation through controlled, cinematic experience
+
+The goal is to demonstrate Voder's intelligent adaptation through a polished, controlled experience that builds conviction in the product's capability.
+
 ## Vision Flow Settles
 
 The schematic is now fully visible:
@@ -24,13 +36,13 @@ The entire diagram subtly zooms out and blurs, becoming a background motif.
 
 The central text block:
 
-“Source Prompts”
+"Source Prompts"
 softly separates and elevates, becoming the focal point.
 
 ## Prompt Appears
 
 A stylised prompt panel fades in, with soft UI-like chrome.
-Content reads:
+**Initial demonstration state** shows:
 
 ```text
 Tone: Casual, confident, modern.
@@ -38,13 +50,13 @@ Tone: Casual, confident, modern.
 
 The visual to the right shows a product UI (hero section, button, copy) with:
 
-“Let’s get you started!”
+"Let's get you started!"
 
 Rounded button, bright accent colour
 
-## Prompt Changes
+## Scripted Prompt Demonstration
 
-The panel updates live:
+The panel automatically updates in a **scripted demonstration**:
 
 ```text
 Tone: Premium, minimalist.
@@ -72,7 +84,13 @@ Warm, focused lighting on UI
 
 Background darkens subtly again to isolate the moment
 
-Optional hover reveals for other prompt examples: - "Dark mode" → auto theme shift - "Use our new logo" → logo swaps instantly
+**Curated hover interactions** reveal additional pre-defined prompt examples:
+
+- "Dark mode" → triggers automatic theme shift demonstration
+- "Use our new logo" → triggers automatic logo swap demonstration
+- Additional examples cycle through the curated demonstration
+
+**Note**: These are visual reveals of pre-defined examples, not user-editable fields.
 
 ## ✨ Emotional Arc
 
@@ -105,17 +123,19 @@ Optional hover reveals for other prompt examples: - "Dark mode" → auto theme s
 
 ### Required Interactive Elements
 
-- Prompt panel with syntax highlighting (Monaco Editor or CodeMirror)
-- Live UI preview showing before/after states
-- Smooth morphing between UI variations (color, typography, spacing)
-- Hover reveals for additional prompt examples
+- **Curated prompt demonstration panel** with pre-defined examples and smooth transitions
+- **Scripted UI preview** showing before/after states in automated sequence
+- **Smooth morphing animations** between UI variations (color, typography, spacing)
+- **Hover reveals** for additional pre-defined prompt examples (not editable)
+- **Automatic cycling** through demonstration states with cinematic timing
 
 ### Content Requirements
 
-- Initial prompt: "Tone: Casual, confident, modern."
-- Updated prompt: "Tone: Premium, minimalist."
-- UI changes: Headline text, button style, color palette
-- Additional examples: "Dark mode", "Use our new logo"
+- **Initial demonstration state**: "Tone: Casual, confident, modern."
+- **Primary transition state**: "Tone: Premium, minimalist."
+- **UI transformation**: Headline text, button style, color palette changes
+- **Additional hover examples**: "Dark mode", "Use our new logo"
+- **No user input fields**: All content is pre-defined and scripted
 
 ### Testing Assertions Required
 

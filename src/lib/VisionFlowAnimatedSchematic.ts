@@ -2,6 +2,7 @@
  * VisionFlowAnimatedSchematic: Sophisticated animated workflow visualization system
  * Implements complete animated schematic flow with glowing nodes, sequential drawing,
  * progressive disclosure, and interactive micro-explanations.
+ * Features path morphing transition from GPS Metaphor section.
  */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,6 +16,24 @@ interface VisionFlowElements {
   liveRegion: HTMLElement;
 }
 
+interface WorkflowNode {
+  id: string;
+  x: number;
+  y: number;
+  label: string;
+  description: string;
+  color: string;
+}
+
+interface ConnectionLine {
+  id: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  length: number;
+}
+
 export class VisionFlowAnimatedSchematic {
   private section: HTMLElement;
   private elements: VisionFlowElements;
@@ -24,20 +43,143 @@ export class VisionFlowAnimatedSchematic {
   private pulseAnimations: gsap.core.Tween[] = [];
   private isAnimating = false;
   private isVisible = false;
+  private workflowNodes: WorkflowNode[] = [];
+  private connectionLines: ConnectionLine[] = [];
+  private morphingPaths: SVGPathElement[] = [];
 
   constructor(section: HTMLElement, elements: VisionFlowElements) {
     this.section = section;
     this.elements = elements;
     
     gsap.registerPlugin(ScrollTrigger);
+    this.initializeWorkflowData();
+    this.setupMorphingPaths();
     this.setupScrollTrigger();
     this.setupInteractiveElements();
     this.setupKeyboardNavigation();
     this.setupReducedMotionSupport();
   }
 
+  private initializeWorkflowData(): void {
+    // Define workflow nodes with precise positioning and enhanced data
+    this.workflowNodes = [
+      {
+        id: 'source-prompts-node',
+        x: 300,
+        y: 80,
+        label: 'Source Prompts',
+        description: 'Business requirements and design intent expressed in natural language',
+        color: '#24D1D5'
+      },
+      {
+        id: 'voder-node',
+        x: 300,
+        y: 240,
+        label: 'Voder',
+        description: 'AI-powered compiler that transforms prompts into structured code',
+        color: '#9AEF00'
+      },
+      {
+        id: 'application-code-node',
+        x: 300,
+        y: 400,
+        label: 'Application Code',
+        description: 'Production-ready code with proper architecture and version control',
+        color: '#24D1D5'
+      },
+      {
+        id: 'working-product-node',
+        x: 300,
+        y: 480,
+        label: 'Working Product',
+        description: 'Complete product that matches the original intent and requirements',
+        color: '#24D1D5'
+      }
+    ];
+
+    // Define connection lines with calculated lengths for animation
+    this.connectionLines = [
+      {
+        id: 'connection-1',
+        x1: 300,
+        y1: 120,
+        x2: 300,
+        y2: 200,
+        length: 80
+      },
+      {
+        id: 'connection-2',
+        x1: 300,
+        y1: 280,
+        x2: 300,
+        y2: 360,
+        length: 80
+      },
+      {
+        id: 'connection-3',
+        x1: 300,
+        y1: 440,
+        x2: 300,
+        y2: 460,
+        length: 20
+      }
+    ];
+  }
+
+  private setupMorphingPaths(): void {
+    // Create morphing paths that will transform from GPS routes to schematic lines
+    this.connectionLines.forEach((conn, index) => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('id', `morph-path-${index}`);
+      path.setAttribute('class', 'morphing-path');
+      path.setAttribute('data-testid', `morph-path-${index}`);
+      
+      // Initial GPS-like curved path (will morph to straight schematic line)
+      const initialPath = this.createCurvedPath(conn.x1, conn.y1, conn.x2, conn.y2);
+      const finalPath = `M ${conn.x1} ${conn.y1} L ${conn.x2} ${conn.y2}`;
+      
+      path.setAttribute('d', initialPath);
+      path.setAttribute('data-final-path', finalPath);
+      path.setAttribute('stroke', 'url(#connection-gradient)');
+      path.setAttribute('stroke-width', '3');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('opacity', '0');
+      
+      // Calculate path length for stroke animation
+      const pathLength = this.calculatePathLength(initialPath);
+      path.setAttribute('stroke-dasharray', pathLength.toString());
+      path.setAttribute('stroke-dashoffset', pathLength.toString());
+      
+      this.elements.svg.appendChild(path);
+      this.morphingPaths.push(path);
+    });
+  }
+
+  private createCurvedPath(x1: number, y1: number, x2: number, y2: number): string {
+    // Create GPS-style curved path that will morph to straight schematic line
+    const midX = (x1 + x2) / 2;
+    const controlOffset = 50; // Curve intensity
+    
+    const cp1x = midX - controlOffset;
+    const cp1y = y1 + (y2 - y1) * 0.3;
+    const cp2x = midX + controlOffset;
+    const cp2y = y1 + (y2 - y1) * 0.7;
+    
+    return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
+  }
+
+  private calculatePathLength(pathData: string): number {
+    // Approximate path length calculation for stroke animation
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', pathData);
+    document.body.appendChild(path);
+    const length = path.getTotalLength();
+    document.body.removeChild(path);
+    return length;
+  }
+
   private setupScrollTrigger(): void {
-    // Main scroll trigger for the 3.5-second animation sequence
+    // Enhanced scroll trigger with transition from Metaphor section
     this.scrollTrigger = ScrollTrigger.create({
       trigger: this.section,
       start: 'top 70%',
@@ -60,15 +202,19 @@ export class VisionFlowAnimatedSchematic {
     this.section.setAttribute('data-animating', 'true');
     this.section.removeAttribute('data-initial-animation-complete');
 
+    // Disable interactivity during animation
+    this.disableInteractivity();
+
     // Announce to screen readers
-    this.elements.liveRegion.textContent = 'Animating workflow diagram: How Voder transforms prompts into working products';
+    this.updateLiveRegion('Animating workflow diagram: How Voder transforms prompts into working products');
 
     // Create master timeline for 3.5-second sequence
     this.timeline = gsap.timeline({
       onComplete: () => {
         this.isAnimating = false;
         this.startContinuousAnimations();
-        this.elements.liveRegion.textContent = 'Workflow diagram animation complete. Interactive elements available.';
+        this.enableInteractivity();
+        this.updateLiveRegion('Workflow diagram animation complete. Interactive elements available.');
         
         // Mark the initial animation sequence as complete for testing
         this.section.setAttribute('data-initial-animation-complete', 'true');
@@ -209,6 +355,7 @@ export class VisionFlowAnimatedSchematic {
     
     this.isVisible = false;
     this.stopContinuousAnimations();
+    this.disableInteractivity();
 
     // Clear animation state markers
     this.section.removeAttribute('data-animating');
@@ -505,6 +652,30 @@ export class VisionFlowAnimatedSchematic {
       animation.kill();
     });
     this.pulseAnimations = [];
+  }
+
+  private updateLiveRegion(message: string): void {
+    this.elements.liveRegion.textContent = message;
+  }
+
+  private enableInteractivity(): void {
+    // Enable all interactive features after animation completes
+    this.workflowNodes.forEach(node => {
+      const nodeElement = this.elements.svg.querySelector(`#${node.id}`);
+      if (nodeElement) {
+        nodeElement.setAttribute('data-interactive', 'true');
+      }
+    });
+  }
+
+  private disableInteractivity(): void {
+    // Disable interactive features during animation
+    this.workflowNodes.forEach(node => {
+      const nodeElement = this.elements.svg.querySelector(`#${node.id}`);
+      if (nodeElement) {
+        nodeElement.removeAttribute('data-interactive');
+      }
+    });
   }
 
   public dispose(): void {

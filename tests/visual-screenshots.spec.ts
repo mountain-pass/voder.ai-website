@@ -143,8 +143,8 @@ test.describe('Visual Screenshots - Website State Capture', () => {
     // Wait for page load
     await page.waitForLoadState('networkidle');
     
-    // GPS Metaphor interaction - scroll to it first
-    await page.locator('text=passenger seat').scrollIntoViewIfNeeded();
+    // GPS Metaphor interaction - scroll to it first using more reliable selector
+    await page.locator('[data-testid="metaphor-section"]').scrollIntoViewIfNeeded();
     await page.waitForTimeout(1000);
     
     // Initial GPS state

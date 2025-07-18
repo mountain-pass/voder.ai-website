@@ -31,12 +31,86 @@ export function renderProblemSection(container: HTMLElement): void {
     canvas.style.height = '100%';
     canvas.style.zIndex = '1';
     canvas.style.pointerEvents = 'none';
-    canvas.style.opacity = '0'; // Start hidden for transition
+    canvas.style.opacity = '1'; // Make fully visible for testing
     canvas.setAttribute('aria-hidden', 'true');
+    
+    // Set explicit canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
     section.appendChild(canvas);
 
-    // Initialize Visual Chaos system
-    const visualChaos = new VisualChaos(canvas);
+    // Wait for canvas to be in DOM before initializing
+    setTimeout(() => {
+      // Double-check dimensions
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+      
+      // Initialize Visual Chaos system
+      const visualChaos = new VisualChaos(canvas);
+      
+      // Store reference for cleanup
+      (section as HTMLElement & { __visualChaos?: typeof visualChaos }).__visualChaos = visualChaos;
+
+      // Set up scroll-based animations for visual chaos
+      setTimeout(() => {
+        // Wait for GSAP to be available
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gsap = (window as any).gsap;
+        if (gsap && gsap.ScrollTrigger) {
+          // Create scroll-triggered animation for chaos intensity
+          gsap.to(canvas, {
+            opacity: 1,
+            duration: 0.5,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 80%',
+              end: 'bottom 20%',
+              toggleActions: 'play none none reverse'
+            }
+          });
+
+          // Intensify chaos based on scroll progress through the section
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: 'top center',
+              end: 'bottom center',
+              scrub: 1, // Smooth scrubbing
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onUpdate: (self: any) => {
+                const progress = self.progress;
+                
+                // Intensify chaos as user scrolls through
+                if (progress > 0.2) {
+                  visualChaos.intensifyChaos();
+                } else {
+                  visualChaos.calmChaos();
+                }
+              }
+            }
+          });
+
+          // Create particle burst effects on scroll milestones
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 50%',
+              end: 'bottom 50%',
+              scrub: true,
+              onEnter: () => visualChaos.intensifyChaos(),
+              onLeave: () => visualChaos.calmChaos(),
+              onEnterBack: () => visualChaos.intensifyChaos(),
+              onLeaveBack: () => visualChaos.calmChaos()
+            }
+          });
+        }
+      }, 100);
+    }, 100);
 
     // Add grain overlay for atmospheric friction
     const grainOverlay = document.createElement('div');
@@ -61,16 +135,16 @@ export function renderProblemSection(container: HTMLElement): void {
     grainOverlay.setAttribute('aria-hidden', 'true');
     section.appendChild(grainOverlay);
 
-    // Add mouse movement for parallax effect
+    // Add mouse movement for parallax effect (simplified)
     const handleMouseMove = (event: MouseEvent) => {
       const rect = section.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
       const y = (event.clientY - rect.top) / rect.height;
       
-      // Apply subtle parallax to canvas
-      const offsetX = (x - 0.5) * 20;
-      const offsetY = (y - 0.5) * 20;
-      canvas.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      // Apply subtle parallax to grain overlay only
+      const offsetX = (x - 0.5) * 10;
+      const offsetY = (y - 0.5) * 10;
+      grainOverlay.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     };
 
     section.addEventListener('mousemove', handleMouseMove);
@@ -78,7 +152,10 @@ export function renderProblemSection(container: HTMLElement): void {
     // Cleanup function for proper lifecycle management
     const cleanup = () => {
       section.removeEventListener('mousemove', handleMouseMove);
-      visualChaos.dispose();
+      const storedVisualChaos = (section as HTMLElement & { __visualChaos?: { dispose: () => void } }).__visualChaos;
+      if (storedVisualChaos) {
+        storedVisualChaos.dispose();
+      }
     };
 
     // Store cleanup function on section for later access

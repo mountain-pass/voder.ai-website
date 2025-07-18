@@ -98,21 +98,22 @@ Confidence
 
 ## ✅ Implementation Requirements
 
-### Trigger & Timing
+### Trigger & Scroll-Tied Implementation
 
-- **Trigger**: First scroll event after brand entry completion (scroll Y > 50px)
-- **Total Duration**: 3 seconds
-- **Phases**:
-  - Camera pull/3D dissolve (1s)
-  - Logo repositioning (1s)
-  - Headline typing animation (1s)
+- **Trigger**: ScrollTrigger with `scrub: 1` - animation tied to scroll position
+- **Start**: First scroll after brand entry completion (scroll Y > 50px)
+- **End**: "bottom 30%" of Why section
+- **Scroll-Tied Phases**:
+  - Camera pull/3D dissolve (0-33% of scroll progress)
+  - Logo repositioning (33-66% of scroll progress)
+  - Headline typing animation (66-100% of scroll progress)
 
-### Measurable Animation States
+### Measurable Animation States (Scroll Progress)
 
-- **Start**: Brand elements at center screen, 3D object at `opacity: 1`
-- **1s**: 3D object dissolving (`opacity: 0.3`, particles dispersing)
-- **2s**: Logo repositioned to top-left at `transform: translate(-40%, -60%) scale(0.7)`
-- **3s**: Headline fully revealed, background at Deep Navy (#0F1A2E)
+- **0% scroll**: Brand elements at center screen, 3D object at `opacity: 1`
+- **33% scroll**: 3D object dissolving (`opacity: 0.3`, particles dispersing)
+- **66% scroll**: Logo repositioned to top-left at `transform: translate(-40%, -60%) scale(0.7)`
+- **100% scroll**: Headline fully revealed, background at Deep Navy (#0F1A2E)
 
 ### Required Elements & Animations
 
@@ -162,15 +163,22 @@ await expect(page.locator('[data-testid="background-navy"]')).toHaveCSS('backgro
 - 3D object reassembles and becomes fully opaque
 
 #### GSAP ScrollTrigger Implementation
+
 ```typescript
 ScrollTrigger.create({
   trigger: "#main-content",
   start: "top 80%",
-  end: "bottom 20%",
-  toggleActions: "play reverse play reverse", // CRITICAL: bidirectional
-  onStart: () => announceToScreenReader("Moving to main message"),
-  onComplete: () => announceToScreenReader("Main message visible"),
-  onReverseComplete: () => announceToScreenReader("Returning to brand introduction")
+  end: "bottom 30%",
+  animation: brandToWhyTimeline, // Timeline with all animation phases
+  scrub: 1, // CRITICAL: Animation tied to scroll position
+  onUpdate: (self) => {
+    // Announce progress for accessibility
+    if (self.progress === 0) {
+      announceToScreenReader("Moving to main message");
+    } else if (self.progress === 1) {
+      announceToScreenReader("Main message visible");
+    }
+  }
 });
 ```
 

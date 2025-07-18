@@ -64,24 +64,25 @@ Subtext:
 
 ## ✅ Implementation Requirements
 
-### Trigger & Timing
+### Trigger & Scroll-Tied Implementation
 
-- **Trigger**: Scroll to 75% of prompt iteration section viewport
-- **Total Duration**: 4 seconds
-- **Phases**:
-  - Prompt panel fade/zoom out (1s)
-  - Benefits sequential reveal (2.5s)
-  - Final headline appearance (0.5s)
+- **Trigger**: ScrollTrigger with `scrub: 1` - animation tied to scroll position
+- **Start**: "top 75%" of prompt iteration section viewport
+- **End**: "bottom 25%" of Outcome Focus section
+- **Scroll-Tied Phases**:
+  - Prompt panel fade/zoom out (0-25% of scroll progress)
+  - Benefits sequential reveal (25-87.5% of scroll progress)
+  - Final headline appearance (87.5-100% of scroll progress)
 
-### Measurable Animation States
+### Measurable Animation States (Scroll Progress)
 
-- **Start**: Prompt panel at `opacity: 1`, UI mockup at `scale(1)`
-- **1s**: Prompt panel at `opacity: 0.3`, UI mockup at `scale(0.8)`
-- **1.5s**: First benefit line visible
-- **2s**: Second benefit line visible
-- **2.5s**: Third benefit line visible
-- **3s**: Fourth benefit line visible
-- **4s**: Final headline "Outcomes, not overhead" visible
+- **0% scroll**: Prompt panel at `opacity: 1`, UI mockup at `scale(1)`
+- **25% scroll**: Prompt panel at `opacity: 0.3`, UI mockup at `scale(0.8)`
+- **37.5% scroll**: First benefit line visible
+- **50% scroll**: Second benefit line visible
+- **62.5% scroll**: Third benefit line visible
+- **75% scroll**: Fourth benefit line visible
+- **100% scroll**: Final headline "Outcomes, not overhead" visible
 
 ### Required Elements & Animations
 

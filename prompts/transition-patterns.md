@@ -39,8 +39,9 @@ scrollTrigger: {
 ```typescript
 interface TransitionConfig {
   trigger: 'scroll' | 'time' | 'interaction';
-  triggerValue: number | string; // scroll %, ms delay, or selector
-  duration: number; // total duration in ms
+  triggerValue: string; // ScrollTrigger selector for scroll-based
+  scrollStart: string; // e.g., "top 80%"
+  scrollEnd: string; // e.g., "bottom 20%"
   phases: AnimationPhase[];
   accessibility: A11yConfig;
   testSelectors: string[];
@@ -48,8 +49,7 @@ interface TransitionConfig {
 
 interface AnimationPhase {
   name: string;
-  startTime: number; // ms from transition start
-  duration: number;
+  scrollProgress: number; // 0-1 representing scroll progress percentage
   elements: string[]; // CSS selectors
   properties: AnimationProperty[];
 }
@@ -138,36 +138,43 @@ test.describe('Transition: [Name]', () => {
 
 ## 🎨 GSAP Animation Patterns
 
-### ⚠️ CRITICAL: Bidirectional Scroll-Triggered Transition
+### ⚠️ CRITICAL: Scroll-Tied Animation with Scrub
 
 ```typescript
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-class ScrollTriggeredTransition {
+class ScrollTiedTransition {
   constructor(private config: TransitionConfig) {
     gsap.registerPlugin(ScrollTrigger);
   }
   
   init(): void {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: this.config.triggerValue,
-        start: "top 80%",
-        end: "bottom 20%",
-        // CRITICAL: Must be bidirectional - plays forward and reverse
-        toggleActions: "play reverse play reverse",
-        onStart: () => this.announceToScreenReader("Transition starting"),
-        onComplete: () => this.announceToScreenReader("Transition complete"),
-        onReverseComplete: () => this.announceToScreenReader("Transition reversed")
-      }
-    });
+    const tl = gsap.timeline();
     
+    // Build timeline with all animation phases
     this.config.phases.forEach(phase => {
       tl.to(phase.elements, {
-        duration: phase.duration / 1000,
         ...this.convertProperties(phase.properties),
         ease: phase.properties[0]?.easing || "power2.out"
+      }, phase.scrollProgress);
+    });
+    
+    // CRITICAL: Use scrub for scroll-tied animation
+    ScrollTrigger.create({
+      trigger: this.config.triggerValue,
+      start: this.config.scrollStart,
+      end: this.config.scrollEnd,
+      animation: tl,
+      scrub: 1, // CRITICAL: Animation tied to scroll position
+      onUpdate: (self) => {
+        if (self.progress === 0) {
+          this.announceToScreenReader("Transition starting");
+        } else if (self.progress === 1) {
+          this.announceToScreenReader("Transition complete");
+        }
+      }
+    });
       }, phase.startTime / 1000);
     });
     

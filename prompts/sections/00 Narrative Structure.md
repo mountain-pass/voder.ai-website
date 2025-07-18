@@ -12,15 +12,17 @@ Before implementing any transition, verify you can answer:
 6. **How do we test this transition?** (specific Playwright assertions to write)
 7. **How does this work in reverse?** (scroll up behavior, reverse animation timing)
 
-## 🔄 Critical Bidirectional Scroll Requirements
+## 🔄 Critical Scroll-Tied Animation Requirements
 
-**ALL TRANSITIONS MUST BE BIDIRECTIONAL:**
+**ALL TRANSITIONS MUST BE SCROLL-TIED WITH SCRUB:**
 
-- **Forward (scroll down)**: Transition plays from start to end state
-- **Reverse (scroll up)**: Transition plays from end back to start state
-- **GSAP ScrollTrigger**: Use `toggleActions: "play reverse play reverse"` or similar
-- **State Management**: Each transition must track and restore previous state
+- **Forward (scroll down)**: Animation progresses with scroll position
+- **Reverse (scroll up)**: Animation reverses with scroll position
+- **GSAP ScrollTrigger**: Use `scrub: 1` for scroll-tied animations (NOT toggleActions)
+- **State Management**: Animation progress matches scroll progress automatically
 - **Testing**: Test both scroll directions for every transition
+
+**CRITICAL**: Animations must be **scrubbed by scroll position**, not triggered by scroll events.
 
 ## 📋 Section Overview & Testing Requirements
 

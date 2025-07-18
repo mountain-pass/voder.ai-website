@@ -160,23 +160,24 @@ Or, a scroll back-to-top cue appears after a delay
 
 ## ✅ Implementation Requirements
 
-### Trigger & Timing
+### Trigger & Scroll-Tied Implementation
 
-- **Trigger**: Scroll to 85% of outcome focus section viewport
-- **Total Duration**: 5 seconds
-- **Phases**:
-  - Benefits fade out (1s)
-  - Background transition to black (2s)
-  - Tagline emergence (1s)
-  - Final elements positioning (1s)
+- **Trigger**: ScrollTrigger with `scrub: 1` - animation tied to scroll position
+- **Start**: "top 85%" of outcome focus section viewport
+- **End**: "bottom 15%" of Closing Moment section
+- **Scroll-Tied Phases**:
+  - Benefits fade out (0-20% of scroll progress)
+  - Background transition to black (20-60% of scroll progress)
+  - Tagline emergence (60-80% of scroll progress)
+  - Final elements positioning (80-100% of scroll progress)
 
-### Measurable Animation States
+### Measurable Animation States (Scroll Progress)
 
-- **Start**: Outcome benefits visible, current background color
-- **1s**: Benefits at `opacity: 0`, background darkening begins
-- **3s**: Background at Voder Black (#0A0A0A), tagline emerging
-- **4s**: "The Compiler for Prompts" fully visible with teal glow
-- **5s**: "Coming Soon" and attribution visible, logo pulsing
+- **0% scroll**: Outcome benefits visible, current background color
+- **20% scroll**: Benefits at `opacity: 0`, background darkening begins
+- **60% scroll**: Background at Voder Black (#0A0A0A), tagline emerging
+- **80% scroll**: "The Compiler for Prompts" fully visible with teal glow
+- **100% scroll**: "Coming Soon" and attribution visible, logo pulsing
 
 ### Required Elements & Animations
 

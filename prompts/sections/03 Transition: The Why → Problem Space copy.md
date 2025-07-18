@@ -60,23 +60,24 @@ Light desaturation or grain overlay can suggest messiness or friction
 
 ## ✅ Implementation Requirements
 
-### Trigger & Timing
+### Trigger & Scroll-Tied Implementation
 
-- **Trigger**: Scroll to 80% of "The Why" section visibility
-- **Total Duration**: 4 seconds
-- **Phases**:
-  - Background darkening (1s)
-  - Text dissolution (1s)
-  - Chaos emergence (1.5s)
-  - Problem copy reveal (0.5s)
+- **Trigger**: ScrollTrigger with `scrub: 1` - animation tied to scroll position
+- **Start**: "top 80%" of "The Why" section
+- **End**: "bottom 20%" of Problem Space section
+- **Scroll-Tied Phases**:
+  - Background darkening (0-25% of scroll progress)
+  - Text dissolution (25-50% of scroll progress)
+  - Chaos emergence (50-87.5% of scroll progress)
+  - Problem copy reveal (87.5-100% of scroll progress)
 
-### Measurable Animation States
+### Measurable Animation States (Scroll Progress)
 
-- **Start**: "Why" text at `opacity: 1`, background at Deep Navy (#0F1A2E)
-- **1s**: Background darkening to `rgb(10, 10, 10)`, ambient tone shift
-- **2s**: "Why" text at `opacity: 0`, `transform: translateY(-100px) blur(4px)`
-- **3.5s**: Code fragments visible, chaos web at full complexity
-- **4s**: Problem headline and copy fully revealed
+- **0% scroll**: "Why" text at `opacity: 1`, background at Deep Navy (#0F1A2E)
+- **25% scroll**: Background darkening to `rgb(10, 10, 10)`, ambient tone shift
+- **50% scroll**: "Why" text at `opacity: 0`, `transform: translateY(-100px) blur(4px)`
+- **87.5% scroll**: Code fragments visible, chaos web at full complexity
+- **100% scroll**: Problem headline and copy fully revealed
 
 ### Required Elements & Animations
 

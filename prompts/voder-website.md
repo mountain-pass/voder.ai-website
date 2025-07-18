@@ -1,6 +1,6 @@
 # Voder Pre-Launch Website Specification
 
-The **vo- **Animation**        | Cinematic pacing. GSAP ScrollTrigger with `scrub` property - animations progress with scroll position, pause when scroll pauses, reverse when scroll reverses. Use inertia and easing for elegance. |er.ai** website is a **high-concept, cinematic pre-launch site** designed to generate intrigue and signal a category-defining shift in how software is created.
+The **voder.ai** website is a **high-concept, cinematic pre-launch site** designed to generate intrigue and signal a category-defining shift in how software is created.
 
 ## 🎯 Purpose
 
@@ -106,7 +106,8 @@ Each transition must include:
 class TransitionController {
   trigger: ScrollTrigger; // Must use ScrollTrigger with scrub property
   scrubValue: number | boolean; // e.g., scrub: 1 for smooth scroll-tied animation
-  duration: number; // in milliseconds  
+  scrollStart: string; // e.g., "top 80%"
+  scrollEnd: string; // e.g., "bottom 20%"
   phases: AnimationPhase[];
   accessibilityHandler: A11yHandler;
   testSelectors: TestSelector[];

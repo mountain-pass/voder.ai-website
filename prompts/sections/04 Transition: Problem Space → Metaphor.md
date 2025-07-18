@@ -114,20 +114,21 @@ Below or beside the path:
 
 ## ✅ Implementation Requirements
 
-### Trigger & Timing
+### Trigger & Scroll-Tied Implementation
 
-- **Trigger**: Scroll to 60% of problem section viewport
-- **Total Duration**: 4 seconds (chaos → collapse → metaphor)
-- **Phases**:
-  - Chaos peak (1s)
-  - Collapse animation (1.5s)
-  - Void moment (0.5s)
-  - Metaphor emergence (1s)
+- **Trigger**: ScrollTrigger with `scrub: 1` - animation tied to scroll position
+- **Start**: "top 60%" of problem section viewport
+- **End**: "bottom 40%" of Metaphor section
+- **Scroll-Tied Phases**:
+  - Chaos peak (0-25% of scroll progress)
+  - Collapse animation (25-62.5% of scroll progress)
+  - Void moment (62.5-75% of scroll progress)
+  - Metaphor emergence (75-100% of scroll progress)
 
-### Measurable Animation States
+### Measurable Animation States (Scroll Progress)
 
-- **Start**: Chaos elements at `opacity: 1`, random positions
-- **Peak**: All fragments visible, maximum motion intensity
+- **0% scroll**: Chaos elements at `opacity: 1`, random positions
+- **25% scroll**: All fragments visible, maximum motion intensity
 - **Collapse**: Elements converge to center point `transform: scale(0.1)`
 - **Void**: All elements at `opacity: 0`, screen near-black
 - **Metaphor**: Road/path visible at `opacity: 1`, labels positioned

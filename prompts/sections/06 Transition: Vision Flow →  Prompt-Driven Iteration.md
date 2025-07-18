@@ -103,23 +103,24 @@ Background darkens subtly again to isolate the moment
 
 ## ✅ Implementation Requirements
 
-### Trigger & Timing
+### Trigger & Scroll-Tied Implementation
 
-- **Trigger**: Scroll to 80% of vision flow section
-- **Total Duration**: 5 seconds
-- **Phases**:
-  - Diagram zoom out (1s)
-  - Prompt panel fade in (1.5s)
-  - Live update demo (2s)
-  - Headline reveal (0.5s)
+- **Trigger**: ScrollTrigger with `scrub: 1` - animation tied to scroll position
+- **Start**: "top 80%" of vision flow section
+- **End**: "bottom 20%" of Prompt Iteration section
+- **Scroll-Tied Phases**:
+  - Diagram zoom out (0-20% of scroll progress)
+  - Prompt panel fade in (20-50% of scroll progress)
+  - Live update demo (50-90% of scroll progress)
+  - Headline reveal (90-100% of scroll progress)
 
-### Measurable Animation States
+### Measurable Animation States (Scroll Progress)
 
-- **Start**: Vision flow diagram at `scale(1)`, full opacity
-- **1s**: Diagram at `scale(0.8)`, `opacity: 0.3`, blurred
-- **2.5s**: Prompt panel visible at `opacity: 1`, positioned left
-- **4.5s**: UI morphing complete, new headline visible
-- **5s**: All animations settled, interactive state enabled
+- **0% scroll**: Vision flow diagram at `scale(1)`, full opacity
+- **20% scroll**: Diagram at `scale(0.8)`, `opacity: 0.3`, blurred
+- **50% scroll**: Prompt panel visible at `opacity: 1`, positioned left
+- **90% scroll**: UI morphing complete, new headline visible
+- **100% scroll**: All animations settled, interactive state enabled
 
 ### Required Interactive Elements
 

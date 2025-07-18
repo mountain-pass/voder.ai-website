@@ -189,7 +189,6 @@ export class VisionFlowAnimatedSchematic {
       end: 'bottom 30%',
       animation: tl,
       scrub: 1, // Scroll-tied animation with 1 second lag for smoothness
-      toggleActions: 'play reverse play reverse',
       markers: false,
       onUpdate: (self) => {
         // Update state based on scroll progress

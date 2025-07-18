@@ -2,12 +2,12 @@
 
 ## NOW
 
-Fix WhyToProblemSpaceTransition to use scroll-tied behavior with `scrub: 1` instead of trigger-based implementation to resolve 9 failing tests. Convert all remaining trigger-based animations across sections to use GSAP ScrollTrigger with `scrub` for bidirectional scroll-tied behavior. Update TransitionController instances in BrandEntryToWhyConfig, ProblemSpaceToMetaphorConfig, and other transition files to ensure animations progress and reverse smoothly with scroll position.
+Add performance monitoring and Core Web Vitals tracking to ensure optimal loading times for Three.js content and GSAP animations across all devices. Implement comprehensive SEO optimization including Open Graph tags, structured data markup, and meta descriptions. Set up automated accessibility testing to continuously validate ARIA implementation and screen reader compatibility across all sections.
 
 ## NEXT
 
-Implement missing visual specification requirements: morphing backgrounds during stillness in The Why section, realistic syntax-highlighted TypeScript/JSX code fragments with color-coding in Problem Space, progressive disclosure animations for benefit cards in Outcome Focus section, and cinematic fade effect with signature glow in Closing Moment. Enhance Problem Space visual chaos with more sophisticated Three.js particle effects and realistic code fragment displays.
+Enhance the Three.js 3D rendering pipeline with advanced shader effects and particle systems for more immersive visual experiences. Implement progressive web app features including service worker caching, offline functionality, and app manifest. Add advanced analytics integration to track user engagement with scroll-tied animations and interaction patterns. Optimize asset loading with intelligent preloading strategies and WebP/AVIF image format support.
 
 ## LATER
 
-Fine-tune scroll-tied animation timing with consistent easing curves and optimal start/end points for smooth bidirectional movement. Implement performance optimizations for scroll-tied animations and 3D rendering. Add automated visual regression testing to compare Playwright screenshots against specification designs. Polish animation precision and micro-interactions for enhanced user experience while maintaining full accessibility compliance.
+Develop A/B testing framework to experiment with animation timing, easing curves, and interactive element positioning. Implement advanced accessibility features including voice navigation support and enhanced screen reader integration. Add internationalization support for multi-language deployment. Create comprehensive documentation and style guide for future maintenance and feature additions. Explore WebGL 2.0 and WebGPU integration for next-generation 3D rendering capabilities.

@@ -24,16 +24,8 @@ export const brandEntryToWhyConfig: TransitionConfig = {
       properties: [
         { property: 'transform', from: 'translate(0,0) scale(1)', to: 'translate(-40%, -60%) scale(0.7)', easing: 'power2.inOut' }
       ] as AnimationProperty[],
-    } as AnimationPhase,
-    {
-      name: 'why-section-fadein',
-      startTime: 2000,
-      duration: 1000,
-      elements: ['#main-content h1#why-heading', '#main-content p.subheading'],
-      properties: [
-        { property: 'opacity', from: 0, to: 1, easing: 'power2.out' }
-      ] as AnimationProperty[],
-    } as AnimationPhase,
+    } as AnimationPhase
+    // REMOVED why-section-fadein to avoid conflict with WhyToProblemSpaceTransition
   ],
   accessibility: {
     liveRegionSelector: 'section[role="main"] div[aria-live] ',
@@ -43,7 +35,7 @@ export const brandEntryToWhyConfig: TransitionConfig = {
   } as AccessibilityConfig,
   testSelectors: [
     'brand-object-trigger',
-    'logo-reposition-complete',
-    'why-headline'
+    'logo-reposition-complete'
+    // REMOVED 'why-headline' to avoid conflicts
   ]
 };

@@ -43,6 +43,7 @@ if (prefersReducedMotion()) {
   console.log('Reduced motion detected, skipping complex animations.');
 }
 initScrollAnimations();
+// Re-enabled BrandEntryToWhyConfig for overlay fading - conflicts resolved
 new TransitionController(brandEntryToWhyConfig).init();
 
 // Initialize the new 4-second choreographed transition

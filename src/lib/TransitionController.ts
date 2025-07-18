@@ -86,21 +86,34 @@ export class TransitionController {
 
   private setupTrigger(): void {
     if (this.config.trigger === 'scroll') {
-      // Build the timeline with all phases, but remove time-based durations
+      // Build the timeline with all phases using relative positions for scroll-tied behavior
       const tl = gsap.timeline();
+      
+      // Convert absolute time-based phases to relative positions (0-1)
+      const totalDuration = this.config.duration;
+      
       this.config.phases.forEach(phase => {
         const fromVars: GSAPVars = {};
         const toVars: GSAPVars = { ease: phase.properties[0]?.easing || 'none' };
+        
         phase.properties.forEach(prop => {
           fromVars[prop.property] = prop.from;
           toVars[prop.property] = prop.to;
         });
+        
         const elementString = Array.isArray(phase.elements) ? phase.elements.join(',') : phase.elements;
         const elements = document.querySelectorAll(elementString);
+        
         if (elements.length > 0) {
-          tl.fromTo(elementString, fromVars, toVars, phase.startTime / 1000);
+          // Convert start time to relative position (0-1)
+          const relativeStart = phase.startTime / totalDuration;
+          // Convert duration to relative duration
+          const relativeDuration = phase.duration / totalDuration;
+          
+          tl.fromTo(elementString, fromVars, { ...toVars, duration: relativeDuration }, relativeStart);
         }
       });
+      
       // Use ScrollTrigger with scrub for scroll-tied, bidirectional animation
       ScrollTrigger.create({
         trigger: this.config.triggerValue as string,
@@ -108,7 +121,6 @@ export class TransitionController {
         end: 'bottom center',
         animation: tl,
         scrub: 1,
-        toggleActions: 'play reverse play reverse',
         onUpdate: (self) => {
           // Announce progress for accessibility if needed
           if (self.progress === 0) {

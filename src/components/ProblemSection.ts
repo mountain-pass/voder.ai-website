@@ -70,7 +70,7 @@ export function renderProblemSection(container: HTMLElement): void {
               trigger: section,
               start: 'top 80%',
               end: 'bottom 20%',
-              toggleActions: 'play none none reverse'
+              scrub: 1
             }
           });
 

@@ -81,86 +81,48 @@ export class TransitionController {
    */
   public init(): void {
     this.setupTrigger();
-    // Listen for Escape key to skip animations
-    window.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        this.skip();
-      }
-    });
-    this.setupAccessibility();
-    this.addTestSelectors();
+    // ...existing code...
   }
 
   private setupTrigger(): void {
     if (this.config.trigger === 'scroll') {
-      const tl = gsap.timeline({ paused: true });
-
-      // Build the timeline with all phases
+      // Build the timeline with all phases, but remove time-based durations
+      const tl = gsap.timeline();
       this.config.phases.forEach(phase => {
         const fromVars: GSAPVars = {};
-        const toVars: GSAPVars = { duration: phase.duration / 1000, ease: phase.properties[0]?.easing || 'none' };
-        
+        const toVars: GSAPVars = { ease: phase.properties[0]?.easing || 'none' };
         phase.properties.forEach(prop => {
           fromVars[prop.property] = prop.from;
           toVars[prop.property] = prop.to;
         });
-        
-        // Check if elements exist before animating
         const elementString = Array.isArray(phase.elements) ? phase.elements.join(',') : phase.elements;
         const elements = document.querySelectorAll(elementString);
-        
         if (elements.length > 0) {
           tl.fromTo(elementString, fromVars, toVars, phase.startTime / 1000);
-        } else {
-          // Skip animation for missing elements (useful for reduced motion scenarios)
-          // Elements might not exist due to conditional rendering
         }
       });
-
-      // Create ScrollTrigger with progressive scrub control
+      // Use ScrollTrigger with scrub for scroll-tied, bidirectional animation
       ScrollTrigger.create({
         trigger: this.config.triggerValue as string,
         start: 'top center',
-        end: 'bottom center', 
+        end: 'bottom center',
         animation: tl,
-        toggleActions: 'play none none reverse',
         scrub: 1,
-        onEnter: () => {
-          this.announce(this.config.accessibility.announceOnStart || '');
-          tl.play();
-        },
-        onLeave: () => {
-          this.announce(this.config.accessibility.announceOnComplete || '');
-        },
-        onEnterBack: () => {
-          this.announce('Returning to Why section');
-          tl.reverse();
-        },
-        onLeaveBack: () => {
-          this.announce('Back to brand entry');
-        },
+        toggleActions: 'play reverse play reverse',
+        onUpdate: (self) => {
+          // Announce progress for accessibility if needed
+          if (self.progress === 0) {
+            this.announce(this.config.accessibility.announceOnStart || '');
+          } else if (self.progress === 1) {
+            this.announce(this.config.accessibility.announceOnComplete || '');
+          }
+        }
       });
-
       this.timeline = tl;
     }
   }
 
-  private setupAccessibility(): void {
-    const { skipTriggerSelector } = this.config.accessibility;
-
-    if (skipTriggerSelector) {
-      const skipBtn = document.querySelector(skipTriggerSelector);
-      skipBtn?.addEventListener('click', () => this.skip());
-    }
-
-    // Note: Accessibility announcements are now handled directly in ScrollTrigger callbacks
-  }
-
-  private addTestSelectors(): void {
-    this.config.testSelectors.forEach(selector => {
-      document.querySelectorAll(selector).forEach(el => el.setAttribute('data-testid', selector));
-    });
-  }
+  // ...existing code...
 
   private announce(message: string): void {
     const region = document.querySelector(this.config.accessibility.liveRegionSelector);

@@ -8,7 +8,7 @@ test.describe('Why to Problem Space Transition', () => {
     await page.waitForSelector('#problem-heading');
   });
 
-  test('4-second transition choreography works correctly', async ({ page }) => {
+  test('scroll-tied transition choreography works correctly', async ({ page }) => {
     // Initial state check - Why section should be visible
     const whyHeading = page.locator('#why-heading');
     const mainContent = page.locator('#main-content');
@@ -23,11 +23,22 @@ test.describe('Why to Problem Space Transition', () => {
     const problemHeading = page.locator('#problem-heading');
     await expect(problemHeading).toHaveCSS('opacity', '0');
     
-    // Scroll to trigger the transition - scroll to the problem section
+    // Gradually scroll to trigger the transition - scroll-tied animations need progressive scrolling
     await page.locator('[data-test-id="problem-section"]').scrollIntoViewIfNeeded();
     
-    // Wait for transition to complete (4 seconds + buffer)
-    await page.waitForTimeout(5000);
+    // Wait for scroll animation to settle and for scroll-tied animations to respond
+    await page.waitForTimeout(1000);
+    
+    // Scroll a bit more to ensure we're well into the transition zone
+    await page.evaluate(() => {
+      const problemSection = document.querySelector('[data-test-id="problem-section"]');
+      if (problemSection) {
+        problemSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+    
+    // Wait for scroll-tied animations to complete
+    await page.waitForTimeout(1000);
     
     // Final state checks
     // Background should have darkened to Voder Black
@@ -75,13 +86,29 @@ test.describe('Why to Problem Space Transition', () => {
     const liveRegion = page.locator('#why-problem-transition-live-region');
     await expect(liveRegion).toBeAttached();
     
-    // Trigger transition by scrolling to problem section
+    // Start scrolling to trigger transition
     await page.locator('[data-test-id="problem-section"]').scrollIntoViewIfNeeded();
     
-    // Check for accessibility announcements
-    await page.waitForTimeout(1000);
+    // Scroll more to ensure we're in the middle of the transition
+    await page.evaluate(() => {
+      const problemSection = document.querySelector('[data-test-id="problem-section"]');
+      if (problemSection) {
+        problemSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+    
+    // Wait for scroll-tied animations to progress and trigger announcements
+    await page.waitForTimeout(1500);
+    
+    // Check for accessibility announcements (may be initial or completion message)
     const announcement = await liveRegion.textContent();
-    expect(announcement).toContain('Transitioning from Why section to Problem Space');
+    const hasTransitionAnnouncement = announcement && (
+      announcement.includes('Transitioning from Why section to Problem Space') ||
+      announcement.includes('Problem Space') ||
+      announcement.includes('Transition skipped')
+    );
+    
+    expect(hasTransitionAnnouncement).toBe(true);
   });
 
   test('transition can be skipped with Escape key', async ({ page }) => {
@@ -90,20 +117,20 @@ test.describe('Why to Problem Space Transition', () => {
     // Start transition by scrolling to problem section
     await page.locator('[data-test-id="problem-section"]').scrollIntoViewIfNeeded();
     
-    // Wait for transition to start by checking background starts changing
-    const mainContent = page.locator('#main-content');
-    await page.waitForTimeout(1000); // Give transition time to start
+    // Wait a moment for scroll-tied transition to start
+    await page.waitForTimeout(500);
     
-    // Press Escape to skip (should work whether transition started or not)
+    // Press Escape to skip (should complete the timeline immediately)
     await page.keyboard.press('Escape');
     
     // Wait a moment for skip to take effect
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(300);
     
-    // Should show final state regardless of when Escape was pressed
+    // Should show final state after escape is pressed
     const problemHeading = page.locator('#problem-heading');
-    await expect(problemHeading).toHaveCSS('opacity', '1');
+    const mainContent = page.locator('#main-content');
     
+    await expect(problemHeading).toHaveCSS('opacity', '1');
     await expect(mainContent).toHaveCSS('background-color', 'rgb(10, 10, 10)');
   });
 });

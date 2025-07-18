@@ -40,8 +40,6 @@ export class VisionFlowAnimatedSchematic {
   private timeline?: gsap.core.Timeline;
   private scrollTrigger?: ScrollTrigger;
   private hoverInteractions: Map<string, () => void> = new Map();
-  private pulseAnimations: gsap.core.Tween[] = [];
-  private isAnimating = false;
   private isVisible = false;
   private workflowNodes: WorkflowNode[] = [];
   private connectionLines: ConnectionLine[] = [];
@@ -179,193 +177,40 @@ export class VisionFlowAnimatedSchematic {
   }
 
   private setupScrollTrigger(): void {
-    // Enhanced scroll trigger with transition from Metaphor section
+    // Use GSAP ScrollTrigger with scrub for scroll-tied, bidirectional animation
+    const tl = gsap.timeline();
+    
+    // Build all animation phases in a single timeline
+    this.buildScrollTiedTimeline(tl);
+    
     this.scrollTrigger = ScrollTrigger.create({
       trigger: this.section,
       start: 'top 70%',
       end: 'bottom 30%',
-      onEnter: () => this.startAnimationSequence(),
-      onLeave: () => this.reverseAnimationSequence(),
-      onEnterBack: () => this.startAnimationSequence(),
-      onLeaveBack: () => this.reverseAnimationSequence(),
-      markers: false
-    });
-  }
-
-  private async startAnimationSequence(): Promise<void> {
-    if (this.isAnimating || this.isVisible) return;
-    
-    this.isAnimating = true;
-    this.isVisible = true;
-
-    // Mark as animating for testing
-    this.section.setAttribute('data-animating', 'true');
-    this.section.removeAttribute('data-initial-animation-complete');
-
-    // Disable interactivity during animation
-    this.disableInteractivity();
-
-    // Announce to screen readers
-    this.updateLiveRegion('Animating workflow diagram: How Voder transforms prompts into working products');
-
-    // Create master timeline for 3.5-second sequence
-    this.timeline = gsap.timeline({
-      onComplete: () => {
-        this.isAnimating = false;
-        this.startContinuousAnimations();
-        this.enableInteractivity();
-        this.updateLiveRegion('Workflow diagram animation complete. Interactive elements available.');
+      animation: tl,
+      scrub: 1, // Scroll-tied animation with 1 second lag for smoothness
+      toggleActions: 'play reverse play reverse',
+      markers: false,
+      onUpdate: (self) => {
+        // Update state based on scroll progress
+        if (self.progress > 0.1 && !this.isVisible) {
+          this.isVisible = true;
+          this.enableInteractivity();
+          this.updateLiveRegion('Workflow diagram animation in progress');
+        } else if (self.progress <= 0.1 && this.isVisible) {
+          this.isVisible = false;
+          this.disableInteractivity();
+        }
         
-        // Mark the initial animation sequence as complete for testing
-        this.section.setAttribute('data-initial-animation-complete', 'true');
-        this.section.removeAttribute('data-animating');
-      }
-    });
-
-    // Phase 1: Background lighting transition (0-0.5s)
-    this.timeline.to(this.elements.backgroundLighting, {
-      opacity: 1,
-      duration: 0.5,
-      ease: 'power2.out'
-    }, 0);
-
-    // Phase 2: Heading reveal (0.2-0.8s)
-    this.timeline.to(this.elements.heading, {
-      opacity: 1,
-      y: 0,
-      duration: 0.6,
-      ease: 'power2.out'
-    }, 0.2);
-
-    // Phase 3: Diagram container reveal (0.5-1.0s)
-    this.timeline.to(this.elements.diagramContainer, {
-      opacity: 1,
-      duration: 0.5,
-      ease: 'power2.out'
-    }, 0.5);
-
-    // Phase 4: Sequential node drawing (1.0-2.5s)
-    await this.animateNodesSequentially();
-
-    // Phase 5: Connection line drawing (1.5-2.8s)
-    await this.animateConnectionLines();
-
-    // Phase 6: Step explanations reveal (2.8-3.5s)
-    this.timeline.to(this.elements.stepExplanations, {
-      opacity: 1,
-      duration: 0.7,
-      ease: 'power2.out'
-    }, 2.8);
-
-    // Animate individual step cards
-    const stepCards = this.elements.stepExplanations.querySelectorAll('.flow-step');
-    stepCards.forEach((card, index) => {
-      this.timeline?.to(card, {
-        opacity: 1,
-        y: 0,
-        duration: 0.4,
-        ease: 'power2.out'
-      }, 2.8 + index * 0.3);
-    });
-  }
-
-  private async animateNodesSequentially(): Promise<void> {
-    const nodes = this.elements.svg.querySelectorAll('circle');
-    const labels = this.elements.svg.querySelectorAll('text');
-
-    nodes.forEach((node, index) => {
-      // Animate node appearance with glow effect
-      this.timeline?.fromTo(node, {
-        opacity: 0,
-        scale: 0,
-        transformOrigin: 'center'
-      }, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.6,
-        ease: 'back.out(1.7)'
-      }, 1.0 + index * 0.3);
-
-      // Animate label appearance
-      const label = labels[index];
-      if (label) {
-        this.timeline?.fromTo(label, {
-          opacity: 0,
-          y: 20
-        }, {
-          opacity: 1,
-          y: 0,
-          duration: 0.4,
-          ease: 'power2.out'
-        }, 1.2 + index * 0.3);
+        if (self.progress >= 0.9) {
+          this.updateLiveRegion('Workflow diagram animation complete. Interactive elements available.');
+        }
       }
     });
   }
 
-  private async animateConnectionLines(): Promise<void> {
-    const connections = this.elements.svg.querySelectorAll('line');
-    
-    connections.forEach((line, index) => {
-      // Make line visible
-      this.timeline?.to(line, {
-        opacity: 1,
-        duration: 0.2
-      }, 1.5 + index * 0.4);
-
-      // Animate stroke drawing
-      this.timeline?.to(line, {
-        strokeDashoffset: 0,
-        duration: 0.8,
-        ease: 'power2.out'
-      }, 1.5 + index * 0.4);
-    });
-  }
-
-  private startContinuousAnimations(): void {
-    // Start gentle pulsing animations for nodes
-    const nodes = this.elements.svg.querySelectorAll('circle');
-    
-    nodes.forEach((node, index) => {
-      const pulseAnimation = gsap.to(node, {
-        scale: 1.1,
-        duration: 2 + index * 0.3,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-      this.pulseAnimations.push(pulseAnimation);
-    });
-
-    // Pulse connection lines
-    const connections = this.elements.svg.querySelectorAll('line');
-    connections.forEach((line, index) => {
-      const pulseAnimation = gsap.to(line, {
-        strokeOpacity: 0.6,
-        duration: 1.5 + index * 0.2,
-        ease: 'power2.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-      this.pulseAnimations.push(pulseAnimation);
-    });
-  }
-
-  private reverseAnimationSequence(): void {
-    if (!this.isVisible) return;
-    
-    this.isVisible = false;
-    this.stopContinuousAnimations();
-    this.disableInteractivity();
-
-    // Clear animation state markers
-    this.section.removeAttribute('data-animating');
-    this.section.removeAttribute('data-initial-animation-complete');
-
-    if (this.timeline) {
-      this.timeline.reverse();
-    }
-
-    // Reset elements to initial state
+  private buildScrollTiedTimeline(tl: gsap.core.Timeline): void {
+    // Set initial states for all elements
     gsap.set([
       this.elements.backgroundLighting,
       this.elements.heading,
@@ -387,6 +232,90 @@ export class VisionFlowAnimatedSchematic {
     gsap.set([...nodes, ...labels, ...connections], { opacity: 0 });
     gsap.set(nodes, { scale: 0 });
     gsap.set(connections, { strokeDashoffset: 80 });
+
+    // Phase 1: Background lighting transition (0-20% of scroll)
+    tl.to(this.elements.backgroundLighting, {
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.out'
+    }, 0);
+
+    // Phase 2: Heading reveal (10-30% of scroll)
+    tl.to(this.elements.heading, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: 'power2.out'
+    }, 0.5);
+
+    // Phase 3: Diagram container reveal (20-40% of scroll)
+    tl.to(this.elements.diagramContainer, {
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.out'
+    }, 1);
+
+    // Phase 4: Sequential node drawing (30-70% of scroll)
+    nodes.forEach((node, index) => {
+      // Animate node appearance with glow effect
+      tl.fromTo(node, {
+        opacity: 0,
+        scale: 0,
+        transformOrigin: 'center'
+      }, {
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        ease: 'back.out(1.7)'
+      }, 1.5 + index * 0.3);
+
+      // Animate label appearance
+      const label = labels[index];
+      if (label) {
+        tl.fromTo(label, {
+          opacity: 0,
+          y: 20
+        }, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out'
+        }, 1.7 + index * 0.3);
+      }
+    });
+
+    // Phase 5: Connection line drawing (50-80% of scroll)
+    connections.forEach((line, index) => {
+      // Make line visible
+      tl.to(line, {
+        opacity: 1,
+        duration: 0.3
+      }, 2.5 + index * 0.2);
+
+      // Animate stroke drawing
+      tl.to(line, {
+        strokeDashoffset: 0,
+        duration: 0.8,
+        ease: 'power2.out'
+      }, 2.5 + index * 0.2);
+    });
+
+    // Phase 6: Step explanations reveal (70-100% of scroll)
+    tl.to(this.elements.stepExplanations, {
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.out'
+    }, 3.5);
+
+    // Animate individual step cards
+    stepCards.forEach((card, index) => {
+      tl.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: 'power2.out'
+      }, 3.7 + index * 0.2);
+    });
   }
 
   private setupInteractiveElements(): void {
@@ -647,13 +576,6 @@ export class VisionFlowAnimatedSchematic {
     }
   }
 
-  private stopContinuousAnimations(): void {
-    this.pulseAnimations.forEach(animation => {
-      animation.kill();
-    });
-    this.pulseAnimations = [];
-  }
-
   private updateLiveRegion(message: string): void {
     this.elements.liveRegion.textContent = message;
   }
@@ -688,9 +610,6 @@ export class VisionFlowAnimatedSchematic {
     if (this.timeline) {
       this.timeline.kill();
     }
-
-    // Clean up continuous animations
-    this.stopContinuousAnimations();
 
     // Clean up event listeners
     this.hoverInteractions.forEach(cleanup => cleanup());

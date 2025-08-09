@@ -6,7 +6,7 @@ consulted: development team, LLM-assisted development stakeholders
 informed: project stakeholders
 ---
 
-# ADR 0006: Migrate from SvelteKit to Vite + Vanilla TypeScript
+# ADR 0006: Use Vite + Vanilla TypeScript
 
 ## Context and Problem Statement
 

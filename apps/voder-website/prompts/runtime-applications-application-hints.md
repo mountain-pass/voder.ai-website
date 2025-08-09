@@ -1,0 +1,1 @@
+../../../prompts/runtime/applications/application-hints.md

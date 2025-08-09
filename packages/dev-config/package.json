@@ -1,0 +1,35 @@
+{
+  "name": "@voder/dev-config",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "echo 'Dev-config is a configuration package - no build needed'",
+    "dev": "echo 'Dev-config is a configuration package - no dev mode'",
+    "test": "echo 'Dev-config is a configuration package - no tests'",
+    "lint": "echo 'Dev-config is a configuration package - no linting needed'",
+    "clean": "echo 'Dev-config is a configuration package - no dist to clean'",
+    "prepare": "node ../../setup-package-docs.js",
+    "voder": "../../../voder/apps/voder-cli/index.js"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint-plugin-jsx-a11y": "^6.0.0",
+    "eslint-plugin-import": "^2.0.0",
+    "eslint-plugin-unicorn": "^48.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "rollup": "^3.0.0",
+    "vite": "^4.0.0",
+    "vitest": "^0.34.0",
+    "@testing-library/dom": "^9.0.0",
+    "jest-axe": "^8.0.0",
+    "@testing-library/jest-dom": "^6.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0"
+  }
+}

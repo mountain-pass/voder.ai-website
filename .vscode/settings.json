@@ -10,5 +10,46 @@
     "github.copilot.chat.generateTests.codeLens": true,
     "github.copilot.chat.languageContext.fix.typescript.enabled": true,
     "github.copilot.chat.languageContext.inline.typescript.enabled": true,
-    "github.copilot.chat.languageContext.typescript.enabled": true
+    "github.copilot.chat.languageContext.typescript.enabled": true,
+      // Stop the file watcher from tracking giant trees
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/build/**": true,
+        "**/.next/**": true,
+        "**/.turbo/**": true,
+        "**/.cache/**": true,
+        "**/.venv/**": true,
+        "**/venv/**": true,
+        "**/coverage/**": true,
+        "**/.git/**": true
+    },
+    // Don’t even show them in Explorer (optional)
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.next": true,
+        "**/.turbo": true,
+        "**/.cache": true,
+        "**/.venv": true,
+        "**/venv": true,
+        "**/coverage": true
+    },
+    // Keep search from crawling them
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.next": true,
+        "**/.turbo": true,
+        "**/.cache": true,
+        "**/.venv": true,
+        "**/venv": true,
+        "**/coverage": true
+    },
+    // Avoid expensive symlink walks in mono-repos
+    "search.followSymlinks": false,
+    "typescript.tsserver.maxTsServerMemory": 4096, 
+  
 }

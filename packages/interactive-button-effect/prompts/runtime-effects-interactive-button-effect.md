@@ -1,0 +1,1 @@
+../../../prompts/runtime/effects/interactive-button-effect/interactive-button-effect.md

@@ -1,26 +1,18 @@
-import eslint from '@eslint/js';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import tseslint from 'typescript-eslint';
-import globals from 'globals';
-import prettier from 'eslint-config-prettier';
+// Root ESLint configuration for Voder monorepo
+// Implements ADR-0004: Adopt ESLint & Prettier for Code Quality and Formatting
+// Extends the shared configuration from packages/tsconfig/eslint.config.js
 
-const __filename = fileURLToPath(import.meta.url);
+import sharedConfig from './packages/tsconfig/eslint.config.js';
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+export default [
+  ...sharedConfig,
+  
+  // Root-specific overrides
   {
-    files: ['**/*.{js,ts}'],
-    languageOptions: {
-      globals: {
-        ...globals.browser,
-      },
-    },
+    files: ['*.config.{js,ts,mjs}', 'scripts/**/*'],
     rules: {
-      'no-console': 'warn',
-    },
-  },
-  // Prettier config should be last to override any conflicting rules
-  prettier
-);
+      'no-console': 'off', // Allow console in build scripts
+      '@typescript-eslint/no-explicit-any': 'off' // Allow any in config files
+    }
+  }
+];

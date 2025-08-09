@@ -1,0 +1,17 @@
+{
+  "extends": "@voder/dev-config/typescript/vite.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*", "*.d.ts"],
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/services" },
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/brand-entry-section" },
+    { "path": "../../packages/canvas-3d-effect" }
+  ]
+}

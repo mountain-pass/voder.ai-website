@@ -1,0 +1,1144 @@
+#!/usr/bin/env node
+
+/**
+ * VODER HIERARCHICAL DOCUMENTATION SYSTEM
+ * =======================================
+ *
+ * This script implements a hierarchical documentation linking system that eliminates
+ * redundancy while ensuring each package gets exactly the documentation it needs for
+ * AI-assisted development.
+ *
+ * HIERARCHY PRINCIPLE: PACKAGES FIND SPECS, THEN INHERIT UPWARD
+ * -------------------------------------------------------------
+ *
+ * The system works by:
+ * 1. Finding a package's specification file (e.g., tools-file.md in prompts/runtime/tools/file/)
+ * 2. Including ALL .md files from that directory AND all parent directories up to prompts/
+ * 3. This creates automatic inheritance: runtime packages get runtime-level docs,
+ *    development packages get development-level docs
+ *
+ * PATH-BASED NAMING SYSTEM
+ * ------------------------
+ *
+ * Files are linked with path-based names to eliminate conflicts and provide clear context:
+ * - Universal files (prompts/ root): architecture.md → architecture.md (no prefix)
+ * - Layer files: prompts/runtime/runtime.md → runtime.md
+ * - Sublayer files: prompts/runtime/sections/sections.md → runtime-sections.md  
+ * - Package files: prompts/runtime/sections/brand-entry-section/brand-entry-section.md → runtime-sections-brand-entry-section.md
+ * - Deep paths: prompts/runtime/applications/voder-website/voder-website.md → runtime-applications-voder-website.md
+ * - Redundancy removal: prompts/runtime/runtime.md → runtime.md (not runtime-runtime.md)
+ *
+ * WHEN DOCUMENTATION ISN'T INHERITED CORRECTLY:
+ * The solution is usually to IMPROVE THE HIERARCHY, not change the script.
+ * - If a file should be inherited by more packages: move it UP the hierarchy
+ * - If a file should be inherited by fewer packages: move it DOWN or create a new layer
+ * - If some packages need it but others don't: create separate hierarchy branches
+ *
+ * CURRENT HIERARCHY STRUCTURE
+ * ---------------------------
+ *
+ * prompts/
+ * ├── core.md                     # UNIVERSAL: All packages inherit this
+ * ├── testing.md                  # UNIVERSAL: All packages inherit this
+ * ├── glossary.md                 # UNIVERSAL: All packages inherit this
+ * ├── security-and-privacy.md     # UNIVERSAL: All packages inherit this
+ * │
+ * ├── runtime/                    # RUNTIME LAYER: Only runtime packages inherit
+ * │   ├── observability-guide.md  # Runtime packages get observability guidance
+ * │   ├── development.md          # Runtime development guidelines
+ * │   ├── tools/                  # Tool layer inherits everything above + tool guidance
+ * │   │   ├── tools.md
+ * │   │   ├── file/
+ * │   │   │   └── tools-file.md   # voder-tools-file gets: universal + runtime + tools + file
+ * │   │   └── git/
+ * │   │       └── tools-git.md    # voder-tools-git gets: universal + runtime + tools + git
+ * │   ├── workflow/               # Workflow layer inherits everything above + workflow guidance
+ * │   │   ├── workflow.md
+ * │   │   └── graph/
+ * │   │       └── workflow-graph.md
+ * │   └── infrastructure/         # Infrastructure layer inherits everything above + infra guidance
+ * │       ├── infrastructure.md
+ * │       └── events/
+ * │           └── infrastructure-events.md
+ * │
+ * └── development/                # DEVELOPMENT LAYER: Only dev tooling inherits
+ *     ├── development.md          # Development-specific guidelines (different from runtime)
+ *     ├── build-tools/
+ *     │   └── build-tools.md      # voder-build-tools gets: universal + development + build-tools
+ *     └── eslint-config/
+ *         └── eslint-config.md    # voder-eslint-config gets: universal + development + eslint
+ *
+ * ARCHITECTURE OVERVIEW
+ * --------------------
+ *
+ * The system uses a hierarchical inheritance model:
+ * 1. UNIVERSAL TIER: Core guidelines every package needs (prompts/ root)
+ * 2. LAYER TIER: Runtime vs Development separation (prompts/runtime/ vs prompts/development/)
+ * 3. SUBLAYER TIER: Specialized guidance (tools/, workflow/, infrastructure/ under runtime/)
+ * 4. PACKAGE TIER: Specific implementation details (individual package directories)
+ *
+ * LINKING STRATEGY
+ * ----------------
+ *
+ * Each package's prompts/ directory receives symlinks based on hierarchical inheritance:
+ *
+ * 1. FIND PACKAGE SPEC: Script locates the package's specification file
+ *    (e.g., tools-file.md for voder-tools-file package)
+ *
+ * 2. INHERIT UPWARD: Include ALL .md files from:
+ *    - The spec directory (prompts/runtime/tools/file/)
+ *    - Parent directory (prompts/runtime/tools/)
+ *    - Grandparent directory (prompts/runtime/)
+ *    - Root directory (prompts/)
+ *
+ * 3. RESULT: Each package gets exactly what it needs through inheritance:
+ *    - voder-tools-file: universal + runtime + tools + file-specific
+ *    - voder-build-tools: universal + development + build-tools-specific
+ *    - voder-eslint-config: universal + development + eslint-specific
+ *
+ * TROUBLESHOOTING INHERITANCE ISSUES
+ * ----------------------------------
+ *
+ * If a package isn't getting documentation it should:
+ * 1. Check if the package spec file exists in the expected location
+ * 2. Verify the hierarchy structure matches the inheritance needs
+ * 3. Move files UP the hierarchy if more packages need them
+ * 4. Create new hierarchy layers if some packages need it but others don't
+ *
+ * Common fixes:
+ * - "All runtime packages need observability" → Move to prompts/runtime/
+ * - "Only tools need error-handling" → Move to prompts/runtime/tools/
+ * - "Build tools shouldn't get observability" → Keep it in runtime/, not universal
+ *
+ * PACKAGE CLASSIFICATION
+ * ----------------------
+ *
+ * Packages are classified by name pattern analysis:
+ *
+ * - RUNTIME packages (inherit from prompts/runtime/):
+ *   - APPLICATION: cli, agent-factory, orchestrator
+ *   - WORKFLOW: graph, router
+ *   - PHASE: phase-observe, phase-orient, phase-decide, phase-act
+ *   - TOOLS: tools-*, tool-registry
+ *   - INFRASTRUCTURE: *-core, *-types, events, logging, cache, state, persistence
+ *
+ *
+ * DYNAMIC DIRECTORY DISCOVERY
+ * ----------------------------
+ *
+ * The system uses dynamic directory scanning instead of hardcoded file lists:
+ *
+ * 1. UNIVERSAL FILES:
+ *    - All packages: All .md files from prompts/ root (dynamically discovered)
+ *    - New universal files automatically included without code changes
+ *
+ * 2. HIERARCHICAL INHERITANCE:
+ *    - Each package spec directory and all parent directories scanned for .md files
+ *    - New files added anywhere in the hierarchy are automatically inherited
+ *    - No code changes needed when adding documentation
+ *
+ * 3. PACKAGE-SPECIFIC FILES:
+ *    - Package spec directories scanned for implementation details (dynamically discovered)
+ *    - File existence checked before creating symlinks
+ *    - Graceful handling of missing files
+ *
+ * 4. BENEFITS OF DIRECTORY-BASED APPROACH:
+ *    - ZERO HARDCODED FILES: All discovery through directory traversal
+ *    - SELF-MAINTAINING: New documentation automatically discovered
+ *    - ROBUST: Missing directories/files handled gracefully
+ *    - TRANSPARENT: Clear logging shows exactly what files are found and linked
+ *    - FUTURE-PROOF: Add any .md file and it's automatically included where appropriate
+ * - DEVELOPMENT: eslint-config, tsconfig, test-utils, build-tools
+ *
+ * BENEFITS
+ * --------
+ *
+ * 1. ZERO REDUNDANCY: Each piece of documentation exists in exactly one place
+ * 2. AUTOMATIC CONSISTENCY: Updates propagate to all relevant packages instantly
+ * 3. CONTEXTUAL COMPLETENESS: Each package gets exactly what it needs, nothing more
+ * 4. MAINTAINABLE: Single source of truth for each concept
+ * 5. AI-OPTIMIZED: Clear context boundaries for LLM-assisted development
+ * 6. SELF-MAINTAINING: New files automatically discovered without code changes
+ * 7. ROBUST: Graceful handling of missing files and directories
+ * 8. TRANSPARENT: Clear logging shows exactly what gets linked
+ *
+ * USAGE: HOW TO RUN THE DOCUMENTATION LINKING
+ * ===========================================
+ *
+ * LINK ALL PACKAGES (RECOMMENDED):
+ * --------------------------------
+ * From the workspace root directory:
+ *   npm run prepare
+ *
+ * This runs the prepare script for ALL packages and apps, ensuring every package
+ * gets its proper hierarchical documentation links.
+ *
+ * LINK SPECIFIC PACKAGE:
+ * ---------------------
+ * From within a specific package directory (e.g., packages/voder-tools-file/):
+ *   npm run prepare
+ *
+ * This links documentation only for that specific package.
+ *
+ * WHAT THE SCRIPT DOES:
+ * --------------------
+ * 1. Finds the package's specification file in the prompts/ hierarchy
+ * 2. Creates symlinks to ALL .md files from that directory up to prompts/ root
+ * 3. Links external dependency documentation from node_modules/
+ * 4. Clears old symlinks first to ensure clean state
+ * 5. Validates all targets exist before creating links
+ *
+ * DEBUGGING INHERITANCE ISSUES:
+ * ----------------------------
+ * If a package isn't getting expected documentation:
+ * 1. Run: npm run prepare (to refresh all links)
+ * 2. Check: Does the package spec file exist? (e.g., prompts/runtime/tools/file/tools-file.md)
+ * 3. Verify: Are parent directories structured correctly?
+ * 4. Solution: Usually requires moving files in the hierarchy, not changing this script
+ *
+ * ADDING NEW DOCUMENTATION:
+ * ------------------------
+ * 1. Place new .md files at the appropriate hierarchy level
+ * 2. Run: npm run prepare (script automatically discovers new files)
+ * 3. No code changes needed - the system is completely directory-based
+ *
+ * THE HIERARCHY APPROACH PHILOSOPHY:
+ * ---------------------------------
+ * This system is designed so that HIERARCHY CHANGES solve most documentation
+ * distribution problems. Rather than hardcoding file lists or complex logic,
+ * we simply move files up/down the hierarchy or create new layers as needed.
+ * This makes the system self-maintaining and easy to understand.
+ */
+
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import { execSync } from "child_process";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Global tracking for link usage across all packages
+const globalLinkTracker = new Map(); // targetPath -> count
+
+function trackLink(targetPath) {
+  const current = globalLinkTracker.get(targetPath) || 0;
+  globalLinkTracker.set(targetPath, current + 1);
+}
+
+function analyzePackageDocsForReport(packageDir, packageName, quietMode = false) {
+  if (!quietMode) {
+    console.log(`  Analyzing ${packageName}...`);
+  }
+
+  // Only analyze existing prompts symlinks for the report
+  const promptsDir = path.join(packageDir, "prompts");
+
+  if (!fs.existsSync(promptsDir)) {
+    return;
+  }
+
+  try {
+    const files = fs.readdirSync(promptsDir);
+    for (const file of files) {
+      const filePath = path.join(promptsDir, file);
+      const stats = fs.lstatSync(filePath);
+
+      if (stats.isSymbolicLink()) {
+        // Resolve the symlink to track its target
+        try {
+          const targetPath = fs.readlinkSync(filePath);
+          const fullTargetPath = path.resolve(promptsDir, targetPath);
+
+          // Only track if the target actually exists
+          if (fs.existsSync(fullTargetPath)) {
+            trackLink(fullTargetPath);
+          }
+        } catch (error) {
+          // Ignore broken symlinks
+        }
+      }
+    }
+  } catch (error) {
+    // Directory might not exist or be empty, which is fine for reporting
+  }
+}
+
+function setupPackageDocs(quietMode = false) {
+  const packageDir = process.cwd();
+  const packageName = path.basename(packageDir);
+
+  if (!quietMode) {
+    console.log(`Setting up documentation for ${packageName}...`);
+  }
+
+  // Setup docs/libraries symlinks
+  setupLibrariesSymlinks(packageDir, packageName, quietMode);
+
+  // Setup prompts symlinks
+  setupPromptsSymlinks(packageDir, packageName, quietMode);
+
+  // Setup prompt-assets symlinks
+  setupPromptAssetsSymlinks(packageDir, packageName, quietMode);
+}
+
+function setupLibrariesSymlinks(packageDir, packageName, quietMode = false) {
+  const docsDir = path.join(packageDir, "docs");
+  const librariesDir = path.join(docsDir, "libraries");
+  const usageDir = path.join(librariesDir, "usage");
+  const needsDir = path.join(librariesDir, "needs");
+
+  if (!quietMode) {
+    console.log(`  Setting up docs/libraries structure...`);
+  }
+
+  // Create docs/libraries/usage and docs/libraries/needs directories
+  fs.mkdirSync(usageDir, { recursive: true });
+  fs.mkdirSync(needsDir, { recursive: true });
+
+  // Clean existing symlinks in both directories
+  for (const dir of [usageDir, needsDir]) {
+    try {
+      const files = fs.readdirSync(dir);
+      for (const file of files) {
+        const filePath = path.join(dir, file);
+        const stats = fs.lstatSync(filePath);
+        if (stats.isSymbolicLink()) {
+          fs.unlinkSync(filePath);
+        }
+      }
+    } catch (error) {
+      // Directory might not exist or be empty, which is fine
+    }
+  }
+
+  // Clean old docs/libraries structure (remove files directly in libraries/)
+  try {
+    const files = fs.readdirSync(librariesDir);
+    for (const file of files) {
+      const filePath = path.join(librariesDir, file);
+      const stats = fs.lstatSync(filePath);
+      if (stats.isSymbolicLink() || (stats.isFile() && file.endsWith(".md"))) {
+        fs.unlinkSync(filePath);
+      }
+    }
+  } catch (error) {
+    // Directory might not exist or be empty, which is fine
+  }
+
+  // Read package.json to get dependencies
+  const packageJsonPath = path.join(packageDir, "package.json");
+  if (!fs.existsSync(packageJsonPath)) {
+    console.log("  No package.json found");
+    return;
+  }
+
+  let packageJson;
+  try {
+    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  } catch (error) {
+    console.error("  Error reading package.json:", error.message);
+    return;
+  }
+
+  // Extract ALL dependencies (both dependencies and devDependencies)
+  const allDeps = {
+    ...(packageJson.dependencies || {}),
+    ...(packageJson.devDependencies || {}),
+  };
+
+  const depNames = Object.keys(allDeps);
+
+  if (depNames.length === 0) {
+    console.log("  No dependencies found");
+    return;
+  }
+
+  console.log(`  Found ${depNames.length} dependencies, creating usage docs...`);
+
+  // Link to node_modules for ALL dependencies in docs/libraries/usage/
+  for (const dep of depNames) {
+    // Sanitize package name for filename (remove @ and replace / with -)
+    const depFilename = dep.replace(/^@/, "").replace(/\//g, "-") + ".md";
+
+    // All dependencies link to node_modules (from docs/libraries/usage to root node_modules)
+    const targetPath = `../../../../../node_modules/${dep}/README.md`;
+    const linkPath = path.join(usageDir, depFilename);
+
+    // Check if target README exists before creating symlink
+    // Resolve the path from the docs/libraries/usage directory, not the package directory
+    const fullTargetPath = path.resolve(usageDir, targetPath);
+    if (fs.existsSync(fullTargetPath)) {
+      try {
+        fs.symlinkSync(targetPath, linkPath);
+        console.log(`    Linked ${dep} -> usage/${depFilename}`);
+      } catch (error) {
+        console.error(`    Failed to link ${dep}: ${error.message}`);
+      }
+    } else {
+      console.log(`    Skipped ${dep} (no README.md found in node_modules)`);
+    }
+  }
+
+  // Note: NEEDS files belong in each package's own docs/libraries/needs/ directory
+  // They should not be linked between packages - that violates the principle
+  // Instead, they should be accessible through the prompts hierarchy
+
+  // Create symlinks to master README files for both directories
+  const needsReadmePath = path.join(needsDir, "README.md");
+  const usageReadmePath = path.join(usageDir, "README.md");
+
+  // Symlink to master needs README (from docs/libraries/needs to root)
+  const needsReadmeTarget = "../../../../../docs-libraries-needs-README.md";
+  if (!fs.existsSync(needsReadmePath)) {
+    const fullNeedsTarget = path.resolve(needsDir, needsReadmeTarget);
+    if (fs.existsSync(fullNeedsTarget)) {
+      try {
+        fs.symlinkSync(needsReadmeTarget, needsReadmePath);
+        console.log(`    Linked needs README -> ${needsReadmeTarget}`);
+      } catch (error) {
+        console.error(`    Failed to link needs README: ${error.message}`);
+      }
+    } else {
+      console.log(`    Skipped needs README (master file not found: ${fullNeedsTarget})`);
+    }
+  }
+
+  // Symlink to master usage README (from docs/libraries/usage to root)
+  const usageReadmeTarget = "../../../../../docs-libraries-usage-README.md";
+  if (!fs.existsSync(usageReadmePath)) {
+    const fullUsageTarget = path.resolve(usageDir, usageReadmeTarget);
+    if (fs.existsSync(fullUsageTarget)) {
+      try {
+        fs.symlinkSync(usageReadmeTarget, usageReadmePath);
+        console.log(`    Linked usage README -> ${usageReadmeTarget}`);
+      } catch (error) {
+        console.error(`    Failed to link usage README: ${error.message}`);
+      }
+    } else {
+      console.log(`    Skipped usage README (master file not found: ${fullUsageTarget})`);
+    }
+  }
+}
+
+function setupPromptsSymlinks(packageDir, packageName, quietMode = false) {
+  const promptsDir = path.join(packageDir, "prompts");
+
+  if (!quietMode) {
+    console.log(`  Setting up prompts...`);
+  }
+
+  // Create prompts directory
+  fs.mkdirSync(promptsDir, { recursive: true });
+
+  // Clean existing symlinks
+  try {
+    const files = fs.readdirSync(promptsDir);
+    for (const file of files) {
+      const filePath = path.join(promptsDir, file);
+      const stats = fs.lstatSync(filePath);
+      if (stats.isSymbolicLink()) {
+        fs.unlinkSync(filePath);
+      }
+    }
+  } catch (error) {
+    // Directory might not exist or be empty, which is fine
+  }
+
+  // Determine package type and create appropriate symlinks
+  const packageJson = getPackageJson(packageDir);
+  const symlinksToCreate = getHierarchicalPromptSymlinks(packageJson, packageDir);
+
+  for (const { filename, targetPath } of symlinksToCreate) {
+    const linkPath = path.join(promptsDir, filename);
+    const fullTargetPath = path.resolve(promptsDir, targetPath);
+
+    if (fs.existsSync(fullTargetPath)) {
+      try {
+        fs.symlinkSync(targetPath, linkPath);
+        trackLink(fullTargetPath); // Track this link for global usage reporting
+        console.log(`    Linked ${filename} -> ${targetPath}`);
+      } catch (error) {
+        console.error(`    Failed to link ${filename}: ${error.message}`);
+      }
+    } else {
+      console.log(`    Skipped ${filename} (target not found: ${targetPath})`);
+    }
+  }
+}
+
+function setupPromptAssetsSymlinks(packageDir, packageName, quietMode = false) {
+  if (!quietMode) {
+    console.log(`  Setting up prompt-assets links...`);
+  }
+
+  // Create prompt-assets directory in the package
+  const promptAssetsDir = path.join(packageDir, "prompt-assets");
+  fs.mkdirSync(promptAssetsDir, { recursive: true });
+
+  // Clean existing symlinks
+  try {
+    const files = fs.readdirSync(promptAssetsDir);
+    for (const file of files) {
+      const filePath = path.join(promptAssetsDir, file);
+      const stats = fs.lstatSync(filePath);
+      if (stats.isSymbolicLink()) {
+        fs.unlinkSync(filePath);
+      }
+    }
+  } catch (error) {
+    // Directory might not exist or be empty, which is fine
+  }
+
+  // Link ADR template
+  const adrTemplatePath = "../../../prompt-assets/adr-template.md";
+  const linkPath = path.join(promptAssetsDir, "adr-template.md");
+  const fullTargetPath = path.resolve(promptAssetsDir, adrTemplatePath);
+
+  if (fs.existsSync(fullTargetPath)) {
+    try {
+      fs.symlinkSync(adrTemplatePath, linkPath);
+      trackLink(fullTargetPath);
+      console.log(`    Linked adr-template.md -> ${adrTemplatePath}`);
+    } catch (error) {
+      console.error(`    Failed to link adr-template.md: ${error.message}`);
+    }
+  } else {
+    console.log(`    Skipped adr-template.md (target not found: ${adrTemplatePath})`);
+  }
+}
+
+/**
+ * Generate path-based filename for hierarchical documentation linking
+ * 
+ * Converts file paths to kebab-case linked names that provide clear context
+ * and eliminate naming conflicts between universal and layer-specific files.
+ * 
+ * Examples:
+ * - prompts/architecture.md → architecture.md (universal, no prefix)
+ * - prompts/runtime/runtime.md → runtime.md (layer file, remove redundancy)
+ * - prompts/runtime/sections/sections.md → runtime-sections.md (sublayer)
+ * - prompts/runtime/sections/brand-entry-section/brand-entry-section.md → runtime-sections-brand-entry-section.md
+ * - prompts/runtime/applications/voder-website/voder-website.md → runtime-applications-voder-website.md
+ * 
+ * @param {string} targetPath - Relative path like "../../../prompts/runtime/sections/sections.md"
+ * @param {string} originalFilename - Original filename like "sections.md"
+ * @returns {string} Path-based filename
+ */
+function generatePathBasedFilename(targetPath, originalFilename) {
+  // Extract the path relative to prompts/
+  // targetPath: "../../../prompts/runtime/sections/sections.md"
+  // Split and find prompts index
+  const pathParts = targetPath.split('/');
+  const promptsIndex = pathParts.indexOf('prompts');
+  
+  if (promptsIndex === -1) {
+    // Fallback to original filename if prompts not found
+    return originalFilename;
+  }
+  
+  // Get path components after prompts/
+  const pathComponents = pathParts.slice(promptsIndex + 1);
+  
+  // Remove the filename from path components
+  const fileNameWithExt = pathComponents[pathComponents.length - 1];
+  const pathWithoutFile = pathComponents.slice(0, -1);
+  
+  // If it's a universal file (directly in prompts/), keep original name
+  if (pathWithoutFile.length === 0) {
+    return originalFilename;
+  }
+  
+  // Extract filename without extension for redundancy check
+  const filenameWithoutExt = fileNameWithExt.replace(/\.md$/, '');
+  const pathForNaming = [...pathWithoutFile];
+  
+  // Remove redundant segments where directory name matches filename
+  // e.g., runtime/runtime.md → just "runtime" not "runtime-runtime"
+  if (pathForNaming.length > 0 && pathForNaming[pathForNaming.length - 1] === filenameWithoutExt) {
+    // The filename matches the last directory, so skip adding the filename part
+    // Just use the path: runtime/runtime.md → runtime.md
+    return pathForNaming.join('-') + '.md';
+  }
+  
+  // Normal case: join path components with hyphens
+  // runtime/sections/brand-entry-section/brand-entry-section.md → runtime-sections-brand-entry-section.md
+  return pathForNaming.join('-') + '-' + filenameWithoutExt + '.md';
+}
+
+function getPackageJson(packageDir) {
+  const packageJsonPath = path.join(packageDir, "package.json");
+  if (!fs.existsSync(packageJsonPath)) {
+    return { keywords: [] };
+  }
+
+  try {
+    return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  } catch (error) {
+    console.error(`  Error reading package.json: ${error.message}`);
+    return { keywords: [] };
+  }
+}
+
+function getUniversalFiles(packageDir) {
+  const promptsDir = path.join(packageDir, "prompts");
+  const rootPromptsPath = path.resolve(promptsDir, "../../../prompts");
+
+  if (!fs.existsSync(rootPromptsPath)) {
+    console.log(`    Universal prompts directory not found: ${rootPromptsPath}`);
+    return [];
+  }
+
+  const universalFiles = [];
+  try {
+    const files = fs.readdirSync(rootPromptsPath);
+    console.log(`    Scanning universal prompts (${files.length} items)`);
+
+    for (const file of files) {
+      const filePath = path.join(rootPromptsPath, file);
+      const stats = fs.statSync(filePath);
+
+      // Only include root-level .md files (not directories) but exclude README.md
+      if (stats.isFile() && file.endsWith(".md") && file !== "README.md") {
+        const targetPath = `../../../prompts/${file}`;
+        universalFiles.push({
+          filename: generatePathBasedFilename(targetPath, file),
+          targetPath: targetPath,
+        });
+        console.log(`      Found universal file: ${file} → linked as ${generatePathBasedFilename(targetPath, file)}`);
+      } else if (file === "README.md") {
+        console.log(`      Skipped directory index: ${file}`);
+      }
+    }
+  } catch (error) {
+    console.error(`    Error scanning universal prompts: ${error.message}`);
+  }
+
+  return universalFiles;
+}
+
+function getLayerSpecificFiles(layerPath, packageDir, excludeFiles = []) {
+  const promptsDir = path.join(packageDir, "prompts");
+  const fullPath = path.resolve(promptsDir, `../../../prompts/${layerPath}`);
+
+  if (!fs.existsSync(fullPath)) {
+    console.log(`    Layer directory not found: ${layerPath}`);
+    return [];
+  }
+
+  const layerFiles = [];
+  try {
+    const files = fs.readdirSync(fullPath);
+    console.log(`    Scanning layer ${layerPath} (${files.length} items)`);
+
+    for (const file of files) {
+      const filePath = path.join(fullPath, file);
+      const stats = fs.statSync(filePath);
+
+      // Only include root-level .md files (not directories) and exclude specified files
+      if (stats.isFile() && file.endsWith(".md") && !excludeFiles.includes(file)) {
+        const targetPath = `../../../prompts/${layerPath}/${file}`;
+        layerFiles.push({
+          filename: generatePathBasedFilename(targetPath, file),
+          targetPath: targetPath,
+        });
+        console.log(`      Found layer file: ${file} → linked as ${generatePathBasedFilename(targetPath, file)}`);
+      }
+    }
+  } catch (error) {
+    console.error(`    Error scanning layer ${layerPath}: ${error.message}`);
+  }
+
+  return layerFiles;
+}
+
+function getDirectoryFiles(relativePath, packageDir) {
+  const promptsDir = path.join(packageDir, "prompts");
+  const fullPath = path.resolve(promptsDir, relativePath);
+
+  if (!fs.existsSync(fullPath)) {
+    console.log(`    Directory not found: ${relativePath}`);
+    return [];
+  }
+
+  const symlinks = [];
+  try {
+    const files = fs.readdirSync(fullPath);
+    console.log(`    Scanning directory ${relativePath} (${files.length} items)`);
+
+    for (const file of files) {
+      const filePath = path.join(fullPath, file);
+      const stats = fs.statSync(filePath);
+
+      // Only include .md files, skip directories and other file types, exclude README.md
+      if (stats.isFile() && file.endsWith(".md") && file !== "README.md") {
+        const targetPath = path.join(relativePath, file);
+        symlinks.push({
+          filename: generatePathBasedFilename(targetPath, file),
+          targetPath: targetPath,
+        });
+        console.log(`      Found: ${file} → linked as ${generatePathBasedFilename(targetPath, file)}`);
+      } else if (file === "README.md") {
+        console.log(`      Skipped directory index: ${file}`);
+      }
+    }
+  } catch (error) {
+    console.error(`    Error reading directory ${relativePath}: ${error.message}`);
+  }
+
+  return symlinks;
+}
+
+function getRootPromptFiles(relativePath, packageDir) {
+  const promptsDir = path.join(packageDir, "prompts");
+  const fullPath = path.resolve(promptsDir, relativePath);
+
+  if (!fs.existsSync(fullPath)) {
+    return [];
+  }
+
+  const symlinks = [];
+  try {
+    const files = fs.readdirSync(fullPath);
+    for (const file of files) {
+      const filePath = path.join(fullPath, file);
+      const stats = fs.statSync(filePath);
+
+      // Only include root-level .md files (not directories or subdirectories), exclude README.md
+      if (stats.isFile() && file.endsWith(".md") && file !== "README.md") {
+        const targetPath = path.join(relativePath, file);
+        symlinks.push({
+          filename: generatePathBasedFilename(targetPath, file),
+          targetPath: targetPath,
+        });
+      }
+    }
+  } catch (error) {
+    console.error(`  Error reading root prompts directory: ${error.message}`);
+  }
+
+  return symlinks;
+}
+
+function getPackageSpecificFile(packageName, packageDir) {
+  // Convert package name to file name
+  // @voder/build-tools -> build-tools.md
+  // @voder/tools-file -> tools-file.md
+  // @voder/phase-observe -> phase-observe.md
+  let fileName = packageName;
+  if (fileName.startsWith("@voder/")) {
+    fileName = fileName.substring(7); // Remove @voder/ prefix
+  }
+  fileName = fileName + ".md";
+
+  const targetPath = `../../../prompts/packages/${fileName}`;
+  const promptsDir = path.join(packageDir, "prompts");
+  const fullTargetPath = path.resolve(promptsDir, targetPath);
+
+  // Check if the package-specific file exists
+  if (fs.existsSync(fullTargetPath)) {
+    return {
+      filename: `${fileName.replace(".md", "")}-spec.md`, // build-tools-spec.md
+      targetPath: targetPath,
+    };
+  }
+
+  return null;
+}
+
+function getHierarchicalPromptSymlinks(packageJson, packageDir) {
+  const packageName = packageJson.name || "";
+  const symlinks = [];
+
+  // Define legacy packages and apps that are NOT in scope for the new linking system
+  const legacyPackages = [
+    "voder-cli-v2",
+    "voder-core",
+    "voder-core-2",
+    "voder-graph", // replaced by voder-langgraph
+  ];
+
+  const legacyApps = [
+    "voder-cli", // replaced by voder-cli-v3
+  ];
+
+  // Check if this is a legacy package/app that should not use the new system
+  const currentPackageDir = process.cwd();
+  const packageDirName = path.basename(currentPackageDir);
+
+  if (legacyPackages.includes(packageDirName) || legacyApps.includes(packageDirName)) {
+    console.error(`\n❌ ERROR: ${packageDirName} is a legacy package that is NOT in scope for the hierarchical documentation system.`);
+    console.error(`   This package should not use the new setup-package-docs.js script.`);
+    console.error(`   Please remove the "prepare" hook from its package.json.`);
+    console.error(`\n   Legacy packages not in scope:`);
+    console.error(`   - ${legacyPackages.join("\n   - ")}`);
+    console.error(`\n   Legacy apps not in scope:`);
+    console.error(`   - ${legacyApps.join("\n   - ")}`);
+    process.exit(1);
+  }
+
+  // Handle both @voder/ and voder- naming patterns first
+  let baseName = "";
+  if (packageName.startsWith("@voder/")) {
+    baseName = packageName.substring(7); // Remove @voder/ prefix
+  } else if (packageName.startsWith("voder-")) {
+    baseName = packageName.substring(6); // Remove voder- prefix
+  } else {
+    console.error(`\n❌ ERROR: Package name "${packageName}" does not follow voder naming conventions.`);
+    console.error(`   Expected: @voder/package-name or voder-package-name`);
+    process.exit(1);
+  }
+
+  // Universal files - all packages get these (root level of hierarchy)
+  const universalFiles = getUniversalFiles(packageDir);
+  symlinks.push(...universalFiles);
+
+  // Find the package-specific file in the hierarchy and inherit everything above it
+  const packageSpecificFile = findPackageInHierarchy(baseName, packageDir);
+  if (packageSpecificFile) {
+    // Add the package-specific file
+    symlinks.push(packageSpecificFile);
+
+    // Add all files from the package file's directory and parent directories in the hierarchy path
+    // Extract the directory path from the target path
+    const targetPath = packageSpecificFile.targetPath; // e.g., "../../../prompts/workflow/graph/langgraph.md"
+    const pathParts = targetPath.split("/"); // ["...", "...", "...", "prompts", "workflow", "graph", "langgraph.md"]
+
+    // Start from the package file's directory (includes siblings) and work up to parent directories
+    for (let i = pathParts.length - 2; i >= 4; i--) {
+      // Start from directory containing the file, stop at prompts/
+      const dirParts = pathParts.slice(0, i + 1); // Include the directory at index i
+      const relativePath = dirParts.join("/");
+      console.log(`    Checking directory: ${relativePath}`);
+      symlinks.push(...getDirectoryFiles(relativePath, packageDir));
+    }
+  }
+
+  // Add needs files from dependent packages to the prompts hierarchy
+  const needsFiles = getNeedsFiles(packageJson, packageDir);
+  symlinks.push(...needsFiles);
+
+  // Deduplicate symlinks by target path, preferring original filename over -spec version
+  const uniqueSymlinks = [];
+  const seenTargets = new Map(); // targetPath -> symlink object
+
+  for (const symlink of symlinks) {
+    const existingSymlink = seenTargets.get(symlink.targetPath);
+
+    if (!existingSymlink) {
+      // First time seeing this target
+      uniqueSymlinks.push(symlink);
+      seenTargets.set(symlink.targetPath, symlink);
+    } else {
+      // We've seen this target before - prefer the original filename over -spec version
+      if (symlink.filename.endsWith("-spec.md") && !existingSymlink.filename.endsWith("-spec.md")) {
+        // Keep the existing non-spec version, skip this -spec version
+        continue;
+      } else if (!symlink.filename.endsWith("-spec.md") && existingSymlink.filename.endsWith("-spec.md")) {
+        // Replace the existing -spec version with this non-spec version
+        const index = uniqueSymlinks.indexOf(existingSymlink);
+        uniqueSymlinks[index] = symlink;
+        seenTargets.set(symlink.targetPath, symlink);
+      }
+      // If both are -spec or both are non-spec, keep the first one (existing)
+    }
+  }
+
+  return uniqueSymlinks;
+}
+
+function findPackageInHierarchy(baseName, packageDir) {
+  const promptsDir = path.join(packageDir, "prompts");
+  const rootPromptsPath = path.resolve(promptsDir, "../../../prompts");
+
+  if (!fs.existsSync(rootPromptsPath)) {
+    console.log(`    Prompts directory not found: ${rootPromptsPath}`);
+    return null;
+  }
+
+  // Recursively search the entire hierarchy for a file matching the package name
+  function searchDirectory(dir, relativePath = "") {
+    try {
+      const items = fs.readdirSync(dir);
+
+      for (const item of items) {
+        const fullPath = path.join(dir, item);
+        const stats = fs.statSync(fullPath);
+
+        if (stats.isFile() && item.endsWith(".md") && item !== "README.md") {
+          // Check if this file matches our package name
+          const fileBaseName = item.replace(".md", "");
+          if (fileBaseName === baseName) {
+            const targetPath = `../../../prompts/${relativePath}${item}`;
+            console.log(`      Found package file: ${relativePath}${item} → linked as ${generatePathBasedFilename(targetPath, item)}`);
+            return {
+              filename: generatePathBasedFilename(targetPath, item),
+              targetPath: targetPath,
+            };
+          }
+        } else if (stats.isDirectory()) {
+          // Recursively search subdirectories
+          const subResult = searchDirectory(fullPath, `${relativePath}${item}/`);
+          if (subResult) {
+            return subResult;
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`    Error searching directory ${dir}: ${error.message}`);
+    }
+
+    return null;
+  }
+
+  return searchDirectory(rootPromptsPath);
+}
+
+function getNeedsFiles(packageJson, packageDir) {
+  const packageName = packageJson.name || "";
+  if (!packageName) {
+    return [];
+  }
+
+  console.log(`    Scanning for needs files that describe what dependents need from ${packageName}...`);
+
+  // Convert package name to expected needs file name
+  // @voder/config-types -> config-types-needs.md
+  let needsFileName = packageName;
+  if (needsFileName.startsWith("@voder/")) {
+    needsFileName = needsFileName.substring(7); // Remove @voder/ prefix
+  }
+  needsFileName = needsFileName.replace(/\//g, "-") + "-needs.md";
+
+  console.log(`      Looking for needs files named: ${needsFileName}`);
+
+  const needsSymlinks = [];
+  const workspaceRoot = path.resolve(packageDir, "../..");
+  const packagesDir = path.join(workspaceRoot, "packages");
+  const appsDir = path.join(workspaceRoot, "apps");
+
+  // Scan packages directory
+  if (fs.existsSync(packagesDir)) {
+    const packages = fs.readdirSync(packagesDir);
+
+    for (const pkg of packages) {
+      const pkgPath = path.join(packagesDir, pkg);
+      if (fs.statSync(pkgPath).isDirectory()) {
+        const needsFilePath = path.join(pkgPath, "docs", "libraries", "needs", needsFileName);
+
+        if (fs.existsSync(needsFilePath)) {
+          // Calculate relative path from current package's prompts dir to the needs file
+          const promptsDir = path.join(packageDir, "prompts");
+          const relativePath = path.relative(promptsDir, needsFilePath);
+
+          const linkName = `needs-from-${pkg}.md`;
+          needsSymlinks.push({
+            filename: linkName,
+            targetPath: relativePath,
+          });
+          console.log(`      Found needs from ${pkg} -> ${linkName}`);
+        }
+      }
+    }
+  }
+
+  // Scan apps directory
+  if (fs.existsSync(appsDir)) {
+    const apps = fs.readdirSync(appsDir);
+    for (const app of apps) {
+      const appPath = path.join(appsDir, app);
+      if (fs.statSync(appPath).isDirectory()) {
+        const needsFilePath = path.join(appPath, "docs", "libraries", "needs", needsFileName);
+
+        if (fs.existsSync(needsFilePath)) {
+          const promptsDir = path.join(packageDir, "prompts");
+          const relativePath = path.relative(promptsDir, needsFilePath);
+
+          const linkName = `needs-from-${app}.md`;
+          needsSymlinks.push({
+            filename: linkName,
+            targetPath: relativePath,
+          });
+          console.log(`      Found needs from ${app} -> ${linkName}`);
+        }
+      }
+    }
+  }
+
+  if (needsSymlinks.length === 0) {
+    console.log(`      No packages found that need ${packageName}`);
+  } else {
+    console.log(`      Found ${needsSymlinks.length} package(s) that need ${packageName}`);
+  }
+
+  return needsSymlinks;
+}
+
+function reportLinkUsage() {
+  console.log("\n📊 LINK USAGE REPORT");
+  console.log("====================");
+
+  // Find all .md files in prompts directory
+  const promptsPath = path.resolve(__dirname, "prompts");
+  const allPromptFiles = new Set();
+
+  function scanPromptsDirectory(dir, relativePath = "") {
+    try {
+      const items = fs.readdirSync(dir);
+
+      for (const item of items) {
+        const fullPath = path.join(dir, item);
+        const stats = fs.statSync(fullPath);
+
+        if (stats.isFile() && item.endsWith(".md") && item !== "README.md") {
+          allPromptFiles.add(fullPath);
+        } else if (stats.isDirectory()) {
+          scanPromptsDirectory(fullPath, `${relativePath}${item}/`);
+        }
+      }
+    } catch (error) {
+      console.error(`Error scanning prompts directory: ${error.message}`);
+    }
+  }
+
+  if (fs.existsSync(promptsPath)) {
+    scanPromptsDirectory(promptsPath);
+  }
+
+  // Categorize files by usage
+  const linkedFiles = [];
+  const unlinkedFiles = [];
+
+  for (const filePath of allPromptFiles) {
+    const linkCount = globalLinkTracker.get(filePath) || 0;
+    const relativePath = path.relative(promptsPath, filePath);
+
+    if (linkCount > 0) {
+      linkedFiles.push({ path: relativePath, count: linkCount });
+    } else {
+      unlinkedFiles.push(relativePath);
+    }
+  }
+
+  // Sort linked files by usage count (descending)
+  linkedFiles.sort((a, b) => b.count - a.count);
+
+  console.log(`\n✅ FILES WITH LINKS (${linkedFiles.length}):`);
+  for (const { path: filePath, count } of linkedFiles) {
+    const countStr = count === 1 ? "1 link" : `${count} links`;
+    console.log(`   ${filePath} → ${countStr}`);
+  }
+
+  if (unlinkedFiles.length > 0) {
+    console.log(`\n⚠️  FILES WITH NO LINKS (${unlinkedFiles.length}):`);
+    unlinkedFiles.sort();
+    for (const filePath of unlinkedFiles) {
+      console.log(`   ${filePath} → UNUSED`);
+    }
+    console.log(`\n💡 Consider removing unused files or check if they should be linked.`);
+  } else {
+    console.log(`\n🎉 All prompt files are being used!`);
+  }
+
+  console.log(`\nTOTAL: ${allPromptFiles.size} prompt files, ${linkedFiles.length} linked, ${unlinkedFiles.length} unused`);
+}
+
+// Only run if called directly (not when imported as module)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+
+  // Check if we're running from the root directory
+  const isRootDirectory = process.cwd() === __dirname;
+
+  if (args.includes("--report") || args.includes("--global-report")) {
+    // Global report mode: analyze all packages and show usage
+    console.log("🔍 SCANNING ALL PACKAGES FOR GLOBAL LINK USAGE REPORT...\n");
+
+    // Find all packages and run setup for each
+    const packagesDir = path.resolve(__dirname, "packages");
+    const appsDir = path.resolve(__dirname, "apps");
+
+    const allPackageDirs = [];
+
+    // Scan packages directory
+    if (fs.existsSync(packagesDir)) {
+      const packages = fs.readdirSync(packagesDir);
+      for (const pkg of packages) {
+        const pkgPath = path.join(packagesDir, pkg);
+        if (fs.statSync(pkgPath).isDirectory() && fs.existsSync(path.join(pkgPath, "package.json"))) {
+          allPackageDirs.push(pkgPath);
+        }
+      }
+    }
+
+    // Scan apps directory
+    if (fs.existsSync(appsDir)) {
+      const apps = fs.readdirSync(appsDir);
+      for (const app of apps) {
+        const appPath = path.join(appsDir, app);
+        if (fs.statSync(appPath).isDirectory() && fs.existsSync(path.join(appPath, "package.json"))) {
+          allPackageDirs.push(appPath);
+        }
+      }
+    }
+
+    console.log(`Found ${allPackageDirs.length} packages to analyze...\n`);
+
+    // Define legacy packages to skip (same as in setupPromptsSymlinks)
+    const legacyPackages = [
+      "voder-cli-v2", // replaced by voder-cli-v3
+      "voder-core", // replaced by voder-core-2
+      "voder-core-2",
+      "voder-graph", // replaced by voder-langgraph
+    ];
+
+    const legacyApps = [
+      "voder-cli", // replaced by voder-cli-v3
+    ];
+
+    // Run setup for each package (this populates the global tracker)
+    for (const pkgDir of allPackageDirs) {
+      const originalCwd = process.cwd();
+      try {
+        process.chdir(pkgDir);
+        const pkgName = path.basename(pkgDir);
+
+        // Skip legacy packages
+        if (legacyPackages.includes(pkgName) || legacyApps.includes(pkgName)) {
+          console.log(`  Skipping legacy package: ${pkgName}`);
+          continue;
+        }
+
+        console.log(`  Analyzing ${pkgName}...`);
+        analyzePackageDocsForReport(pkgDir, pkgName, true); // quiet mode - only analyze existing symlinks
+      } catch (error) {
+        console.error(`  Error processing ${path.basename(pkgDir)}: ${error.message}`);
+      } finally {
+        process.chdir(originalCwd);
+      }
+    }
+
+    // Generate the global report
+    reportLinkUsage();
+  } else if (isRootDirectory) {
+    // Run from root directory: execute npm run prepare to update all packages
+    console.log("🚀 Running from root directory - executing 'npm run prepare' to update all packages...\n");
+
+    try {
+      execSync("npm run prepare", {
+        stdio: "inherit",
+        cwd: __dirname,
+      });
+      console.log("\n✅ All packages updated successfully!");
+    } catch (error) {
+      console.error(`\n❌ Error running npm prepare: ${error.message}`);
+      process.exit(1);
+    }
+
+    process.exit(0);
+  } else {
+    // Normal single-package mode
+    setupPackageDocs();
+  }
+}
+
+export { setupPackageDocs, reportLinkUsage };

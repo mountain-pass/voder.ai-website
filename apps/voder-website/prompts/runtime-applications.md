@@ -1,0 +1,1 @@
+../../../prompts/runtime/applications/applications.md

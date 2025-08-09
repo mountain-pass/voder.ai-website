@@ -1,0 +1,1 @@
+../../../prompts/runtime/effects/particle-system-effect/particle-system-effect.md

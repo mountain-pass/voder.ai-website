@@ -1,0 +1,32 @@
+{
+  "name": "@voder/outcome-focus-section",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c ../../packages/build-tools/rollup.config.base.js",
+    "dev": "rollup -c ../../packages/build-tools/rollup.config.base.js --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepare": "node ../../setup-package-docs.js"
+  },
+  "dependencies": {
+    "@voder/shared": "*",
+    "@voder/services": "*",
+    "@voder/particle-system-effect": "*"
+  },
+  "devDependencies": {
+    "@voder/tsconfig": "*",
+    "@voder/eslint-config": "*",
+    "@voder/build-tools": "*",
+    "@voder/dev-tools": "*",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "eslint": "^8.0.0"
+  }
+}

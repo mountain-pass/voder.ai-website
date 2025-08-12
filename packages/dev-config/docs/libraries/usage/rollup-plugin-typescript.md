@@ -1,1 +1,0 @@
-../../../../../node_modules/@rollup/plugin-typescript/README.md

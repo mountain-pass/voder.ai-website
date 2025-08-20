@@ -5,6 +5,8 @@ date: 2024-06-27
 decision-makers: voder.ai website team
 consulted: voder.ai website team
 informed: voder.ai stakeholders
+packages:
+	- dev-config
 ---
 
 # ADR 0002: Use Playwright for End-to-End Testing

@@ -17,7 +17,6 @@
     "typescript",
     "eslint.config.ts",
     "prettier.config.ts",
-    "stylelint.config.js",
     "linters",
     "vitest.config.ts",
     "scripts"

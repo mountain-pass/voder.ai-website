@@ -1,1 +1,0 @@
-../../../../../node_modules/@fontsource/inter/README.md

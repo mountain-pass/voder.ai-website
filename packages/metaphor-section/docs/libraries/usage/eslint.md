@@ -1,1 +1,0 @@
-../../../../../node_modules/eslint/README.md

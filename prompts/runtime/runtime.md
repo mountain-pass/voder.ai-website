@@ -3,6 +3,10 @@
 This document provides comprehensive guidelines for implementing runtime packages in the Voder monorepo. Runtime packages are the components, services, and systems that execute during website operation, including all UI components, effects, sections, navigation, and applications.
 
 ---
+- **Packages**: Use Rollup for optimized library builds
+- **Applications**: Use Vite for development server and HMR
+- **CSS Inlining**: Critical CSS optimization via vite-plugin-inline-source or similar, if applic
+
 
 ## 🎯 **RUNTIME LAYER SCOPE & PURPOSE**
 

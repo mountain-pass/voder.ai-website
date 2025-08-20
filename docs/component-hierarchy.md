@@ -1,6 +1,6 @@
 # Component Hierarchy for Voder Pre-Launch Website
 
-This document outlines the component architecture for the Voder.ai pre-launch website based on the specifications in `/prompts/voder-website.md`. The hierarchy follows principles of single responsibility, encapsulation, composability, replaceability, independent deployability, and cohesive interfaces.
+This document outlines the component architecture for the Voder.ai pre-launch website based on the specifications in `/prompts/runtime/applications/voder-website/website.md`. The hierarchy follows principles of single responsibility, encapsulation, composability, replaceability, independent deployability, and cohesive interfaces.
 
 ## 🏗️ Component Hierarchy Overview
 

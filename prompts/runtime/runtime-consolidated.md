@@ -249,6 +249,88 @@ export const VOICE_EXAMPLES = {
 // Avoid: Over-explaining, marketing fluff, overuse of "AI", developer jargon
 ```
 
+### **Iconography & Visual Motifs**
+Components should implement consistent iconography patterns:
+
+```typescript
+export const ICONOGRAPHY_STANDARDS = {
+  style: 'line-based', // Icons should be line-based, minimal
+  approach: 'minimal', // Avoid skeuomorphism
+  repeatingMotifs: [
+    'cube',        // Geometric foundation element
+    'flow lines',  // Connection and process visualization
+    'glimmer',     // Subtle accent and attention
+    'lattice',     // Structure and grid systems
+    'circuit',     // Technical/system connectivity
+  ],
+  implementation: {
+    strokeWidth: '1.5px',        // Consistent line weight
+    cornerRadius: '2px',         // Subtle rounding
+    colorUsage: 'single-color',  // Monochromatic preferred
+    sizing: 'scalable-svg',      // Vector-based for all sizes
+  }
+};
+```
+
+### **Layout Structure Guidelines**
+Components must follow website section structure requirements:
+
+```typescript
+export const SECTION_LAYOUT_STANDARDS = {
+  brandEntry: {
+    format: 'Full-screen logo + visual object',
+    notes: 'No scroll hint'
+  },
+  theWhy: {
+    format: '1–2 statements + ambient motion',
+    notes: 'Big type, lots of space'
+  },
+  problemSpace: {
+    format: 'Layered visuals, bold headings',
+    notes: 'Emotional tension'
+  },
+  metaphor: {
+    format: 'Journey-line graphic, sub-heads',
+    notes: 'Scroll-linked animation'
+  },
+  visionFlow: {
+    format: 'Schematic diagram',
+    notes: 'Simplified Input–Output logic'
+  },
+  promptIteration: {
+    format: 'UI transformation demo',
+    notes: 'Strategic, not technical'
+  },
+  outcomeFocus: {
+    format: '3–4 benefit lines',
+    notes: 'Pulse animation, fade pacing'
+  },
+  closingMoment: {
+    format: 'Logo, tagline, "Built with Voder" in corner',
+    notes: 'Fade to black, final brand imprint'
+  }
+};
+```
+
+### **Brand Persona Reference**
+For creative and strategic alignment:
+
+```typescript
+export const BRAND_PERSONA = {
+  // "If Voder Were a Person..."
+  appearance: {
+    wears: 'black tailored hoodie, clean sneakers, elevated street wear'
+  },
+  interests: {
+    reads: 'sci-fi philosophy and design systems docs'
+  },
+  communication: {
+    speaks: 'slowly, clearly, and only when needed',
+    listens: 'very closely'
+  }
+};
+```
+
 ---
 
 ## ♿ **ACCESSIBILITY IMPLEMENTATION**

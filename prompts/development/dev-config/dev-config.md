@@ -1,140 +1,177 @@
-# @voder/dev-config — Development Configuration Package
+# @voder/dev-con### **Mand- Compat- Governance: that deviations (e.g., different lint layers, coverage exceptions, alternative tools) REQUIRE an ADR per the Dependency Governance policy.
+- Self-contained links: only reference published content; do not link to internal repository paths.
+- Documentation hygiene: Prettier-format all Markdown and enforce Markdown linting (see "Markdown Linting (Required)" below).
+
+## **Package Overview**mentation hygiene: Prettier-format all Markdown and enforce Markdown linting (see "Markdown Linting (Required)" below).
+
+## **Package Overview**ity and peers: supported Node runtime, ESM-only note (if applicable), and required peer dependency ranges including markdownlint-cli2.
+- Quickstart orientation: where to place minimal configuration (tsconfig extends, `eslint.config.js`, `vitest.config.ts`, `vite.config.ts`/Rollup) using this package's exports.
+- Governance: that deviations (e.g., different lint layers, coverage exceptions, alternative tools) REQUIRE an ADR per the Dependency Governance policy.
+- Self-contained links: only reference published content; do not link to internal repository paths.
+- **Documentation hygiene: MANDATORY use of this package's markdown linting configuration and CLI commands. Alternative markdown linters are PROHIBITED.** Consumer README Requirements**
+Every package that adopts `@voder/dev-config` MUST document, in its public README:
+- Test expectations and usage: Node environment testing with Vitest, coverage thresholds (90% all metrics), and testing utilities for server-side/tooling packages. **Vitest and coverage are mandatory for all packages.**
+- Code quality expectations and usage: ESLint 9 flat config via `eslint.config.js` or `eslint.config.ts`. Compose layers (base, dx, performance) using the flat exports provided by this package. Prettier is the single formatter.
+- Compatibility and peers: supported Node runtime, ESM-only note (if applicable), and required peer dependency ranges including all ESLint plugins.
+- Quickstart orientation: where to place minimal configuration (tsconfig extends, `eslint.config.js`, `vitest.config.ts`) using this package's exports.
+- Governance: that deviations (e.g., different lint layers, coverage exceptions, alternative tools) REQUIRE an ADR per the Dependency Governance policy.Quickstart orientation: where to place minimal configuration (tsconfig extends, `eslint.config.js`, `vitest.config.ts`) using this package's exports. Quickstart orientation: where to place minimal configuration (tsconfig extends, `eslint.config.js`, `vitest.config.ts`) using this package's exports.e- Documentation hygiene: Prettier-format all Markdown and enforce Markdown linting (see "Markdown Linting (Required)" below).
+
+## **Package Overview**ce: that deviations (e.g., different lint layers, coverage exceptions, alternative tools) REQUIRE an ADR per the Dependency Governance policy.
+- Self-contained links: only reference published content; do not link to internal repository paths.
+- Documentation hygiene: Prettier-format all Markdown and enforce Markdown linting (see "Markdown Linting (Required)" below).
+
+## **Package Overview**evelopment Configuration Package
 
 ## **🎯 Package Context**
 
-This package provides development tooling configurations for other projects in a single, cohesive package. This is a **configuration package** that exports TypeScript configs, lint & formatting rules, build setups, and testing utilities - it does not contain runtime application logic.
+This package provides development tooling configurations for other projects in a single, cohesive package. This is a **configuration package** written in TypeScript that compiles to JavaScript for distribution, exporting TypeScript configs, lint & formatting rules, and testing utilities - it does not contain runtime application logic.
 
 > CI / Pipeline Note: The CI/CD for this package is managed externally. Do not add pipeline configuration. 
 
 > Disclaimer: Examples use placeholder identifiers (e.g., `PackageName`, `IService`). They illustrate patterns, not enforced naming.
 
+### **Mandatory Consumer README Requirements**
+Every package that adopts `@voder/dev-config` MUST document, in its public README:
+- Test expectations and usage: Node environment testing with Vitest, coverage thresholds (90% all metrics), and testing utilities for server-side/tooling packages.
+- Code quality expectations and usage: ESLint 9 flat config via `eslint.config.js` or `eslint.config.ts`. Compose layers (base, dx, performance) using the flat exports provided by this package. Prettier is the single formatter.
+- Compatibility and peers: supported Node runtime, ESM-only note (if applicable), and required peer dependency ranges.
+- Quickstart orientation: where to place minimal configuration (tsconfig extends, `eslint.config.js`, `vitest.config.ts`, `vite.config.ts`/Rollup) using this package’s exports.
+- Governance: that deviations (e.g., different lint layers, coverage exceptions, alternative tools) REQUIRE an ADR per the Dependency Governance policy.
+- Self-contained links: only reference published content; do not link to internal repository paths.
+- Documentation hygiene: Prettier-format all Markdown and enforce Markdown linting (see “Markdown Linting (Required)” below).
+
 ## **Package Overview**
 
-**Export Structure:**
+**Export Strategy:**
+This package implements the dual export strategy defined in the Universal Development Guide, providing both dedicated export paths and main index aggregation:
+
 ```javascript
-import { typescript, eslint, build, testing, etc... } from '@voder/dev-config';
+// Dedicated paths (explicit, tree-shakable)
+import { createVitestNodeConfig } from '@voder/dev-config/testing';
+import prettierConfig from '@voder/dev-config/prettier';
+import { base, dx, performance } from '@voder/dev-config/eslint';
+
+// Main index (convenient for multiple imports)
+import { testing, prettier, eslint, typescript } from '@voder/dev-config';
 ```
 
+**Testing Requirements:**
+This package MUST include comprehensive test suites as specified in the Universal Development Guide:
+- **Export equivalence tests** to ensure both import patterns provide identical functionality
+- **Package structure tests** to verify all package.json exports point to existing compiled files
+- **Temporary package installation tests** to validate the complete consumer experience
+- **Source functionality tests** to verify core configuration behavior
+
+See test files in `src/tests/` for implementation examples including package installation integration tests that validate the actual consumer experience.
+
 **Consolidated Responsibilities:**
-- ✅ **TypeScript configurations** - ESM-first presets for apps, libraries, and tools
-- ✅ **ESLint configurations** - Code quality, ESM validation, accessibility rules
+- ✅ **TypeScript configurations** - ESM-first presets for libraries, tools, and testing
+- ✅ **ESLint configurations** - Code quality, ESM validation, and developer experience rules  
 - ✅ **Formatting configuration** - Prettier integration for consistent, automated code style
-- ✅ **Build configurations** - Rollup/Vite setups with performance optimization
-- ✅ **Testing configurations** - Vitest setups with coverage and accessibility testing
+- ✅ **Testing configurations** - Vitest setups with coverage for Node.js environments
+- ✅ **Markdown linting** - Shared markdown linting configuration for documentation
 
-### **Export Surface (Quick Reference)**
-| Namespace | Export(s) | Kind | Purpose | Stability |
-|-----------|-----------|------|---------|-----------|
-| `typescript` | `base.json`, `vite.json`, `node.json`, `library.json`, `test.json` | JSON presets | Standardized TS compiler options | Stable |
-| `eslint` | `base`, `dx`, `accessibility`, `performance` | Array segments | Layered lint rule groups (must include `dx`) | Base/dx/accessibility stable; performance under audit |
-| `build` | `createPackageConfig`, `createAppConfig` | Functions | Rollup/Vite config factories | Stable |
-| `testing` | `createVitestNodeConfig`, `createVitestJsdomConfig`, `test-utils`, `test-setup` | Functions / helpers | Explicit env configs + shared test utilities | Stable |
-| `prettier` | `default` | Object | Central formatting rules | Stable |
+### **Required Functionality (Implementation Flexible)**
+| Capability | Required Features | Implementation Notes |
+|-----------|-------------------|---------------------|
+| **TypeScript** | Base, Node, Library, Test presets with ESM+strict settings | Export path and format flexible |
+| **ESLint** | Base, DX (mandatory), Performance layers for flat config v9 | Layer composition required, export path flexible |
+| **Testing** | Vitest Node config factory with 90% coverage thresholds | Function export required, path flexible |
+| **Prettier** | Centralized formatting config with TypeScript support | Direct config access required |
+| **Linters** | Concrete markdown linting tool with working configuration | **REQUIRES IMPLEMENTATION** - select tool, configure rules, expose commands |
 
-> Import pattern: `import { typescript, eslint, build, testing } from '@voder/dev-config';`
-
-## **1. TypeScript Configuration (`typescript`)**
+## **1. TypeScript Configuration**
 
 ### **Core Purpose**
 Shared TypeScript presets with:
-- ESM-first compatibility (enforce ".js" import specifiers in source)
-- Fast DX for apps (Vite) and libraries
-- Live cross-package development without building (source-to-source imports)
+- Modern ESM compilation settings (NodeNext module resolution)
+- TypeScript compilation to JavaScript with declaration files for distribution
+- Strict type checking and consistent casing enforcement
+- Configuration for Node.js tools, libraries, and testing environments
 
-### **Preset Matrix**
-- `base.json` (shared defaults)
-- `vite.json` (apps, Vite + DOM)
-- `node.json` (tools/CLIs)
-- `library.json` (libs: declarations + project refs)
-- `test.json` (Vitest)
+### **Required Presets**
+- **Base** - Core TypeScript settings for all packages
+- **Node** - Additional settings for Node.js tools/CLIs
+- **Library** - Library-specific settings with declarations + project references
+- **Test** - Testing-specific configuration for Vitest integration
 
-## **2. ESLint Configuration (`eslint`)**
+**Consumer Usage Pattern:**
+```jsonc
+// tsconfig.json - specific path depends on package implementation
+{
+  "extends": "@voder/dev-config/typescript/library.json",
+  "compilerOptions": {
+    "outDir": "./dist"
+  }
+}
+```
+
+## **2. ESLint Configuration**
 
 ### **Core Purpose**
 Comprehensive ESLint rules ensuring:
 - ESM import validation with strict `.js` extension enforcement
 - TypeScript-aware linting with proper type checking
 - Code quality standards consistent across all packages
-- Accessibility compliance for web components
 - Performance optimization rules
-- Additional autofix rules specifically focused on improving developer experience with consistent, modern patterns
+- Developer experience enhancements with autofix patterns
+- Deprecation detection and migration guidance
 
-**Rationale for DX Rules:**
-- **Import hygiene**: Eliminates duplicate imports, enforces consistent ordering
-- **TypeScript consistency**: `interface` over `type`, array-simple syntax, optional chaining
-- **Modern patterns**: Object shorthand, arrow functions, logical assignments
-- **Unicorn rules**: Encourages modern APIs (`includes` vs `indexOf`, string methods, etc.)
-- **Testing standards**: Consistent testing-library patterns, better assertions
-- **Readability**: Strategic blank lines around declarations and returns
+### **Required Layer Structure**
+- **Base** - Core ESLint rules for code quality, safety, and ESM compliance
+- **DX (Developer Experience)** - Autofix patterns and modern JavaScript idioms (**mandatory for all consumers**)
+- **Performance** - Performance-focused linting for loops, memory, data structures, and V8 optimizations
 
-**ESLint Policy:**
-- We DO NOT use ESLint flat config or FlatCompat in this project.
-- Use classic configuration files (`.eslintrc.cjs`/`.eslintrc.json`) with `extends`.
-- Shareable configs are provided by this package and should be extended in order: `base`, `dx` (mandatory), `accessibility`, `performance`.
+**ESLint Policy Requirements:**
+- Must use ESLint 9 flat config (`eslint.config.js` or `eslint.config.ts`)
+- Must compose layers in order: `base` → `dx` (mandatory) → `performance`  
+- Must use `eslint-config-prettier` to disable stylistic conflicts
+- Must NOT run Prettier via ESLint
 
-**Usage Pattern (classic extends):**
+**Consumer Usage Pattern:**
 ```js
-// .eslintrc.cjs in a consuming package
-module.exports = {
-  root: true,
-  extends: [
-    '@voder/dev-config/eslint/base',
-    '@voder/dev-config/eslint/dx',
-    '@voder/dev-config/eslint/accessibility',
-    '@voder/dev-config/eslint/performance'
-  ],
-};
+// eslint.config.js - import path depends on package implementation
+import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import { base, dx, performance } from '@voder/dev-config/eslint';
+
+export default [
+  js.configs.recommended,
+  ...base,
+  ...dx,        // mandatory
+  ...performance,
+  prettier,
+  { ignores: ['dist/', 'build/', 'coverage/', 'node_modules/'] }
+];
 ```
 
-## **3. Build Configuration (`build`)**
+> Note: This configuration package is built with TypeScript and must be compiled to JavaScript for distribution. The package exports point to compiled JavaScript files with TypeScript declarations for full type safety. The TypeScript source files in `src/`, `eslint/`, `typescript/`, and `linters/` directories are compiled to the `dist/` directory during the build process. Consumers can use either `.js` or `.ts` for their own config files as ESLint 9 supports both. For TypeScript config files, install jiti as a dev dependency to enable TypeScript config loading.
 
-### **Core Purpose**
-Optimized build configurations implementing:
-- Rollup configurations for ES module library packages
-- Vite configurations for applications with performance optimization
-- CSS inlining implementation per ADR-0007 for critical performance
-- Bundle splitting strategies for optimal loading performance
-- Asset optimization for 3D models, images, and (optional) animation / 3D libraries
+> ESLint 9 walks up to the nearest `eslint.config.js` or `eslint.config.ts`. Commit a package-local config file to prevent inheriting parent configs inadvertently.
 
-Violation Examples (❌):
-```typescript
-import { something } from '@voder/dev-config/src/internal/util'; // deep import of internals
-```
-Correct (✅):
-```typescript
-import { build } from '@voder/dev-config'; // public entry only, when used by consumers
-```
-
-## **4. Testing Configuration (`testing`)**
+## **3. Testing Configuration**
 
 ### **Core Purpose**
 Comprehensive testing setup providing:
-- Vitest configuration helpers with explicit environments (choose `node` or `jsdom`)
-- Test utilities, mock factories, and custom assertions (some are DOM-focused for UI consumer packages)
+- Vitest configuration helpers for Node.js environment testing
 - Coverage requirements (**90% branches, functions, lines, statements globally**)
-- Accessibility testing integration hooks (exported for UI packages)
+- Test setup files for server-side and tooling packages
 
-> Note: `@voder/dev-config` itself is non-UI and should use the Node configuration for its own tests.
+### **Required Functionality**
+- **Node Environment Configuration** for server-side, tooling, and configuration packages
+- **Coverage Thresholds** enforced at 90% across all metrics
+- **Test Setup Integration** for consistent testing environment
 
-### **Environment-specific configurations (no auto-detect)**
-Consumers must choose the appropriate environment explicitly.
-
-- Node environment (non-UI, tooling, server-side):
+**Consumer Usage Pattern:**
 ```ts
+// vitest.config.ts - import path depends on package implementation  
 import { createVitestNodeConfig } from '@voder/dev-config/testing';
 export default createVitestNodeConfig();
 ```
 
-- jsdom environment (browser/UI testing):
-```ts
-import { createVitestJsdomConfig } from '@voder/dev-config/testing';
-export default createVitestJsdomConfig();
-```
-
-### **Vitest Base Config (reference shape)**
+**Expected Configuration Shape:**
 ```javascript
-import { defineConfig } from 'vitest/config';
-
+// Reference implementation - actual implementation may vary
 export function createVitestNodeConfig() {
   return defineConfig({
     test: {
@@ -149,128 +186,110 @@ export function createVitestNodeConfig() {
     }
   });
 }
-
-export function createVitestJsdomConfig() {
-  return defineConfig({
-    test: {
-      environment: 'jsdom',
-      globals: true,
-      setupFiles: ['./src/test-setup.jsdom.ts'],
-      coverage: {
-        provider: 'v8',
-        reporter: ['text', 'html', 'lcov'],
-        thresholds: { branches: 90, functions: 90, lines: 90, statements: 90 }
-      }
-    }
-  });
-}
 ```
 
-### **Test Utilities (`test-utils.ts`)**
-```typescript
-import { render, type RenderOptions } from '@testing-library/dom';
-import { axe, toHaveNoViolations } from 'jest-axe';
-import type { IComponent } from '@voder/shared';
+## **4. Prettier Configuration**
 
-// Extend expect with accessibility matchers
-expect.extend(toHaveNoViolations);
+### **Core Purpose**
+TypeScript and JavaScript formatting with centralized configuration standards.
 
-/**
- * Custom render function for component testing (jsdom/browser-only)
- */
-export function renderComponent(
-  component: IComponent,
-  options?: RenderOptions
-) {
-  const container = document.createElement('div');
-  component.mount(container);
-  
-  return {
-    container,
-    component,
-    unmount: () => component.unmount(),
-    rerender: (newProps: any) => component.update(newProps)
-  };
-}
+### **Required Functionality**
+- **TypeScript/JavaScript Formatting** with consistent style rules
+- **Centralized Configuration** for formatting standards across packages
+- **Development Tool Integration** with VS Code and build processes
 
-/**
- * Accessibility testing helper (jsdom/browser-only)
- */
-export async function expectAccessible(element: Element): Promise<void> {
-  const results = await axe(element);
-  expect(results).toHaveNoViolations();
-}
-
-/**
- * Animation testing helper (jsdom/browser-only)
- * Waits for a given duration to allow CSS animations/transitions to complete.
- */
-export async function waitForAnimation(duration = 300): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, duration));
-}
-```
-
-### **Test Setup (`test-setup.node.ts` and `test-setup.jsdom.ts`)**
-```typescript
-// src/test-setup.node.ts (Node environment)
-import { afterEach } from 'vitest';
-
-// Add any Node-specific global setup here
-afterEach(() => {
-  // Node cleanup if needed
-});
-```
-
-```typescript
-// src/test-setup.jsdom.ts (jsdom/browser environment)
-import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/dom';
-import { afterEach } from 'vitest';
-
-// Cleanup after each test (DOM)
-afterEach(() => {
-  cleanup();
-});
-```
-
-## **Prettier Integration (`prettier.config.js`)**
-
-**Purpose**: Enforce a **single central formatting standard** exported from `@voder/dev-config`. Individual packages MUST NOT create their own Prettier configs unless an ADR grants an exception.
-
-**Design Principles:**
-- Formatting is non-negotiable + fully automated (no subjective style debates)
-- ESLint only enforces logic / safety / import hygiene (avoid overlapping style rules)
-- Prettier runs in write & check modes (CI uses check)
-- Consistent authoring experience across editors (EditorConfig + Prettier)
-
-**Prettier Config (ESM example)**
+**Consumer Usage Pattern:**
 ```javascript
-// prettier.config.js
+// prettier.config.js - import path depends on package implementation
+import prettierConfig from '@voder/dev-config/prettier';
+export default prettierConfig;
+```
+
+**Expected Configuration Shape:**
+```javascript
+// Reference implementation - actual implementation may vary
 export default {
-  printWidth: 100,
   semi: true,
   singleQuote: true,
-  trailingComma: 'all',
-  arrowParens: 'always',
-  bracketSpacing: true,
-  endOfLine: 'lf',
-  overrides: [
-    { files: '*.md', options: { printWidth: 80 } }
-  ]
+  tabWidth: 2,
+  trailingComma: 'es5',
+  printWidth: 80,
+  parser: 'typescript'
 };
 ```
 
-**Recommended Package Scripts (example)**
-```jsonc
+### **5. Markdown Linting (Mandatory Implementation)**
+
+**MANDATORY REQUIREMENT**: This package MUST provide a complete working markdown linting implementation that all consumers are REQUIRED to use.
+
+**Implementor Responsibilities:**
+- **Choose a specific markdown linter** (e.g., markdownlint-cli2, remark-lint, etc.)
+- **Create complete working configuration** with the rules specified below
+- **Add the tool as peer dependency** that consumers must install
+- **Provide working CLI commands** that consumers use in their package.json scripts
+- **Mandate consumer usage** - no alternative markdown linters allowed
+
+**Consumer Usage Pattern:**
+```javascript
+**Consumer Usage Pattern:**
+```javascript
+// Consumers MUST import and use the provided configuration
+import { getConfig, createCLICommand } from '@voder/dev-config/linters/markdown';
+
+// Get the complete working configuration
+const config = getConfig();
+
+// Get ready-to-use CLI commands for package.json scripts
+const lintCommand = createCLICommand();
+const fixCommand = createCLICommand({ fix: true });
+```
+
+**Required Configuration Features:**
+- **File scope**: `README.md` and `docs/**/*.md` (or consumer's package docs folder)
+- **Rules baseline**:
+  - Enforce headings order, fenced code blocks with language, no bare HTML where avoidable
+  - Allow long lines (Prettier handles wrapping) — disable line-length rule
+  - Forbid relative links in public READMEs (only published URLs and npm package links)
+- **Mandatory usage**: Consumers MUST use this configuration and MUST NOT use alternative markdown linters
+- **Complete implementation**: Package provides working config and CLI commands, not just abstractions
+```
+
+**Required Configuration Features:**
+- **File scope**: `README.md` and `docs/**/*.md` (or consumer's package docs folder)
+- **Rules baseline**:
+  - Enforce headings order, fenced code blocks with language, no bare HTML where avoidable
+  - Allow long lines (Prettier handles wrapping) — disable line-length rule
+  - Forbid relative links in public READMEs (only published URLs and npm package links)
+- **Mandatory tool usage**: Consumers MUST use the exported markdown linting configuration and commands - no alternative tools allowed
+- **Complete implementation**: This package provides working configuration and CLI commands for the selected tool
+- **Peer dependency pattern**: Tool is specified as peer dependency that consumers must install
+
+**Implementation Strategy:**
+1. **Select a markdown linting tool** (document choice in ADR)
+2. **Add tool as peer dependency** (consumers install the tool)
+3. **Create complete working configuration** matching the tool's expected format
+4. **Export getConfig() function and CLI helpers** that provide ready-to-use commands
+5. **Update package.json exports** to include the linters path
+6. **Mandate usage in consumer documentation** - no alternative markdown linters allowed
+
+**Consumer Package.json Integration:**
+```json
 {
+  "peerDependencies": {
+    "markdownlint-cli2": "^0.13.0"
+  },
   "scripts": {
-    "format": "prettier \"**/*.{ts,tsx,js,jsx,json,md,css}\" --write",
-    "format:check": "prettier \"**/*.{ts,tsx,js,jsx,json,md,css}\" --check",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md",
+    "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md"
   }
 }
 ```
+
+**Mandatory Consumer Requirements:**
+- **Install peer dependency**: `npm install --save-dev markdownlint-cli2`
+- **Use provided configuration**: Import `getConfig()` to write `.markdownlint.json`
+- **Use provided CLI commands**: Import `createCLICommand()` for npm scripts
+- **No alternative tools**: Consumers MUST NOT use remark-lint, textlint, or other markdown linters
 
 ## **Execution Checklist (LLM Coding Agent — Limited Access Mode)**
 
@@ -281,148 +300,31 @@ export default {
 
 ## **Configuration Usage Patterns Examples**
 ```typescript
-// In a package's vitest.config.ts — choose one explicitly
+// In a package's vitest.config.ts for Node.js testing
 import { createVitestNodeConfig } from '@voder/dev-config/testing';
 export default createVitestNodeConfig();
 ```
-```typescript
-// or, for UI/browser packages
-import { createVitestJsdomConfig } from '@voder/dev-config/testing';
-export default createVitestJsdomConfig();
-```
-
-```typescript
-// In a package's vite.config.ts
-import { build } from '@voder/dev-config';
-
-export default build.createPackageConfig({
-  packageName: '@voder/my-package'
-});
-```
 
 ```javascript
-// In a package's eslint config (classic extends)
-// .eslintrc.cjs
-module.exports = {
-  root: true,
-  extends: [
-    '@voder/dev-config/eslint/base',
-    '@voder/dev-config/eslint/dx',
-    '@voder/dev-config/eslint/accessibility',
-    '@voder/dev-config/eslint/performance'
-  ]
-};
+// In a package's ESLint config (flat, ESLint 9)
+// eslint.config.js
+import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import { base, dx, performance } from '@voder/dev-config/eslint';
+
+export default [
+  js.configs.recommended,
+  ...base,
+  ...dx,
+  ...performance,
+  prettier
+];
 ```
 
-```jsonc
-// In a package's tsconfig.json
-{
-  "extends": "@voder/dev-config/typescript/library.json",
-  "compilerOptions": {
-    "outDir": "./dist"
-  }
-}
-```
+## **LLM Agent Guidance**
 
-### **Application Development Workflow**
-```typescript
-// In an app's vite.config.ts
-import { build } from '@voder/dev-config';
-
-export default build.createAppConfig({
-  appName: 'voder-website'
-});
-```
-
-```jsonc
-// In an app's tsconfig.json
-{
-  "extends": "@voder/dev-config/typescript/vite.json"
-}
-```
-
-## **Integration Patterns**
-
-### **ESM Import Strategy**
-All packages must use ESM-style imports with explicit `.js` extensions in source **(Pure ESM: `module` is `ESNext` in all tsconfig variants; CommonJS `module` settings removed)**:
-```typescript
-// ✅ Correct - explicit .js extension
-import { Component } from './component.js';
-import type { Config } from './types.js';
-
-// ❌ Incorrect - missing extension
-import { Component } from './component';
-```
-
-### **TypeScript + ESLint Coordination**
-The package ensures TypeScript and ESLint work together:
-- TypeScript `verbatimModuleSyntax: true` enforces import/export syntax
-- ESLint `import/extensions` enforces `.js` extensions for TS sources
-- Both tools validate ESM compatibility and runtime correctness
-
-### **Build + Test Integration**
-Build and test configurations share common patterns:
-- Shared external dependencies kept minimal; vendor-specific UI libs referenced only in `ui-testing.md`
-- Compatible module resolution strategies
-
-## **Package Scope**
-
-This unified package focuses specifically on:
-- Development-time tooling configurations
-- Code quality and consistency enforcement
-- Build optimization and performance
-- Testing infrastructure and utilities
-- ESM compatibility and TypeScript integration
-
-**❌ This package MUST NOT contain:**
-- Runtime logic, UI components, or business logic
-- Application-specific implementations
-- Database connections or API integrations
-- User interface code or styling
-
-**✅ This package SHOULD export:**
-- TypeScript configuration files (`.json`)
-- ESLint configuration objects (including mandatory `dx` layer)
-- Build configuration factory functions
-- Testing setup utilities and configurations (coverage 90% all metrics)
-- Prettier formatting rules (single central config)
-
-## **Package Architecture**
-
-### **Configuration-First Design**
-The @voder/dev-config package follows a configuration-first approach, exporting configurations rather than implementations:
-
-```typescript
-// Export configurations, not implementations
-export const baseConfig = { ... };
-export const strictConfig = { ... };
-export const packageConfig = { ... };
-
-// Provide factory functions for customization
-export function createCustomConfig(overrides: Partial<Config>): Config {
-  return mergeConfigs(baseConfig, overrides);
-}
-```
-
-### **Modular Configuration Exports**
-Multiple configuration variants are provided for different use cases:
-
-```typescript
-// Unified import with named destructuring (best DX)
-import { typescript, eslint, build, testing } from '@voder/dev-config';
-
-// Access specific configurations
-const libraryConfig = typescript.library;
-const baseRules = eslint.base;
-const packageBuild = build.createPackageConfig({ packageName: '@voder/my-package' });
-const nodeTestConfig = testing.createVitestNodeConfig();
-```
-
-## **Implementation Standards**
-
-### **Configuration Validation**
-All configurations MUST be validated for correctness and compatibility:
-
-### **Testing Requirements**
-Development configurations MUST include comprehensive tests:
+- **Implementation Flexibility**: This package may be implemented with varying internal structures while maintaining the required functionality above
+- **Export Requirements**: Consumers must be able to access configurations via the export paths shown in usage patterns  
+- **Documentation Focus**: Prioritize clear consumer usage over internal implementation details
+- **Validation Approach**: Test against consumer requirements rather than specific implementation patterns
 

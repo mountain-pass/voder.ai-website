@@ -1,9 +1,10 @@
----
 status: 'accepted'
 date: 2025-08-06
 decision-makers: voder.ai website team
 consulted: LLM-assisted development stakeholders
 informed: development team
+packages:
+  - dev-config
 ---
 
 # ADR 0009: Use Vitest for Package Testing and Playwright for E2E Testing
@@ -55,6 +56,11 @@ Chosen option: **"Vitest + Playwright"**, because it provides optimal developer 
 - **Mobile Tests**: Responsive behavior on mobile devices
 - **Performance E2E**: Core Web Vitals, loading performance
 - **Accessibility E2E**: Full-page accessibility validation
+
+### Migration note
+
+#### Migration note
+Migration note: MVP loader tests have migrated to use shared mocks utilities located at src/vite.config.mock-utils.ts and deterministic first-function extraction via getFirstFunctionExport in src/vite.config.test-helpers.ts. Per-test ad-hoc mocks have been removed; loader assertions now rely on the known first function export from the mocks.
 
 ### Consequences
 

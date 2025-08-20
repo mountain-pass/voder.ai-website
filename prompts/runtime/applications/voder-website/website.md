@@ -174,34 +174,253 @@ const scrollTrigger = ScrollTrigger.create({
 
 ## ♿ Accessibility & ARIA Requirements
 
-### Component-Specific ARIA Implementation
+### Component-Specific ARIA Implementation with HTML Examples
 
-| Section              | Required ARIA Attributes                     | Implementation Details                                   |
-| -------------------- | -------------------------------------------- | -------------------------------------------------------- |
-| **Brand Entry**      | `aria-label="Voder brand introduction"`      | 3D canvas marked as decorative with `aria-hidden="true"` |
-| **Hero Section**     | `role="banner"`, `aria-label="Main heading"` | Primary navigation with `role="navigation"`              |
-| **Problem Space**    | `role="main"`, section landmarks             | Clear heading hierarchy for screen readers               |
-| **Metaphor**         | `aria-label="GPS vs Directions comparison"`  | Visual metaphors described in accessible text            |
-| **Vision Flow**      | `aria-label="Voder workflow diagram"`        | Flow diagram with accessible text alternatives           |
-| **Prompt Iteration** | `aria-live="polite"` for dynamic content     | Code changes announced to screen readers                 |
-| **Outcome Focus**    | `role="complementary"` for benefit cards     | Each benefit clearly labeled and structured              |
-| **Closing Moment**   | `role="contentinfo"` for footer content      | Final branding marked appropriately                      |
+#### 1. Brand Entry Section
 
-### Interactive Elements
+```html
+<section aria-label="Voder brand introduction" role="banner">
+  <canvas aria-hidden="true"></canvas>
+  <div aria-live="polite" aria-atomic="true">
+    <!-- Loading states announced here -->
+  </div>
+  <h1>Voder</h1>
+  <p>The Compiler for Prompts</p>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+</section>
+```
 
-- All buttons must have descriptive `aria-label` attributes
-- Form inputs require `aria-label` and `aria-required` where applicable
-- Links must have accessible names (not just "click here")
-- Focus indicators must be clearly visible and 3:1 contrast minimum
-- Keyboard navigation must follow logical tab order
-- Complex animations respect `prefers-reduced-motion`
+#### 2. Hero Section
 
-### 3D Content Accessibility
+```html
+<section role="main" aria-labelledby="hero-heading">
+  <h1 id="hero-heading" class="typing-animation">
+    Tell Us What You Want. Let Voder Build It.
+  </h1>
+  <nav role="navigation" aria-label="Main navigation">
+    <a href="#about">About</a>
+    <!-- Other nav items -->
+  </nav>
+</section>
+```
 
-- Three.js Canvas components marked with `aria-hidden="true"` for decorative content
-- Essential information from 3D scenes provided in accessible text form
-- Alternative text descriptions for key visual metaphors
-- No essential content delivered only through 3D interactions
+#### 3. Problem Space Section
+
+```html
+<section aria-labelledby="problem-heading">
+  <h2 id="problem-heading">The Problem</h2>
+  <!-- Visual chaos animations marked as decorative -->
+  <div aria-hidden="true" class="visual-chaos">
+    <!-- Complex animations here -->
+  </div>
+  <!-- Essential content in accessible text -->
+  <p>Today's code generation tools still leave you stuck...</p>
+</section>
+```
+
+#### 4. Interactive Flow Diagram
+
+```html
+<section aria-labelledby="flow-heading">
+  <h2 id="flow-heading">How It Works</h2>
+  <div role="img" aria-labelledby="flow-description">
+    <svg><!-- Flow diagram --></svg>
+  </div>
+  <div id="flow-description">
+    Business Intent leads to Source Prompts, which are processed by Voder to
+    create Working Software.
+  </div>
+</section>
+```
+
+### Keyboard Navigation Requirements
+
+#### Navigation Order
+1. **Skip links** (hidden until focused)
+2. **Main navigation** (logical left-to-right, top-to-bottom)
+3. **Interactive elements** (buttons, links, form controls)
+4. **Section landmarks** (can be navigated via screen reader shortcuts)
+
+#### Key Bindings
+
+| Key               | Action                                          | Context              |
+| ----------------- | ----------------------------------------------- | -------------------- |
+| `Tab`             | Move to next focusable element                  | Global               |
+| `Shift + Tab`     | Move to previous focusable element              | Global               |
+| `Enter` / `Space` | Activate buttons and links                      | Interactive elements |
+| `Escape`          | Close modals, exit fullscreen, pause animations | Global               |
+| `Arrow Keys`      | Navigate within grouped elements                | Navigation menus     |
+
+#### Focus Management
+- **Visible focus indicators** on all interactive elements
+- **Focus trap** during intro animation (with skip option)
+- **Logical tab order** following visual layout
+- **No keyboard traps** (always escapable)
+
+### Responsive Accessibility
+
+#### Touch Targets
+- **Minimum size**: 44px × 44px for touch targets
+- **Adequate spacing**: 8px minimum between adjacent targets
+- **No precision required**: Generous click/tap areas
+
+#### Viewport Considerations
+- **Zoom support**: 200% zoom without horizontal scrolling
+- **Orientation**: Content usable in both portrait and landscape
+- **Small screens**: Essential content prioritized on mobile
+
+### Motion & Animation Accessibility
+
+#### prefers-reduced-motion Support
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  /* Disable non-essential animations */
+  .brand-entry-animation,
+  .scroll-triggered-animation {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Keep essential feedback */
+  .fade-in {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+```
+
+#### Animation Guidelines
+- **No flashing** above 3 times per second
+- **Pause controls** for auto-playing content longer than 5 seconds
+- **Essential content** not dependent on animation
+- **Smooth degradation** when animations are disabled
+
+### Screen Reader Optimization
+
+#### Content Structure
+- **Semantic HTML**: Proper heading hierarchy (h1 → h2 → h3)
+- **Landmark roles**: `main`, `navigation`, `banner`, `contentinfo`
+- **Lists**: Use `ul`/`ol` for grouped content
+- **Tables**: Headers and captions for data relationships
+
+#### Dynamic Content
+
+```html
+<!-- For content that updates -->
+<div aria-live="polite" aria-atomic="true">
+  <!-- Updated content announced to screen readers -->
+</div>
+
+<!-- For urgent updates -->
+<div aria-live="assertive">
+  <!-- Immediately announced -->
+</div>
+```
+
+#### Image Accessibility
+- **Meaningful images**: Descriptive alt text
+- **Decorative images**: `alt=""` or `aria-hidden="true"`
+- **Complex graphics**: `aria-describedby` linking to detailed description
+- **3D content**: Alternative text describing essential information
+
+### Testing Requirements & GSAP ScrollTrigger Integration
+
+#### Automated Testing
+
+**CRITICAL**: Accessibility tests MUST scroll to target sections and wait for animations to complete before scanning.
+
+```typescript
+// REQUIRED: Scroll to target section to trigger scroll-based animations
+await targetSection.scrollIntoViewIfNeeded();
+await page.waitForTimeout(500); // Give time for scroll to complete
+
+// Wait for GSAP and scroll-triggered animations to complete
+await page.waitForFunction(
+  () => {
+    // Check if GSAP is loaded and has active animations
+    if (typeof window.gsap !== 'undefined') {
+      const activeTweens = window.gsap
+        .getTweensOf('*')
+        .filter((tween) => tween.isActive());
+      if (activeTweens.length > 0) {
+        return false;
+      }
+    }
+
+    // Check for elements with animation classes
+    const animatingElements = document.querySelectorAll(
+      '.animating, [data-animating="true"]'
+    );
+    return animatingElements.length === 0;
+  },
+  { timeout: 5000 }
+);
+
+// Then run accessibility scan
+const results = await new AxeBuilder({ page })
+  .include('section[data-test-id="target-section"]')
+  .analyze();
+```
+
+**Why Scrolling is Required**:
+- GSAP ScrollTrigger animations only activate when elements enter viewport
+- Scroll-based animations remain in initial state until triggered
+- Static accessibility scans miss the final animated state
+- Color transitions and positioning depend on scroll events
+
+**Best Practices**:
+1. **Scroll to target first**: `await targetSection.scrollIntoViewIfNeeded()`
+2. **Wait for network idle**: `await page.waitForLoadState('networkidle')`
+3. **Wait for specific animations**: Use custom data attributes to track animation state
+4. **Wait for GSAP completion**: Use GSAP's `onComplete` callbacks in tests
+5. **Verify final state**: Check computed styles match expected values before scanning
+
+#### Testing Checklist
+- [ ] **Tests scroll to target sections before scanning** (required for scroll-triggered animations)
+- [ ] All text meets minimum contrast ratios **after animations complete**
+- [ ] All interactive elements keyboard accessible **in final state**
+- [ ] Skip links functional and properly hidden
+- [ ] Screen reader announces content logically
+- [ ] Focus indicators visible and persistent **post-animation**
+- [ ] Animations respect `prefers-reduced-motion`
+- [ ] Essential content available without JavaScript
+- [ ] Touch targets meet minimum size requirements **after layout animations**
+- [ ] 200% zoom doesn't break layout
+- [ ] No keyboard traps or focus issues
+- [ ] **Accessibility tests wait for GSAP and scroll animations to complete**
+
+#### Manual Testing
+- **Screen reader testing** (NVDA, JAWS, VoiceOver)
+- **Keyboard-only navigation** verification
+- **High contrast mode** compatibility
+- **Mobile screen reader** testing (TalkBack, VoiceOver)
+
+### Implementation Priority
+
+#### Phase 1: Foundation
+1. Semantic HTML structure
+2. Color contrast compliance
+3. Keyboard navigation
+4. Basic ARIA labels
+
+#### Phase 2: Enhancement
+1. Advanced ARIA patterns
+2. Screen reader optimization
+3. Motion sensitivity support
+4. Touch accessibility
+
+#### Phase 3: Validation
+1. Comprehensive testing
+2. User feedback integration
+3. Performance optimization (DEFERRED - will be addressed in a future development phase)
+4. Documentation updates
+
+### Success Metrics
+- **Zero critical accessibility violations** in automated testing
+- **100% keyboard navigation** coverage
+- **WCAG 2.1 AA compliance** verified by external audit
+- **Positive user feedback** from assistive technology users
 
 ## 📋 Development Requirements
 

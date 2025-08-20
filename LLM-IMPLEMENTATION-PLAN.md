@@ -191,6 +191,7 @@ This project uses **LLM agents as developers** for each package/app in our monor
 - [x] Move `transition-patterns.md` → `prompts/runtime/transition-patterns.md` (GSAP/web-specific) ✅ **MERGED** - Unique content merged into existing runtime documentation
 - [x] Move `guidelines.md` → `prompts/runtime/guidelines.md` (Vite/build-specific) ✅ **MERGED** - Development workflow and deployment content merged into runtime documentation
 - [x] Move `voder-website.md` → `prompts/runtime/applications/voder-website/website.md` (application-specific) ✅ **HIERARCHY CREATED** - Proper application inheritance established
+- [x] **DELETE legacy `prompts/legacy/voder-website.md`** ✅ **COMPLETED** - Legacy file removed after verifying content duplication in non-legacy location
 - [x] Move `component-hierarchy.md` → `docs/component-hierarchy.md` (system documentation) ✅ **MOVED** - Not implementation guidance, moved to docs for reference
 - [x] Move `implementation-strategy.md` → **DELETED** ✅ **REDUNDANT** - Content was redundant with existing implementation guides
 - [x] Split `hints.md` → **SPLIT INTO THREE FILES** ✅ **COMPLETED** - Content distributed across hierarchy levels with unique names

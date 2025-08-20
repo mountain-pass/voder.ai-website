@@ -39,10 +39,22 @@ All tests must pass before deployment:
 - **Linear history**: Merge or rebase strategy enforcement
 
 ### **Development Workflow**
-- **Commit frequency**: Regular commits during development sessions
+- **Commit frequency**: Code MUST be committed frequently. THIS IS VERY IMPORTANT
+- **Commit triggers**: When the tests pass, you MUST commit
+- **File count triggers**: IF THERE ARE more than 5 modified or untracked files, you MUST plan to commit NOW!
+- **History triggers**: IF none of the last 5 actions in the history are a commit, you MUST plan to commit NOW!
+- **Push requirements**: If there are un-pushed commits, you MUST plan to push NOW! If it's not safe, you MUST plan NOW to make the changes so that it is safe to push!
 - **Commit messages**: Conventional commit format preferred
 - **Feature branches**: Short-lived branches for features/fixes
 - **Documentation updates**: Keep docs current with changes
+
+### **Process Management**
+- **Background processes**: DO NOT KEEP PROCESSES RUNNING LONGER THAN NECESSARY. IF YOU NO LONGER HAVE A NEED FOR A PROCESS, YOU MUST PLAN TO STOP IT NOW!
+- **Testing output**: Record linting and testing output in `outputs/`, but do NOT commit them
+- **File cleanup**: YOU MUST DELETE THE FILES `outputs/` WHEN THEY ARE NO LONGER NEEDED
+
+### **Completion Requirements**
+- **YOU ARE NOT DONE UNTIL ALL THE CHANGES ARE COMMITTED AND PUSHED**
 
 ### **Release Process**
 - **Version tagging**: Semantic versioning for releases

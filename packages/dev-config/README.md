@@ -1,82 +1,44 @@
-# @voder/dev-config
+# Purpose
 
-Purpose
+Provide a single-package solution of TypeScript, ESLint, Prettier, Vitest, and Markdown-lint configurations for Node.js projects.
 
-A configuration package that exposes development-time tooling presets and helpers for TypeScript, ESLint (v9 flat config), Prettier, and Vitest-based testing. This package contains configuration and helper code only — no runtime application logic.
+## Compatibility & Requirements
 
-Compatibility & Requirements
+- Node.js ≥22.6.0 (ESM support with `--experimental-strip-types`)
+- peerDependencies:
+  - eslint ^9.0.0
+  - prettier ^3.0.0
+  - typescript ^5.0.0
+  - vitest ^3.2.0
+  - markdownlint-cli2 ^0.18.1
+  - @typescript-eslint/parser ^8.0.0
+  - @typescript-eslint/eslint-plugin ^8.0.0
+  - eslint-config-prettier ^10.0.0
+  - eslint-plugin-import ^2.30.0
+  - eslint-plugin-simple-import-sort ^12.0.0
+  - eslint-plugin-unicorn ^60.0.0
 
-- Node: This package is ESM-first. For general usage, Node 18+ is supported; NOTE: importing the TypeScript Prettier config file (prettier.config.ts) or running Prettier against that file requires Node 22.6.0+ or using NODE_OPTIONS="--experimental-strip-types".
-- ESM: All package exports and configuration files are ESM-first.
-- Tooling: Consumers must install tooling listed under Peer dependencies below in their consuming project so the configs can be used.
-
-Peer dependencies
-
-This package relies on common developer tooling to be installed by consumers. Install examples follow.
-
-Required peer dependencies (typical set):
-
-- typescript
-- eslint (ESLint v9)
-- prettier
-- vitest
-- @vitest/coverage-v8
-- @typescript-eslint/eslint-plugin
-- @typescript-eslint/parser
-- eslint-config-prettier
-- eslint-import-resolver-typescript
-- eslint-plugin-import
-- eslint-plugin-simple-import-sort
-- eslint-plugin-unicorn
-- @types/node (for TypeScript Node development)
-
-Install examples (copy/paste)
-
-- npm
+## Installation
 
 ```bash
-npm install --save-dev typescript eslint prettier vitest @vitest/coverage-v8 \
-  @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-prettier \
-  eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-simple-import-sort \
-  eslint-plugin-unicorn @types/node
+npm install @voder/dev-config
+pnpm add @voder/dev-config
+yarn add @voder/dev-config
 ```
 
-- pnpm
+## Quickstart
 
-```bash
-pnpm add -D typescript eslint prettier vitest @vitest/coverage-v8 \
-  @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-prettier \
-  eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-simple-import-sort \
-  eslint-plugin-unicorn @types/node
-```
+### Extend your tsconfig
 
-- yarn
-
-```bash
-yarn add -D typescript eslint prettier vitest @vitest/coverage-v8 \
-  @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-prettier \
-  eslint-import-resolver-typescript eslint-plugin-import eslint-plugin-simple-import-sort \
-  eslint-plugin-unicorn @types/node
-```
-
-Quickstart
-
-TypeScript
-
-- Extend a typescript preset in your package's tsconfig.json:
-
-```json
+```jsonc
+// tsconfig.json
 {
   "extends": "@voder/dev-config/typescript/library.json",
-  "compilerOptions": { "outDir": "./dist" }
+  "compilerOptions": { "outDir": "./dist" },
 }
 ```
 
-ESLint (Flat Config v9)
-
-- Compose layers in this order: base → dx (mandatory) → performance. Use eslint.config.js/ts or eslint.config.mjs in your repository root to avoid walking up other configs.
-
-Example (eslint.config.mjs):
+### Create `eslint.config.js`
 
 ```js
 import js from '@eslint/js';
@@ -89,120 +51,158 @@ export default [
   ...dx, // mandatory
   ...performance,
   prettier,
-  { ignores: ['dist/', 'build/', 'coverage/', 'node_modules/'] },
 ];
 ```
 
-Vitest (Node environment)
-
-- Use the testing helper exported by this package:
+### Use Vitest factory in `vitest.config.ts`
 
 ```ts
-// vitest.config.ts
+import { defineConfig } from 'vitest/config';
 import { createVitestNodeConfig } from '@voder/dev-config/testing';
-export default createVitestNodeConfig();
+
+export default defineConfig(createVitestNodeConfig());
 ```
 
-- This helper configures:
-  - environment: 'node'
-  - globals: true
-  - setupFiles: ['./src/test-setup.node.ts']
-  - coverage: provider 'v8' with thresholds: branches/functions/lines/statements >= 90%
+### Minimal Rollup/Vite snippet (`vite.config.ts`)
 
-Prettier
+```ts
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
-- This package exports a TypeScript Prettier config at the dedicated export path:
+export default defineConfig({
+  plugins: [tsconfigPaths()],
+  resolve: { alias: { '@config': '@voder/dev-config' } },
+});
+```
+
+## Usage & API Reference
+
+### Testing Utilities
+
+#### `createVitestNodeConfig(): Record<string, unknown>`
+
+Factory for Vitest Node config.
+
+```ts
+import { createVitestNodeConfig } from '@voder/dev-config/testing';
+const config = createVitestNodeConfig();
+console.log(config.test.environment); // 'node'
+```
+
+#### `testSetup: { node: string }`
+
+Paths to setup files.
+
+```ts
+import { testSetup } from '@voder/dev-config/testing';
+console.log(testSetup.node); // './src/test-setup.node.ts'
+```
+
+### ESLint Configurations
+
+#### `base: Linter.Config[]`
+
+Core ESLint flat-config layer.
 
 ```js
+import { base } from '@voder/dev-config/eslint';
+console.log(base[0].name); // '@voder/dev-config/eslint/base'
+```
+
+#### `dx: Linter.Config[]`
+
+Developer-experience rules.
+
+#### `performance: Linter.Config[]`
+
+Performance-focused rules.
+
+### TypeScript Presets
+
+#### `base, node, library, test: Record<string, unknown>`
+
+Compiler options for each environment.
+
+```ts
+import { base, node } from '@voder/dev-config/typescript';
+console.log(base.compilerOptions.target); // 'ES2022'
+```
+
+### Prettier Configuration
+
+#### `default: Config`
+
+Prettier settings.
+
+```ts
 import prettierConfig from '@voder/dev-config/prettier';
-export default prettierConfig;
+console.log(prettierConfig.singleQuote); // true
 ```
 
-- If you run Prettier against prettier.config.ts, either run on Node >=22.6.0 or use:
-  - NODE_OPTIONS="--experimental-strip-types" prettier --check ...
-    (Note: this is required to allow Prettier to load .ts config files natively.)
+### Markdown Linting
 
-HTML/CSS Linting
+#### `getConfig(overrides?): Record<string, unknown>`
 
-```js
-// eslint.config.js
-import js from '@eslint/js';
-import prettier from 'eslint-config-prettier';
-import { base, dx, performance, html } from '@voder/dev-config/eslint';
+Programmatic rule object.
 
-export default [
-  js.configs.recommended,
-  ...base,
-  ...dx,
-  ...performance,
-  ...html, // HTML lint rules
-  prettier,
-  { ignores: ['dist/', 'build/', 'coverage/', 'node_modules/'] },
-];
+```ts
+import { getConfig } from '@voder/dev-config/linters/markdown';
+console.log(getConfig().MD013); // false
 ```
 
-```js
-// stylelint.config.js (at project root)
-import { stylelintConfig } from '@voder/dev-config/eslint';
-export default stylelintConfig;
+#### `createCLICommand(opts?): string`
+
+CLI invocation string.
+
+```sh
+npm run lint:md # runs markdownlint-cli2 with the generated config
 ```
 
-```diff
- "scripts": {
-   // …existing…
-+  "lint:css": "stylelint --config stylelint.config.js \"**/*.{css,scss}\""
- }
-```
+## Troubleshooting
 
-Markdown linting
+- Missing peer dependency (Cannot find module ...): If you see errors like "Cannot find module 'eslint'" or similar, install the required peer dependencies in your project. Example (install common peers as dev dependencies):
+  npm install --save-dev eslint prettier typescript vitest markdownlint-cli2 @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-import eslint-plugin-simple-import-sort eslint-plugin-unicorn
 
-- This package exposes a markdown linter abstraction (linters/markdown) that consumers import; it uses the tool selected by the package (markdownlint-cli2) under the hood. Consumers should use the package export rather than pinning a specific linter tool.
+- Prettier TypeScript config: The Prettier config is provided as TypeScript (prettier.config.ts). You need Node >= 22.6.0 to load it natively. When running Prettier CLI or scripts that load the `.ts` config, set:
+  NODE*OPTIONS="--experimental-strip-types" prettier --check "\**/\_.{ts,js,md}"
 
-Usage & API summary
-
-Primary exports:
-
-- `typescript` — JSON presets: `base`, `node`, `library`, `test`.
-- `eslint` — shareable flat-config layers: `base`, `dx`, `performance`.
-- `testing` — helpers: `createVitestNodeConfig()`, `testSetup`.
-- `prettier` — default Prettier config (exported).
-- `linters/markdown` — programmatic markdown lint configuration helper (getConfig).
-
-Export patterns supported:
-
-- Dedicated path (tree-shakable): `@voder/dev-config/testing`, `@voder/dev-config/eslint`, `@voder/dev-config/typescript`, `@voder/dev-config/prettier`
-- Main index: `import { testing, eslint, typescript } from '@voder/dev-config'`
-
-Troubleshooting
-
-- "ESLint can't find parser/project": Ensure the consuming repo has a local tsconfig and the ESLint config points at it (parserOptions.project).
-- "Cannot find module '@vitest/coverage-v8'": Install @vitest/coverage-v8 and ensure version alignment with vitest (see dev tool notes).
-- "Prettier can't load prettier.config.ts": Use Node >=22.6.0 or set NODE_OPTIONS="--experimental-strip-types".
-- "Vitest setup files not found": Verify `src/test-setup.node.ts` exists or adapt setupFiles in your vitest config to match your repo layout.
-
-Development and contributing
-
-- Scripts available in package.json (for package developers):
-  - format, format:check, lint, lint:fix, type-check, test, test:watch, test:coverage
-- Running local validation:
-  - npm run type-check
-  - npm run test
+  For convenience, use the package scripts:
   - npm run format
-- If you must change tooling decisions (different linters, different coverage thresholds, etc.), create an ADR following the package governance.
+  - npm run format:check
 
-Security
+- Regenerating .markdownlint.json: If you update markdown linting defaults or want to regenerate the project config, run:
+  - npm run generate:md-config
+    or run the prebuild which runs generation automatically:
+  - npm run prebuild
 
-- Scope and boundaries: This package only provides development-time configuration and helpers. It performs no network access, no telemetry, and no runtime execution in consumers' production code.
-- Data handling: Only local configuration files and code are processed. Do not store secrets or credentials in configs.
-- Threat model: Intended for trusted developer and CI environments.
-- Update policy: Security and tooling updates are delivered via patch releases; consumers should follow the package changelog.
+## Security
 
-License
+- Scope & boundaries: This package provides configuration only (TypeScript, ESLint, Prettier, Vitest, and markdown lint rules). It does not perform runtime network requests, telemetry, or persist user data.
+- Data handling: The package only processes configuration objects and local files. It does not store or transmit secrets.
+- Threat model: The primary risk is supply-chain (npm dependencies, plugins and CLI tools executed by consumers). Use lockfile-based installs in CI (npm ci) and registry mirrors when possible to reduce risk.
+- Update policy: Security updates are delivered via patch releases and noted in CHANGELOG.md. Run npm audit regularly and review advisories before applying forced fixes.
 
-This software is proprietary and not open-source.
+## License
 
-This package is licensed under the literal license token "UNLICESNED" in package.json. No rights are granted to use, copy, modify, distribute, sublicense, or otherwise exploit this software except as explicitly agreed in writing by the owners. All rights reserved.
+This software is proprietary and not open-source. The package is licensed as UNLICESNED. No license is granted to use, copy, modify, distribute, or sublicense except as explicitly agreed in writing by the owners. All rights reserved.
 
-Notes
+## Contributing
 
-- The README is self-contained and references only published exports and public URLs; it does not reference internal repository paths.
+- Install dependencies:
+  npm install
+- Run full verification (lint, md-lint-fix, format, build, tests):
+  npm run verify
+- Build package:
+  npm run build
+- Run tests:
+  npm test
+  npm run test:ci
+- Lint:
+  npm run lint
+  npm run lint:fix
+- Format:
+  npm run format
+  npm run format:check
+
+Note: The Prettier TypeScript config requires Node >= 22.6.0. When running Prettier CLI or scripts that load the TypeScript config, prefix commands with:
+NODE_OPTIONS="--experimental-strip-types"

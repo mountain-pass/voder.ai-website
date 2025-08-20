@@ -76,6 +76,11 @@ export default defineConfig({
 });
 ```
 
+## Utility scripts
+
+- `npm run copy:assets` — runs `scripts/copy-assets.ts` to copy ESLint- and TypeScript-JSON assets into `dist/`
+- `npm run generate:md-config` — runs `scripts/generate-markdownlint-config.ts` to regenerate `.markdownlint.json`
+
 ## Usage & API Reference
 
 ### Testing Utilities

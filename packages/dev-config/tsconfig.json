@@ -1,0 +1,26 @@
+{
+  "extends": "./typescript/base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true
+  },
+  "include": [
+    "src",
+    "eslint",
+    "typescript",
+    "eslint.config.ts",
+    "prettier.config.ts",
+    "stylelint.config.js",
+    "linters",
+    "vitest.config.ts",
+    "scripts"
+  ],
+  "exclude": ["node_modules", "dist", "build", "coverage"]
+}

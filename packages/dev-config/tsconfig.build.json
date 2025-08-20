@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "emitDeclarationOnly": false
+  },
+  "include": [
+    "src",
+    "eslint",
+    "typescript",
+    "eslint.config.ts",
+    "linters",
+    "vitest.config.ts",
+    "prettier.config.ts"
+  ],
+  "exclude": ["node_modules", "dist", "build", "coverage"]
+}

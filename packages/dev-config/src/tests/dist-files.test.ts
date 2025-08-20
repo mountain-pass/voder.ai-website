@@ -1,4 +1,5 @@
 import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
@@ -14,7 +15,9 @@ describe('package installation integration tests', () => {
     tempDir = await mkdtemp(join(tmpdir(), 'voder-test-'));
 
     // Pack the current package
-    const packResult = execSync('npm pack', { encoding: 'utf8' });
+    const result = spawnSync('npm', ['pack'], { encoding: 'utf8', shell: false });
+      if (result.error) throw result.error;
+      const packResult = result.stdout;
 
     const tarball = packResult.trim().split('\n').pop();
 

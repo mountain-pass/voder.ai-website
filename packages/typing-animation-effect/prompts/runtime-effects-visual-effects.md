@@ -1,0 +1,1 @@
+../../../prompts/runtime/effects/visual-effects.md

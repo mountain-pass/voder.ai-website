@@ -1,8 +1,8 @@
-# Purpose
+# @voder/dev-config
 
 Provide a single-package solution of TypeScript, ESLint, Prettier, Vitest, and Markdown-lint configurations for Node.js projects.
 
-## Compatibility & Requirements
+# @voder/dev-config
 
 - Node.js ≥22.6.0 (ESM support with `--experimental-strip-types`)
 - **Governance:** Any deviation from these configurations requires an ADR per the Dependency Governance policy.
@@ -19,7 +19,7 @@ Provide a single-package solution of TypeScript, ESLint, Prettier, Vitest, and M
   - eslint-plugin-simple-import-sort ^12.0.0
   - eslint-plugin-unicorn ^60.0.0
 
-## Installation
+# @voder/dev-config
 
 ```bash
 npm install @voder/dev-config
@@ -27,9 +27,9 @@ pnpm add @voder/dev-config
 yarn add @voder/dev-config
 ```
 
-## Quickstart
+# @voder/dev-config
 
-### Extend your tsconfig
+# @voder/dev-config
 
 ```jsonc
 // tsconfig.json
@@ -39,7 +39,7 @@ yarn add @voder/dev-config
 }
 ```
 
-### Create `eslint.config.js`
+# @voder/dev-config
 
 ```js
 import js from '@eslint/js';
@@ -55,7 +55,7 @@ export default [
 ];
 ```
 
-### Use Vitest factory in `vitest.config.ts`
+# @voder/dev-config
 
 ```ts
 import { defineConfig } from 'vitest/config';
@@ -64,7 +64,7 @@ import { createVitestNodeConfig } from '@voder/dev-config/testing';
 export default defineConfig(createVitestNodeConfig());
 ```
 
-### Minimal Rollup/Vite snippet (`vite.config.ts`)
+# @voder/dev-config
 
 ```ts
 import { defineConfig } from 'vite';
@@ -76,16 +76,16 @@ export default defineConfig({
 });
 ```
 
-## Utility scripts
+# @voder/dev-config
 
 - `npm run copy:assets` — runs `scripts/copy-assets.ts` to copy ESLint- and TypeScript-JSON assets into `dist/`
 - `npm run generate:md-config` — runs `scripts/generate-markdownlint-config.ts` to regenerate `.markdownlint.json`
 
-## Usage & API Reference
+# @voder/dev-config
 
-### Testing Utilities
+# @voder/dev-config
 
-#### `createVitestNodeConfig(): Record<string, unknown>`
+# @voder/dev-config
 
 Factory for Vitest Node config.
 
@@ -95,7 +95,7 @@ const config = createVitestNodeConfig();
 console.log(config.test.environment); // 'node'
 ```
 
-#### `testSetup: { node: string }`
+# @voder/dev-config
 
 Paths to setup files.
 
@@ -104,9 +104,9 @@ import { testSetup } from '@voder/dev-config/testing';
 console.log(testSetup.node); // './src/test-setup.node.ts'
 ```
 
-### ESLint Configurations
+# @voder/dev-config
 
-#### `base: Linter.Config[]`
+# @voder/dev-config
 
 Core ESLint flat-config layer.
 
@@ -115,17 +115,17 @@ import { base } from '@voder/dev-config/eslint';
 console.log(base[0].name); // '@voder/dev-config/eslint/base'
 ```
 
-#### `dx: Linter.Config[]`
+# @voder/dev-config
 
 Developer-experience rules.
 
-#### `performance: Linter.Config[]`
+# @voder/dev-config
 
 Performance-focused rules.
 
-### TypeScript Presets
+# @voder/dev-config
 
-#### `base, node, library, test: Record<string, unknown>`
+# @voder/dev-config
 
 Compiler options for each environment.
 
@@ -134,9 +134,9 @@ import { base, node } from '@voder/dev-config/typescript';
 console.log(base.compilerOptions.target); // 'ES2022'
 ```
 
-### Prettier Configuration
+# @voder/dev-config
 
-#### `default: Config`
+# @voder/dev-config
 
 Prettier settings.
 
@@ -145,9 +145,9 @@ import prettierConfig from '@voder/dev-config/prettier';
 console.log(prettierConfig.singleQuote); // true
 ```
 
-### Markdown Linting
+# @voder/dev-config
 
-#### `getConfig(overrides?): Record<string, unknown>`
+# @voder/dev-config
 
 Programmatic rule object.
 
@@ -156,7 +156,7 @@ import { getConfig } from '@voder/dev-config/linters/markdown';
 console.log(getConfig().MD013); // false
 ```
 
-#### `createCLICommand(opts?): string`
+# @voder/dev-config
 
 CLI invocation string.
 
@@ -164,7 +164,7 @@ CLI invocation string.
 npm run lint:md # runs markdownlint-cli2 with the generated config
 ```
 
-## Troubleshooting
+# @voder/dev-config
 
 - Missing peer dependency (Cannot find module ...): If you see errors like "Cannot find module 'eslint'" or similar, install the required peer dependencies in your project. Example (install common peers as dev dependencies):
   npm install --save-dev eslint prettier typescript vitest markdownlint-cli2 @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-import eslint-plugin-simple-import-sort eslint-plugin-unicorn
@@ -181,18 +181,18 @@ npm run lint:md # runs markdownlint-cli2 with the generated config
     or run the prebuild which runs generation automatically:
   - npm run prebuild
 
-## Security
+# @voder/dev-config
 
 - Scope & boundaries: This package provides configuration only (TypeScript, ESLint, Prettier, Vitest, and markdown lint rules). It does not perform runtime network requests, telemetry, or persist user data.
 - Data handling: The package only processes configuration objects and local files. It does not store or transmit secrets.
 - Threat model: The primary risk is supply-chain (npm dependencies, plugins and CLI tools executed by consumers). Use lockfile-based installs in CI (npm ci) and registry mirrors when possible to reduce risk.
 - Update policy: Security updates are delivered via patch releases and noted in CHANGELOG.md. Run npm audit regularly and review advisories before applying forced fixes.
 
-## License
+# @voder/dev-config
 
 This software is proprietary and not open-source. The package is licensed as UNLICESNED. No license is granted to use, copy, modify, distribute, or sublicense except as explicitly agreed in writing by the owners. All rights reserved.
 
-## Contributing
+# @voder/dev-config
 
 - Install dependencies:
   npm install

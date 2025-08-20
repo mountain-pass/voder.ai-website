@@ -5,6 +5,7 @@ Provide a single-package solution of TypeScript, ESLint, Prettier, Vitest, and M
 ## Compatibility & Requirements
 
 - Node.js ≥22.6.0 (ESM support with `--experimental-strip-types`)
+- **Governance:** Any deviation from these configurations requires an ADR per the Dependency Governance policy.
 - peerDependencies:
   - eslint ^9.0.0
   - prettier ^3.0.0

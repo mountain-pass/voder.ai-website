@@ -1,4 +1,4 @@
-import { execSync , spawnSync } from 'child_process';
+import { execSync, spawnSync } from 'child_process';
 import { mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
@@ -16,8 +16,8 @@ describe('package installation integration tests', () => {
     // Pack the current package
     const result = spawnSync('npm', ['pack'], { encoding: 'utf8', shell: false });
 
-      if (result.error) throw result.error;
-      const packResult = result.stdout;
+    if (result.error) throw result.error;
+    const packResult = result.stdout;
 
     const tarball = packResult.trim().split('\n').pop();
 

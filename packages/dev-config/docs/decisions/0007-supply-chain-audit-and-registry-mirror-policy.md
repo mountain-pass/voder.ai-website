@@ -19,15 +19,15 @@ The project needs to ensure that all dependencies are audited for vulnerabilitie
 
 ## Decision Drivers
 
-- Automated vulnerability scanning  
-- Failover registry-mirror support  
-- Reproducible, secure installs  
+- Automated vulnerability scanning
+- Failover registry-mirror support
+- Reproducible, secure installs
 
 ## Considered Options
 
-- Integrate found 0 vulnerabilities into CI  
-- Introduce lockfile integrity tests  
-- Enforce  registry-mirror settings  
+- Integrate found 0 vulnerabilities into CI
+- Introduce lockfile integrity tests
+- Enforce registry-mirror settings
 
 ## Decision Outcome
 
@@ -35,11 +35,11 @@ Chosen option: “Require automated supply-chain audits and enforce registry-mir
 
 ### Consequences
 
-- Good: Immediate alerts on high-severity vulnerabilities  
-- Good: Redundant registry endpoints for CI builds  
-- Bad: Additional CI configuration and contributor onboarding  
+- Good: Immediate alerts on high-severity vulnerabilities
+- Good: Redundant registry endpoints for CI builds
+- Bad: Additional CI configuration and contributor onboarding
 
 ### Confirmation
 
-- CI runs found 0 vulnerabilities in the  script  
-- Project root contains a  with mirror entries  
+- CI runs found 0 vulnerabilities in the script
+- Project root contains a with mirror entries

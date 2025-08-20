@@ -29,6 +29,7 @@ markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md
 to automatically fix fixable issues.
 
 Both commands use the shared rule set:
+
 - Heading levels and order (MD001)
 - Code fences must specify a language (MD040)
 - No raw HTML (MD033)

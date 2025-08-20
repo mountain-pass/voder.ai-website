@@ -43,7 +43,7 @@ describe('coverage - import surface', () => {
 
     const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
-    const prettierConfigPath = path.resolve(currentDir, '../prettier.config.ts');
+    const prettierConfigPath = path.resolve(currentDir, '../dist/prettier.config.js');
 
     expect(fs.existsSync(prettierConfigPath)).toBe(true);
 

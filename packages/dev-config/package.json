@@ -60,7 +60,7 @@
     "voder": "node ../../../voder/apps/voder-cli/index.js",
     "format:fix": "npm run format",
     "verify": "npm audit fix --force && npm run lint:fix && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
-    "audit:ci": "\"npm audit --audit-level=moderate\""
+    "audit:ci": "npm audit --audit-level=high"
   },
   "peerDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.0.0",

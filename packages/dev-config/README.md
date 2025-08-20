@@ -165,7 +165,7 @@ npm run lint:md # runs markdownlint-cli2 with the generated config
   npm install --save-dev eslint prettier typescript vitest markdownlint-cli2 @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-prettier eslint-plugin-import eslint-plugin-simple-import-sort eslint-plugin-unicorn
 
 - Prettier TypeScript config: The Prettier config is provided as TypeScript (prettier.config.ts). You need Node >= 22.6.0 to load it natively. When running Prettier CLI or scripts that load the `.ts` config, set:
-  NODE*OPTIONS="--experimental-strip-types" prettier --check "\**/\_.{ts,js,md}"
+  NODE_OPTIONS="--experimental-strip-types" prettier --check "\**/\_.{ts,js,md}"
 
   For convenience, use the package scripts:
   - npm run format

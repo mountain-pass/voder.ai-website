@@ -18,6 +18,7 @@ export default createVitestNodeConfig();
 
 `@voder/dev-config` centralizes best-practice configurations for developer tools.  
 It exports:
+
 - **TypeScript** presets (`library`, `node`, `base`, `test`)  
 - **ESLint** flat-config layers (`base`, `dx`, `performance`)  
 - **Prettier** formatting defaults  

@@ -1617,7 +1617,7 @@ Maintain the CHANGELOG.md in the package root to document all notable changes, v
 
 All packages are proprietary (not open-source). Set the package license field and README accordingly.
 
-- package.json MUST set the license field to the literal string `UNLICESNED`.
+- package.json MUST set the license field to the literal string `UNLICENSED`.
 - README MUST include a clear proprietary notice and lack of granted rights.
 
 Examples:
@@ -1627,7 +1627,7 @@ Examples:
 {
   "name": "@voder/example",
   "version": "1.0.0",
-  "license": "UNLICESNED"
+  "license": "UNLICENSED"
 }
 ```
 

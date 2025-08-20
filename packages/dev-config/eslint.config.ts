@@ -3,7 +3,7 @@ import js from '@eslint/js';
 import type { Linter } from 'eslint';
 import prettier from 'eslint-config-prettier';
 
-import { base, dx, performance } from './eslint/index.js';
+import { base, dx, performance } from './eslint/index.ts';
 
 const config: Linter.Config[] = [
   js.configs.recommended,

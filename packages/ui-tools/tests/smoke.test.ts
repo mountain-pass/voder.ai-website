@@ -2,8 +2,8 @@ import { describe, test, expect } from 'vitest';
 
 describe('Smoke Tests', () => {
   test('dist entry loads and exports createPostCSSConfig', async () => {
-    // Import the compiled package entry
-    const mod = await import('../dist/src/index.js');
+    // Import the source module (avoid depending on compiled dist during type-check)
+    const mod = await import('../src/index');
     expect(mod).toBeDefined();
 
     // Primary export exists and is a function

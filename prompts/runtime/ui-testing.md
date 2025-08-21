@@ -1,4 +1,4 @@
-# UI Testing with @voder/dev-config
+# UI Testing 
 
 ## **Overview**
 

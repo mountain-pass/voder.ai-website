@@ -38,35 +38,66 @@
  * ---------------------------
  *
  * prompts/
- * ├── core.md                     # UNIVERSAL: All packages inherit this
- * ├── testing.md                  # UNIVERSAL: All packages inherit this
- * ├── glossary.md                 # UNIVERSAL: All packages inherit this
- * ├── security-and-privacy.md     # UNIVERSAL: All packages inherit this
+ * ├── universal-guide.md          # UNIVERSAL: All packages inherit this
  * │
- * ├── runtime/                    # RUNTIME LAYER: Only runtime packages inherit
- * │   ├── observability-guide.md  # Runtime packages get observability guidance
- * │   ├── development.md          # Runtime development guidelines
- * │   ├── tools/                  # Tool layer inherits everything above + tool guidance
- * │   │   ├── tools.md
- * │   │   ├── file/
- * │   │   │   └── tools-file.md   # voder-tools-file gets: universal + runtime + tools + file
- * │   │   └── git/
- * │   │       └── tools-git.md    # voder-tools-git gets: universal + runtime + tools + git
- * │   ├── workflow/               # Workflow layer inherits everything above + workflow guidance
- * │   │   ├── workflow.md
- * │   │   └── graph/
- * │   │       └── workflow-graph.md
- * │   └── infrastructure/         # Infrastructure layer inherits everything above + infra guidance
- * │       ├── infrastructure.md
- * │       └── events/
- * │           └── infrastructure-events.md
+ * ├── runtime/                    # RUNTIME LAYER: Website packages inherit
+ * │   ├── accessibility-requirements.md
+ * │   ├── brand-guide.md
+ * │   ├── glossary.md
+ * │   ├── runtime.md
+ * │   ├── sections/               # Section layer for website components
+ * │   │   ├── sections.md
+ * │   │   ├── brand-entry-section/
+ * │   │   │   └── brand-entry-section.md
+ * │   │   ├── closing-moment-section/
+ * │   │   │   └── closing-moment-section.md
+ * │   │   ├── metaphor-section/
+ * │   │   │   └── metaphor-section.md
+ * │   │   ├── outcome-focus-section/
+ * │   │   │   └── outcome-focus-section.md
+ * │   │   ├── problem-space-section/
+ * │   │   │   └── problem-space-section.md
+ * │   │   ├── prompt-iteration-section/
+ * │   │   │   └── prompt-iteration-section.md
+ * │   │   ├── the-why-section/
+ * │   │   │   └── the-why-section.md
+ * │   │   └── vision-flow-section/
+ * │   │       └── vision-flow-section.md
+ * │   ├── effects/                # Effect layer for interactive components
+ * │   │   ├── effects.md
+ * │   │   ├── canvas-3d-effect/
+ * │   │   │   └── canvas-3d-effect.md
+ * │   │   ├── code-display-effect/
+ * │   │   │   └── code-display-effect.md
+ * │   │   ├── interactive-button-effect/
+ * │   │   │   └── interactive-button-effect.md
+ * │   │   ├── particle-system-effect/
+ * │   │   │   └── particle-system-effect.md
+ * │   │   └── typing-animation-effect/
+ * │   │       └── typing-animation-effect.md
+ * │   ├── core/
+ * │   │   └── core.md             # Core package for shared functionality
+ * │   ├── shared/
+ * │   │   └── shared.md           # Shared utilities across components
+ * │   ├── navigation/
+ * │   │   └── navigation.md       # Navigation component
+ * │   └── services/
+ * │       └── services.md         # Service layer for data access
  * │
- * └── development/                # DEVELOPMENT LAYER: Only dev tooling inherits
- *     ├── development.md          # Development-specific guidelines (different from runtime)
- *     ├── build-tools/
- *     │   └── build-tools.md      # voder-build-tools gets: universal + development + build-tools
- *     └── eslint-config/
- *         └── eslint-config.md    # voder-eslint-config gets: universal + development + eslint
+ * └── development/                # DEVELOPMENT LAYER: Development tooling
+ *     └── dev-config/
+ *         └── dev-config.md       # Development configuration package (consolidated tooling)
+ *
+ * CONSOLIDATED DEVELOPMENT TOOLING:
+ * ---------------------------------
+ * The dev-config package consolidates all development tooling configuration that was previously
+ * split across multiple packages:
+ * - TypeScript configuration
+ * - ESLint configuration
+ * - Prettier configuration
+ * - Vitest testing configuration (Node.js testing environments)
+ * - Markdown linting configuration
+ * - Development configuration utilities
  *
  * ARCHITECTURE OVERVIEW
  * --------------------
@@ -74,8 +105,14 @@
  * The system uses a hierarchical inheritance model:
  * 1. UNIVERSAL TIER: Core guidelines every package needs (prompts/ root)
  * 2. LAYER TIER: Runtime vs Development separation (prompts/runtime/ vs prompts/development/)
- * 3. SUBLAYER TIER: Specialized guidance (tools/, workflow/, infrastructure/ under runtime/)
+ * 3. SUBLAYER TIER: Specialized guidance (sections/, effects/ under runtime/)
  * 4. PACKAGE TIER: Specific implementation details (individual package directories)
+ *
+ * DEV-CONFIG CONSOLIDATION:
+ * The dev-config package provides all development tooling configuration in one place,
+ * eliminating the need for separate build-tools, eslint-config, and tsconfig packages.
+ * This includes TypeScript configs, ESLint layers, Prettier settings, Vitest configurations
+ * for both Node.js and UI testing (jsdom), and markdown linting.
  *
  * LINKING STRATEGY
  * ----------------
@@ -92,9 +129,9 @@
  *    - Root directory (prompts/)
  *
  * 3. RESULT: Each package gets exactly what it needs through inheritance:
- *    - voder-tools-file: universal + runtime + tools + file-specific
- *    - voder-build-tools: universal + development + build-tools-specific
- *    - voder-eslint-config: universal + development + eslint-specific
+ *    - brand-entry-section: universal + runtime + sections + brand-entry-specific
+ *    - canvas-3d-effect: universal + runtime + effects + canvas-3d-specific
+ *    - dev-config: universal + development + dev-config-specific (consolidated tooling)
  *
  * TROUBLESHOOTING INHERITANCE ISSUES
  * ----------------------------------
@@ -113,14 +150,24 @@
  * PACKAGE CLASSIFICATION
  * ----------------------
  *
- * Packages are classified by name pattern analysis:
+ * Packages are classified by their purpose and inherit from appropriate layers:
  *
  * - RUNTIME packages (inherit from prompts/runtime/):
- *   - APPLICATION: cli, agent-factory, orchestrator
- *   - WORKFLOW: graph, router
- *   - PHASE: phase-observe, phase-orient, phase-decide, phase-act
- *   - TOOLS: tools-*, tool-registry
- *   - INFRASTRUCTURE: *-core, *-types, events, logging, cache, state, persistence
+ *   - WEBSITE SECTIONS: brand-entry-section, closing-moment-section, metaphor-section,
+ *     outcome-focus-section, problem-space-section, prompt-iteration-section, 
+ *     the-why-section, vision-flow-section
+ *   - INTERACTIVE EFFECTS: canvas-3d-effect, code-display-effect, interactive-button-effect,
+ *     particle-system-effect, typing-animation-effect  
+ *   - CORE INFRASTRUCTURE: core, shared, navigation, services
+ *
+ * - DEVELOPMENT packages (inherit from prompts/development/):
+ *   - DEVELOPMENT TOOLING: dev-config (consolidated configuration package)
+ *
+ * CONSOLIDATED vs ELIMINATED PACKAGES:
+ * - dev-config: NEW - consolidates TypeScript, ESLint, Prettier, Vitest, Markdown configs
+ * - build-tools: ELIMINATED - empty package, functionality moved to dev-config
+ * - eslint-config: ELIMINATED - missing package, functionality moved to dev-config
+ * - tsconfig: ELIMINATED - missing package, functionality moved to dev-config
  *
  *
  * DYNAMIC DIRECTORY DISCOVERY
@@ -148,7 +195,8 @@
  *    - ROBUST: Missing directories/files handled gracefully
  *    - TRANSPARENT: Clear logging shows exactly what files are found and linked
  *    - FUTURE-PROOF: Add any .md file and it's automatically included where appropriate
- * - DEVELOPMENT: eslint-config, tsconfig, test-utils, build-tools
+ * - RUNTIME: Website packages (sections, effects, core, shared, navigation, services)
+ * - DEVELOPMENT: Development tooling (dev-config)
  *
  * BENEFITS
  * --------
@@ -192,7 +240,7 @@
  * ----------------------------
  * If a package isn't getting expected documentation:
  * 1. Run: npm run prepare (to refresh all links)
- * 2. Check: Does the package spec file exist? (e.g., prompts/runtime/tools/file/tools-file.md)
+ * 2. Check: Does the package spec file exist? (e.g., prompts/runtime/sections/brand-entry-section/brand-entry-section.md)
  * 3. Verify: Are parent directories structured correctly?
  * 4. Solution: Usually requires moving files in the hierarchy, not changing this script
  *

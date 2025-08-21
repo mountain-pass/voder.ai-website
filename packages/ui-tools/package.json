@@ -30,6 +30,7 @@
     "@voder/dev-config": "file:../dev-config",
     "autoprefixer": "^10.4.21",
     "jest-axe": "^10.0.0",
+    "jsdom": "^26.1.0",
     "markdownlint-cli2": "^0.18.1",
     "postcss": "^8.5.6",
     "typescript": "^5.9.2",

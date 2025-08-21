@@ -20,7 +20,8 @@
     "test:ci": "vitest run --coverage --reporter=verbose",
     "clean": "rm -rf dist/ coverage/ .cache/ .vite/ .eslintcache",
     "prepare": "node ../../setup-package-docs.js",
-    "voder": "node ../../../voder/apps/voder-cli/index.js"
+    "voder": "node ../../../voder/apps/voder-cli/index.js",
+    "pretest": "npm run build"
   },
   "peerDependencies": {
     "autoprefixer": "^10.0.0",

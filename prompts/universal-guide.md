@@ -1029,6 +1029,41 @@ writeFileSync('.markdownlint.json', JSON.stringify(config, null, 2));
 - **CI/CD integration**: Automated enforcement in pipelines
 - **LLM comprehension**: Consistent markdown structure improves AI understanding
 
+### **🚨 MANDATORY: Package Scripts**
+
+**ALL packages MUST include standardized scripts for documentation setup and CLI access:**
+
+**Required Scripts:**
+```json
+// package.json scripts (MANDATORY)
+{
+  "scripts": {
+    "prepare": "node ../../setup-package-docs.js",
+    "voder": "node ../../../voder/apps/voder-cli/index.js",
+    "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md",
+    "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md"
+  }
+}
+```
+
+**Script Requirements:**
+- **`prepare`**: MUST run documentation setup using the hierarchical linking system
+- **`voder`**: MUST provide access to the Voder CLI from any package directory
+- **`lint:md`**: MUST run markdown linting (as documented above)
+- **`lint:md:fix`**: MUST run markdown linting with auto-fix (as documented above)
+
+**Why These Scripts Are Mandatory:**
+- **Documentation Setup**: `prepare` ensures all packages get proper hierarchical documentation links
+- **CLI Access**: `voder` provides consistent access to tooling from any package
+- **Automation**: Scripts run automatically during package installation and development
+- **Consistency**: Standardized command interface across all packages
+- **LLM Integration**: Predictable script names for AI-assisted development
+
+**Script Behavior:**
+- **`prepare`**: Automatically runs on `npm install` to set up documentation symlinks
+- **`voder`**: Provides CLI access with proper relative path resolution
+- **Path Resolution**: All paths are relative to workspace structure for consistency
+
 ### **Package Structure Requirements**
 ```
 package.json             # Dependencies & scripts

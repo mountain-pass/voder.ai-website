@@ -1,15 +1,11 @@
 # Last Action Executed
 
-**Timestamp:** 2025-08-21T09:10:27.994Z
+**Timestamp:** 2025-08-21T09:41:25.187Z
 
 ## Plan
 
 ```
-Restore tracked .voder paths to their HEAD state (idempotent). Run this single POSIX command from the project root:
-
-```bash
-paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0' '\n' || true)"; if [ -n "$paths" ]; then git restore --source=HEAD -- $paths || true; else echo "No .voder paths known to git to restore"; fi
-```
+git push origin main
 ```
 
 ## Action
@@ -19,10 +15,11 @@ paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0'
 **Parameters:**
 ```json
 {
-  "command": "bash",
+  "command": "git",
   "parameters": [
-    "-lc",
-    "paths=\"$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\\0' '\\n' || true)\"; if [ -n \"$paths\" ]; then git restore --source=HEAD -- $paths || true; else echo \"No .voder paths known to git to restore\"; fi"
+    "push",
+    "origin",
+    "main"
   ],
   "timeout": 60000
 }
@@ -31,7 +28,7 @@ paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0'
 ## Handler Response
 
 ```
-`bash -lc paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0' '\n' || true)"; if [ -n "$paths" ]; then git restore --source=HEAD -- $paths || true; else echo "No .voder paths known to git to restore"; fi` completed.
+`git push origin main` completed.
 Output:
 
 ```

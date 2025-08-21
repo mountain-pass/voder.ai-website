@@ -1,92 +1,42 @@
 Summary of work completed so far
 
-- Added a comprehensive .gitignore covering Node build outputs/caches, temp/log files, editor/tool and OS artifacts, secrets (.env), and build/test variants. package.json and lockfiles were intentionally kept tracked (noted tracked sensitive files must be removed from the index before committing).
+- Added a comprehensive .gitignore to exclude Node build outputs/caches, temp/log files, editor/tool and OS artifacts, secrets (.env), and build/test variants while keeping package.json and lockfiles tracked.
 
-- Created .voderignore to expose specific artifacts to the LLM inspector (!dist/, !coverage/lcov-report/, !build/types/) while leaving large dirs like node_modules/ ignored; the file was echoed into the repo.
+- Created .voderignore that exposes specific artifacts to the LLM inspector (!dist/, !coverage/lcov-report/, !build/types/) and keeps large dirs (e.g., node_modules/) ignored; the file was echoed into the repo.
 
-- Made the initial scaffold commit:
-  - Command: git add . && git commit -m "chore(ui-tools): initial docs and package scaffold"
-  - Result: commit 5234902 on main; 24 files changed, 3,331 insertions(+).
-  - Added package scaffolding, many .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs, .voderignore), docs/decisions (including symlinked decision docs), symlinked prompts/docs, and packages/ui-tools/package.json and package-lock.json.
+- Made the initial scaffold commit on main (commit 5234902): added package scaffolding, many .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs, .voderignore), docs/decisions (including symlinked decision docs), symlinked prompts/docs, and packages/ui-tools/package.json and package-lock.json (24 files changed, ~3,331 insertions).
 
-- Ran a Node one-liner to update package.json non-interactively: set package.scripts.prepare to a no-op ('echo "prepare skipped"') if ../../setup-package-docs.js did not exist and wrote package.json in-place. Command executed successfully.
+- Ran non-interactive Node one-liners to update package.json in-place in multiple steps, e.g., setting package.scripts.prepare to a no-op when ../../setup-package-docs.js did not exist and later replacing the root "scripts" section with standard type-check/build/test/clean scripts while preserving prepare and voder fields.
 
-- Committed and pushed .voder tracking updates:
-  - Command: git add .voder && git commit -m "chore(ui-tools): update voder tracking files" && git push
-  - Result: [main c7fe9bb] — 7 files changed, 409 insertions(+), 517 deletions(-). Pushed to origin/main.
+- Committed and pushed .voder tracking updates (example commit c7fe9bb) and recorded multiple additional .voder metadata commits (examples: ee49965, 76f67ed, abc228f).
 
-- Implemented and added packages/ui-tools/src/build/postcss.ts:
-  - Added a TypeScript interface PostCSSConfigOptions and createPostCSSConfig function.
-  - Used ESM import of autoprefixer, included JSDoc, default browsers list, supported options.plugins, and returned a plugins array beginning with autoprefixer. File written successfully.
+- Implemented packages/ui-tools/src/build/postcss.ts: added PostCSSConfigOptions interface and createPostCSSConfig function with ESM autoprefixer import, JSDoc, default browsers list, and plugins array; the file was written to the repo.
 
-- Recorded multiple .voder metadata changes in follow-up commits:
-  - Commit ee49965: git add .voder && git commit -m "chore(ui-tools): record voder metadata changes" — 7 files changed, 474 insertions(+), 380 deletions(-).
-  - Commit 76f67ed: git add .voder/history.md .voder/last-action.md .voder/plan.md && git commit -m "chore(ui-tools): record voder metadata changes" — 3 files changed, 74 insertions(+), 282 deletions(-).
-  - Commit abc228f: git add .voder && git commit -m "chore(ui-tools): commit pending voder metadata updates" — 7 files changed, 469 insertions(+), 288 deletions(-).
-  - These local commits were pushed to remote at various points.
+- Added a minimal public export barrel at packages/ui-tools/src/index.ts exporting createPostCSSConfig and PostCSSConfigOptions from './build/postcss.js' (commit 8c4e390).
 
-- Added a minimal public export barrel:
-  - packages/ui-tools/src/index.ts exporting createPostCSSConfig and PostCSSConfigOptions from './build/postcss.js'.
-  - Committed as [main 8c4e390] feat(ui-tools): add PostCSS export barrel (createPostCSSConfig) — 1 file changed, 2 insertions.
+- Performed numerous stash operations and manipulations around .voder metadata: stashed local .voder changes, restored/applied stashes, attempted add/commit, dropped stashes, and handled the repo being ahead of origin/main by two commits at one point.
 
-- Stashed .voder local changes (without committing):
-  - Command: git stash push -m "wip: stash .voder metadata" -- .voder || true
-  - Result: Saved working directory and index state on main: "wip: stash .voder metadata".
+- Captured repo status showing unstaged modified files, deleted and modified prompt files, modified setup files, and several untracked files (including packages/services docs and package-lock.json).
 
-- Most recent stash/restore attempt and resulting state:
-  - Restored the stash entry labeled "wip: stash .voder metadata", applied it, added .voder, committed, and dropped the stash via a single non-interactive command. The command completed but left the repo with unstaged and uncommitted changes; git reported "no changes added to commit".
-  - At that time the branch was noted as local branch ahead of origin/main by 2 commits.
+- Created a filtered stash to save non-.voder changes (saving all changed files except .voder paths), encountered a pathspec error when restoring .voder metadata for packages/ui-tools/.voder/, and then performed an idempotent restore of tracked .voder paths via git ls-files and git restore.
 
-- Current repository status (git status / --porcelain excerpt):
-  - Unstaged modified files:
-    - docs/component-hierarchy.md
-    - packages/dev-config/package.json
-    - packages/services/docs/decisions/README.md
-    - packages/services/package.json
-    - packages/services/src/AnimationService.ts
-    - packages/services/tsconfig.json
-    - packages/shared/tsconfig.json
-    - packages/ui-tools/.voder/history.md
-    - packages/ui-tools/.voder/implementation-progress.md
-    - packages/ui-tools/.voder/last-action.md
-    - packages/ui-tools/.voder/plan.md
-    - packages/ui-tools/.voder/progress-chart.png
-    - packages/ui-tools/.voder/progress-log-areas.csv
-    - packages/ui-tools/.voder/progress-log.csv
-  - Deleted files (reported):
-    - prompts/runtime/accessibility-requirements.md
-    - prompts/runtime/ui-testing.md
-  - Modified files:
-    - prompts/universal-guide.md
-    - setup-package-docs.js
-  - Untracked files:
-    - packages/services/docs/libraries/usage/
-    - packages/services/package-lock.json
-    - packages/services/prompts/runtime-ui-testing.md
-    - prompts/development/ui-tools/
-  - Exact porcelain output (excerpt) included the above M/D/?? lines.
+- Persisted and pushed .voder metadata in commit 1802445 (added/updated .voder files, pushed to origin/main).
 
-- Most recent command executed to stash non-.voder changes:
-  - files="$(git --no-pager diff --name-only | grep -v '^.voder/' | tr '\n' ' ')" && [ -n "$files" ] && git stash push -m "wip: save non-.voder working changes" -- $files || true
-  - The command completed (no further output captured).
+- Added packages/ui-tools/tsconfig.json via a POSIX heredoc with compilerOptions targeting ES2022/ESNext, NodeNext resolution, strict settings, declaration output to dist, and includes ["src","tests","prettier.config.ts"]; staged and committed in commit 4e74df7 ("chore(ui-tools): add tsconfig for build and tests").
 
-- Most recently attempted action (restore .voder metadata to HEAD):
-  - Command run: git restore --source=HEAD -- .voder/ packages/ui-tools/.voder/ || true
-  - Result: The command failed with exit code 1. stderr: error: pathspec 'packages/ui-tools/.voder/' did not match any file(s) known to git.
+- Created an ADR documenting devDependency decisions at packages/ui-tools/docs/decisions/0002-add-dev-deps-for-ui-tools.md (status: accepted, date: 2025-08-21); added, committed and pushed in commit afbbe30 ("chore(ui-tools): add ADR for devDependencies").
+
+- Most recent file change and commit: staged and committed the modified package.json with the message "chore(ui-tools): restore dev/test scripts" (commit 6278399). Git output: "[main 6278399] chore(ui-tools): restore dev/test scripts — 1 file changed, 7 insertions(+), 2 deletions(-)".
 
 **Most recently we've executed the following action:**
 
 ---
-Restore tracked .voder paths to their HEAD state (idempotent). Run this single POSIX command from the project root:
-
-```bash
-paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0' '\n' || true)"; if [ -n "$paths" ]; then git restore --source=HEAD -- $paths || true; else echo "No .voder paths known to git to restore"; fi
-```
+git push origin main
 ---
 
 **This was the result:**
 ---
-`bash -lc paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0' '\n' || true)"; if [ -n "$paths" ]; then git restore --source=HEAD -- $paths || true; else echo "No .voder paths known to git to restore"; fi` completed.
+`git push origin main` completed.
 Output:
 
 ---

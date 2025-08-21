@@ -27,6 +27,10 @@
       "import": "./dist/typescript/index.js",
       "types": "./dist/typescript/index.d.ts"
     },
+    "./typescript/base.json": "./typescript/base.json",
+    "./typescript/library.json": "./typescript/library.json",
+    "./typescript/node.json": "./typescript/node.json",
+    "./typescript/test.json": "./typescript/test.json",
     "./linters/markdown": {
       "import": "./dist/linters/markdown/index.js",
       "types": "./dist/linters/markdown/index.d.ts"

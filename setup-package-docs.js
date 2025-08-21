@@ -328,6 +328,9 @@ function setupPackageDocs(quietMode = false) {
   // Setup ADR symlinks (decision records tagged for this package)
   setupAdrSymlinks(packageDir, packageName, quietMode);
 
+  // Setup dependency ADR symlinks (inherited from dependencies)
+  setupDependencyAdrSymlinks(packageDir, packageName, quietMode);
+
   // Setup prompt-assets symlinks
   setupPromptAssetsSymlinks(packageDir, packageName, quietMode);
 }
@@ -463,6 +466,208 @@ function setupAdrSymlinks(packageDir, packageName, quietMode = false) {
 
     fs.writeFileSync(summaryPath, lines.join('\n') + '\n');
   } catch (e) { console.error('    Failed to write ADR README:', e.message); }
+}
+
+/** Link ADRs from dependency packages into docs/decisions with 'inherited-' prefix */
+function setupDependencyAdrSymlinks(packageDir, packageName, quietMode = false) {
+  // Read package.json to get dependencies
+  const packageJsonPath = path.join(packageDir, "package.json");
+  if (!fs.existsSync(packageJsonPath)) {
+    if (!quietMode) console.log("  No package.json found for dependency ADR linking");
+    return;
+  }
+
+  let packageJson;
+  try {
+    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  } catch (error) {
+    console.error("  Error reading package.json for dependency ADRs:", error.message);
+    return;
+  }
+
+  // Extract ALL dependencies (both dependencies and devDependencies)
+  const allDeps = {
+    ...(packageJson.dependencies || {}),
+    ...(packageJson.devDependencies || {}),
+  };
+
+  const depNames = Object.keys(allDeps);
+  
+  if (depNames.length === 0) {
+    if (!quietMode) console.log("  No dependencies found for ADR inheritance");
+    return;
+  }
+
+  const adrTargetDir = path.join(packageDir, 'docs', 'decisions');
+  fs.mkdirSync(adrTargetDir, { recursive: true });
+
+  let totalLinked = 0;
+  
+  if (!quietMode) console.log(`  Linking dependency ADRs from ${depNames.length} dependencies...`);
+
+  // Process each dependency
+  for (const depName of depNames) {
+    // Skip non-local dependencies (external packages)
+    if (!depName.startsWith('@voder/') && !allDeps[depName].startsWith('file:')) {
+      continue;
+    }
+
+    let depPath;
+    if (allDeps[depName].startsWith('file:')) {
+      // Local file reference like "file:../dev-config"
+      depPath = path.resolve(packageDir, allDeps[depName].replace('file:', ''));
+    } else if (depName.startsWith('@voder/')) {
+      // Convert @voder/dep-name to ../dep-name
+      const depBaseName = depName.replace('@voder/', '');
+      depPath = path.resolve(packageDir, `../${depBaseName}`);
+    }
+
+    if (!depPath || !fs.existsSync(depPath)) {
+      continue;
+    }
+
+    const depAdrDir = path.join(depPath, 'docs', 'decisions');
+    if (!fs.existsSync(depAdrDir)) {
+      continue;
+    }
+
+    let linkedFromDep = 0;
+
+    try {
+      const adrFiles = fs.readdirSync(depAdrDir).filter(f => 
+        f.endsWith('.md') && f !== 'README.md'
+      );
+
+      for (const adrFile of adrFiles) {
+        const sourceAdrPath = path.join(depAdrDir, adrFile);
+        
+        // Skip if it's already a symlink (inherited from another dependency)
+        try {
+          if (fs.lstatSync(sourceAdrPath).isSymbolicLink()) {
+            continue;
+          }
+        } catch (e) {
+          continue;
+        }
+
+        // Build inherited link name: add 'inherited-' prefix unless already present
+        let inheritedFileName = adrFile;
+        if (!adrFile.startsWith('inherited-')) {
+          inheritedFileName = 'inherited-' + adrFile;
+        }
+
+        const linkPath = path.join(adrTargetDir, inheritedFileName);
+        
+        // Skip if link already exists
+        if (fs.existsSync(linkPath)) {
+          continue;
+        }
+
+        const relativeTarget = path.relative(adrTargetDir, sourceAdrPath);
+        
+        try {
+          fs.symlinkSync(relativeTarget, linkPath);
+          if (!quietMode) console.log(`    Inherited ADR ${depName}/${adrFile} -> ${inheritedFileName}`);
+          linkedFromDep++;
+          totalLinked++;
+        } catch (e) {
+          console.error(`    Failed to inherit ADR ${depName}/${adrFile}: ${e.message}`);
+        }
+      }
+    } catch (e) {
+      // Error reading dependency ADR directory, continue with next dependency
+    }
+
+    if (!quietMode && linkedFromDep > 0) {
+      console.log(`    Linked ${linkedFromDep} ADRs from ${depName}`);
+    }
+  }
+
+  if (!quietMode) console.log(`  Dependency ADR linking complete (${totalLinked} inherited)`);
+
+  // Update the README.md to include inherited decisions
+  updateAdrReadmeWithInherited(adrTargetDir, packageName);
+}
+
+/** Update ADR README to include inherited decisions section */
+function updateAdrReadmeWithInherited(adrTargetDir, packageName) {
+  const summaryPath = path.join(adrTargetDir, 'README.md');
+  
+  try {
+    // Gather decision entries and categorize them
+    const allEntries = fs
+      .readdirSync(adrTargetDir)
+      .filter(f => f.endsWith('.md') && f !== 'README.md')
+      .sort();
+
+    const localEntries = [];
+    const sharedEntries = [];
+    const inheritedEntries = [];
+
+    for (const e of allEntries) {
+      const p = path.join(adrTargetDir, e);
+      let isLink = false;
+      try { isLink = fs.lstatSync(p).isSymbolicLink(); } catch {}
+      
+      if (isLink) {
+        if (e.startsWith('inherited-')) {
+          inheritedEntries.push(e);
+        } else {
+          sharedEntries.push(e);
+        }
+      } else {
+        localEntries.push(e);
+      }
+    }
+
+    const lines = [
+      `# Decision Records for ${packageName}`,
+      '',
+    ];
+
+    if (localEntries.length > 0) {
+      lines.push(
+        '## Local decisions',
+        '',
+        'These decisions are authored and owned by this package.',
+        '',
+        ...localEntries.map(e => `- [${e}](./${e})`),
+        ''
+      );
+    }
+
+    if (sharedEntries.length > 0) {
+      lines.push(
+        '## Shared decisions',
+        '',
+        'These are shared ADRs linked from the root docs/decisions because they declare applicability to this package via front-matter `packages:`.',
+        '',
+        ...sharedEntries.map(e => `- [${e}](./${e})`),
+        ''
+      );
+    }
+
+    if (inheritedEntries.length > 0) {
+      lines.push(
+        '## Inherited decisions',
+        '',
+        'These are decision records inherited from dependency packages that may affect this package.',
+        '',
+        ...inheritedEntries.map(e => `- [${e}](./${e})`),
+        ''
+      );
+    }
+
+    if (localEntries.length === 0 && sharedEntries.length === 0 && inheritedEntries.length === 0) {
+      lines.push('_No decisions present._', '');
+    }
+
+    lines.push('> This file is auto-generated by setup-package-docs.js; do not edit manually.');
+
+    fs.writeFileSync(summaryPath, lines.join('\n') + '\n');
+  } catch (e) { 
+    console.error('    Failed to update ADR README with inherited decisions:', e.message); 
+  }
 }
 
 function setupLibrariesSymlinks(packageDir, packageName, quietMode = false) {
@@ -673,22 +878,55 @@ function setupPromptAssetsSymlinks(packageDir, packageName, quietMode = false) {
     // Directory might not exist or be empty, which is fine
   }
 
-  // Link ADR template
-  const adrTemplatePath = "../../../prompt-assets/adr-template.md";
-  const linkPath = path.join(promptAssetsDir, "adr-template.md");
-  const fullTargetPath = path.resolve(promptAssetsDir, adrTemplatePath);
-
-  if (fs.existsSync(fullTargetPath)) {
-    try {
-      fs.symlinkSync(adrTemplatePath, linkPath);
-      trackLink(fullTargetPath);
-      console.log(`    Linked adr-template.md -> ${adrTemplatePath}`);
-    } catch (error) {
-      console.error(`    Failed to link adr-template.md: ${error.message}`);
-    }
-  } else {
-    console.log(`    Skipped adr-template.md (target not found: ${adrTemplatePath})`);
+  // Link all .md files from prompt-assets directory
+  const sourcePromptAssetsDir = path.resolve(packageDir, "../../prompt-assets");
+  
+  if (!fs.existsSync(sourcePromptAssetsDir)) {
+    if (!quietMode) console.log(`    Prompt-assets directory not found: ${sourcePromptAssetsDir}`);
+    return;
   }
+
+  let linkedCount = 0;
+
+  try {
+    const files = fs.readdirSync(sourcePromptAssetsDir);
+    
+    for (const file of files) {
+      // Only link .md files
+      if (!file.endsWith('.md')) {
+        continue;
+      }
+
+      const sourceFilePath = path.join(sourcePromptAssetsDir, file);
+      const stats = fs.statSync(sourceFilePath);
+      
+      // Only link regular files (not directories or symlinks)
+      if (!stats.isFile()) {
+        continue;
+      }
+
+      const relativeTargetPath = `../../prompt-assets/${file}`;
+      const linkPath = path.join(promptAssetsDir, file);
+      const fullTargetPath = path.resolve(promptAssetsDir, relativeTargetPath);
+
+      if (fs.existsSync(fullTargetPath)) {
+        try {
+          fs.symlinkSync(relativeTargetPath, linkPath);
+          trackLink(fullTargetPath);
+          if (!quietMode) console.log(`    Linked ${file} -> ${relativeTargetPath}`);
+          linkedCount++;
+        } catch (error) {
+          console.error(`    Failed to link ${file}: ${error.message}`);
+        }
+      } else {
+        if (!quietMode) console.log(`    Skipped ${file} (target not found: ${relativeTargetPath})`);
+      }
+    }
+  } catch (error) {
+    console.error(`    Error reading prompt-assets directory: ${error.message}`);
+  }
+
+  if (!quietMode) console.log(`    Linked ${linkedCount} prompt-asset files`);
 }
 
 /**

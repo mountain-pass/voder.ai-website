@@ -1,12 +1,7 @@
 {
-  "extends": "@voder/tsconfig/base.json",
+  "extends": "@voder/dev-config/typescript/library.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "declaration": true,
-    "declarationMap": true
+    "outDir": "dist"
   },
-  "include": ["src/**/*"],
-  "references": [
-    { "path": "../shared" }
-  ]
+  "include": ["src/**/*"]
 }

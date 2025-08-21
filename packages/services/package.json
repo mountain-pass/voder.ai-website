@@ -1,6 +1,7 @@
 {
   "name": "@voder/services",
   "version": "1.0.0",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -15,7 +16,6 @@
     "prepare": "node ../../setup-package-docs.js"
   },
   "dependencies": {
-    "@voder/shared": "*",
     "gsap": "^3.13.0"
   },
   "devDependencies": {

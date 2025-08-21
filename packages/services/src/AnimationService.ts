@@ -1,5 +1,21 @@
-import { IAnimationService, AnimationCommand } from '@voder/shared';
 import { gsap } from 'gsap';
+
+// Local interfaces - will be extracted to @voder/shared later
+export interface IAnimationService {
+  execute(command: AnimationCommand): Promise<void>;
+}
+
+export interface AnimationCommand {
+  type: 'fadeIn' | 'fadeOut' | 'slideIn' | 'slideOut' | 'custom';
+  target: HTMLElement;
+  config: AnimationConfig;
+}
+
+export interface AnimationConfig {
+  duration: number;
+  easing: string;
+  delay?: number;
+}
 
 export class AnimationService implements IAnimationService {
   async execute(command: AnimationCommand): Promise<void> {

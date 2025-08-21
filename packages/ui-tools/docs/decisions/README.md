@@ -5,6 +5,7 @@
 These decisions are authored and owned by this package.
 
 - [0001-ui-tools-css-preprocessing.md](./0001-ui-tools-css-preprocessing.md)
+- [0002-add-dev-deps-for-ui-tools.md](./0002-add-dev-deps-for-ui-tools.md)
 
 ## Inherited decisions
 

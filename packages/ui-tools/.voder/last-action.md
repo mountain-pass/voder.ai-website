@@ -1,18 +1,13 @@
 # Last Action Executed
 
-**Timestamp:** 2025-08-21T11:59:41.643Z
+**Timestamp:** 2025-08-21T13:10:19.622Z
 
 ## Plan
 
 ```
-Run this from the project root to add the missing test runtime helper as a devDependency and update package-lock.json:
+Run this single command from the project root to remove duplicate lines (dedupe) in .gitignore and replace it in-place:
 
-npm install --no-audit --no-fund --save-dev @testing-library/jest-dom
-
-What this does:
-- Updates package.json (adds @testing-library/jest-dom under devDependencies)
-- Produces/updates package-lock.json with the installed package
-- Must be executed in the repository root (where package.json lives) on a POSIX shell (bash/zsh)
+awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore
 ```
 
 ## Action
@@ -22,13 +17,10 @@ What this does:
 **Parameters:**
 ```json
 {
-  "command": "npm",
+  "command": "bash",
   "parameters": [
-    "install",
-    "--no-audit",
-    "--no-fund",
-    "--save-dev",
-    "@testing-library/jest-dom"
+    "-lc",
+    "awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore"
   ],
   "timeout": 60000
 }
@@ -37,9 +29,7 @@ What this does:
 ## Handler Response
 
 ```
-`npm install --no-audit --no-fund --save-dev @testing-library/jest-dom` completed.
+`bash -lc awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore` completed.
 Output:
-
-added 8 packages in 838ms
 
 ```

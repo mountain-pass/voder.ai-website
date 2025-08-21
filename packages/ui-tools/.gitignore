@@ -1,4 +1,6 @@
 # Node / build outputs / caches
+prompt-assets/
+
 node_modules/
 dist/
 build/
@@ -7,7 +9,6 @@ coverage/
 .vite/
 .nyc_output/
 *.tsbuildinfo
-
 # Temporary / output / logs (forbidden in repo)
 *.log
 *.txt
@@ -19,7 +20,6 @@ temp/
 tmp/
 diagnostics/
 artifacts/
-
 # Tool artifacts & editors/IDE
 .eslintcache
 .DS_Store
@@ -28,17 +28,12 @@ artifacts/
 *.suo
 *.user
 *.swp
-
 # OS / platform artifacts
 Thumbs.db
-.DS_Store
-
 # Secrets / local environment
 .env
-
 # Build/test specific alternatives
 dist-*/
 coverage-*/
-
 # Keep package.json and lockfiles tracked (do NOT ignore)
 # (Intentionally not ignoring package-lock.json, yarn.lock, package.json)

@@ -1,94 +1,85 @@
-Summary of work completed so far
+Summary — history of completed work
 
-- Repo ignore files
-  - Added comprehensive .gitignore for Node build outputs/caches, temp/log files, editor/OS artifacts, .env secrets, and build/test variants.
-  - Added .voderignore to exclude large directories while exposing selected artifacts to the LLM inspector.
+- Repository housekeeping and metadata
+  - Added comprehensive .gitignore and .voderignore.
+  - Created initial scaffold on main with package scaffolding and multiple .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs).
+  - Added docs/decisions (including symlinked decision docs), symlinked prompts/docs, and persisted multiple metadata commits while using stashes/filtered stashes and git-file restores to manage .voder edits.
 
-- Initial scaffold & metadata
-  - Created initial scaffold commit on main with package scaffolding and multiple .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs).
-  - Added docs/decisions (including symlinked decision docs), symlinked prompts/docs, and a packages/ui-tools package.
+- Package scaffold and package.json work
+  - Iteratively adjusted root and package package.json fields and scripts, preserving prepared and .voder fields.
+  - Added top-level main/types/exports fields for @voder/ui-tools v1.0.0 (private, "type": "module").
+  - Removed a nested "types" under "exports" to avoid exposing .d.ts files; committed with message: "fix: align package.json exports with dist artifacts (avoid .d.ts in exports)".
 
-- package.json and scripts
-  - Iteratively adjusted package.json scripts and toggled prepare while preserving prepare and voder fields (notable commit 6278399).
+- packages/ui-tools implementation
+  - Implemented packages/ui-tools/src/build/postcss.ts exporting createPostCSSConfig and PostCSSConfigOptions (ESM autoprefixer import, JSDoc, default browsers list).
+  - Added public export barrel at packages/ui-tools/src/index.ts and packages/ui-tools/tsconfig.json (ES2022/ESNext target, NodeNext resolution, strict, declarations).
+  - Added a guarded packages/ui-tools/vite.config.ts to avoid optional plugin import failures during test startup.
 
-- .voder metadata lifecycle
-  - Extensively edited and preserved .voder metadata across many local commits using stashes/filtered stashes and git-file restores to maintain idempotent tracked paths (examples: commits da44748, 8b5bcc0, later 9a21545, 744170e).
-  - Persisted and pushed multiple local commits updating .voder metadata (including commit cde242b with 7 files changed).
+- TypeScript configuration and ADR
+  - Changed root tsconfig.json.module to "NodeNext" to resolve TS5110 and allow type-check/build to complete.
+  - Added an ADR documenting devDependency decisions for ui-tools (accepted 2025-08-21).
 
-- Source additions and public exports
-  - Added packages/ui-tools/src/build/postcss.ts implementing PostCSSConfigOptions and createPostCSSConfig (ESM autoprefixer import, JSDoc, default browsers list).
-  - Added public export barrel at packages/ui-tools/src/index.ts exporting createPostCSSConfig and PostCSSConfigOptions (commit 8c4e390).
+- Toolchain and dependencies installed
+  - Installed devDependencies non-interactively: typescript, vitest@3.2.4, @vitest/coverage-v8@3.2.4, @types/node, postcss, autoprefixer, @testing-library/dom, jest-axe, markdownlint-cli2 (152 packages added, 2 updated).
+  - Later added jsdom@^26.0.0 and @testing-library/jest-dom (8 packages).
+  - Committed package.json and package-lock.json changes.
 
-- TypeScript config & ADR
-  - Added packages/ui-tools/tsconfig.json (ES2022/ESNext target, NodeNext resolution, strict settings, declaration output).
-  - Added ADR documenting devDependency decisions for ui-tools (accepted 2025-08-21).
-  - Edited root tsconfig.json to set compilerOptions.module to "NodeNext" to align with moduleResolution (commit on main 3f7cd75).
+- Tests and test infrastructure
+  - Added Vitest tests:
+    - packages/ui-tools/tests/build/postcss.test.ts (initially force-added; later committed).
+    - packages/ui-tools/tests/package-structure.test.ts validating package.json exports point to existing dist files and do not expose .ts/.d.ts paths.
+  - The package-structure test surfaced the exports/.d.ts exposure issue, which was fixed by editing package.json.
 
-- Repo state, notable commits, and pushes
-  - Observed varying working-tree states during work (unstaged/modified files, deleted/modified prompt files, untracked files); repo was at times ahead of origin/main by two commits.
-  - Finalized staged package metadata in commit 207ad8a.
-  - Persisted and pushed multiple local commits to origin/main (examples: da44748, 8b5bcc0, df1fc64).
-  - Committed modified tracked .voder metadata files (9a21545, 744170e) and pushed them.
-  - Most recent .voder metadata add/commit/push performed and completed.
+- Build, type-check, and test runs
+  - Switched to "NodeNext" and completed type-check and build.
+  - Ran the verification pipeline (npm run type-check && npm run build && npm test) multiple times.
+  - Fixed a failing package-structure assertion by removing the nested "types" property under exports.
 
-- Developer toolchain installs
-  - Ran non-interactive npm installs adding devDependencies: typescript, vitest@3.2.4, @vitest/coverage-v8@3.2.4, @types/node, postcss, autoprefixer, @testing-library/dom, jest-axe, markdownlint-cli2 (152 packages added, 2 updated).
-  - Later added jsdom@^26.0.0 as a devDependency.
+- Vitest startup issue and mitigation
+  - Encountered Vitest startup failure (ERR_MODULE_NOT_FOUND for 'vite-plugin-inline-source') due to a generated node_modules/.vite-temp/vite.config.ts referencing a plugin present only in .voder metadata.
+  - Added a guarded vite.config.ts in packages/ui-tools that dynamically attempts to import the optional plugin, swallows import/init errors, and exports an async Vite config with a plugins array to prevent optional-plugin import failures during test startup; change committed.
 
-- Tests and .gitignore conflict
-  - Created packages/ui-tools/tests/build/postcss.test.ts (Vitest unit test for createPostCSSConfig).
-  - Initial git add/commit failed because tests/build was ignored; the test file was force-added and later committed in commit 1d761f9 ("test(ui-tools): add PostCSS factory unit test").
+- Miscellaneous git operations
+  - Repeated git index adjustments and add/commit/push cycles (including git rm --cached -r dist/ attempts where applicable) to persist metadata and dependency changes.
+  - Installed @testing-library/jest-dom, stashed local .voder edits, and pushed local commits on main to origin.
+  - Last committed change before the final verification run included creating packages/ui-tools/tests/package-structure.test.ts.
 
-- Dependency / lockfile commit
-  - Staged and committed root package.json and package-lock.json dependency/lockfile changes in commit 3943c9d ("chore(ui-tools): record dependency/lockfile changes").
+- Most recent verification run and result
+  - Command: npm run type-check && npm run build && npm test
+  - Results:
+    - Type-check: tsc --noEmit completed.
+    - Build: tsc -p tsconfig.json completed.
+    - Tests (vitest v3.2.4) under packages/ui-tools: 2 test files, 2 tests — both passed:
+      - tests/package-structure.test.ts — passed.
+      - tests/build/postcss.test.ts — passed.
+    - Test run summary: 2 test files passed (2 tests), duration ~410ms.
 
-- Build run, failure, and fix
-  - Ran type-check/build/test pipeline which initially failed with tsc error TS5110 (module must be set to NodeNext when moduleResolution is NodeNext).
-  - Fixed root tsconfig.module to NodeNext and committed the change; type-check and build then completed.
+- Most recent git action
+  - Executed: git push (from repository root). Result: git push completed.
 
-- Verification pipeline run (most recent)
-  - Executed npm run type-check && npm run build && npm test.
-  - Type-check and build completed; Vitest startup failed with ERR_MODULE_NOT_FOUND for package 'vite-plugin-inline-source' (error originated from node_modules/.vite-temp/vite.config.ts), preventing tests from running to completion.
+- Most recently executed command and result
+  - Command: git rm --cached -r dist/
+  - Result: failed with exit code 128; stderr: "fatal: pathspec 'dist/' did not match any files"
 
-- Dependency inspection & repository search for missing plugin
-  - Ran npm ls vite-plugin-inline-source --json || true; output showed the package was not present in the local dependency tree.
-  - Searched the repo for references to "vite-plugin-inline-source"; matches were found only inside .voder metadata files (history.md, implementation-progress.md, plan.md, last-action.md). No occurrences were found in source files outside metadata.
+- Last executed check for tracked dist paths
+  - Command: git ls-files -- 'dist' 'dist/*' || true
+  - Result: completed with no output (no tracked dist paths).
 
-- Attempts to inspect generated Vite temp config
-  - Attempted to view node_modules/.vite-temp/vite.config.ts and list the directory; commands produced no visible output.
-
-- Guarded vite.config.ts and commit
-  - Created a guarded packages/ui-tools/vite.config.ts that dynamically attempted to import 'vite-plugin-inline-source', swallowed import/init errors, and exported an async Vite config with the resulting plugins array.
-  - Committed the change: [main ffedbbe] fix(ui-tools): guard optional vite-plugin-inline-source import to avoid test startup error (1 file changed, 28 insertions).
-
-- Most recent executed shell/git actions and results
-  - Ran git rm --cached -r dist/ to remove tracked build outputs from the index while leaving files on disk; command failed with exit code 128 and stderr: "fatal: pathspec 'dist/' did not match any files".
-  - Executed git push origin main; the push completed.
-  - Executed git add of multiple .voder files, committed with message "chore(ui-tools): persist .voder metadata updates", and pushed; add/commit/push completed.
-  - Ran git ls-files dist; the command completed with no output.
-
-- Most recent commit to persist staged metadata
-  - Ran git commit -m "chore(ui-tools): persist staged metadata and ensure clean working tree".
-  - Result: commit completed as [main 2048ffa] with "7 files changed, 288 insertions(+), 351 deletions(-)".
+- Most recent repository edit (single-file change)
+  - Appended the line "prompt-assets/" to .gitignore to prevent prompt-assets/ from being tracked.
+  - Result: patch applied successfully; .gitignore updated (the file now contains the appended "prompt-assets/" entries in multiple sections).
 
 **Most recently we've executed the following action:**
 
 ---
-Run this from the project root to add the missing test runtime helper as a devDependency and update package-lock.json:
+Run this single command from the project root to remove duplicate lines (dedupe) in .gitignore and replace it in-place:
 
-npm install --no-audit --no-fund --save-dev @testing-library/jest-dom
-
-What this does:
-- Updates package.json (adds @testing-library/jest-dom under devDependencies)
-- Produces/updates package-lock.json with the installed package
-- Must be executed in the repository root (where package.json lives) on a POSIX shell (bash/zsh)
+awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore
 ---
 
 **This was the result:**
 ---
-`npm install --no-audit --no-fund --save-dev @testing-library/jest-dom` completed.
+`bash -lc awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore` completed.
 Output:
-
-added 8 packages in 838ms
 
 ---

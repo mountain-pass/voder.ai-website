@@ -905,21 +905,16 @@ function setupPromptAssetsSymlinks(packageDir, packageName, quietMode = false) {
         continue;
       }
 
-      const relativeTargetPath = `../../prompt-assets/${file}`;
+      const relativeTargetPath = `../../../prompt-assets/${file}`;
       const linkPath = path.join(promptAssetsDir, file);
-      const fullTargetPath = path.resolve(promptAssetsDir, relativeTargetPath);
 
-      if (fs.existsSync(fullTargetPath)) {
-        try {
-          fs.symlinkSync(relativeTargetPath, linkPath);
-          trackLink(fullTargetPath);
-          if (!quietMode) console.log(`    Linked ${file} -> ${relativeTargetPath}`);
-          linkedCount++;
-        } catch (error) {
-          console.error(`    Failed to link ${file}: ${error.message}`);
-        }
-      } else {
-        if (!quietMode) console.log(`    Skipped ${file} (target not found: ${relativeTargetPath})`);
+      try {
+        fs.symlinkSync(relativeTargetPath, linkPath);
+        trackLink(sourceFilePath);
+        if (!quietMode) console.log(`    Linked ${file} -> ${relativeTargetPath}`);
+        linkedCount++;
+      } catch (error) {
+        if (!quietMode) console.log(`    Skipped ${file} (link failed: ${error.message})`);
       }
     }
   } catch (error) {

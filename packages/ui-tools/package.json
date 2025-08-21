@@ -6,9 +6,14 @@
   "license": "UNLICENSED",
   "description": "Specialized development tooling for UI component libraries",
   "scripts": {
+    "type-check": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest run --coverage --reporter=verbose",
+    "clean": "rm -rf dist/ coverage/ .cache/ .vite/ .eslintcache",
     "prepare": "node ../../setup-package-docs.js",
-    "voder": "node ../../../voder/apps/voder-cli/index.js",
-    "build": "echo 'Build placeholder'"
+    "voder": "node ../../../voder/apps/voder-cli/index.js"
   },
   "peerDependencies": {
     "vite": "^6.0.0",

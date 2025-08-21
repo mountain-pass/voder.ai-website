@@ -4,7 +4,7 @@ import {
   simulateClick,
   waitForNextFrame,
   waitForAnimation
-} from '../../src/testing/helpers.ts';
+} from '../../src/testing/helpers';
 
 describe('testing helpers', () => {
   test('renderComponent mounts and removes created container on unmount', async () => {

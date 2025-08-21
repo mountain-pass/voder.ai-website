@@ -133,26 +133,29 @@ LLM agents operate as **solo developers** with **complete autonomy**:
 - **✅ Verify Changes**: Always run appropriate validation after making changes
 - **✅ Debug Issues**: Run diagnostic commands to understand and resolve problems
 - **✅ Make Decisions**: Decide on implementation approaches without external input
-- **✅ Commit Directly**: Push completed work directly to main branch
+- **✅ Commit Directly**: Push completed work directly to main branch (ONLY after all quality checks pass)
 - **❌ Passive Inspection**: Don't just read files and assume - actively verify current state
 - **❌ Historical Assumptions**: Don't assume previous test results represent current state
 - **❌ Wait for Others**: No one else is coming to help, review, or approve your work
 - **❌ Create Reports**: Don't create status reports, review documents, or progress updates for others
 - **❌ Publishing/Releases**: Never run `npm publish`, `npm version`, or create releases - this is handled by bespoke CI/CD
 - **❌ GitHub Actions**: Never create `.github/workflows/` files - the project uses a bespoke CI/CD system, not GitHub Actions
+- **❌ Commit Broken Code**: NEVER commit code that fails builds, tests, linting, or formatting checks
 
 **Solo Development Guidelines:**
 - **Complete Ownership**: You own the entire development lifecycle (excluding publishing/releases)
 - **Self-Validation**: Use automated tools for all validation - no human review exists
 - **Direct Action**: Take action immediately when you know what needs to be done
 - **End-to-End Responsibility**: From requirements to deployment-ready code (publishing handled externally)
+- **🚨 Quality Gate Enforcement**: ALWAYS run `npm run verify` before committing - never commit broken code
 
 **Command Execution Guidelines:**
 - **Verification First**: When unsure about package state, run verification commands
 - **Test Before Conclude**: Run tests to confirm current working tree status
 - **Build to Validate**: Run builds to ensure current code compiles correctly
+- **Quality Before Commit**: Run `npm run verify` before every commit to ensure all checks pass
 - **Active Problem Solving**: Use commands to diagnose and resolve issues
-- **Prefer Broad Quality Checks**: Use comprehensive commands like `npm run test:coverage && npm run lint:fix && npm run format:fix && npm audit` over individual test files
+- **Prefer Broad Quality Checks**: Use comprehensive commands like `npm run verify` over individual test files
 - **Avoid Expensive Individual Commands**: Running individual tests like `npx vitest run src/tests/package-exports.test.ts` is very expensive - use full test suites instead
 
 #### **Recommended Output Strategy:**
@@ -761,10 +764,31 @@ The `verify` script runs a comprehensive quality pipeline that validates the ent
 - **`npm run test:ci`**: Run comprehensive test suite with coverage
 
 **When to Run Verify:**
-- **Before commits**: Ensure all quality checks pass
+- **🚨 BEFORE ALL COMMITS (MANDATORY)**: ALL quality checks MUST pass before committing code
 - **After dependency updates**: Validate package still works correctly
 - **During development**: Regular validation of current state
 - **CI/CD integration**: Automated quality gate in pipelines
+
+**🚨 CRITICAL: Commit Quality Gates**
+
+**NEVER commit or push code that:**
+- ❌ Has build failures (`npm run build` fails)
+- ❌ Has failing tests (`npm run test:ci` fails)
+- ❌ Has linting errors (`npm run lint:check` fails)
+- ❌ Has formatting inconsistencies (`npm run format:check` fails)
+- ❌ Has markdown linting errors (`npm run lint:md` fails)
+- ❌ Has TypeScript errors (`npm run type-check` fails)
+- ❌ Has security vulnerabilities (`npm audit` shows high/critical issues)
+
+**ALWAYS run `npm run verify` before commits to ensure all quality gates pass.**
+
+**Why Quality Gates Are Mandatory:**
+- **Build Integrity**: Ensures working tree always compiles successfully
+- **Test Coverage**: Maintains code quality and prevents regressions
+- **Code Consistency**: Enforces consistent formatting and style across all packages
+- **Security**: Prevents committing code with known vulnerabilities
+- **Team Productivity**: Reduces time spent debugging broken builds
+- **CI/CD Reliability**: Ensures external CI/CD system doesn't fail on preventable issues
 
 **2. Clean Script (MANDATORY):**
 The `clean` script removes all generated files and build artifacts:

@@ -1,96 +1,86 @@
 ## NOW
 
-git commit -am "chore: record .voder metadata updates" 2>&1 | tee /dev/stderr
+Commit and push the modified .voder metadata files to origin/main (create a single focused commit that records the current .voder/* changes and push it).
 
 ## NEXT
 
-1) Push the local commits to remote and capture output:
-   - git push origin main 2>&1 | tee /dev/stderr
-
-2) Re-run the full verification pipeline and capture output (this populates .voder/history.md and provides current diagnostics):
+1) Re-run the full verification pipeline and capture console-first output so results go to .voder/history.md:
    - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
 
-3) Inspect the verification output in the console/.voder/history.md and act based on results:
-   - If the verification run SUCCEEDS:
-     - Align jest-axe peer metadata and record an ADR (non-interactive):
-       - npm pkg set peerDependencies.jest-axe="^10.0.0" 2>&1 | tee /dev/stderr
-       - If package.json changed, create the ADR file and commit it along with package.json/package-lock.json, then re-run verification:
-         - cat > docs/decisions/0003-align-jest-axe-version.md <<'ADR'
-           ---
-           status: accepted
-           date: 2025-08-21
-           deciders: [voder-dev-team]
-           packages: '@voder/ui-tools'
-           ---
-           
-           # Align jest-axe peer dependency to devDependency version
-           
-           ## Decision
-           Align the `peerDependencies.jest-axe` entry in package.json to `^10.0.0` to match the devDependency version currently used for local testing.
-           
-           ## Rationale
-           Avoids confusing peer/consumer warnings and ensures local development uses a compatible jest-axe version.
-           
-           ## Consequences
-           - package.json peerDependencies updated to `^10.0.0`
-           - No runtime behavior change for consumers; this is metadata alignment.
-           ADR
-         - git add docs/decisions/0003-align-jest-axe-version.md package.json package-lock.json || true 2>&1 | tee /dev/stderr
-         - git commit -m "docs(adr): align jest-axe peer dependency to dev version" 2>&1 | tee /dev/stderr
-         - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+2) Inspect the verification output (consult .voder/history.md). Follow the single-path decision below:
 
-   - If the verification run FAILS:
-     - Enter the single-change loop. Use the verification stderr to select exactly one highest-priority corrective action (do not modify .voder/ or prompts/ beyond committing metadata already done). After performing exactly one change, re-run the verification pipeline. Example single-file corrective actions (execute ONLY ONE per iteration):
-       - If TS5055 overwrite errors indicate tsc is writing into tracked dist/:
-         - git rm --cached -r dist/ 2>&1 | tee /dev/stderr && git commit -m "chore: remove tracked dist/ to avoid tsc overwrite" 2>&1 | tee /dev/stderr
-       - If tsconfig is missing an exclude for dist:
-         - node -e "const fs=require('fs');const p='tsconfig.json';const cfg=JSON.parse(fs.readFileSync(p));cfg.exclude=Array.from(new Set([...(cfg.exclude||[]),'dist']));fs.writeFileSync(p,JSON.stringify(cfg,null,2)+'\n');console.log('updated tsconfig.json');" 2>&1 | tee /dev/stderr && git add tsconfig.json && git commit -m "fix: exclude dist from tsconfig to avoid overwrite errors" 2>&1 | tee /dev/stderr
-       - If a missing devDependency causes tests to fail (e.g., jsdom, @testing-library/jest-dom):
-         - npm install --no-audit --no-fund --save-dev <package-name> 2>&1 | tee /dev/stderr
-         - git add package.json package-lock.json && git commit -m "chore: add devDependency <package-name> required for tests" 2>&1 | tee /dev/stderr
-       - After performing exactly one such change, re-run:
-         - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
-       - Repeat the single-change loop until verification is green. Always preserve console output with tee.
+   A) If verification SUCCEEDS (build and tests pass)
+   - Align jest-axe peer metadata and record an ADR (single-change commit). Execute the non-interactive steps below (pipe all output to tee to preserve console-first history):
+     - npm pkg set peerDependencies.jest-axe="^10.0.0" 2>&1 | tee /dev/stderr
+     - Create the ADR file docs/decisions/0003-align-jest-axe-version.md (use a single here-doc write; include status/date/deciders/context/rationale/decision/consequences).
+     - git add package.json package-lock.json docs/decisions/0003-align-jest-axe-version.md
+     - git commit -m "docs(adr): align jest-axe peer dependency to dev version" 2>&1 | tee /dev/stderr
+     - git push origin main 2>&1 | tee /dev/stderr
+     - Re-run verification to confirm everything remains green:
+       - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
 
-Notes for NEXT:
-- Preserve console-first output for every command (use tee) so .voder/history.md captures results.
-- Do NOT modify files under prompts/.
-- Keep each commit focused and small; re-run verification after each commit.
+   B) If verification FAILS
+   - Enter the single-change loop. For each iteration:
+     1. Read the most recent console output (from the command in step 1) and pick exactly one corrective action from the targeted list below. Apply only that one change, commit it, push it, then re-run the verification command. Repeat iterations until verification succeeds.
+     2. Targeted corrective actions (choose exactly one per iteration):
+
+        i) tsconfig.json exclusion of dist is missing / build overwrite error:
+           - node -e "const fs=require('fs');const p='tsconfig.json';const cfg=JSON.parse(fs.readFileSync(p));cfg.exclude=Array.from(new Set([...(cfg.exclude||[]),'dist']));fs.writeFileSync(p,JSON.stringify(cfg,null,2)+'\n');console.log('updated tsconfig.json');" 2>&1 | tee /dev/stderr
+           - git add tsconfig.json && git commit -m "fix: exclude dist from tsconfig to avoid overwrite errors" 2>&1 | tee /dev/stderr
+           - git push origin main 2>&1 | tee /dev/stderr
+
+        ii) Missing devDependency required by build/tests (install the single missing package):
+           - npm install --no-audit --no-fund --save-dev <package-name> 2>&1 | tee /dev/stderr
+           - git add package.json package-lock.json && git commit -m "chore: add devDependency <package-name> required for tests" 2>&1 | tee /dev/stderr
+           - git push origin main 2>&1 | tee /dev/stderr
+
+        iii) package.json exports point to non-existent dist paths (package-structure test failure):
+           - node -e "const fs=require('fs');const p='package.json';const pkg=JSON.parse(fs.readFileSync(p));pkg.exports={'.':pkg.exports['.']};fs.writeFileSync(p,JSON.stringify(pkg,null,2)+'\n');console.log('patched package.json exports');" 2>&1 | tee /dev/stderr
+           - git add package.json && git commit -m "fix: align package.json exports to compiled dist paths" 2>&1 | tee /dev/stderr
+           - git push origin main 2>&1 | tee /dev/stderr
+
+     3. After performing the chosen single corrective action, re-run:
+        - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+
+   Notes for NEXT:
+   - Preserve console-first output for every command (pipe to tee) so all results are captured in .voder/history.md.
+   - Make only one corrective change per verification iteration; each change must be committed and pushed before re-running verification.
+   - Do NOT modify files under prompts/ or .voder/.
+   - If you repeatedly hit the same failure after a focused change, stop and re-evaluate the single corrective choice (do not apply multiple changes in one iteration).
 
 ## LATER
 
-Once the verification pipeline is reliably passing and the working tree is clean and pushed:
+Once verification is reliably passing and the repository working tree is clean and pushed, proceed with incremental feature work — one vertical slice per commit, each followed by the verification loop (re-run the pipeline after every commit):
 
-1) Continue incremental feature work — one vertical slice per commit, each followed by verification:
-   - a) Add a focused unit test for createPostCSSConfig
-     - Add: tests/build/postcss.test.ts
-     - git add tests/build/postcss.test.ts && git commit -m "test: add unit tests for createPostCSSConfig"
-     - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
-   - b) Implement the Vite library config factory and its tests
-     - Add: src/build/vite-library.ts, tests/build/vite-library.test.ts
-     - Commit and run verification
-   - c) Implement jsdom testing utilities and tests
-     - Add: src/testing/vitest-jsdom.ts, src/testing/setup.ts, src/testing/helpers.ts, src/testing/accessibility.ts and tests
-     - Commit and run verification
-   - d) Add markdown-lint config generator and package scripts
-     - Add: scripts/generate-markdownlint-config.ts
-     - Update package.json scripts: lint:md, lint:md:fix
-     - Commit and run verification
-   - e) Add lint/format configs and scripts
-     - Add: eslint.config.js, prettier.config.js
-     - Update package.json scripts: lint, lint:fix, format, format:check, verify
-     - Commit and run verification
-   - f) Adopt dual-export pattern and add integration tests
-     - Update package.json exports to include dedicated paths (./testing, ./prettier, ./eslint → ./dist/...)
-     - Add export-equivalence tests and package-installation integration tests
-     - Commit and run verification
-   - g) Add README.md (consumer-facing) and CHANGELOG.md (use template)
-     - Commit and run verification
-   - h) Expand tests and iterate until coverage meets project targets (run npm run test:ci to measure)
+1. Add a focused unit test for createPostCSSConfig and implement any minimal test helpers required:
+   - tests/build/postcss.test.ts; run verification and commit.
 
-2) Governance and metadata:
-   - After each substantive dependency change, author and commit the required ADR(s) in docs/decisions/ alongside package.json/package-lock.json changes.
+2. Implement the Vite library configuration factory and its tests:
+   - src/build/vite-library.ts and tests/build/vite-library.test.ts; commit and verify.
 
-3) Continuous hygiene:
-   - Ensure dist/ remains untracked and tsconfig excludes dist.
-   - Preserve console-first output for all commands (use tee) and avoid creating repository files for diagnostics.
+3. Implement jsdom testing utilities and tests (small pieces, one file at a time):
+   - src/testing/vitest-jsdom.ts → tests/testing/vitest-jsdom.test.ts
+   - src/testing/helpers.ts → tests/testing/helpers.test.ts
+   - src/testing/accessibility.ts → tests/testing/accessibility.test.ts
+   - src/testing/setup.ts (test environment) — commit and verify after each addition.
+
+4. Add markdown-lint config generator and package scripts:
+   - scripts/generate-markdownlint-config.ts; add lint:md and lint:md:fix scripts in package.json; commit and verify.
+
+5. Add lint/format configs and standardized scripts:
+   - eslint.config.js (import from @voder/dev-config), prettier.config.js export; add lint, lint:fix, format, format:check, verify scripts; commit and verify.
+
+6. Adopt dual-export pattern and add integration tests:
+   - Expand package.json exports to include dedicated paths (./testing, ./prettier, ./eslint → ./dist/...), add export-equivalence and package-installation integration tests; commit and verify.
+
+7. Add README.md and CHANGELOG.md (consumer-facing, self-contained):
+   - Populate README with usage, security posture, UNLICENSED notice, and verify instructions; add CHANGELOG.md using template; commit and verify.
+
+8. Expand tests to meet coverage & quality targets:
+   - Incrementally add unit/integration tests until coverage thresholds are met; run npm run test:ci and iterate.
+
+Constraints & reminders (apply to all steps)
+- Only one corrective change per verification iteration while in the failure loop.
+- Do not modify files under prompts/ or .voder/.
+- Use POSIX-compatible, non-interactive commands; ensure all output is console-first and captured via tee.
+- Scope all git commands to the current working directory and always push commits (git push origin main) after committing.

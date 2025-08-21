@@ -1,13 +1,15 @@
 # Last Action Executed
 
-**Timestamp:** 2025-08-21T08:38:24.035Z
+**Timestamp:** 2025-08-21T09:10:27.994Z
 
 ## Plan
 
 ```
-Run this from the project root to push your local commits to the remote and synchronize the branch:
+Restore tracked .voder paths to their HEAD state (idempotent). Run this single POSIX command from the project root:
 
-git push origin main
+```bash
+paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0' '\n' || true)"; if [ -n "$paths" ]; then git restore --source=HEAD -- $paths || true; else echo "No .voder paths known to git to restore"; fi
+```
 ```
 
 ## Action
@@ -17,11 +19,10 @@ git push origin main
 **Parameters:**
 ```json
 {
-  "command": "git",
+  "command": "bash",
   "parameters": [
-    "push",
-    "origin",
-    "main"
+    "-lc",
+    "paths=\"$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\\0' '\\n' || true)\"; if [ -n \"$paths\" ]; then git restore --source=HEAD -- $paths || true; else echo \"No .voder paths known to git to restore\"; fi"
   ],
   "timeout": 60000
 }
@@ -30,7 +31,7 @@ git push origin main
 ## Handler Response
 
 ```
-`git push origin main` completed.
+`bash -lc paths="$(git ls-files -z .voder/ packages/ui-tools/.voder/ 2>/dev/null | tr '\0' '\n' || true)"; if [ -n "$paths" ]; then git restore --source=HEAD -- $paths || true; else echo "No .voder paths known to git to restore"; fi` completed.
 Output:
 
 ```

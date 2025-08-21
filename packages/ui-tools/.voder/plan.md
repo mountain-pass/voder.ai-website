@@ -1,66 +1,63 @@
-## NOW
+The previous plan was incorrect. Here is the corrected plan.
 
-Stage all legitimate changes while keeping package-internal .voder metadata unstaged, commit, and push the result:
-- git add -A && git reset -- 'packages/ui-tools/.voder/*' || true && git commit -m "chore: commit source & documentation changes (exclude .voder metadata)" || true && git push origin main || true
+## NOW
+Stage all changes while excluding the package-internal .voder metadata (single non-interactive command):
+git add -A -- . ':(exclude)packages/ui-tools/.voder/*'
 
 ## NEXT
+After the NOW command succeeds, perform these steps in order (stop on any failure and fix before continuing):
 
-After the NOW command completes, run these non-interactive, idempotent verification steps (execute each line as a single shell command). Follow them in order and stop only to make focused source/test fixes if the verification pipeline fails — never modify files under any .voder/ directory.
+1. Commit the staged changes with a clear hygiene message:
+   - git commit -m "chore: repository hygiene — commit source changes (exclude .voder)" || true
 
-1) If any dist/ files are tracked, untrack them, commit the removal, and push:
-- if git ls-files | grep -q '^dist/'; then git rm --cached -r dist/ && git commit -m "chore: remove tracked build artifacts (dist/)" && git push origin main; fi
+2. Detect and untrack tracked build outputs (idempotent):
+   - git ls-files --error-unmatch dist >/dev/null 2>&1 && git rm --cached -r dist || true
 
-2) Ensure package-internal .voder files remain unstaged (safety guard):
-- git restore --staged 'packages/ui-tools/.voder/*' || true
+3. Ensure .gitignore contains dist/ and commit if it changed:
+   - git add .gitignore
+   - git commit -m "chore: ensure dist/ is gitignored" || true
 
-3) Confirm the working tree is clean (porcelain output for automation/debugging):
-- git status --porcelain
+4. Add the idempotent pretest build guard to package.json and commit:
+   - node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.scripts=p.scripts||{};if(p.scripts.pretest!=='npm run build'){p.scripts.pretest='npm run build';fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\n');console.error('pretest script added');}else{console.error('pretest already present');}"
+   - git add package.json
+   - git commit -m "chore: add pretest build guard" || true
 
-4) Run the canonical verification pipeline (type-check → build → tests):
-- npm run type-check && npm run build && npm test
+5. Push housekeeping commits:
+   - git push origin main || true
 
-If step 4 fails:
-- Make one small focused fix that touches only source or tests (do NOT edit any files under any .voder/ directory), run the NEXT sequence again beginning at step 1, and repeat until the verification pipeline passes.
+6. Run the verification pre-check and fix any failures before feature work:
+   - npm run type-check
+   - npm run build
+   - npm test
+
+Do not proceed to feature development until all verification commands succeed.
 
 ## LATER
+Once the repository is clean, verification passes, and housekeeping is pushed, proceed with the TDD-driven Vite-factory work and follow-ups:
 
-Once the repository is clean and the canonical verification pipeline passes reliably, proceed with small, fully-tested vertical slices. After each slice, run the verification pipeline and push only when green.
+1. TDD: add tests for Vite library config (tests/build/vite-library.test.ts) asserting:
+   - config.build.lib.formats === ['es']
+   - config.build.lib.name === 'TestLib'
+   - config.css?.postcss is defined
 
-1) Add pretest build guard
-- Add "pretest": "npm run build" to package.json scripts; run npm run type-check && npm run build && npm test and commit.
+2. Implement createViteLibraryConfig (test-first):
+   - Add src/build/vite-library.ts implementing the factory per spec.
+   - Export it from src/index.ts:
+     export { createViteLibraryConfig, type ViteLibraryOptions } from './build/vite-library.js';
 
-2) Implement Vite library factory (first feature slice)
-- Add src/build/vite-library.ts exporting createViteLibraryConfig that integrates createPostCSSConfig.
-- Add tests/tests/build/vite-library.test.ts asserting formats === ['es'], lib.name set, and css.postcss defined.
-- Run verification; commit & push when successful.
+3. Iterate verification until green:
+   - npm run type-check
+   - npm run build
+   - npm test
 
-3) Add PostCSS unit tests & verify emitted dist
-- Add tests/tests/build/postcss.test.ts verifying autoprefixer presence and default browsers.
-- Confirm tsc emits dist/src/build/postcss.js and .d.ts during build; run verification; commit & push.
+4. Commit & push the TDD slice:
+   - git add src/build/vite-library.ts src/index.ts tests/build/vite-library.test.ts
+   - git commit -m "feat: add Vite library config factory (TDD) and tests"
+   - git push origin main
 
-4) Implement jsdom testing utilities incrementally
-- Add src/testing/vitest-jsdom.ts + tests.
-- Add src/testing/helpers.ts + tests for renderComponent, simulateClick, waitForNextFrame.
-- Add src/testing/setup.ts and a test that initializes the jsdom setup.
-- Run verification after each small change; commit & push when green.
+5. Continue incremental TDD slices (vitest-jsdom config, testing helpers & setup, linting factories), add required scripts (lint, format, lint:md, verify), implement integration/export tests, and add README/CHANGELOG per the implementation guide — only after version-control hygiene and the Vite-factory TDD slice are green.
 
-5) Implement linting factories and markdown lint scripts
-- Add src/linting/{html,css,accessibility}.ts with unit tests.
-- Add generation of .markdownlint.json from @voder/dev-config and add "lint:md" / "lint:md:fix" scripts plus lint, lint:fix, format, format:check per the Universal Guide.
-- Run verification; commit & push.
-
-6) Expand exports and add package-level integration tests
-- After building corresponding dist artifacts, add dedicated export paths to package.json (e.g., "./testing": "./dist/testing/index.js") and update types as needed.
-- Add tests/export-equivalence.test.ts and tests/package-exports.test.ts verifying dedicated-path vs index imports and package.json export resolution.
-- Run the canonical verification pipeline; commit & push.
-
-7) Consumer docs & housekeeping
-- Add README.md (self-contained, UNLICENSED, quick-start, Node engine note, security posture) and CHANGELOG.md.
-- Reconcile dependency discrepancies (e.g., align jest-axe versions between peer/dev), and add "engines": { "node": ">=22.6.0" } to package.json if appropriate.
-- Re-run verification and commit & push.
-
-REMINDERS / CONSTRAINTS
-- Never modify, commit, or remove files under any .voder/ directory.
-- All git commands must be non-interactive and scoped to the current repository.
-- Keep changes small and test-driven; run the verification pipeline after each change and only push when it succeeds.
-- If any step fails, fix only source/tests (never .voder), re-run NEXT from step 1, and continue iterating until green.
+Notes / constraints reminders:
+- Do NOT modify, remove, revert, or commit files under packages/ui-tools/.voder — they must remain untouched.
+- All git commands are non-interactive and scoped to the current working directory.
+- If any step in NEXT fails, stop and fix the failure before continuing.

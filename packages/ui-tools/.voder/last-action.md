@@ -1,13 +1,14 @@
 # Last Action Executed
 
-**Timestamp:** 2025-08-21T13:10:19.622Z
+**Timestamp:** 2025-08-21T13:37:10.486Z
 
 ## Plan
 
 ```
-Run this single command from the project root to remove duplicate lines (dedupe) in .gitignore and replace it in-place:
+Action: discard local edits in the workspace-internal metadata directory (.voder/) to clean the working tree.
 
-awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore
+Command (run from the project root):
+git restore .voder/ || true
 ```
 
 ## Action
@@ -17,10 +18,10 @@ awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore
 **Parameters:**
 ```json
 {
-  "command": "bash",
+  "command": "git",
   "parameters": [
-    "-lc",
-    "awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore"
+    "restore",
+    ".voder/"
   ],
   "timeout": 60000
 }
@@ -29,7 +30,7 @@ awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore
 ## Handler Response
 
 ```
-`bash -lc awk '!seen[$0]++' .gitignore > .gitignore.tmp && mv .gitignore.tmp .gitignore` completed.
+`git restore .voder/` completed.
 Output:
 
 ```

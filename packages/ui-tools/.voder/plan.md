@@ -1,98 +1,67 @@
-## PLAN (focused on NEXT PRIORITY: clean working tree → unblock verification)
+## PLAN — unblock build/test pipeline (NEXT PRIORITY)
 
 ## NOW
-Run a single non-interactive commit to record the modified .voder metadata and produce a clean working tree:
-
-git commit -a -m "chore: record .voder metadata changes"
-
-(Explanation: git commit -a will commit all modified tracked files — including the modified .voder/* files shown in git status — without staging separately. This leaves the working tree clean so we can re-run the verification pipeline.)
+Commit the modified .voder metadata so the working tree is clean:
+- Action: Stage and commit all currently modified files under .voder/ with a single non-interactive commit message (for example: "chore: commit .voder metadata updates").
+  - Purpose: This addresses the highest-priority version-control issue identified in the assessment (a non-clean working tree). Make the repo state clean before performing test/build remediations.
 
 ## NEXT
-1. Re-run the full verification pipeline and capture console output:
-   - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+After the .voder metadata commit completes, perform the focused test fix and verification run to unblock the pipeline:
 
-2. Inspect the verification output (console / .voder/history.md). Then follow the single-path decision:
+1. Update the smoke test so type-check no longer depends on built artifacts:
+   - Edit tests/smoke.test.ts to import the source module instead of the compiled dist path, e.g. change:
+     import('../dist/src/index.js')
+     → import('../src/index')
+   - Save the file.
 
-   - If verification SUCCEEDS (build + tests pass):
-     a. Add a focused unit test for the PostCSS factory to increase test coverage:
-        - Create tests/build/postcss.test.ts with assertions that:
-          - createPostCSSConfig() returns an object with a plugins array
-          - autoprefixer is included and configured with the default browsers list
-     b. Commit the test and push:
-        - git add tests/build/postcss.test.ts && git commit -m "test: add unit test for createPostCSSConfig" && git push origin main
-     c. Re-run verification:
-        - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+2. Commit and push the test fix non-interactively:
+   - git add tests/smoke.test.ts
+   - git commit -m "test: import from src in smoke test so type-check can resolve module"
+   - git push origin main
 
-     (Then continue incremental implementation of missing features one small change + verify at a time.)
+3. Run the combined verification pipeline and capture console output to .voder/history.md (non-interactive):
+   - npm run type-check && npm run build && npm test 2>&1 | tee .voder/history.md /dev/stderr
 
-   - If verification FAILS:
-     Enter the single-change remediation loop. For EACH iteration:
-     a. Read the latest console output (captured to .voder/history.md).
-     b. Choose exactly ONE corrective action from the targeted list below, apply it, commit, push, then re-run verification.
-     c. Repeat until verification succeeds.
+4. Inspect .voder/history.md for results:
+   - If the verification completes successfully (type-check, build, tests pass), proceed to LATER plan items.
+   - If verification still fails, pick exactly one additional remediation from the original remediation set (A, B, or C) and apply it in a single focused iteration (do not batch multiple remediations). Record the run output to .voder/history.md after each attempt.
 
-     Targeted corrective actions (choose exactly one per iteration):
-
-     i) TS5055 / tsc trying to write into dist/:
-        - Ensure tsconfig.json excludes dist:
-          node -e "const fs=require('fs');const p='tsconfig.json';const cfg=JSON.parse(fs.readFileSync(p));cfg.exclude=Array.from(new Set([...(cfg.exclude||[]),'dist']));fs.writeFileSync(p,JSON.stringify(cfg,null,2)+'\n');console.log('updated tsconfig.json');" 2>&1 | tee /dev/stderr
-        - git add tsconfig.json && git commit -m "fix: exclude dist from tsconfig to avoid overwrite errors" && git push origin main
-
-     ii) Missing devDependency required by build/tests (install exactly one package):
-        - npm install --no-audit --no-fund --save-dev <package-name> 2>&1 | tee /dev/stderr
-        - git add package.json package-lock.json && git commit -m "chore: add devDependency <package-name> required for tests" && git push origin main
-
-     iii) package.json exports point to non-existent dist paths (package-structure test failure):
-        - node -e "const fs=require('fs');const p='package.json';const pkg=JSON.parse(fs.readFileSync(p));pkg.exports={'.':pkg.exports['.']};fs.writeFileSync(p,JSON.stringify(pkg,null,2)+'\n');console.log('patched package.json exports');" 2>&1 | tee /dev/stderr
-        - git add package.json && git commit -m "fix: align package.json exports to compiled dist paths" && git push origin main
-
-     - After performing the chosen single corrective action, re-run:
-       - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
-
-Notes for NEXT:
-- Preserve console-first output for every command (pipe to tee) so results are captured in .voder/history.md.
-- Only one corrective change per verification iteration while in the failure loop.
-- Do not modify files under prompts/ or .voder/ (committing .voder changes is allowed but do not edit their contents).
-- All git commands must be non-interactive and scoped to the repo working directory.
+Notes:
+- All commands must be non-interactive, POSIX-compatible, and scoped to the current working directory.
+- Do NOT modify files in .voder/ or prompts/ during these steps (except that .voder files are being committed in NOW as a single allowed action).
+- Always capture the verification console output into .voder/history.md.
 
 ## LATER
-After the working tree is clean and verification reliably passes, continue incremental work (one small vertical slice per commit + verify):
+Once the verification pipeline is consistently passing, continue incremental, test-backed implementation work (each change = small implementation + tests + commit + verify):
 
-1. Add missing unit/integration tests incrementally (one test file per commit + verify):
-   - tests/build/vite-library.test.ts: validate createViteLibraryConfig produces ESM-only formats and includes PostCSS config
-   - tests/testing/vitest-jsdom.test.ts
-   - tests/testing/helpers.test.ts (renderComponent, simulateClick, waitForAnimation/next frame)
-   - tests/testing/accessibility.test.ts (expectAccessible/getAccessibilityViolations)
-   - tests/testing/setup.test.ts (jsdom mocks & cleanup)
-   - tests/export-equivalence.test.ts and tests/package-installation.test.ts (npm pack → temporary install)
-   - After each test file: git add, commit, push, run verification.
+1. Add unit test for PostCSS factory
+   - Create tests/build/postcss.test.ts validating createPostCSSConfig includes autoprefixer and the default browsers list.
+   - Commit and run verify.
 
-2. Implement missing source features incrementally (one file + its tests per iteration):
-   - src/build/vite-library.ts + tests
-   - src/testing/vitest-jsdom.ts, src/testing/helpers.ts, src/testing/accessibility.ts, src/testing/setup.ts + tests
-   - src/linting/html.ts, src/linting/css.ts, src/linting/accessibility.ts + tests
-   - scripts/generate-markdownlint-config.ts and package scripts for lint:md / lint:md:fix
+2. Implement missing modules incrementally (one module + tests per commit)
+   - src/build/vite-library.ts + tests/build/vite-library.test.ts
+   - src/testing/vitest-jsdom.ts + tests/testing/vitest-jsdom.test.ts
+   - src/testing/helpers.ts + tests/testing/helpers.test.ts
+   - src/testing/accessibility.ts + tests/testing/accessibility.test.ts
+   - src/testing/setup.ts + tests/testing/setup.test.ts
+   - src/linting/html.ts, css.ts, accessibility.ts + corresponding tests
 
-3. Add code quality & packaging scaffolding in small steps:
-   - Add eslint.config.js (import layers from @voder/dev-config) → commit → verify
-   - Add prettier.config.js (import from @voder/dev-config) → commit → verify
-   - Expand package.json scripts (lint, lint:fix, format, format:check, verify) → commit → verify
+3. Add required package scripts and docs (small, focused commits)
+   - Add lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify scripts
+   - Add a consumer-facing README.md following the README template, and a CHANGELOG.md
+   - Commit and run verify after each change
 
-4. Adopt dual-export pattern and run integration tests:
-   - Expand package.json exports (./testing, ./prettier, ./eslint) pointing to ./dist/
-   - Add tests verifying dedicated exports and main index export equivalence → commit → verify
+4. Implement dual-export strategy and integration tests
+   - Expand package.json exports in small steps (e.g., add "./testing" then verify)
+   - Add export-equivalence tests and package-installation integration tests
+   - Commit and verify after each addition
 
-5. Documentation & packaging:
-   - Add README.md (template-based, UNLICENSED license notice, security posture, quickstart)
-   - Add CHANGELOG.md initial entry
-   - Generate .markdownlint.json via scripts/generate-markdownlint-config.ts and add lint:md scripts
-   - Commit docs and re-run verification
+5. Enforce dependency & supply-chain policies
+   - Add automated tests for vitest ↔ @vitest/coverage-v8 alignment
+   - Integrate npm audit checks into verification incrementally
+   - Document any dependency decisions with ADRs as required
 
-6. Ongoing maintenance & governance:
-   - Keep vitest / @vitest/coverage-v8 and other aligned dependencies updated per ADR and verify after any changes
-   - Run npm audit periodically and update lockfile as needed
-   - Continue one-change-per-iteration discipline: implement → test → commit → push → verify
-
----
-
-If you want, I can now (a) produce the exact test file contents for tests/build/postcss.test.ts (ready to write), or (b) prepare the tsconfig.json patch command if verification shows TS5055 still occurs after the NOW commit. Which follow-up should I prepare for you next?
+General constraints for LATER work:
+- Keep each change minimal, test-backed, and verifiable with the combined verification pipeline.
+- Capture all verification outputs to .voder/history.md.
+- Do not modify files in .voder/ or prompts/ except for committing pre-existing changes already discussed.

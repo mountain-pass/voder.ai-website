@@ -1,77 +1,78 @@
 ## NOW
 
-git add .voder/history.md .voder/last-action.md .voder/plan.md && git commit -m "chore(meta): update .voder metadata" || true
+Run a non-interactive commit of the unstaged .voder metadata so the working tree is clean:
+- git add .voder/* && git commit -m "chore: record .voder metadata updates" || true
 
 ## NEXT
 
-1) Remove any accidentally tracked build artifacts from the index (no-op if not tracked) and commit:
-- git rm --cached -r dist/ || true && git commit -m "chore: remove tracked build artifacts (dist/)" || true
+After committing the .voder changes, restore verifiable package state and iterate until green:
 
-2) Push local commits to remote main:
-- git push origin main
+1. Push the commit to remote:
+   - git push origin main
 
-3) Run the verification pipeline (fail-fast; stream output to console/stderr):
-- npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+2. Run the full verification pipeline (fail-fast; stream output to console/stderr):
+   - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
 
-4) Single-file-fix → verify loop (repeat until verification succeeds):
-a. Inspect the console/stderr output from step 3 and identify the single highest-priority failing blocker.  
-b. Edit exactly one source or configuration file to fix that blocker (DO NOT modify files under `.voder/` or `prompts/`).  
-c. Stage & commit only that file:
-- git add <that-file> && git commit -m "fix: <short-desc>"  
-d. Re-run verification:
-- npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr  
-e. Repeat steps a–d until the pipeline is green.
+3. If verification fails, enter the single-file-fix → verify loop (repeat until the pipeline is green):
+   a. Inspect the console/stderr output from step 2 and identify the single highest-priority failing blocker (one file only).  
+   b. Edit exactly one source or configuration file (do NOT modify anything under .voder/ or prompts/).  
+   c. Stage & commit only that one file:
+      - git add <that-file> && git commit -m "fix: <short-desc>"
+   d. Re-run verification:
+      - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+   e. Repeat a–d until the pipeline completes successfully.
 
-5) When the verification pipeline is green, push any remaining commits:
-- git push origin main
+4. When the verification pipeline is green, push any remaining commits:
+   - git push origin main
+
+(Notes: keep every change small and test-driven; use only non-interactive commands; do not modify files under `.voder/` or `prompts/`.)
 
 ## LATER
 
-Once the repository is clean and `npm run type-check && npm run build && npm test` passes reliably, proceed incrementally (one small vertical slice at a time). For each item: implement → test → build → commit → run verification.
+Once the repository is clean and verification consistently passes, proceed incrementally (one vertical slice per commit) to implement the remaining NEXT PRIORITY work and the broader feature set:
 
-High-priority next slices (one commit per slice: implementation + tests):
+1. Markdown linting generator & scripts
+   - Create scripts/generate-markdownlint-config.ts that imports getConfig from @voder/dev-config/linters/markdown and writes .markdownlint.json to repo root (non-.voder).
+   - Add package.json scripts: "lint:md" and "lint:md:fix".
+   - Commit and run verification.
 
-1) Markdown-lint generator & scripts
-- Create scripts/generate-markdownlint-config.ts (imports getConfig from @voder/dev-config/linters/markdown and writes `.markdownlint.json`).
-- Add package.json scripts: `lint:md` and `lint:md:fix`.
-- Commit and run verification.
+2. Engines & dependency hygiene
+   - Add "engines": { "node": ">=22.6.0" } to package.json.
+   - Reconcile jest-axe peer/dev mismatch (align ranges or document ADR); commit package.json and ADR together if changing deps.
+   - Add tests/tests/dependency-versions.test.ts asserting vitest & @vitest/coverage-v8 alignment.
+   - Commit and run verification.
 
-2) Engines and dependency hygiene
-- Add `"engines": { "node": ">=22.6.0" }` to package.json and commit.
-- Reconcile jest-axe version mismatch (update package.json and create ADR docs/decisions/0003-align-jest-axe-version.md if changing dependencies); commit both files together.
-- Add tests/tests/dependency-versions.test.ts asserting vitest & @vitest/coverage-v8 alignment; commit and verify.
+3. Standard quality & verify scripts
+   - Add scripts: lint, lint:fix, format, format:check, and the mandatory "verify" script to package.json.
+   - Add minimal ESLint/Prettier glue files per dev-config requirements (eslint.config.js, prettier.config.js) if required by lint step.
+   - Run npm run verify and fix issues one file at a time via the single-file-fix loop.
 
-3) Standard quality & verify scripts
-- Add lint, lint:fix, format, format:check and the mandatory `verify` script to package.json; commit and run `npm run verify`, fixing issues one file at a time.
+4. Implement core public APIs in small vertical slices (each commit = implementation + tests)
+   - Feature A: src/build/vite-library.ts + tests/build/vite-library.test.ts
+   - Feature B: src/testing/vitest-jsdom.ts and src/testing/setup.ts + tests
+   - Feature C: src/testing/helpers.ts and src/testing/accessibility.ts + tests
+   - Feature D: src/linting/html.ts, src/linting/css.ts, src/linting/accessibility.ts + tests
+   - After each slice: build, run tests, commit, and push.
 
-4) Implement core public APIs in small vertical slices (one feature + tests per commit)
-- Feature A — Vite library config:
-  - Add src/build/vite-library.ts and tests/build/vite-library.test.ts; commit and verify.
-- Feature B — Vitest jsdom config & setup:
-  - Add src/testing/vitest-jsdom.ts, src/testing/setup.ts, and corresponding tests; commit and verify.
-- Feature C — DOM testing helpers & accessibility:
-  - Add src/testing/helpers.ts, src/testing/accessibility.ts and tests; commit and verify.
-- Feature D — Linting config creators:
-  - Add src/linting/html.ts, src/linting/css.ts, src/linting/accessibility.ts and tests; commit and verify.
+5. Exports & integration tests
+   - Update package.json exports to adopt the dual-export pattern (map ./testing, ./build, ./eslint, ./prettier to ./dist/).
+   - Add integration tests:
+     - tests/export-equivalence.test.ts
+     - tests/package-installation.test.ts (npm pack → install into a temp dir; use non-interactive flags)
+   - Commit and run verification.
 
-5) Exports & integration tests
-- Update package.json exports to the dual-export pattern (add `./testing`, `./build`, `./eslint`, `./prettier` pointing to `./dist/...`) and commit.
-- Add integration tests:
-  - tests/export-equivalence.test.ts (dedicated-path vs index)
-  - tests/package-installation.test.ts (npm pack → install into temp dir; use safe install flags)
-- Commit and verify.
+6. README / CHANGELOG / consumer docs
+   - Add a self-contained README.md and CHANGELOG.md (Unreleased) following README isolation policy (no internal repo links).
+   - Commit and run verification.
 
-6) README / CHANGELOG / consumer docs
-- Create a self-contained README.md and CHANGELOG.md (Unreleased); commit and verify.
+7. Coverage & public API tests
+   - Incrementally extend tests to achieve:
+     - 100% coverage of public API exports and error scenarios
+     - Overall ≥ 90% coverage
+   - Run npm run test:ci to collect coverage and iterate fixes via single-file-fix loop until thresholds are met.
 
-7) Coverage & public API tests
-- Incrementally add tests to reach required thresholds:
-  - 100% coverage of public API exports and error scenarios
-  - Overall >= 90% coverage
-- Run `npm run test:ci` to collect coverage and iterate fixes one-file-per-commit.
-
-Guiding discipline for LATER:
-- Make each change small and atomic; implementation + tests in the same commit.
-- Create ADRs for any new direct dependency and commit the ADR alongside package.json changes.
+Guiding discipline for LATER
+- Make every change small and atomic: implementation + tests in the same commit.
+- Create ADRs for any new direct dependency and commit ADR alongside package.json changes.
 - Never modify files under `.voder/` or `prompts/`.
-- Keep `dist/` gitignored; if `dist/` becomes tracked accidentally, remove it with `git rm --cached` and commit that removal.
+- Keep `dist/` gitignored; if tracked again, remove it from the index and commit the removal.

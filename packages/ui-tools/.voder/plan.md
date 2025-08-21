@@ -1,86 +1,62 @@
-## PLAN — unblock build/test pipeline (PRIORITY: clean VC & unblock verification)
-
-Goal: Clean the working tree (persist .voder metadata) and run the verification pipeline so we can observe failures. If verification fails, apply exactly one minimal remediation to unblock test runs (guard package-structure assertions), commit, and re-run verification. After verification is stable, continue with targeted fixes for the TS5055 build error and incremental feature/test implementation.
-
 ## NOW
-Run a single non‑interactive git commit to persist the modified tracked .voder metadata and clean the working tree:
-git commit -am "chore: persist .voder metadata updates"
-
-(Reason: the assessment flagged uncommitted .voder files as the highest-priority blocker. Committing tracked modifications will produce a clean working tree and enable deterministic verification runs. This single command is non-interactive and commits all modified tracked files, including the .voder/* edits.)
+Run the single commit to persist the staged .voder metadata:
+git commit -m "chore: persist .voder metadata updates" -- .voder
 
 ## NEXT
-1. Run the full verification pipeline and capture console output to the persistent history:
-   npm run type-check && npm run build && npm test 2>&1 | tee .voder/history.md /dev/stderr
+1. Push the commit to the main remote to produce a clean working tree:
+   - git push origin main
 
-2. Inspect the verification result (read .voder/history.md). Then:
-   - If verification succeeds (type-check → build → tests all pass): stop here and proceed to LATER.
-   - If verification fails: apply exactly one remediation (A) below, commit that single focused change, push it, then re-run the verification command in step (1). DO NOT apply multiple remediations in the same iteration.
+2. Run the canonical verification pipeline and capture console output (this will be recorded automatically in .voder/history.md):
+   - npm run type-check && npm run build && npm test
 
-   Remediation A — Temporarily make tests/package-structure.test.ts resilient to missing dist/:
-   - Rationale: remove brittle build→test coupling so tests can run while we diagnose the TS5055 build overwrite issue. This is a stopgap; it will be reverted once the build root cause is fixed.
-   - Non-interactive (atomic) steps to perform if verification failed:
-     a) Patch the test file (one-liner — executed only if needed):
-        node -e "const fs=require('fs');const p='tests/package-structure.test.ts';let s=fs.readFileSync(p,'utf8');if(!/dist\\'\\)/.test(s.replace(/\\\\n/g,'\\n'))){s=s.replace(\"const exportsField = packageJson.exports;\",\"const exportsField = packageJson.exports;\\n    // If dist/ does not exist (build not run), skip assertions that require compiled output\\n    if (!require('fs').existsSync('dist')) { console.warn('⚠️  dist/ missing — skipping package-structure assertions'); return; }\");fs.writeFileSync(p,s);console.log('patched',p);}else{console.log('already patched',p);} "
-     b) Commit the single file change:
-        git add tests/package-structure.test.ts && git commit -m "test: skip package-structure assertions when dist/ missing to avoid build coupling"
-     c) Push the commit:
-        git push origin main
-     d) Re-run verification and recapture history:
-        npm run type-check && npm run build && npm test 2>&1 | tee .voder/history.md /dev/stderr
+3. Inspect the verification console output and act with a single focused remediation (do NOT apply multiple fixes at once). Use the diagnostics below only as needed to choose the one remediation to perform:
+   - Diagnostics (run only to inform the single remediation):
+     - git ls-files | grep '^dist/' || true
+     - tsc -p tsconfig.json --listEmittedFiles || true
+     - npm run build
+   - Based on the verification + diagnostics, choose exactly one remediation (examples):
+     - If package-structure tests fail due to missing compiled files: run npm run build (then re-run verification).
+     - If package-structure tests fail because dist/ files are tracked: git rm --cached -r dist/ && git commit -m "chore: remove tracked build artifacts (dist/)" -- then push and re-run verification.
+     - If TypeScript emits TS5055 or outDir overwrite errors: edit tsconfig.json to change compilerOptions.outDir to a non-overlapping path, commit that single change, push, and re-run verification.
+     - If tests fail due to ESM import-extension errors: fix the single failing import (add correct .js extension) in one file, commit, push, and re-run verification.
+     - If tests fail with "Cannot find module '<pkg>'": install the single missing devDependency non-interactively (npm install --no-audit --no-fund --save-dev <pkg>), commit package.json/package-lock.json, create an ADR if this is a new direct dependency, push, and re-run verification.
 
-   - Notes:
-     - Apply only remediation A in this iteration if needed. If verification still fails after applying A, stop and re-evaluate — do not batch additional fixes in the same iteration.
-     - Do not modify files in .voder/ or prompts/.
-     - All commands are POSIX/sh-compatible and non-interactive.
+4. After applying the single remediation, re-run the canonical verification (step 2). Repeat the diagnose → single remediation → verify loop until verification passes.
+
+Notes for NEXT
+- Do not modify other files under .voder (the only allowed .voder change now is the commit in NOW).
+- Keep each remediation atomic: one change, one commit, one push, then re-run verification.
+- Record results via console output only — the history capture will make them available for future steps.
 
 ## LATER
-Once the verification pipeline runs cleanly (type-check → build → tests pass consistently), proceed incrementally (small changes + tests + verify) in this order:
+Once the working tree is clean and the canonical verification passes reliably:
 
-1. Address the TS5055 build root cause (one minimal change at a time):
-   - Investigate why tsc attempted to overwrite dist/ inputs (likely leftover compiled files in nested package paths or tsconfig include/exclude misconfiguration).
-   - Candidate fixes (apply and verify one small change at a time):
-     - Confirm tsconfig "exclude": ["dist"] is present and correct; if multiple tsconfig files exist, ensure package-local tsconfig does not include dist as input.
-     - Ensure no compiled artifacts are tracked under other paths (run git ls-files | grep 'dist/' and untrack any if found).
-     - If tsc is emitting into a path that is also matched by tsconfigs in subdirectories, adjust outDir or project references to avoid overlapping outputs.
-   - After each change: run the verify pipeline and restore the package-structure test to its original strict assertions once build is deterministic.
+1. Stabilize build/test ordering and developer docs
+   - Ensure the verify pipeline runs build before tests that assert dist/ artifacts.
+   - Add DEVELOPMENT.md documenting the canonical local verification order: type-check → build → test.
 
-2. Reinstate strict package-structure tests:
-   - Remove the temporary guard in tests/package-structure.test.ts and commit the revert once build emits dist/ reliably.
+2. Incrementally implement missing modules (one module + tests per commit)
+   - Implement src/build/vite-library.ts and tests/build/vite-library.test.ts.
+   - Implement src/testing/vitest-jsdom.ts and tests/testing/vitest-jsdom.test.ts.
+   - Implement src/testing/helpers.ts, src/testing/accessibility.ts, src/testing/setup.ts and their tests.
+   - For each implementation: add minimal code to satisfy tests, commit, push, and run the canonical verification.
 
-3. Add targeted unit test for PostCSS factory (small, focused):
-   - tests/build/postcss.test.ts — assert createPostCSSConfig returns a config with autoprefixer in plugins and the default browser list.
-   - Commit and run full verification.
+3. Add mandated scripts & docs in focused commits
+   - Add lint, lint:fix, format, format:check, lint:md, lint:md:fix, and verify scripts to package.json (one script per commit is acceptable but keep changes small).
+   - Create a self-contained README.md and a CHANGELOG.md stub (separate commits).
 
-4. Implement remaining modules one at a time (each with tests + verify):
-   - src/build/vite-library.ts → tests/build/vite-library.test.ts
-   - src/testing/vitest-jsdom.ts → tests/testing/vitest-jsdom.test.ts
-   - src/testing/helpers.ts → tests/testing/helpers.test.ts
-   - src/testing/accessibility.ts → tests/testing/accessibility.test.ts
-   - src/testing/setup.ts → tests/testing/setup.test.ts
-   - src/linting/*.ts → corresponding tests
-   - For each module, keep changes minimal and run the verification pipeline after commit.
+4. Implement dual-export strategy & integration tests incrementally
+   - Add dedicated exports to package.json (e.g., "./testing", "./postcss", "./linting") — one export per commit.
+   - Add export-equivalence tests and package-installation integration tests (one test file at a time).
 
-5. Add required package scripts and docs (small commits):
-   - Add lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify scripts to package.json.
-   - Add consumer-facing README.md (based on the README template) and an initial CHANGELOG.md stub.
-   - Commit separately and run verify after each.
+5. Expand tests & coverage progressively until coverage goals are met
+   - Add public-API error-condition tests and remaining mandatory test categories to drive coverage toward project thresholds.
 
-6. Implement dual-export strategy and integration tests incrementally:
-   - Extend package.json exports to include dedicated paths (e.g., "./testing"), ensure dist layout matches, and add export-equivalence and package-installation (npm pack) integration tests.
-   - Verify after each incremental change.
+6. Governance for dependencies
+   - For any new direct dependency added during LATER work, create an ADR that documents the change and bundle it with the corresponding package.json/package-lock changes.
 
-7. Enforce supply-chain & dependency policies:
-   - Add a small automated test to assert vitest and @vitest/coverage-v8 versions are aligned (per ADR).
-   - Add npm audit into verification early in the pipeline or as part of verify script.
-   - Document any dependency decisions with ADRs as required.
-
-General rules for all later work:
-- Make every code change minimal and focused; include tests for new behavior.
-- After every commit run the canonical verification:
-  npm run type-check && npm run build && npm test 2>&1 | tee .voder/history.md /dev/stderr
-- Never modify files in .voder/ or prompts/ as part of these steps.
-- Apply only one remediation per failed verification iteration; do not batch multiple fixes.
-
----
-
-If you want, I will now perform the single NOW action (git commit -am "chore: persist .voder metadata updates") — confirm and I will proceed.
+Constraints & reminders
+- Do not change or create non-ignored output files in the repository.
+- All actions must be non-interactive and scoped to the current working directory.
+- After every change that affects code/tests/build, run the canonical verification.
+- Keep each change minimal and atomic; always perform exactly one remediation when verification fails.

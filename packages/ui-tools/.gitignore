@@ -37,3 +37,7 @@ dist-*/
 coverage-*/
 # Keep package.json and lockfiles tracked (do NOT ignore)
 # (Intentionally not ignoring package-lock.json, yarn.lock, package.json)
+packages/services/docs/libraries/usage/
+packages/services/package-lock.json
+packages/services/prompts/runtime-ui-testing.md
+prompts/development/ui-tools/

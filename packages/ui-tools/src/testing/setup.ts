@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/dom';
 import { afterEach, vi } from 'vitest';
 
 /**
@@ -8,7 +7,13 @@ import { afterEach, vi } from 'vitest';
 export function setupJsdomTestEnvironment(): void {
   // Cleanup DOM after each test
   afterEach(() => {
-    cleanup();
+    // Manual DOM cleanup: remove all children from document.body so tests start with a clean DOM.
+    // This replaces the previous cleanup() helper import which is not available in @testing-library/dom.
+    while (document.body.firstChild) {
+      document.body.removeChild(document.body.firstChild);
+    }
+
+    // Clear timers that tests may have registered
     vi.clearAllTimers();
   });
 

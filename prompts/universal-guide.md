@@ -982,10 +982,11 @@ export class PackageName {
 
 ### **🚨 MANDATORY: Markdown Documentation Standards**
 
-**ALL packages MUST comply with standardized markdown linting:**
+**ALL packages MUST comply with standardized markdown linting using configurations from `@voder/dev-config`:**
 
 **Mandatory Requirements:**
 - **Use shared configuration**: MUST import and use markdown linting configuration from `@voder/dev-config`
+- **No custom configurations**: MUST NOT create custom `.markdownlint.json` or override rules
 - **Install required peer dependency**: MUST install `markdownlint-cli2` as specified by dev-config
 - **No alternative tools**: MUST NOT use remark-lint, textlint, or other markdown linters
 - **Enforce in scripts**: MUST include `lint:md` and `lint:md:fix` scripts in package.json
@@ -1355,7 +1356,27 @@ When packages have version alignment requirements or dependency constraints:
 
 ### **Testing Tool Configuration**
 
-**Package Test Scripts**:
+**ALL packages MUST use standardized testing configurations from `@voder/dev-config` or `@voder/ui-tools`:**
+
+**Configuration Requirements:**
+- **Node.js packages**: MUST use Vitest configurations from `@voder/dev-config/testing`
+- **UI packages**: MUST use Vitest configurations from `@voder/ui-tools/testing` 
+- **No custom test configs**: MUST NOT create package-specific Vitest configurations without ADR justification
+- **Standardized scripts**: MUST use standard test script names and patterns
+
+**Required Vitest Configuration Pattern:**
+```javascript
+// vitest.config.ts - MANDATORY for all packages
+import { createVitestNodeConfig } from '@voder/dev-config/testing';
+// OR for UI packages:
+// import { createVitestJsdomConfig } from '@voder/ui-tools/testing';
+
+export default createVitestNodeConfig({
+  // Package-specific overrides only if justified in ADR
+});
+```
+
+**Package Test Scripts:**
 ```json
 {
   "scripts": {
@@ -1363,6 +1384,12 @@ When packages have version alignment requirements or dependency constraints:
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=verbose"
+  },
+  "devDependencies": {
+    "@voder/dev-config": "workspace:*"
+  },
+  "peerDependencies": {
+    "vitest": "^2.0.0"
   }
 }
 ```
@@ -1389,19 +1416,26 @@ When packages have version alignment requirements or dependency constraints:
 
 ### **🚨 MANDATORY CODE FORMATTING REQUIREMENTS**
 
-All packages MUST maintain consistent code formatting and pass linting checks:
+All packages MUST use standardized configurations from `@voder/dev-config` and pass all quality checks:
+
+**Configuration Source Requirements:**
+- **Prettier Configuration**: MUST use Prettier configuration exported by `@voder/dev-config`
+- **ESLint Configuration**: MUST use ESLint configurations (base, dx, performance) from `@voder/dev-config`
+- **TypeScript Configuration**: MUST extend TypeScript configurations from `@voder/dev-config`
+- **Testing Configuration**: MUST use Vitest configurations from `@voder/dev-config` (or `@voder/ui-tools` for UI packages)
+- **No Custom Configs**: MUST NOT create package-specific formatting or linting configurations without ADR justification
 
 **Code Formatting Standards:**
-- **Prettier Integration**: All packages MUST use Prettier for consistent code formatting
+- **Prettier Integration**: All packages MUST use Prettier for consistent code formatting via dev-config
 - **No Formatting Errors**: NEVER commit code with formatting inconsistencies
 - **Auto-Format on Save**: Configure editors to auto-format code on save
 - **Pre-commit Formatting**: Code MUST be formatted before committing
 
 **Linting Standards:**
-- **ESLint Configuration (v9 Flat Config)**: All packages MUST use ESLint 9 flat config via `eslint.config.js`.
+- **ESLint Configuration (v9 Flat Config)**: All packages MUST use ESLint 9 flat config via `eslint.config.js` importing from dev-config
 - **No Linting Errors**: NEVER commit code with ESLint errors
 - **Linting Warnings**: Address linting warnings promptly, don't let them accumulate
-- **Custom Rules**: Package-specific overrides must be documented and justified
+- **Custom Rules**: Package-specific overrides must be documented and justified in ADRs
 
 **Package Scripts for Code Quality:**
 ```json
@@ -1416,6 +1450,60 @@ All packages MUST maintain consistent code formatting and pass linting checks:
 }
 ```
 
+**Package Scripts for Code Quality:**
+```json
+{
+  "scripts": {
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md",
+    "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@voder/dev-config": "workspace:*"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "markdownlint-cli2": "^0.13.0"
+  }
+}
+```
+
+**Required Configuration Files:**
+```javascript
+// eslint.config.js - MANDATORY for all packages
+import { base, dx, performance } from '@voder/dev-config/eslint';
+
+export default [
+  ...base,
+  ...dx,
+  ...performance
+];
+```
+
+```javascript
+// prettier.config.js - MANDATORY for all packages  
+import config from '@voder/dev-config/prettier';
+export default config;
+```
+
+```json
+// tsconfig.json - MANDATORY for all packages
+{
+  "extends": "@voder/dev-config/typescript/base",
+  "compilerOptions": {
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
+}
+```
+
 **Why consistent formatting and linting matter:**
 - **Code Review Efficiency**: Consistent style reduces cognitive load during reviews
 - **Merge Conflicts**: Consistent formatting minimizes formatting-related conflicts
@@ -1424,31 +1512,28 @@ All packages MUST maintain consistent code formatting and pass linting checks:
 - **LLM Comprehension**: Consistent patterns help AI agents understand and maintain code
 
 **Formatting Strategy:**
-- Single central Prettier configuration exported by the development configuration package
-- ESLint focuses on semantic & correctness rules; stylistic conflicts disabled via `eslint-config-prettier`
+- **Centralized Configuration**: Single Prettier configuration exported by `@voder/dev-config` for all packages
+- **ESLint Integration**: ESLint focuses on semantic & correctness rules; stylistic conflicts disabled via `eslint-config-prettier` in dev-config
+- **No Local Overrides**: Packages MUST NOT override formatting rules without ADR justification
 
 **ESLint Layer Policy (Flat Config):**
-- Layer order remains: base, dx (mandatory), performance.
-- Compose layers in flat config in the documented order so later layers can refine earlier ones.
+- **Required Layers**: All packages MUST import and use base, dx (mandatory), performance layers from dev-config
+- **Layer Order**: Compose layers in flat config in the documented order so later layers can refine earlier ones
+- **No Custom Layers**: Packages MUST NOT create custom ESLint layers without ADR justification
 
 **ESLint consumer config example (eslint.config.js, consuming flat layers):**
 ```js
-// eslint.config.js (ESM)
-import js from '@eslint/js';
-import prettier from 'eslint-config-prettier';
+// eslint.config.js (ESM) - MANDATORY pattern for all packages
 import { base, dx, performance } from '@voder/dev-config/eslint';
 
 export default [
-  js.configs.recommended,
   ...base,
   ...dx,
-  ...performance,
-  prettier,
-  {
-    ignores: ['dist/', 'build/', 'coverage/', 'node_modules/']
-  }
+  ...performance
 ];
 ```
+
+> **Note**: ESLint 9 walks up to the nearest `eslint.config.js`. Every package MUST commit a package-local `eslint.config.js` importing from dev-config to prevent picking up parent configurations.
 
 > Note: ESLint 9 walks up to the nearest `eslint.config.js`. Commit a package-local `eslint.config.js` to prevent picking up a parent config.
 

@@ -1,101 +1,92 @@
-## Plan (focused on NEXT PRIORITY: make the repo clean and run the verification pipeline)
-
-Rationale: The highest-priority task from the assessment is to get the repository into a clean, verifiable state and run the verification pipeline so we have concrete failure output to iterate on. The NOW action below makes the working tree clean (committing the modified tracked .voder metadata files), so subsequent verification runs will be deterministic and safe.
-
 ## NOW
-Commit the modified tracked files (persist the .voder metadata changes) so the working tree is clean and we can run verification.
 
-Command to run (single non-interactive command; all output will go to console/stderr and be captured in .voder/history.md):
+Run a single non‑interactive commit to persist the modified tracked .voder metadata:
 - git commit -a -m "chore(ui-tools): persist .voder metadata updates"
 
-(signed-off rationale: this commits only tracked changes; do NOT add untracked files. After this completes the working tree will be clean and we can run the dependency/verification steps deterministically.)
-
 ## NEXT
-After the NOW commit succeeds, run these steps in sequence (each command non-interactive; capture ALL output to console/stderr):
 
-1. Dependency & supply-chain snapshot
+After the .voder metadata is committed, run the verification + triage pipeline and remediate iteratively:
+
+1. Run the verification pipeline (capture all console output):
+   - npm run type-check && npm run build && npm test
+
+2. Immediately run supply‑chain snapshots:
    - npm audit --json --no-fund || true
    - npm outdated --json --no-fund || true
 
-2. Inspect jest-axe alignment and print results
+3. Inspect jest-axe peer vs dev ranges (print to console):
    - node -e "const p=require('./package.json'); console.log('peer jest-axe:', p.peerDependencies?.['jest-axe']||'none'); console.log('dev jest-axe:', p.devDependencies?.['jest-axe']||'none');"
 
-3. (Conditional) If the console output shows a major-version mismatch (peer ^9 vs dev ^10) and you choose to align the dev dependency to the peer-compatible range, run:
+4. If you observe a deliberate jest-axe mismatch and choose to align dev → peer-compatible range, perform this single non‑interactive change and record it:
    - npm install --no-audit --no-fund --save-dev jest-axe@^9.0.0
    - git add -- package.json package-lock.json
    - git commit -m "chore(ui-tools): align jest-axe to peer-compatible range"
    - git push origin main
+   - Re-run steps 1 and 2
 
-   Note: Do not perform the above automatic change unless you intentionally reviewed the console output and decided to proceed.
+5. Iterative verification triage loop — repeat until verification is green:
+   - For each failure from step 1:
+     a. Make the smallest possible code or config change limited to src/, tests/, or tsconfig.json (one fix per commit).
+     b. If adding new tracked files: git add -- <new-files>; otherwise use git commit -a -m "fix(ui-tools): <short description>"
+     c. git push origin main
+     d. Re-run: npm run type-check && npm run build && npm test
+     e. Re-run supply‑chain snapshots as needed (step 2)
+   - Guidance for common failure types:
+     - Type errors → smallest type or tsconfig tweak.
+     - Module/import resolution → fix ESM import paths (.js extensions) or adjust tsconfig.
+     - Failing tests → prefer implementation fixes to match spec-encoded tests.
+     - Missing dev tooling → add devDependency only when absolutely required and create an ADR documenting the dependency change (bundle ADR with package.json/package-lock.json changes).
 
-4. Run the verification pipeline (fail-fast)
-   - npm run type-check && npm run build && npm test
-
-5. If verification fails, iterate small focused fixes only in source/test/type config:
-   - Make minimal code/test fix(s) limited to src/, tests/, or tsconfig.json
-   - git add -- <modified-files>
-   - git commit -m "fix(ui-tools): <short description>"
+6. When verification is consistently green locally and any lockfile changes exist:
+   - git add -- package.json package-lock.json || true
+   - git commit -m "chore(ui-tools): update lockfile after remediation" || true
    - git push origin main
-   - Re-run: npm run type-check && npm run build && npm test
-   - Repeat until verification is green
 
-6. After verification is green, re-run supply-chain snapshot and commit lockfile if changed:
-   - npm audit --json --no-fund || true
-   - npm outdated --json --no-fund || true
-   - If package-lock.json or package.json changed:
-     - git add -- package-lock.json package.json
-     - git commit -m "chore(ui-tools): address audit / update lockfile"
-     - git push origin main
-
-Important NEXT notes
-- All command outputs must go to stdout/stderr (console-first) so they appear in .voder/history.md.
-- Do not modify anything under .voder/ or prompts/.
-- Keep all commands POSIX-safe and non-interactive.
-- Avoid automatic major dependency upgrades without an explicit decision and ADR.
+Notes for NEXT:
+- Capture all stdout/stderr (console-first policy) — console output will be preserved in .voder/history.md.
+- Keep each change minimal and re-run the full verification after each commit.
+- Do NOT modify files under .voder/ or prompts/.
+- All commands must be non‑interactive and scoped to the current working directory.
 
 ## LATER
-After the repository is clean and the verification pipeline is green, proceed incrementally (small vertical slices; each slice must be implemented, tested, and verified before moving to the next):
 
-1. Implement Vite library factory + tests
-   - Add src/build/vite-library.ts (createViteLibraryConfig per design).
-   - Add tests: tests/build/vite-library.test.ts asserting ESM-only formats and css.postcss presence.
-   - Commit & run verification.
+After the repository is clean and verification runs consistently green, implement the planned feature slices incrementally (implement → test → verify → commit → push):
 
-2. Implement jsdom testing utilities & accessibility helpers
-   - Add src/testing/{vitest-jsdom.ts, helpers.ts, accessibility.ts, setup.ts}.
-   - Add unit/integration tests for helpers and accessibility utilities (jsdom + jest-axe).
-   - Add a test enforcing vitest + @vitest/coverage-v8 alignment per ADR.
-   - Commit & run verification.
+1. Build factory slice
+   - Implement src/build/vite-library.ts per spec.
+   - Add tests: tests/build/vite-library.test.ts.
+   - Run verification and commit.
 
-3. Add linting factories & markdown lint integration
-   - Add src/linting/{html.ts, css.ts, accessibility.ts}.
-   - Add helper to generate .markdownlint.json (consume @voder/dev-config) and add lint:md / lint:md:fix scripts to package.json.
-   - Commit & run verification.
+2. Testing & accessibility slice
+   - Implement src/testing/{vitest-jsdom.ts, helpers.ts, accessibility.ts, setup.ts}.
+   - Add jsdom + jest-axe unit tests (tests/testing/*.test.ts) and a test asserting @vitest/coverage-v8 loads with vitest.
+   - Run verification and commit.
 
-4. Implement packaging/exports & package-structure tests
-   - Add build asset copy steps, update package.json exports to point to ./dist/*, add prebuild/postbuild hooks to scripts.
+3. Linting & markdown slice
+   - Implement src/linting/{html.ts, css.ts, accessibility.ts} and markdown-lint generator helper.
+   - Add lint:md and lint:md:fix scripts (markdownlint-cli2 per ADR).
+   - Run verification and commit.
+
+4. Packaging & export tests slice
+   - Implement dual-export packaging strategy (exports → ./dist/).
+   - Ensure build emits dist/ and types.
    - Add tests: tests/package-structure.test.ts, tests/export-equivalence.test.ts, tests/package-installation.test.ts.
-   - Ensure tsc output and declaration files are validated by tests.
-   - Commit & run verification.
+   - Run verification and commit.
 
-5. Add README & housekeeping
-   - Add self-contained README.md (UNLICENSED, quick-start, Node engine note, peer deps, security posture).
-   - Add CHANGELOG.md template, eslint.config.js / prettier config, and lint/format scripts.
-   - Commit & run verification.
+5. Scripts & consumer docs slice
+   - Add standardized scripts (verify, lint, lint:fix, format, format:check, lint:md, lint:md:fix).
+   - Add a self-contained README.md (UNLICENSED) with quick-start, API examples, security posture.
+   - Run verification and commit.
 
-6. Supply-chain hardening & ADRs
-   - Remediate audit findings, commit lockfile, add ADRs for any major dependency changes; bundle ADRs with package.json/lockfile changes.
-   - Add tests that assert required version alignment constraints (e.g., vitest/provider).
+6. ADRs & supply‑chain hardening
+   - For any direct dependency changes, add ADR(s) under docs/decisions/ documenting rationale and bundle them with package.json/package-lock.json changes.
+   - Add automated tests that assert version alignment constraints required by ADRs (e.g., vitest and @vitest/coverage-v8).
 
-7. Expand tests & coverage toward policy targets
-   - Incrementally increase test coverage to ≥90% (with 100% public API coverage), enforce thresholds in Vitest config, and make verify the single-source quality gate.
+7. Coverage expansion
+   - Gradually add tests to meet coverage policy (begin with public API exports).
+   - Enforce thresholds in Vitest config and run test:ci regularly.
 
-LATER notes
-- Keep each change the smallest vertical slice that yields verifiable value and tests.
-- Always run the verification pipeline after each slice.
-- Do not modify .voder/ or prompts/ files.
-- Maintain console-first outputs and POSIX-safe commands.
-
----
-
-If you want, I can produce the exact sequence of shell commands (ready to paste/run) for the NEXT steps (after the NOW commit), or I can prepare the minimal focused test/code fixes to make verification pass once you run the verification and share its console output. Which would you like next?
+Constraints reminder
+- Do not modify files under .voder/ or prompts/.
+- All git and shell commands must be non‑interactive and scoped to the current working directory.
+- Capture and review all console output before making dependency decisions.

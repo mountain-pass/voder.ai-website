@@ -1,0 +1,1 @@
+../../../dev-config/docs/decisions/0005-require-exact-version-alignment-for-vitest-packages.md

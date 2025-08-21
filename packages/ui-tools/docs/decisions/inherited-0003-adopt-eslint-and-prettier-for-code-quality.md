@@ -1,0 +1,1 @@
+../../../dev-config/docs/decisions/0003-adopt-eslint-and-prettier-for-code-quality.md

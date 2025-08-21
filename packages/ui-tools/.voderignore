@@ -1,0 +1,6 @@
+# Negations to make specific gitignored build outputs visible to LLM agents
+!dist/
+!coverage/lcov-report/
+!build/types/
+
+# Keep this file minimal; do NOT negate node_modules/ or other large runtime dirs.

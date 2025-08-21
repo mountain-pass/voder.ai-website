@@ -1,0 +1,24 @@
+{
+  "name": "@voder/ui-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "description": "Specialized development tooling for UI component libraries",
+  "scripts": {
+    "prepare": "node ../../setup-package-docs.js",
+    "voder": "node ../../../voder/apps/voder-cli/index.js",
+    "build": "echo 'Build placeholder'"
+  },
+  "peerDependencies": {
+    "vite": "^6.0.0",
+    "vitest": "^3.2.0",
+    "jsdom": "^26.0.0",
+    "jest-axe": "^9.0.0",
+    "autoprefixer": "^10.0.0",
+    "postcss": "^8.0.0"
+  },
+  "devDependencies": {
+    "@voder/dev-config": "file:../dev-config"
+  }
+}

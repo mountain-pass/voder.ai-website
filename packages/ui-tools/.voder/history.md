@@ -1,18 +1,18 @@
 Summary of work completed so far
 
 - Repository housekeeping and metadata
-  - Added comprehensive .gitignore and .voderignore; deduplicated .gitignore in-place using awk.
+  - Added comprehensive .gitignore and .voderignore; deduplicated .gitignore in-place.
   - Created initial scaffold on main with package scaffolding and multiple .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs).
   - Added docs/decisions (including symlinked decision docs), symlinked prompts/docs, and used stashes/filtered stashes and git-file restores to manage .voder edits.
 
-- Package scaffold and package.json adjustments
+- Package scaffold and package.json changes
   - Iteratively adjusted root and package package.json fields and scripts while preserving prepared and .voder fields.
   - Added top-level main/types/exports for @voder/ui-tools v1.0.0 (private, "type": "module").
-  - Removed a nested "types" under "exports" to avoid exposing .d.ts files (commit: "fix: align package.json exports with dist artifacts (avoid .d.ts in exports)").
+  - Removed a nested "types" under "exports" to avoid exposing .d.ts paths (commit: "fix: align package.json exports with dist artifacts (avoid .d.ts in exports)").
 
 - packages/ui-tools implementation
   - Implemented packages/ui-tools/src/build/postcss.ts exporting createPostCSSConfig and PostCSSConfigOptions (ESM autoprefixer import, JSDoc, default browsers list).
-  - Added public export barrel at packages/ui-tools/src/index.ts and packages/ui-tools/tsconfig.json (ES2022/ESNext, NodeNext resolution, strict, declarations).
+  - Added public export barrel at packages/ui-tools/src/index.ts and packages/ui-tools/tsconfig.json.
   - Added a guarded packages/ui-tools/vite.config.ts to avoid optional plugin import failures during test startup.
 
 - TypeScript configuration and ADR
@@ -39,10 +39,10 @@ Summary of work completed so far
   - Encountered Vitest startup failure (ERR_MODULE_NOT_FOUND for 'vite-plugin-inline-source') caused by a generated node_modules/.vite-temp/vite.config.ts referencing a plugin present only in .voder metadata.
   - Mitigated by adding a guarded vite.config.ts that dynamically attempts to import the optional plugin, swallows import/init errors, and exports an async Vite config with an empty-or-populated plugins array.
 
-- Miscellaneous git operations
+- Git activity and miscellaneous operations
   - Repeated git index adjustments and add/commit/push cycles (including attempted git rm --cached -r dist/ where no tracked dist paths existed).
   - Installed @testing-library/jest-dom, stashed local .voder edits, and pushed local commits on main to origin.
-  - Dedupe .gitignore committed; overall commit reported 10 files changed, 517 insertions(+), 379 deletions(-).
+  - Dedupe .gitignore committed; an overall commit reported 10 files changed, 517 insertions(+), 379 deletions(-).
 
 - Recent verification and test results
   - Last verification run (npm run type-check && npm run build && npm test):
@@ -55,34 +55,35 @@ Summary of work completed so far
   - Committed deduplicated .gitignore.
   - Added and committed a PostCSS usage doc (symlinked) at packages/ui-tools/docs/libraries/usage/postcss.md (commit main 0713db7).
 
-- Most recent actions and stash activity
+- Most recent actions, stashes, and shell commands
   - git push origin main completed.
   - Ran: git stash push -m "wip: stash .voder metadata before verification" -- .voder — saved working directory and index state.
-
-- Most recent shell commands and outcomes
   - Executed: git rm --cached -r dist/ || true — completed; no tracked dist paths were present.
   - Dedupe .gitignore with awk — completed successfully.
 
-- Most recent commit attempt and result
-  - Executed: git commit -m "chore: stop tracking built artifacts (dist/)" || true
-  - Result: The command completed but reported no changes added to commit. Working tree showed several modified .voder files:
-    - Modified (not staged): .voder/history.md, .voder/implementation-progress.md, .voder/last-action.md, .voder/plan.md, .voder/progress-chart.png, .voder/progress-log-areas.csv, .voder/progress-log.csv
+- Most recent commit attempt and working tree state
+  - Executed: git commit -m "chore: stop tracking built artifacts (dist/)" || true — command reported no changes added to commit.
+  - Working tree showed several modified .voder files not staged: .voder/history.md, .voder/implementation-progress.md, .voder/last-action.md, .voder/plan.md, .voder/progress-chart.png, .voder/progress-log-areas.csv, .voder/progress-log.csv.
   - Also showed untracked files outside the repository root (e.g., ../services/docs/libraries/usage/, ../services/package-lock.json, ../services/prompts/runtime-ui-testing.md, ../../prompts/development/ui-tools/).
 
-This captures the history of what has been done so far, including recent verification, test results, git operations, and the latest commit attempt outcome.
+- Most recent action executed
+  - Action: discard local edits in the workspace-internal metadata directory (.voder/) via:
+    - git restore .voder/ || true
+  - Result: `git restore .voder/` completed.
 
 **Most recently we've executed the following action:**
 
 ---
-Action: discard local edits in the workspace-internal metadata directory (.voder/) to clean the working tree.
+Run this in the project root to commit the tracked .gitignore change:
 
-Command (run from the project root):
-git restore .voder/ || true
+git commit -am "chore: deduplicate .gitignore entries (prompt-assets/)"
 ---
 
 **This was the result:**
 ---
-`git restore .voder/` completed.
+`git commit -am chore: deduplicate .gitignore entries (prompt-assets/)` completed.
 Output:
+[main a909560] chore: deduplicate .gitignore entries (prompt-assets/)
+ 7 files changed, 430 insertions(+), 447 deletions(-)
 
 ---

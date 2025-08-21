@@ -14,5 +14,8 @@
     "src",
     "tests",
     "prettier.config.ts"
+  ],
+  "exclude": [
+    "dist"
   ]
 }

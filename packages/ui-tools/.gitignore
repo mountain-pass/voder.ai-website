@@ -3,7 +3,7 @@ prompt-assets/
 
 node_modules/
 dist/
-build/
+/build/
 coverage/
 .cache/
 .vite/
@@ -41,6 +41,3 @@ packages/services/docs/libraries/usage/
 packages/services/package-lock.json
 packages/services/prompts/runtime-ui-testing.md
 prompts/development/ui-tools/
-packages/ui-tools/.voder/
-
-.voder/

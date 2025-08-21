@@ -1,6 +1,6 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-08-21T15:00:17.845Z
+**Generated:** 2025-08-21T15:26:22.072Z
 
 ![Progress Chart](./progress-chart.png)
 
@@ -9,289 +9,274 @@ Projection: flat (no recent upward trend)
 ## IMPLEMENTATION STATUS: INCOMPLETE (54% ± 5% COMPLETE)
 
 ## OVERALL ASSESSMENT
-- What is complete
-  - Repository scaffolding, ADRs, and developer documentation exist and are well-documented (docs/decisions, docs/libraries).
-  - Package metadata and tooling are present: package.json (ESM), tsconfig.json, vite.config.ts, devDependencies/peerDependencies added (TypeScript, Vitest, postcss/autoprefixer, jsdom, jest-axe, etc.).
-  - Minimal implementation and compiled artifacts exist for a very small public surface (src/index.ts → exposes createPostCSSConfig; compiled dist/ includes index.js/.d.ts and two compiled tests).
-  - Build and test pipeline has run successfully in prior runs (the toolchain works), and the guarded vite.config.ts is defensive.
-- What is missing / incomplete
-  - Core package functionality described in the implementation guide is mostly absent. The spec expects many factories and helpers (createViteLibraryConfig, createVitestJsdomConfig, DOM testing helpers, accessibility utilities, linting config factories, templates) — these are not implemented/available in source or exports.
-  - Exports strategy is incomplete: package.json only exports "." (no dual exports like ./testing, ./prettier, ./eslint) required by the guide.
-  - Tests are minimal and insufficient: only package-structure and smoke tests exist. No unit tests for core functions, no export-equivalence tests, no package-installation integration tests, and coverage targets (≥90% overall, 100% public API) are not met.
-  - Required scripts and tooling glue are missing: no verify script, no lint:md / markdownlint config generator, no eslint.config.js or prettier.config.js as mandated.
-  - Documentation lacks consumer-facing essentials: no README.md or CHANGELOG.md for the package root; API reference is scattered.
-  - Version control is not in a clean state: there are unstaged/modified .voder metadata files.
-  - Recent verification run failed due to a build configuration state issue (TS5055 — TypeScript attempted to write into tracked dist/ inputs), indicating repository-state fragility (committed build outputs at some point).
-- Reference to sub-assessment findings (percent scores)
-  - FUNCTIONALITY: 25% — Minimal implemented API; majority of required features absent.
-  - CODE_QUALITY: 65% — Small implemented surface appears reasonable; repository has fragile points (dist artifacts, missing lint/format enforcement).
-  - TESTING: 20% — Tests are present but tiny in scope and currently blocked by build/config issues; coverage is far below requirements.
-  - EXECUTION: 85% — Tooling runs have succeeded previously; current failure stems from repository state (dist artifacts causing TS emitter errors) rather than broken scripts.
-  - DOCUMENTATION: 55% — Strong internal ADRs and guides, but missing public README/CHANGELOG/API docs and markdown-lint glue.
-  - DEPENDENCIES: 70% — Intentional and mostly up-to-date; require an npm audit / SCA and minor peer/dev alignment checks (e.g., jest-axe).
-  - SECURITY: 80% — No obvious high‑severity code vulnerabilities; supply-chain and lifecycle-script review / SCA recommended.
-  - VERSION_CONTROL: 30% — Uncommitted workspace changes (.voder files) keep repo from a clean/synchronized state.
+- What’s complete
+  - Core scaffolding and metadata: package.json, tsconfig.json, vite.config.ts, ADRs (docs/decisions/) and developer guidance exist and are high quality.
+  - One implemented public API: createPostCSSConfig is implemented and exported (src + compiled dist). Dist contains compiled artifacts and compiled tests, and smoke + package-structure tests that import dist exist and have run successfully in prior verification.
+  - Dev dependency management and supply-chain checks: devDependencies/peerDependencies are present and your previous audit reported zero vulnerabilities.
+  - Build/test scripts exist (type-check, build, test, test:ci), and the build + tests have passed previously (before the most recent TS overwrite error).
+
+- What’s missing or incomplete (major gaps)
+  - Functionality: Only a small slice of the promised feature set is implemented (PostCSS factory). Major package responsibilities are unimplemented: Vite library factory, Vitest jsdom factory, testing helpers, accessibility utilities, HTML/CSS linting factories, templates, and the complete export surface (dual-export strategy). (FUNCTIONALITY: 25%)
+  - Testing: Tests are minimal and focused on packaging and a single smoke assertion. No unit tests for createPostCSSConfig, no integration/package-installation tests, no export-equivalence tests, and no meaningful coverage. Current tests will not meet the project’s coverage policy (required ≥90%). (TESTING: 10%)
+  - Version control cleanliness: Working tree has uncommitted modifications (several .voder files). That prevents a clean, publishable state and must be resolved. (VERSION_CONTROL: 25%)
+  - Documentation: Strong internal docs (ADRs, prompts) but lacking consumer‑facing docs: README.md, CHANGELOG, concise API documentation, and .markdownlint.json are missing. (DOCUMENTATION: 55%)
+  - Code quality & execution risks: Code quality for the narrow implemented surface is reasonable, but the repository relies on compiled artifacts in dist which masks missing source files and caused build friction (TS5055). The recent TS5055 build failure shows build configuration fragility that needs confirmation-fixed. (CODE_QUALITY: 65%, EXECUTION: 70%)
+  - Security & dependencies: Good — private package, lockfile, zero audit findings; follow-up recommendations remain (untracked/committed build artifacts, lifecycle scripts, SCA monitoring). (DEPENDENCIES: 100%, SECURITY: 85%)
+
+- Sub-assessment references (for traceability)
+  - FUNCTIONALITY: 25%
+  - CODE_QUALITY: 65%
+  - TESTING: 10%
+  - EXECUTION: 70%
+  - DOCUMENTATION: 55%
+  - DEPENDENCIES: 100%
+  - SECURITY: 85%
+  - VERSION_CONTROL: 25%
 
 ## NEXT PRIORITY
-Immediate highest-priority actions (in order) to unblock progress and address the lowest-scoring areas:
+Immediate next steps (ordered by priority — address the lowest-scoring areas first):
 
-1. Clean up version control (required first)
-   - Commit or stash the modified .voder metadata files so the working tree is clean. (Current status shows modified .voder/* files). A clean working directory is needed before running verification and making further single-file fixes.
+1. Clean and synchronize version control (critical, low friction)
+   - Commit or intentionally stash the .voder metadata edits so working tree is clean:
+     - If the .voder changes are meant to be kept, stage and commit them with a clear message.
+     - If they are transient, stash or discard as appropriate.
+   - Ensure there are no unstaged or uncommitted changes before continuing.
+   - Verify no local commits are unpushed (git status / git log); push if any.
+   - Rationale: a clean, committed working tree is required before repeatable verification runs and prevents ambiguity about what was tested.
 
-2. Re-run the verification pipeline to reproduce and capture current failure
-   - Run: npm run type-check && npm run build && npm test (console/stderr output preserved).
-   - This will confirm whether the TS5055 overwrite-of-input error persists, and will provide the single highest-priority error to address.
+2. Re-run the verification pipeline now that VC is clean
+   - Run: npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+   - Capture the full console output (use tee) so results are recorded in .voder/history.md.
+   - If the build still fails with TS5055 (overwrite errors), do one minimal fix and re-run (example: confirm tsconfig.exclude includes "dist", ensure dist is not in "include", and remove any tracked dist files from the index with git rm --cached -r dist/ if they remain tracked).
 
-3. Fix the TypeScript build / repository-state issue (TS5055)
-   - Ensure no compiled outputs are present as tracked inputs:
-     - Remove any committed dist/ artifacts from the index (git rm --cached -r dist/) if still tracked.
-     - Ensure tsconfig.json excludes dist (confirm "exclude": ["dist"] present).
-     - If necessary delete or move existing dist/ files from the working tree (they are gitignored).
-   - Commit exactly the single file needed to fix this (e.g., tsconfig.json change or removal of tracked dist files) and re-run the verification pipeline until build/test succeed.
+3. Add a focused unit test for PostCSS behavior (quick win for TESTING & FUNCTIONALITY)
+   - Implement tests/tests/build/postcss.test.ts asserting:
+     - createPostCSSConfig returns an object with plugins array
+     - autoprefixer is included or the returned config includes expected structure/options
+   - Run tests and confirm they pass; this proves functional behavior rather than just presence.
+   - Rationale: raises testing from 10% by verifying actual functionality and starts satisfying test requirements.
 
-4. Implement the smallest useful functional slice and associated tests (after build is stable)
-   - Verify the PostCSS factory implementation exists in source (src/build/postcss.ts) and compiles to dist/src/build/postcss.js; add a focused unit test for createPostCSSConfig behavior (input → expected autoprefixer plugin present).
-   - Ensure dist compiled artifacts align with src and the smoke test imports succeed reliably.
+4. Stop relying on committed compiled outputs
+   - Ensure dist/ is listed in .gitignore and not tracked in the index:
+     - If dist files are tracked, remove them from the index (git rm --cached -r dist/) and commit that change.
+   - This avoids TS write/overwrite issues (TS5055) and ensures builds are done from source.
 
-5. Expand tests and exports incrementally
-   - Add the mandated dual exports in package.json (./testing, ./prettier, etc.) once those module sources exist.
-   - Add unit tests for createViteLibraryConfig, createVitestJsdomConfig, DOM helpers, accessibility utilities.
-   - Add export-equivalence and package-installation tests per guide.
-   - Iterate until test coverage and export integration requirements are satisfied.
+5. Add minimal consumer-facing docs (README.md) and a short API section
+   - Create README.md that includes purpose, install, quick start (how to import createPostCSSConfig), scripts to run tests/build, and security/license blurb.
+   - This addresses documentation gaps quickly and improves consumer experience.
 
-6. Add missing scripts and documentation
-   - Add verify, lint:md, lint:md:fix, lint, format, format:check scripts and the markdownlint config generator script (small incremental commits).
-   - Add a README.md (self-contained) and CHANGELOG.md.
+6. Plan medium-term work (after immediate verification & unit test pass)
+   - Implement remaining required modules incrementally (one vertical slice per commit):
+     - src/build/vite-library.ts + tests
+     - src/testing/* (vitest-jsdom, setup, helpers, accessibility) + tests
+     - src/linting/* factories + tests
+     - scripts to generate .markdownlint.json and add lint:md scripts
+     - Add dual export paths in package.json and corresponding export-equivalence and installation integration tests
+   - Each change should be small, committed independently, and validated by the verify pipeline.
 
-7. Run dependency & security checks
-   - Run npm audit / SCA, and address any critical/high vulnerabilities; add CI enforcement for audits and supply-chain policy.
-
-Rationale: Version control state and the TS build error are immediate blockers that prevent tests and further development. Once the workspace is clean and build/test pass, the team can implement the missing features and comprehensive tests incrementally (one vertical slice per commit) until the package meets the functional, testing, and documentation requirements.
+Summary: Clean VC and re-run verification immediately. If the build fails due to TS artifacts, remove tracked dist and ensure tsconfig excludes dist. Add a minimal unit test for createPostCSSConfig and add README.md. After those fixes, proceed incrementally to implement the remaining modules and the comprehensive test suite. Once tests and verification are green, push and iterate further.
 
 If you want, I can:
-- produce the exact single-file edits and commands to clean the repository (git add/commit lines) and fix the TS build issue, and then run the verification steps; or
-- prepare the minimal unit test and source file for createPostCSSConfig so the next verification loop has a focused target.
-
-Which of the immediate next actions should I perform now?
-
+- produce the exact git and npm commands to run next (non-interactive),
+- create the unit test file for createPostCSSConfig and the README.md as minimal patches,
+- or run the verification loop (if you want me to perform the next code changes step-by-step).
 
 
-## FUNCTIONALITY ASSESSMENT (25% ± 10% COMPLETE)
-- Implemented / present (what works today)
-  - Core repository scaffolding and metadata are in place: .gitignore, .voderignore, ADRs, and documentation pages exist.
-  - Package metadata: package.json declares the package as ESM, main/types fields point to dist, peerDependencies/devDependencies have been added for UI toolchain (postcss/autoprefixer, vitest, jsdom, etc.).
-  - TypeScript build configuration exists (tsconfig.json) and compilation has been run (dist/ contains compiled artifacts).
-  - Minimal public export barrel present (src/index.ts) and compiled dist entry (dist/src/index.js) that re-exports createPostCSSConfig.
-  - Two automated Vitest test suites (package-structure and smoke) exist (source in tests/, compiled in dist/tests/). These tests are the basic package-structure and smoke checks required by the guide.
-  - Basic npm scripts exist for type-check, build, test, test:ci, and clean.
 
-- Partially implemented / fragile areas (likely broken or incomplete runtime behavior)
-  - The public API surface is minimal: only createPostCSSConfig is (intended to be) exported. The comprehensive set of APIs described in the UI Tools spec (vite library config factory, Vitest jsdom config factory, DOM testing helpers, accessibility utilities, linting config factories, template files, utility helpers) are not present in src/ (or are not clearly available in the repository root source tree). The project guide expects many factory functions and helpers — those are missing or not exposed.
-  - The dist entry re-exports from './build/postcss.js'. Unless the compiled file dist/src/build/postcss.js is present and correct, importing dist/src/index.js will fail at runtime. The provided file list shows dist/src/index.js and dist/src/index.d.ts but no dist/src/build/postcss.js was listed; if that file is missing, the smoke test and consumers will error when resolving the re-export. (History suggests postcss.ts was implemented earlier, but current source tree does not show src/build/postcss.ts — this ambiguity is a functional risk.)
-  - Test coverage is minimal and only covers export-path and a smoke import — the rich suite of unit/integration tests required by the specification (build config tests, testing helpers tests, lint config tests, installation-integration tests, export-equivalence tests, dependency-version alignment checks, and the high coverage thresholds) are not implemented.
-  - The mandated "dual export" pattern for config packages (main index plus dedicated sub-paths such as ./testing, ./prettier, ./eslint) is not implemented in package.json.exports — there is a single "." export only. The package therefore does not meet the stated export strategy requirements.
-  - The package does not expose the mandatory markdown-lint generator and scripts (lint:md, lint:md:fix) required by the universal guide, nor the required verify script that composes audit/lint/format/build/test steps.
-  - Linting and formatting integration files required by the guide (eslint.config.js, prettier.config.js) are not present in the repository root; markdown lint generation script is missing.
-  - The rich test environment setup (setupJsdomTestEnvironment), DOM testing helpers, accessibility helpers, and linting configuration factories described in the UI Tools implementation guide are not present in src/ (or not exported). Those are required functionality for the package scope.
+## FUNCTIONALITY ASSESSMENT (25% ±10% COMPLETE)
+- Implemented / present:
+  - PostCSS configuration factory (createPostCSSConfig) implemented and exported from the package entry (src and compiled dist present).
+  - Minimal public export barrel (src/index.ts) exposing createPostCSSConfig; matching compiled dist entry exists and smoke test imports it.
+  - TypeScript configuration (tsconfig.json) is present and set to emit declarations to dist; build/test/type-check scripts exist in package.json.
+  - A guarded vite.config.ts exists to avoid optional-plugin startup failures (robustness).
+  - Basic Vitest tests exist for package-structure and a smoke test that imports dist; compiled test artifacts are present under dist/tests/.
+  - ADRs and package-local documentation for several design decisions are present in docs/decisions/.
+  - package.json contains main/types/exports and peer/devDependency entries aligned with several ADRs.
 
-- Missing / not implemented features (per the specification)
-  - Vite library configuration factory (createViteLibraryConfig) source and tests are not present in src/.
-  - Vitest jsdom config factory (createVitestJsdomConfig) and its test coverage are missing.
-  - DOM testing helpers (renderComponent, simulateClick, waitForNextFrame, etc.) are not present in src/ exports.
-  - Accessibility utilities (expectAccessible, getAccessibilityViolations, accessibilityTests) are not implemented/exported in src/.
-  - CSS/HTML/accessibility linting config factories (createCSSLintConfig, createHTMLLintConfig, createAccessibilityLintConfig) are not implemented or exported in src/.
-  - Template files (templates/vitest.config.ts, vite.config.ts, test-setup.jsdom.ts) described by the guide are not present.
-  - Required scripts per the universal guide (verify, lint:md, lint:md:fix, format, lint, lint:fix, format:check, etc.) are not in package.json.
-  - Tests for package-installation integration, export-equivalence, and many unit tests required by the guide are absent.
-  - Coverage and public API coverage targets (100% public API, 90% overall) are not met — test suite is tiny.
+- Partial / limited implementations:
+  - Tests: there are basic smoke and package-structure tests, but the test surface is very small and focuses only on the compiled entry and exports presence (does not exercise PostCSS behavior or any UI testing utilities).
+  - Packaging/exports: main export (".") to dist is implemented and validated by tests; however the fuller dual-export strategy (dedicated subpaths such as ./testing, ./prettier, ./eslint) described in the guide is not implemented.
+  - Build pipeline: basic build/type-check/test scripts exist and have been run, though the earlier TS overwrite issue indicates the build setup required an adjustment; the core build for current implemented artifacts appears present.
 
-- Known issues / blockers to functionality
-  - Potential missing compiled artifact for postcss (dist/src/build/postcss.js). If that file is not present, importing the package dist entry will throw ERR_MODULE_NOT_FOUND at runtime because dist/src/index.js re-exports from './build/postcss.js'.
-  - Until the full set of source modules is added to src/ and compiled to dist/, consumers cannot use the majority of the package features described in the implementation guide.
-  - The package.json exports structure, test coverage, and scripts do not satisfy the "Package Development Patterns" and "Universal Testing Standards" mandated by the documentation.
+- Missing / NOT implemented (major gaps relative to requirements):
+  - Vite library configuration factory (createViteLibraryConfig) — referenced in the guide but not present in the repo source.
+  - UI testing stack: Vitest jsdom configuration factory (createVitestJsdomConfig), test environment setup (setupJsdomTestEnvironment), DOM testing helpers (renderComponent, simulateClick, etc.), and accessibility utilities (expectAccessible, getAccessibilityViolations, etc.) are not implemented in src (only exist in the spec doc).
+  - Linting configurations: html, css, and accessibility lint config factories are not present in src (spec provides them, but implementation files are absent).
+  - Template files and example configs (templates/), and many of the outlined module files in src (build/vite-library.ts, testing/*, linting/*, utils/*) are missing.
+  - Required package scripts from the universal guide are missing or incomplete: mandatory markdown lint scripts (lint:md, lint:md:fix), format/format:check, lint/lint:fix, and the canonical verify script are not present in package.json.
+  - Markdown lint integration (generation of .markdownlint.json from @voder/dev-config) is not implemented / no script present.
+  - Dual export strategy: dedicated export paths and equivalence tests are not implemented.
+  - Integration/package-installation tests and export-equivalence tests (required for configuration packages) are missing.
+  - Coverage and quality gates: no evidence of meeting the high coverage thresholds (90%+), and there are no tests that exercise the public API beyond the single-postcss export.
+  - README.md, CHANGELOG.md, and many of the public-facing documentation items required by the guide are not present or not completed.
+  - Many of the "Primary Responsibilities" (Vite library configs, CSS processing beyond the PostCSS factory, jsdom testing utilities, accessibility testing, HTML/CSS linting, component test utilities) are unimplemented beyond the PostCSS factory.
 
-- Overall assessment
-  - The repository has the scaffolding, metadata, and a very small slice of functionality (a minimal export barrel, build setup, tests for export paths and a smoke import) and has been prepared with correct tooling in package.json. However, the majority of the package responsibilities and APIs described in the UI Tools specification are not implemented or not verifiably present in source form. Several important integration points (dual exports, markdown lint scripts, testing helpers, linting configs, Vite/Vitest factories) are missing.
-  - Functionality completeness is low — the project is an early scaffold with a small amount of working verification but does not yet provide the core features required by the specification.
+- Risk / completeness notes:
+  - The repository has a clear and thorough specification; however the actual implemented surface is a small subset (primarily PostCSS factory + minimal packaging/test scaffolding). For a package intended to provide a full suite of UI tooling (build configs, testing factories, lint rules, utilities, templates, and a complete set of tests and scripts), the current implementation meets only the foundational starting point.
+  - Tests and exports currently present validate only packaging and the presence of the single PostCSS API; they do not validate the broader functional promises made in the package guide.
 
-Recommendations (functional next steps)
-  - Ensure the implementation of src/build/postcss.ts (and its compiled dist counterpart) exists and that dist/src/build/postcss.js is present so the smoke import succeeds reliably.
-  - Incrementally implement the highest-priority API factories and helpers (start with createPostCSSConfig in source, then createViteLibraryConfig and createVitestJsdomConfig), adding unit tests for each piece and exporting them via src/index.ts.
-  - Add the mandatory scripts (lint:md, lint:md:fix, verify, lint, format, type-check) and implement the markdownlint config generator and tests.
-  - Expand the test-suite to cover export-equivalence, installation-integration, and API public surface, driving coverage upward.
+Summary: The codebase implements an important core piece (PostCSS + autoprefixer factory) and minimal packaging/tests, but the majority of the package responsibilities and required features (Vite library factory, jsdom testing utilities, accessibility helpers, linting configs, templates, mandatory scripts, comprehensive tests, and dual export strategy) remain unimplemented. Overall functionality completion is low — roughly 25% of the targeted feature set is implemented.
 
-Summary score explanation: ~25% indicates repository scaffolding, package metadata, a minimal public export and two tests exist, but the bulk of the functionality described in the implementation guide is not implemented or not verifiably present.
+## CODE QUALITY ASSESSMENT (65% ± 15% COMPLETE)
+- The repository currently contains a small, working surface: the compiled dist exports, a minimal source export barrel (src/index.ts), and Vitest smoke + package‑structure tests that exercise the compiled output. Those tests (which import dist/*) are consistent with the current state and — per your history — have passed previously. The TypeScript target (ES2022 / NodeNext) and the exported .js extension usage are aligned for ESM output, and the build/test scripts are present and reasonably formed.
 
-## CODE QUALITY ASSESSMENT (65% ± 10% COMPLETE)
-- The codebase is functional for its current, very small surface area (the package exposes a single PostCSS factory via src/index.ts and there are compiled artifacts and smoke/package-structure tests that target those artifacts). The guarded vite.config.ts is defensive and avoids startup crashes when optional plugins are absent. However there are several quality and correctness issues that reduce confidence and maintainability:
-  - Incomplete implementation: many APIs and modules described in the design docs (testing, linting, build factory, templates, etc.) are not present in source form — only a minimal PostCSS export appears implemented. The repo contains many docs/ADR files but the runtime/test surface is narrow.
-  - Dist artifacts in the repository create fragility and confusion. Committed/checked-in dist/ outputs previously caused TypeScript TS5055 "overwrite input" build errors. Although tsconfig was adjusted to exclude dist/ (mitigation applied), keeping compiled outputs in the tree is risky and can lead to stale artifacts, accidental overwrites, and ambiguous source-of-truth issues.
-  - Testing coverage is minimal. There are only smoke and package-structure tests; the comprehensive test requirements in the guides (export-equivalence, installation integration, unit tests for many factories) are missing. Current tests exercise a tiny slice of functionality so API correctness and edge cases are not assured.
-  - Missing quality-tooling config and scripts required by the project's guidelines: no ESLint/Prettier config files or lint/format scripts are present despite policy requiring them. package.json lacks the standardized verify/lint/format/lint:md scripts mandated by the guide. This reduces automated enforcement of code-quality rules.
-  - Minor correctness/usability issues:
-    - package.json exports are minimal (no explicit types field under exports) — this is valid but diverges from the dual-export pattern the docs expect and could cause consumer confusion.
-    - tsconfig.json includes prettier.config.ts in "include" although no such file exists in the repository; this is harmless at runtime but indicates drift between config and files.
-    - package.json scripts reference helper binaries (prepare -> ../../setup-package-docs.js, voder -> ../../../voder/apps/...) that are not present in the package; running those scripts will fail in isolation.
-  - Style/consistency: source files use ESM-style import paths with explicit .js extensions (intentional for ESM output), which is acceptable here but should be documented and consistently applied; there is no committed ESLint/Prettier enforcement so style could diverge over time.
-  - Security/safety: imports of testing tooling (jest-axe, jsdom) and devDeps exist in package.json; these are development-only, but there are no tests asserting version-alignment constraints (required by ADRs) yet.
+  However there are several code‑quality gaps and risks that reduce the score:
+  - Incomplete source surface: the source-level implementation for many advertised APIs (eg. src/build/postcss.ts, testing helpers, linting factories) is either missing from the tracked src tree or not visible in the current file list. The package currently relies on compiled artifacts in dist, which hides missing/unsynced source files and increases risk of drift. A source-first implementation is preferable.
+  - Fragile build assumptions: some source files import with .js extensions (correct for ESM output), but if source files referenced by those imports are missing, type-check / runtime authoring workflows and some toolchains can break. The recent TS5055 overwrite issue you saw is symptomatic of build/output path confusion (dist tracked or referenced as inputs). The tsconfig exclusion fix was required — this indicates the build configuration and repo state need hardening.
+  - Minimal test coverage: tests are currently smoke & structure checks against compiled output. There are no unit tests for core factories/utilities (PostCSS config, Vite factory, DOM helpers) in source form. The test surface is insufficient to meet the package's described guarantees.
+  - No lint/format enforcement or configs present in the package root (eslint/prettier/markdown lint scripts & configs required by the guides are missing). That reduces maintainability and makes style/consistency ad hoc.
+  - Missing documentation and README for consumers; docs exist in docs/ but README.md and other package metadata guidance are not present/incomplete relative to the spec.
+  - Error handling and API documentation are sparse (the single source barrel has no JSDoc, public types are minimal).
+  - Some dependencies (dev & peer) are present but the package doesn't yet demonstrate the expected dual-export patterns or full integration tests required by the guide.
 
-Summary: the code "works" for the narrow, implemented surface (smoke tests target the compiled barrel), but the repository is not yet at production-quality: missing implementations, limited tests, absent lint/format enforcement, and the presence of dist artifacts make the setup fragile. I estimate overall code quality around 65% given these gaps; addressing the missing modules/tests, removing/ignoring dist outputs, and adding the mandated tooling/config/scripts would raise this substantially.
+  Summary: The code is in an intermediate but working state for the narrow, compiled-output-driven tests that exist today. It is not yet robust, well-tested at source level, or conformant with the broader repository standards (linting, docs, dual exports, complete source implementations). To raise quality toward 90–100% would require: restoring/adding missing source modules, adding unit tests for each public API, adding package-local lint/format configs and scripts, removing reliance on committed/visible dist as a crutch, and improving API docs and error handling.
 
-## TESTING ASSESSMENT (20% ± 10% COMPLETE)
-- Current test surface is minimal and narrowly focused. The repository contains two Vitest suites: 
-  - tests/package-structure.test.ts — validates package.json exports reference ./dist/ files (structural/package export checks).
-  - tests/smoke.test.ts — smoke test that imports the compiled dist entry and asserts createPostCSSConfig exists.
-- Recent historical runs show those 2 tests passed in isolation. However the latest full verification run failed at the TypeScript build step (TS5055) before tests executed, so the test pipeline is currently blocked by build issues.
-- There is no coverage report committed or enforced in the repo, and no tests exercising the actual implementation logic:
-  - No unit tests for createPostCSSConfig behavior (input → expected PostCSS config).
-  - No tests for the planned API surface: vite-library factory, vitest-jsdom factory, DOM helpers, accessibility utilities, linting config generators, or template files.
-  - No integration tests required by the guide (export-equivalence, package-installation/npm pack consumer tests).
-  - No automated tests verifying vitest / @vitest/coverage-v8 version alignment or coverage thresholds are maintained.
-- Compared to the project’s stated testing requirements (Vitest-based verification, export integration tests, package-installation tests, smoke tests, and minimum coverage thresholds of 90% overall / 100% public API), current tests meet only a tiny fraction of the requirements: structural and smoke checks only.
-- Recommendation (next smallest steps to improve test coverage and reliability):
-  1. Fix the TypeScript build issue so tests can run reliably (unblocks CI/testing).
-  2. Add focused unit tests for core functions first (createPostCSSConfig) — these are small, fast, high-value tests.
-  3. Add vitest-jsdom factory and helpers tests (setup, renderComponent, simulate events).
-  4. Add export-equivalence and package-structure/package-installation integration tests per guide.
-  5. Enable coverage collection (test:ci) and progressively raise to the required thresholds.
-- Overall conclusion: testing exists but is incomplete and fragile. Current state is roughly 20% of required testing effort toward the stated goals (±10%). Tests previously ran and passed for what exists, but the suite is far from adequate in scope and coverage and is currently blocked by a build failure.
+## TESTING ASSESSMENT (10% ± 15% COMPLETE)
+- There are only two formal Vitest test files in the package source:
+  - tests/package-structure.test.ts — validates that package.json exports point to files under ./dist and do not reference .ts sources.
+  - tests/smoke.test.ts — smoke test that imports the compiled dist entry and asserts createPostCSSConfig exists and is a function.
+- Compiled equivalents exist under dist/tests/*.js indicating prior successful builds and test runs; historical notes indicate these two tests passed previously after a successful build.
+- Coverage: there is no coverage report checked here and the existing test surface is extremely small. The tests exercise only:
+  - export path correctness (packaging surface)
+  - a minimal smoke assertion that the compiled export exists
+  They do NOT exercise functional behavior of createPostCSSConfig, PostCSS plugin composition, Vite config factory, testing helpers, linting config factories, accessibility helpers, or any error/edge cases.
+- Missing required test categories per the project’s own Universal Testing Standards:
+  - No unit tests for createPostCSSConfig or other config factories (build/postcss.ts is untested).
+  - No export-equivalence tests (dual-export pattern) or package-installation integration tests to validate consumer experience.
+  - No smoke tests covering broader API surface (only createPostCSSConfig is asserted).
+  - No tests verifying version-alignment or dependency constraint behaviors (e.g., vitest / coverage provider).
+- Coverage thresholds (project policy: ≥90% overall, 100% public API) are not met and cannot be met with current tests; current test set will produce extremely low coverage.
+- Passing status: based on project history, the tests passed in a prior successful verification run; however the most recent verification run failed at build time (TS build errors) so tests could not be executed in that run. Assuming the build is fixed, the two tests should pass, but that does not imply adequate test coverage.
 
-## EXECUTION ASSESSMENT (85% ± 10% COMPLETE)
-- The package has been largely built, type-checked, and tested successfully in prior verification runs (tsc --noEmit, tsc -p tsconfig.json, and Vitest runs all completed successfully earlier). The project contains compiled outputs in dist/ and working Vitest tests that previously passed, which demonstrates the build & test scripts do work in the expected flow.
-- However, the most recent full verification (npm run type-check && npm run build && npm test) failed with TypeScript TS5055 errors: the compiler attempted to write declaration/output files into dist/ paths that already exist as inputs. This indicates a repository state/configuration problem (compiled outputs present as source inputs) rather than a fundamental bug in the build scripts themselves.
-- In short: build and test tooling is implemented and has run successfully before, but the current workspace contains dist/ artifacts that cause the TypeScript emitter to detect overwrite-of-input and fail the build. Fixing the repository state (ensure dist/ is excluded/removed as input, or delete/move the existing dist/ artifacts) will return the verification pipeline to green.
+Summary judgement:
+- Tests exist and are minimal / focused on packaging/smoke assertions — they are valuable as a starting point but insufficient.
+- Many mandatory test categories and detailed unit/integration tests are missing; current coverage will be far below the project's required thresholds.
+
+Recommendations (short):
+- Add unit tests for createPostCSSConfig (behavioral assertions for autoprefixer plugin inclusion and options).
+- Add tests for the Vite library config factory and linting config factories.
+- Add export-equivalence and package-installation integration tests.
+- Run coverage and incrementally expand tests until policy thresholds (90%+ / 100% public API) are met.
+
+## EXECUTION ASSESSMENT (70% ±10% COMPLETE)
+- The package has been exercised successfully in the past: there is clear evidence that tsc (type-check), tsc -p (build) and Vitest tests completed successfully in an earlier full verification run — compiled outputs exist in dist/ and the smoke/package-structure tests target those compiled files.
+- However, the most recently executed verification command (npm run type-check && npm run build && npm test) failed with TypeScript TS5055 errors (tsc attempted to overwrite files under dist/ that were treated as inputs). That run exited with code 1, so the current repository state is not fully validated end-to-end.
+- A corrective change (adding "exclude": ["dist"] to tsconfig.json) was made in the working tree to address the overwrite problem, but there is no evidence the verification pipeline has been re-run and succeeded since that fix.
+- Conclusion: build & test scripts are mostly implemented and have worked previously, but at present the verification pipeline is failing (build-stage) until the TS5055 issue is confirmed resolved by re-running the verification. Overall execution is partially successful but not fully validated.
 
 <scratchpad>
-Inventory of existing documentation:
-- docs/decisions/* — comprehensive ADRs (local + inherited) present and clear.
-- docs/libraries/usage/* — PostCSS and dev-config usage docs exist.
-- docs/decisions/README.md — index of ADRs.
-- prompts/* — detailed implementation guides (useful but internal).
-- tests and examples in prompts and docs demonstrate usage patterns (vite/vitest examples).
-- No README.md at package root or package-level README under package.
-- No CHANGELOG.md.
-- No generated .markdownlint.json or script to generate it (though requirement described).
-- No dedicated API reference (e.g., README sections for exported functions/types), only in-code comments and example snippets across docs/prompts.
-- package.json has description, scripts, exports, and license but README absence contradicts the README Isolation requirement in the universal guide.
-- Security posture guidance exists in universal guide but not in a package README.
+Observations from repo:
+- Strong: docs/decisions/ (many ADRs, good coverage), docs/libraries/usage (postcss + dev-config), prompts provide long implementation guides and API-like examples, tsdoc/JSDoc present in prompt examples, dist has compiled entry and d.ts for exported symbol createPostCSSConfig.
+- Missing or incomplete: no package README.md at repo root or package root; no CHANGELOG.md; no concise API reference for exported functions/types (only examples in prompts and small dist type file with one export); no .markdownlint.json (generation referenced but not present); no SECURITY.md or explicit security posture in README; no user-facing docs for scripts (how to run verify/build/test) beyond package.json; no CONTRIBUTING.md; no examples directory or code samples shipped in repo (prompts contain examples but are internal).
+- Quality: ADRs and decision docs are excellent and thorough. The implementation/usage guidance inside prompts/development-ui-tools.md is comprehensive but those files are in prompts/ (internal) rather than a published README. Consumers and humans visiting the package root (npm/GitHub) will miss essential public-facing docs.
+- Impact: For maintainers/LLM agents the documentation is rich; for consumers and humans (README/API surface/usage) the package is missing the standard, expected docs that appear on package pages.
 
-Implications:
-- ADRs and usage docs are strong — good for maintainers and LLM agents.
-- Missing public-facing README and CHANGELOG means consumers won't get installation/usage/security/licensing guidance when viewing package registry or repo root.
-- No centralized API docs means users must read source or scattered docs/prompts to learn the public API.
-- Markdown linting enforcement is mandated but no generator script or .markdownlint.json present.
+Estimate scoring rationale:
+- ADRs and design docs: near complete → strong positive.
+- User-facing README/API/CHANGELOG/SECURITY/usage examples at package root: missing → major negative.
+- Tests and examples exist but not documented in a central README; package.json has scripts but no docs explaining them.
 
-Recommended minimal next docs (highest priority):
-1. Add package README.md (self-contained) with purpose, install, quick start, usage examples, API summary, security posture, license.
-2. Add CHANGELOG.md (Unreleased) following templates.
-3. Add small API reference section (in README or docs/) summarizing main exports (createPostCSSConfig, types) and examples.
-4. Add generator script or instructions to produce .markdownlint.json per dev-config and add lint:md scripts to package.json.
-5. Optionally surface a short CONTRIBUTING or DEVELOPMENT section linking to verify/build/test commands (but avoid internal paths).
-
-Score reasoning: ADRs + usage docs = strong developer-facing documentation (majority of design and intent recorded). Missing README/CHANGELOG/API reference are critical for consumers and publishing compliance.
-
-Score chosen: ~55% (good internal docs, lacking public consumer docs and API summary).
+Decision: overall documentation completeness moderate but with critical gaps (README + API reference + CHANGELOG + security posture). Score ~55% with ±10% confidence.
 </scratchpad>
 
 ## DOCUMENTATION ASSESSMENT (55% ± 10% COMPLETE)
-- The repository has strong internal documentation for maintainers: comprehensive ADRs in docs/decisions/, useful usage/writeups in docs/libraries/, and detailed implementation guidance in prompts/*. These cover design rationale, configuration choices, example usage, and testing expectations — making the project well-documented from an internal/maintenance perspective. However, essential consumer-facing and packaging documentation is missing or incomplete: there is no README.md at the package root (required and mandated by your own README isolation rules), no CHANGELOG.md, and no centralized API reference or concise public usage examples (the public exports are only indirectly documented across prompts and tests). Additionally, mandated tooling glue (a markdownlint config generator and lint:md scripts) is described but not present. To reach a consumer-complete documentation state, add a self-contained README (installation, quick start, API summary, security posture, license), an Unreleased CHANGELOG.md, and a short API reference or example file; then generate the markdownlint config and wire the lint:md scripts. These additions would move the documentation from good internal coverage to complete public/consumer coverage.
+- Strengths:
+  - Thorough decision records (docs/decisions/) — ADRs are well‑written, date stamped, and cover architecture, dependency, and policy choices.
+  - Developer-oriented reference material exists in prompts/development-ui-tools.md and prompts/universal-guide.md; these contain detailed API examples, configuration guides, test requirements, and usage snippets.
+  - Library usage docs present for PostCSS and @voder/dev-config (docs/libraries/usage/).
+  - Package metadata (package.json) and scripts are present and consistent with the documented workflows.
 
-## DEPENDENCIES ASSESSMENT (70% ± 15% COMPLETE)
-- High‑level: The package lists only peerDependencies and devDependencies (no runtime "dependencies"), which limits direct production risk. The pinned devDeps (vitest 3.2.4 and @vitest/coverage-v8 3.2.4) follow the ADR requirement for version alignment and look consistent. TypeScript (5.9.2) and @types/node (24.x) are recent, and tooling versions (jsdom 26.x, autoprefixer 10.x, postcss 8.x) are on modern major lines. Based on the declared versions, there are no obvious stale-major mismatches that would block development, but I cannot guarantee absence of known or newly disclosed vulnerabilities without running npm audit / an SCA tool. Key points and recommended next actions:
-  - Alignment and intentional pins
-    - Vitest and @vitest/coverage-v8 are aligned (3.2.x) — good and required by ADR.
-    - Dev and peer ranges for most packages are compatible (peer ^8/10/etc; dev has concrete 8.x/10.x installs).
-  - Potential inconsistencies to review
-    - jest-axe: peerDependencies lists "^9.0.0" while devDependencies include "jest-axe": "^10.0.0". This major‑version difference should be reviewed — either update the peer range or use the same major in devDeps to avoid surprising consumer warnings or incompatibilities.
-  - Security posture
-    - Because these are devDependencies / peerDependencies, runtime exposure is minimal for consumers, but CI/dev machines still execute these packages, so supply‑chain risk exists. Run "npm audit" / an SCA (Dependabot/Snyk) scan and apply recommended fixes. The repository already references a supply‑chain ADR — enforce automated audits in CI.
-  - Practical verification steps I recommend (non-interactive):
-    1. npm audit --json (inspect and capture results)
-    2. npm outdated (see upgrade opportunities)
-    3. If audit reports fixable issues, run npm audit fix --force only after reviewing (per verify script guidance).
-    4. Ensure lockfile is in sync (npm ci locally in CI) and consider adding a test that verifies vitest/@vitest/coverage-v8 alignment (as ADR suggests).
-  - Other housekeeping
-    - Consider adding an "engines" field (Node >=22.6.0) to make runtime assumptions explicit (docs and ADRs already reference this).
-    - Periodically refresh minor/patch versions; avoid unintentional major bumps without an ADR for tool changes.
-- Conclusion: dependency choices and alignment look deliberate and reasonably up-to-date; however, a programmatic security audit (npm audit / SCA) and a small peer/dev version alignment pass (notably jest-axe) are required to raise confidence to "very good."
+- Weaknesses / Missing items (high priority):
+  - No README.md at package root (or top-level) that is public-facing, self-contained, and consumer-friendly. This is the single biggest gap — users visiting the repo or package registry will not find installation, quick start, API surface, or security posture.
+  - No concise API reference documenting exported functions, types, and runtime behavior. The implementation guide and prompts include examples, but there is no dedicated API docs page or README section describing the public surface (e.g., createPostCSSConfig, PostCSSConfigOptions, createVitestJsdomConfig, testing helpers).
+  - No CHANGELOG.md in repository to record notable changes/releases.
+  - No SECURITY.md or equivalent security posture document (the README template mentions it, but it's not present).
+  - Missing .markdownlint.json (generation is referenced but not present) and no docs explaining how to generate or run markdown linting beyond code snippets.
+  - No CONTRIBUTING.md or short developer onboarding doc that summarises the verify/build/test workflow in one place for new contributors.
+  - Public examples / cookbook (small runnable examples) are only in prompts or tests; they should be surfaced in README or docs for consumers.
 
-## SECURITY ASSESSMENT (80% ± 15% COMPLETE)
+- Medium/Lower priority gaps:
+  - No explicit documentation of package exports (dual-exports pattern) in package README — prompts mention dual export strategy, but package.json currently has a single export; documentation should reflect actual exports and consumption examples.
+  - No generated API docs from TypeScript (e.g., typed reference pages) — for a small package this may be optional but desirable for developer experience.
+  - No CHANGELOG or release guidance for consumers despite licensing/publishing policy notes.
 
-- Overall security posture
-  - No obvious high‑severity code vulnerabilities (no eval, no unsanitized user input flows, no network calls in library code).
-  - Package is marked "private": true (package.json) so it is not intended for public publishing — this reduces risk of accidental public exposure of internal code but does not eliminate supply‑chain risk from dependencies.
-  - The assessment is based on a static review of repository files provided. I have not executed the code or performed automated dependency scanning; that would be required to reach higher confidence.
+- Recommended next minimal documentation work (small, high-impact items):
+  1. Add README.md at package root with:
+     - Short purpose summary, compatibility, installation, quick start, minimal usage examples for main exports (importing createPostCSSConfig).
+     - How to run the development commands (type-check, build, test, verify).
+     - Security posture paragraph noting no runtime networking/telemetry, inputs processed, and update policy (as required by template).
+     - Proprietary license notice.
+  2. Add a short "API" section in README listing exported functions/types with one-line descriptions (createPostCSSConfig, PostCSSConfigOptions, and where to find more in src/ or prompts).
+  3. Add CHANGELOG.md placeholder and SECURITY.md placeholder referencing the README security posture.
+  4. Add a short CONTRIBUTING.md or a "Development" section in README that points to npm scripts (verify, build, test).
+  5. Commit a small docs/ note or script README snippet describing how to generate .markdownlint.json (or include a generated file if policy requires).
 
-- Dependency / supply‑chain risks (moderate)
-  - The project depends on multiple third‑party packages (postcss, autoprefixer, vite, vitest, jest‑axe, markdownlint‑cli2, etc.). DevDependencies and peerDependencies are present and some are development tooling that runs locally/CI — these can introduce supply‑chain risk if compromised.
-  - Mitigations & recommendations:
-    - Run automated SCA (npm audit / Snyk / GitHub Dependabot or similar) regularly and on CI. ADRs mention audit/registry‑mirror policy — implement enforcement in CI and run `npm ci` (not interactive `npm install`) in CI.
-    - Keep a lockfile (package-lock.json) and ensure CI uses it (npm ci) to avoid surprise upgrades.
-    - Pin or tightly control versions for high‑risk tooling (e.g., test/coverage providers) where ADRs require exact alignment.
-    - Enforce registry mirror and lockfile integrity checks in CI (the repo’s ADRs recommend this).
+- Overall assessment:
+  - The repository contains excellent internal and architectural documentation (ADRs and implementation guides), which is why the score is above average. However, visible, consumer-ready documentation (README, API reference, changelog, security) is missing. Adding those few high-impact documents will move the repo from "developer-only" docs to a well-documented package ready for consumers and automated publishing.
 
-- Scripts that execute code during install / developer workflows (review needed)
-  - package.json contains lifecycle / convenience scripts:
-    - "prepare": "node ../../setup-package-docs.js" — this script is executed by npm during install lifecycle in certain contexts. Any prepare script can run arbitrary JS with developer privileges. The implementation of ../../setup-package-docs.js is not shown here — it must be reviewed to ensure it doesn't perform unsafe filesystem/network operations or leak secrets.
-    - "voder": "node ../../../voder/apps/voder-cli/index.js" — runs a CLI script outside package. Ensure these referenced scripts are trusted and audited.
-  - Recommendation: Review and audit any npm lifecycle scripts and any referenced local scripts. Consider gating prepare to only run in trusted environments or document its behavior clearly. Avoid running unreviewed lifecycle scripts in CI agents with elevated credentials.
+## DEPENDENCIES ASSESSMENT (100% ± 0% COMPLETE)
+- There are no runtime "dependencies" declared in package.json for @voder/ui-tools (the package.json contains only "peerDependencies" and "devDependencies"). Therefore there is nothing in the runtime dependency set to update or to report as vulnerable for this package specifically.
+- Repository-wide audit summary (from your history) shows 0 reported vulnerabilities across the dependency surface, so no immediate security issues were detected.
+- Notes / actionable points (non-blocking):
+  - Although not runtime dependencies, the package does declare peerDependencies and devDependencies (vitest, postcss, autoprefixer, jest-axe, etc.). Those should be kept monitored and audited regularly because issues in devDependencies or peers can still affect build/test processes or produce confusing consumer warnings.
+  - I noticed a metadata mismatch risk (peer vs dev) for jest-axe in the workspace history (peer/ dev versions differ). That is not a runtime dependency issue, but aligning peer metadata reduces consumer confusion and should be addressed separately if desired.
+  - Continue periodic npm audit, keep lockfile refreshed, and update peer/dev deps as needed.
 
-- Use of child_process / execSync in tests / docs (caution)
-  - Example test template(s) in docs call execSync('npm pack') and execSync('npm install') to run package installation flows. execSync is powerful and can run arbitrary commands — ensure inputs are controlled and not constructed from user data.
-  - Recommendation: Sanitize or avoid interpolating untrusted data into shell commands; prefer passing an args array to spawn/exec variants when constructing commands programmatically.
+## SECURITY ASSESSMENT (85% ± 10% COMPLETE)
+- Overall posture: Good. The package is private, uses modern tooling, includes a lockfile, and the repo contains ADRs that mention supply-chain audits and registry mirroring. A recent audit run reported zero vulnerabilities. There are no obvious remote‑execution or open network interfaces in the codebase itself.
 
-- Temporary filesystem usage & cleanup
-  - Tests create temp directories with mkdtemp and remove them in afterAll. This is good practice, but ensure robust cleanup on failures/timeouts (a test crash could leave temp data).
-  - Recommendation: Use try/finally patterns or ensure test harness removes temp dirs on process exit. Ensure temp files are created with secure permissions (default mkdtemp is usually fine).
+- Notable strengths
+  - package.json sets "private": true and "license": "UNLICENSED", preventing accidental public publish.
+  - package-lock.json is present (history says it was committed) so installs can be reproducible and audited.
+  - A supply‑chain ADR and audit run exist; the project already ran npm audit (zero findings reported).
+  - .gitignore prevents committing common output and sensitive temporary files.
+  - Dev scripts and TypeScript build are local; there are no server or runtime network calls in source code.
+  - Dynamic optional plugin loading in vite.config.ts is defensive (errors swallowed) rather than failing open in a dangerous way.
 
-- Console/history leakage risk
-  - The project follows a "console-first" policy and captures outputs into .voder/history.md and other .voder metadata that are tracked. Console output may inadvertently capture sensitive data (secrets, tokens, credentials, system info).
-  - Recommendation: Review .voder/history.md and recent console outputs for accidentally leaked secrets; adopt a policy to scrub secrets from console logs. Consider adding a pre‑commit check to detect high‑entropy strings or known secret patterns in .voder/history.md and other tracked logs.
+- Potential security issues / concerns
+  1. Checked-in compiled artifacts (dist/)
+     - Risk: The repo contains compiled output under dist/ (dist/src/index.js and .d.ts). Committed build artifacts increase the attack surface: they can mask source changes, may contain transpiled or inlined data, and make supply‑chain review harder. They also risk leaking build-time paths or debug info if source maps are included.
+     - Recommendation: Ensure dist/ is not tracked (git rm --cached -r dist/), keep dist/ in .gitignore (already present), and rely on package-lock + build-from-source in CI. If dist/ must be visible to LLMs, prefer .voderignore negation rather than committing artifacts.
 
-- Dynamic import and error swallowing
-  - vite.config.ts dynamically imports an optional plugin and swallows import/initialization errors. That is safe in meaning (avoids crash if plugin missing) but hides failures. If the plugin were compromised or malicious, dynamic import could execute arbitrary plugin code at runtime — this is true for any third‑party plugin.
-  - Recommendation: Limit trusted plugin usage, review optional plugins before installation, and avoid loading untrusted code at runtime in production build contexts.
+  2. Installer script execution (npm lifecycle scripts)
+     - Risk: "prepare": "node ../../setup-package-docs.js" and other npm scripts run code at install-time (prepare runs on npm install). If contributors, CI, or downstream consumers run install in untrusted contexts, arbitrary JS can execute.
+     - Recommendation: Keep install-time scripts minimal and well-reviewed. Document prepare behavior. In CI use npm ci and run verify in controlled environment. Consider limiting the set of lifecycle scripts that run automatically.
 
-- Test environment sanboxing
-  - The testing utilities mock browser APIs (matchMedia, IntersectionObserver, ResizeObserver) using vitest vi.fn(). Those mocks are fine but ensure they are not used to bypass security checks in code under test (e.g., security‑relevant behavior conditioned on these APIs).
-  - Recommendation: Keep sensitive code out of test-only mocks; maintain separation between test environment and production behavior.
+  3. Supply‑chain / transitive dependency risk
+     - Risk: The package uses many devDependencies and peerDependencies (Vitest, vite, postcss, autoprefixer, markdownlint, jsdom, jest-axe, etc.). Transitive packages can introduce vulnerabilities even if top-level deps are clean.
+     - Recommendation: Continue automated SCA (npm audit, dependabot or equivalent), validate lockfile integrity, pin or tightly constrain versions where ADRs recommend, and run supply‑chain checks in CI. Consider verifying checksums and registry mirrors per the ADR.
 
-- Exposure of build outputs & documentation artifacts
-  - dist/ is gitignored and negated in .voderignore for LLM inspection — this is good for LLM workflows, but make sure compiled outputs do not contain embedded secrets or build‑time credentials. Verify that the build process never inlines sensitive environment values into artifacts.
-  - Recommendation: Confirm build steps do not read secrets from environment and embed them into dist artifacts.
+  4. Exec/child_process usage in docs/examples
+     - Risk: Some testing/integration examples in the guides (and in future planned tests) use execSync/npm pack/execSync to run commands in temporary directories. If such code is added to tests and not properly sandboxed, there is potential for command‑injection if inputs are derived from untrusted content.
+     - Recommendation: When using execSync in tests, ensure inputs are sanitized and tests run in isolated temp dirs. Prefer built-in Node APIs and avoid shell interpolation of untrusted strings.
 
-- Permissions & node engine constraints
-  - ADRs indicate Node ≥ 22.6.0. Ensure CI runners and developer environments meet engine requirements; mismatched Node versions can cause tooling to behave unexpectedly (less of a security issue, more of a stability concern).
-  - Recommendation: Add an "engines" field to package.json to help enforce Node version and fail early if unsupported Node is used.
+  5. Node version / experimental flags
+     - Risk: The project relies on Node >= 22.6.0 and use of experimental flags (e.g., --experimental-strip-types) for TypeScript config loading per ADR. Experimental features can change semantics and contain unresolved bugs.
+     - Recommendation: Document required Node versions clearly. Run CI with pinned Node images matching the supported version. Re-evaluate experimental flag usage when Node stabilizes.
 
-- Access control & information leakage in repository
-  - The repository contains docs and ADRs with internal decisions; ensure that sensitive operational details (registry mirrors, internal private registry credentials) are not committed. I did not see secrets in the checked files, but it's possible .voder/history.md or other tracked files may contain sensitive output (e.g., full stack traces with file paths). Review tracked .voder files for secrets.
-  - Recommendation: Run git secrets scanner (truffleHog, git-secrets) over repository history and current tracked files.
+  6. Visibility of internal metadata (.voder)
+     - Risk: The repo contains .voder metadata and history files that capture console outputs and implementation details (and are intentionally tracked). These may include sensitive context (command output, environment details). The .voder files are currently tracked and visible.
+     - Recommendation: Review .voder/* contents for any secrets or sensitive environment dumps. Ensure no credentials or tokens are captured. If sensitive, move to secure storage or redact history.
 
-- CI / publishing safety
-  - Publishing is handled by bespoke CI; ensure the CI agent has least privilege to publish and that credentials are stored securely (not in repo).
-  - Recommendation: Document and audit the CI system and token usage; rotate tokens if they may have been printed in console/history.
+- Best-practice recommendations (actionable)
+  - Remove tracked build artifacts: git rm --cached -r dist/ and commit; rely on .gitignore to keep them out of VCS.
+  - Maintain and commit the lockfile (already present). Run npm ci in CI and local verification to ensure deterministic installs.
+  - Continue regular automated SCA (npm audit, SCA tool), and enforce it in CI per ADR.
+  - Consider adding a lockfile integrity or verified registry check step in CI (e.g., audit-ci, npm ci with registry mirror validation).
+  - Keep install-time scripts minimal; document what prepare does so maintainers understand what executes on install.
+  - Review third‑party dev tooling versions (peerDependencies vs devDependencies) and pin where ADRs require exact alignment (e.g., vitest/@vitest/coverage-v8).
+  - Sanitize and sandbox any future test code that will run shell commands or execute dynamic code.
+  - Ensure CI runs with a minimal, up-to-date Node version consistent with ADR requirements to avoid relying on experimental behavior in uncontrolled environments.
+  - Review repository for secrets (even though .gitignore excludes .env) and add pre-commit or CI scanning for accidental secrets.
 
-Summary of prioritized action items (high → low)
-1. Audit lifecycle scripts: review ../../setup-package-docs.js and any scripts referenced by package.json (prepare, voder) for unsafe behavior.
-2. Run automated dependency scanning (npm audit, SCA) and enforce in CI; remediate critical/high findings or pin versions where necessary.
-3. Review .voder/history.md and other metadata for accidental secret leakage and add pre‑commit/CI checks to prevent secret leaks to console/history.
-4. Ensure execSync or shell commands used in tests are not passed untrusted input and are run in isolated CI/test environments.
-5. Add an "engines" field (Node >=22.6.0) to package.json to reduce mismatched tooling risks.
-6. Verify build process does not embed secrets into dist outputs; confirm dist contents are safe for inspection.
+- Conclusion
+  - No immediate vulnerability is visible in the code itself (no network servers, no unsafe eval, no obvious path traversal or injection in committed source). The main residual risks are supply‑chain related (transitive dependencies), lifecycle script execution risk, and the presence of tracked build artifacts which complicate review and can hide changes. Those are addressable via the recommendations above.
 
-Notes on coverage of this assessment
-- This is a static codebase review and dependency manifest inspection. It identifies patterns and areas of concern but does not include:
-  - Automated dependency vulnerability scan (npm audit/SCA).
-  - Dynamic/runtime analysis or fuzzing.
-  - Secrets scanning of repository history.
-- Performing those actions would be the next step to raise confidence from ~80% toward 95–100%.
-
-## VERSION CONTROL ASSESSMENT (30% ±10% COMPLETE)
-- The repository is not in a clean, publishable state: there are unstaged/modified files (7 .voder metadata files) so “ALL CHANGES COMMITTED” is false. Because any uncommitted changes caps completeness at 30%, the overall version-control health is low.
+## VERSION CONTROL ASSESSMENT (25% ± 10% COMPLETE)
+- The repository is not in a clean, publishable state: there are local modifications that are not committed (working tree is dirty), so version control completeness is low.
 - Specifics:
-  - Uncommitted changes (modified, not staged): .voder/history.md, .voder/implementation-progress.md, .voder/last-action.md, .voder/plan.md, .voder/progress-chart.png, .voder/progress-log-areas.csv, .voder/progress-log.csv — these must be committed or intentionally stashed/cleaned.
-  - Branch sync: local branch is up to date with origin/main (no unpushed commits).
-  - Untracked files: none reported (no untracked important files to reduce score).
-  - .gitignore appears to cover build artifacts (dist/, node_modules/, coverage/, etc.), which is correct policy-wise.
-- Conclusion: because of the unstaged/uncommitted changes the repository is only ~30% complete from a version-control completeness perspective. To move above 80% you must first produce a clean working tree (commit or stash the modified files), ensure all local commits are pushed, and confirm no important files are accidentally untracked.
+  - Uncommitted changes exist: "Changes not staged for commit" shows 7 modified files (.voder/history.md, .voder/implementation-progress.md, .voder/last-action.md, .voder/plan.md, .voder/progress-chart.png, .voder/progress-log-areas.csv, .voder/progress-log.csv). Because any uncommitted changes reduce completeness to at most 30%, this is the primary blocker.
+  - No unpushed commits: the branch is reported "up to date with 'origin/main'" and branch info shows no ahead/behind—so there are no local commits pending push (this avoids the mid‑range penalty).
+  - Untracked important files: git status reports 0 untracked files, but the file-tracking summary shows "Project files tracked: 22/28" (22 of 28) — indicating some project files are not tracked (6 not tracked). This reduces completeness further because missing tracked project files may indicate incomplete VCS coverage or intentionally ignored build outputs; it should be verified whether the untracked items are intentionally ignored or accidental.
+  - Build artifacts appear correctly ignored by .gitignore (dist/, node_modules/, logs, etc.), which is good, but some metadata under .voder/ is modified and currently uncommitted — leaving important historical/operational state out of commits.
+- Bottom line: The repository is only partially well-managed under version control. Synchronization with remote is fine (no unpushed commits), and ignore patterns look appropriate, but the presence of unstaged/modified files and the discrepancy in tracked project files prevents this repo from being considered clean or fully version-controlled. To reach a high completeness (>80%) you must commit or intentionally stash/clean the working changes and confirm that all required project files are tracked as intended.

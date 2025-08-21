@@ -1,83 +1,124 @@
 ## NOW
 
-Run a single non-interactive commit to record the modified .voder metadata and clean the working tree:
-- git commit -am "chore: record .voder metadata updates"
+Stage and commit the modified .voder metadata files to clean the working tree:
 
-(One command only — commits all currently tracked changes, including the modified .voder files shown in git status. This directly addresses the NEXT PRIORITY: get the repo into a clean state so verification can run.)
+git add .voder && git commit -m "chore: record .voder metadata updates" 2>&1 | tee /dev/stderr
+
+(One command — purpose: make the working tree clean so we can re-run the verification pipeline and diagnose build failures unambiguously. This does not modify .voder content, only records it in git.)
 
 ## NEXT
 
-1. Run the full verification pipeline and preserve console/stderr output for history:
-   - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+1) Re-run the full verification pipeline and capture console output (this will populate .voder/history.md):
 
-2. If verification succeeds:
-   - Push the branch: git push origin main
-   - Proceed to the LATER steps.
+npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
 
-3. If verification fails, follow the single-file-fix loop (repeat until verification succeeds):
-   a. Inspect the verification stderr and locate the single highest‑priority error block (one root cause).
-   b. Choose and apply a single-file fix that directly addresses that root cause (do NOT edit files under .voder/ or prompts/). Examples:
-      - If TypeScript TS5055 (overwrite input) shows up: edit tsconfig.json to ensure "exclude": ["dist"] and correct outDir/declarationDir as needed (single-file edit).
-      - If an exports path points to source .ts files: edit package.json exports to point to ./dist/... (single-file edit).
-      - If tests expect a compiled file that’s missing and the correct fix is a config change: edit the single config file (tsconfig.json or package.json) that causes the build to emit to the expected path.
-      - (If the only viable fix requires removing tracked build outputs, run a single git command to untrack them, e.g., git rm --cached -r dist/ — treat this as the single action for that iteration and commit it as described below.)
-   c. Commit only that one file/change non‑interactively:
-      - git add <that-file-or-change> && git commit -m "fix: <brief reason addressing root cause>"
-   d. Re-run the verification command from step 1 and repeat the loop if there are further failures.
+2) If the verification run succeeds, align jest-axe peer metadata and record an ADR (non-interactive sequence):
 
-Notes for the loop:
-- Keep each iteration minimal: exactly one source/config change per commit.
-- Always stream output to console/stderr so results are captured in .voder/history.md.
-- Do not modify files under .voder/ or prompts/.
-- If you perform a git rm removal to untrack dist/, treat that removal as the single change and commit it in the same iteration.
+npm pkg set peerDependencies.jest-axe="^10.0.0" 2>&1 | tee /dev/stderr
+# If package.json changed, commit ADR + package.json/package-lock.json and re-run verify
+if ! git diff --quiet -- package.json; then
+  cat > docs/decisions/0003-align-jest-axe-version.md <<'ADR'
+---
+status: accepted
+date: 2025-08-21
+deciders: [voder-dev-team]
+packages: '@voder/ui-tools'
+---
+
+# Align jest-axe peer dependency to devDependency version
+
+## Decision
+Align the `peerDependencies.jest-axe` entry in package.json to `^10.0.0` to match the devDependency version currently used for local testing.
+
+## Rationale
+Avoids confusing peer/consumer warnings and ensures local development uses a compatible jest-axe version.
+
+## Consequences
+- package.json peerDependencies updated to `^10.0.0`
+- No runtime behavior change for consumers; this is metadata alignment.
+ADR
+  git add docs/decisions/0003-align-jest-axe-version.md package.json package-lock.json || true 2>&1 | tee /dev/stderr
+  git commit -m "docs(adr): align jest-axe peer dependency to dev version" 2>&1 | tee /dev/stderr
+  npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+fi
+
+3) If the verification run fails, follow the single-change loop (one minimal file change per iteration). Use the latest verification stderr (captured by the previous command) to pick the single highest-priority fix. Examples of single-file corrective actions you may need to run (execute exactly one such change, then re-run verification):
+
+- If TS5055 overwrite errors still appear (tsc trying to write into tracked dist/): remove tracked dist files from the index and commit that single change:
+
+git rm --cached -r dist/ 2>&1 | tee /dev/stderr && git commit -m "chore: remove tracked dist/ to avoid tsc overwrite" 2>&1 | tee /dev/stderr
+
+- If tsconfig still missing exclude: ensure tsconfig.json excludes dist (single-file update; non-interactive edit):
+
+node -e "const fs=require('fs');const p='tsconfig.json';const cfg=JSON.parse(fs.readFileSync(p));cfg.exclude=Array.from(new Set([...(cfg.exclude||[]),'dist']));fs.writeFileSync(p,JSON.stringify(cfg,null,2)+'\n');console.log('updated tsconfig.json');" 2>&1 | tee /dev/stderr && git add tsconfig.json && git commit -m "fix: exclude dist from tsconfig to avoid overwrite errors" 2>&1 | tee /dev/stderr
+
+- If the failure identifies a missing devDependency required by tests (e.g., @testing-library/jest-dom, jsdom), install it as a devDependency (single command) and commit package-lock.json changes:
+
+npm install --no-audit --no-fund --save-dev <package-name> 2>&1 | tee /dev/stderr
+git add package.json package-lock.json && git commit -m "chore: add devDependency <package-name> required for tests" 2>&1 | tee /dev/stderr
+
+After performing exactly one such change, re-run:
+
+npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
+
+Repeat the loop until verification is green.
+
+Notes for the NEXT phase:
+- Always preserve console output (use tee) so the history is recorded.
+- Do not change files under .voder/ or prompts/.
+- Keep each commit to a single, focused change and re-run verification after each commit.
 
 ## LATER
 
-After the repository is clean and verification consistently passes, implement the NEXT‑PRIORITY work incrementally (one small vertical slice per commit), with tests and verification after each item:
+Once the verification pipeline is reliably passing and the working tree is clean and pushed:
 
-1. Markdown linting generator & scripts
-   - Add scripts/generate-markdownlint-config.ts that imports getConfig from @voder/dev-config/linters/markdown and writes .markdownlint.json.
-   - Add package.json scripts:
-     - "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md"
-     - "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md"
-   - Commit and run the verification pipeline.
+1) Push changes to remote:
 
-2. Engines & dependency hygiene
-   - Add "engines": { "node": ">=22.6.0" } to package.json.
-   - Add tests/tests/dependency-versions.test.ts to check vitest & @vitest/coverage-v8 alignment.
-   - If dependency changes are required, bundle ADR + package.json changes together per governance and run verify.
+git push origin main 2>&1 | tee /dev/stderr
 
-3. Standard quality & verify scripts
-   - Add scripts: "lint", "lint:fix", "format", "format:check", and a "verify" script to package.json per the project conventions.
-   - Add minimal ESLint/Prettier glue files (eslint.config.js, prettier.config.js) that import from @voder/dev-config.
-   - Commit and run the verification pipeline; fix issues via the single-file-fix loop.
+2) Begin the incremental feature work (one vertical slice per commit — implement, test, verify after each change):
 
-4. Implement core public APIs incrementally (one slice at a time with tests)
-   - Slice A: src/build/vite-library.ts + tests/build/vite-library.test.ts
-   - Slice B: src/testing/vitest-jsdom.ts and src/testing/setup.ts + tests
-   - Slice C: src/testing/helpers.ts and src/testing/accessibility.ts + tests
-   - Slice D: src/linting/html.ts, src/linting/css.ts, src/linting/accessibility.ts + tests
-   - After each slice: build, run tests, commit, push.
+a) Add a unit test for createPostCSSConfig
+- File to add: tests/build/postcss.test.ts
+- Commit and run verification:
+  - git add tests/build/postcss.test.ts && git commit -m "test: add unit tests for createPostCSSConfig" 2>&1 | tee /dev/stderr
+  - npm run type-check && npm run build && npm test 2>&1 | tee /dev/stderr
 
-5. Exports & integration tests
-   - Update package.json exports to adopt the dual-export pattern (e.g., ".", "./testing", "./prettier", "./eslint" mapped to ./dist/*).
-   - Add tests:
-     - tests/export-equivalence.test.ts
-     - tests/package-installation.test.ts (pack → install into tmp dir)
-   - Commit and run verify.
+b) Implement Vite library config factory and tests
+- Files: src/build/vite-library.ts, tests/build/vite-library.test.ts
+- Commit, then run verification
 
-6. README / CHANGELOG / consumer docs
-   - Add a self-contained README.md (no internal repo links) and CHANGELOG.md (Unreleased) with concise API docs for public exports.
-   - Commit and run verify.
+c) Implement jsdom testing utilities and tests
+- Files: src/testing/vitest-jsdom.ts, src/testing/setup.ts, src/testing/helpers.ts, src/testing/accessibility.ts and corresponding tests
+- Commit, then run verification
 
-7. Coverage & public API tests
-   - Expand tests to reach 100% public API coverage and ≥90% overall coverage.
-   - Use npm run test:ci to collect coverage and iterate via the single-file-fix loop until thresholds are met.
+d) Add markdown-lint config generator + package scripts
+- File: scripts/generate-markdownlint-config.ts
+- Update package.json scripts: lint:md, lint:md:fix
+- Commit, then run verification
 
-Constraints & reminders
-- Never edit files under .voder/ or prompts/.
-- Use only non‑interactive commands; each verification-fix iteration must be a single-file change and single commit.
-- Preserve console/stderr output for traceability (history captured in .voder/history.md).
-- Keep changes small and incremental; verify after every commit.
+e) Add lint/format configs and scripts
+- Files: eslint.config.js, prettier.config.js
+- Update package.json scripts: lint, lint:fix, format, format:check, verify
+- Commit, then run verification
 
-If you want, I can now execute the NOW command (the non‑interactive commit) or prepare the exact single-file edits you should make in the first single-file-fix iteration if verification fails (for example, the tsconfig.json patch to ensure "exclude": ["dist"]). Which should I do next?
+f) Adopt dual-export pattern and add integration tests
+- Update package.json exports to include dedicated paths (./testing, ./prettier, ./eslint → ./dist/...)
+- Add export-equivalence tests and package-installation integration tests
+- Commit, then run verification
+
+g) Add README.md and CHANGELOG.md (use the README template)
+- Commit, then run verification
+
+h) Expand tests and reach coverage targets
+- Iterate until npm run test:ci reports coverage ≥90% and required public API coverage
+
+General constraints for LATER work:
+- Each change must be a small, self-contained commit.
+- Run the verification pipeline after every commit.
+- Preserve console-first output for all commands (use tee).
+- Do not modify .voder/ or prompts/.
+- All commands must be non-interactive.
+
+Rationale summary
+- The highest-priority blocker from the assessment was a dirty working tree (.voder files) preventing a clear verification run and making diagnosis ambiguous. Committing those metadata files now will produce a clean workspace so we can re-run verification, capture output, and either finish or iterate the single-change loop to resolve the remaining build/test issues. After verification is green, continue with the metadata alignment ADR, push, and then implement the missing functionality incrementally (tests → implementation → verification).

@@ -1,103 +1,96 @@
+## PLAN (focused on the NEXT PRIORITY: clean working tree → unblock verification)
+
 ## NOW
+Run a single commit command to persist the modified .gitignore:
+- git commit -am "chore: persist intended .gitignore change"
 
-Edit a single file: tests/testing/helpers.test.ts — change the import path
-- Change import from:
-  - '../../src/testing/helpers.ts'
-- To:
-  - '../../src/testing/helpers'
-
-(One logical file edit only. Do not perform any other edits in this step.)
+(One non-interactive command — commits tracked modifications including the changed .gitignore. This makes the working tree clean so verification can run deterministically.)
 
 ## NEXT
+After the NOW commit completes, follow this strict one-change-per-commit verify loop:
 
-After the single-file edit above, perform the verify loop and the conditional single-file fixes in strict one-change-per-commit iterations:
+1. Push and run the verify sequence
+   - git push origin main
+   - npm run type-check && npm run build && npm test
+   - Capture all console output (it will be recorded in .voder/history.md). Use the test/type-check output to decide the next single-file fix.
 
-1. Commit, push, and verify (run after the NOW edit)
-   - Stage & commit:
+2. If verification fails with TS5097 for a .ts import in tests/testing/helpers.test.ts:
+   - Edit the single file tests/testing/helpers.test.ts and change the import:
+     - from: '../../src/testing/helpers.ts'
+     - to:   '../../src/testing/helpers'
+   - Commit & push:
      - git add tests/testing/helpers.test.ts
      - git commit -m "test: remove .ts extension from imports in helpers test"
      - git push origin main
-   - Run non-interactive verification:
-     - npm run type-check && npm run build && npm test
-   - Capture console output to the project console (it will be recorded in .voder/history.md) and use it to decide the next single-file change.
-
-2. If verification fails with TS5097 complaining about .ts imports in setup test, fix that single file
-   - Edit tests/testing/setup.test.ts: change import '../../src/testing/setup.ts' → '../../src/testing/setup'
-   - Commit message: test: remove .ts extension from imports in setup test
-   - git add, git commit, git push, then run:
+   - Run verify:
      - npm run type-check && npm run build && npm test
 
-3. If verification now shows failing tests related to renderComponent lifecycle (container removal or mount/unmount behavior), apply the single-file fix:
-   - Edit src/testing/helpers.ts to perform one logical change:
+3. If verification then fails with TS5097 for a .ts import in tests/testing/setup.test.ts:
+   - Edit the single file tests/testing/setup.test.ts and change the import:
+     - from: '../../src/testing/setup.ts'
+     - to:   '../../src/testing/setup'
+   - Commit & push:
+     - git add tests/testing/setup.test.ts
+     - git commit -m "test: remove .ts extension from imports in setup test"
+     - git push origin main
+   - Run verify:
+     - npm run type-check && npm run build && npm test
+
+4. If verification surfaces failing tests related to renderComponent lifecycle (container ownership / mount/unmount behavior):
+   - Edit the single file src/testing/helpers.ts:
      - Track whether the helper created/attached the container (createdByHelper boolean).
      - Only append to document.body when createdByHelper is true.
      - Only remove the container on unmount when createdByHelper is true.
-     - Replace silent catch blocks around mount/unmount with console.error(...) so errors are visible on stderr.
-   - Commit message: fix: renderComponent only removes created container and log mount/unmount errors
-   - git add, git commit, git push, then run:
+     - Replace silent catch blocks around mount/unmount with console.error(...) so errors are visible to stderr.
+   - Commit & push:
+     - git add src/testing/helpers.ts
+     - git commit -m "fix: renderComponent only removes created container and log mount/unmount errors"
+     - git push origin main
+   - Run verify:
      - npm run type-check && npm run build && npm test
 
-4. Reactive single-file fixes loop
-   - For any new failing test or TypeScript error surfaced by the verification run, fix exactly one file that addresses the failure (no multi-file commits).
-   - Use a short descriptive commit message (e.g., fix: correct import path in X.ts).
+5. Reactive single-file fixes loop
+   - For any new failing test or TypeScript error surfaced by verification, fix exactly one file that addresses that failure.
+   - Use a short focused commit message (e.g., fix: correct import path in X.ts).
    - After each commit: git push origin main and run:
      - npm run type-check && npm run build && npm test
    - Repeat until the verification sequence completes successfully (green).
 
-Notes for NEXT
-- Keep each iteration minimal: one file edit → commit → push → verify.
-- If any edit requires adding/changing package.json (dependencies or exports) that affect consumers, create an ADR in docs/decisions/ documenting the dependency/export change and include the ADR in the same commit as the package.json change, then run verification.
-- Preserve console-first policy: surface diagnostics with console.error/log so outputs are captured in .voder/history.md for future triage.
+Important rules for NEXT:
+- Only one logical file change per commit.
+- Always capture/inspect console output from the verify run before deciding the next file to edit.
+- If any change requires package.json or dependency edits that affect consumers, include an ADR in docs/decisions/ in the same commit as the package.json change, then run verify.
+- Preserve console-first diagnostics: surface errors via console.error/log, not repository files.
 - Do not modify files under .voder/ or prompts/.
 
 ## LATER
-
-Once the verification loop is consistently green, proceed incrementally (one file/one commit at a time) to implement remaining prioritized work:
+After the verify loop is consistently green, proceed incrementally (one-file-per-commit) to implement the remaining guided work:
 
 1. Accessibility helpers & tests
    - Implement src/testing/accessibility.ts (expectAccessible, getAccessibilityViolations, expectAriaAttributes, expectFocusable, accessibilityTests using jest-axe).
-   - Commit: feat: add accessibility testing utilities
-   - Add unit tests tests/testing/accessibility.test.ts.
-   - Commit: test: add accessibility unit tests
-   - After each commit: push and run the verification sequence.
+   - Add tests/testing/accessibility.test.ts.
+   - Commit each file as a separate commit and run the verify sequence after each.
 
-2. Ensure build/config factories are tracked as source
-   - Confirm src/build/postcss.ts and src/build/vite-library.ts exist and are tracked. If missing, add them.
-   - Commit: feat: add PostCSS and Vite library config factories
-   - Push and verify.
+2. Linting factories & docs
+   - Implement src/linting/html.ts, src/linting/css.ts, src/linting/accessibility.ts (if not already present), plus tests.
+   - Implement small .markdownlint.json generation helper or document prepare usage; if adding scripts or dependencies, include ADR(s).
 
-3. Unit tests for build/config factories
-   - Add tests/build/postcss.test.ts and tests/build/vite-library.test.ts (simple shape and inclusion assertions).
-   - Commit: test: add build configuration tests
-   - Push and verify.
+3. Scripts and package exports
+   - Add standardized scripts incrementally (lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify). Add each script in its own commit.
+   - Add dedicated package exports (e.g., "./testing", "./linting") incrementally; any consumer-facing export change must be accompanied by an ADR committed with the package.json change.
 
-4. Markdown lint generator or documentation
-   - Implement small generator (scripts/generate-markdownlint-config.ts) or add explicit docs showing prepare usage.
-   - If adding markdownlint-cli2 or changing scripts/package.json, include ADR documenting the change.
-   - Commit message: feat: add markdownlint config generator OR chore: document prepare usage
-   - Push and verify.
+4. Integration & policy tests
+   - Add export-equivalence.test.ts and package-installation.test.ts once packaging is stable. These may be longer-running; commit them separately and run verify.
 
-5. Add standardized scripts & package subpath exports (one change at a time)
-   - Add scripts: lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify — add each script/update as its own commit.
-   - Add package.json exports (e.g., "./testing", "./prettier", "./eslint") incrementally; any consumer-impacting export or dependency change MUST be accompanied by an ADR committed with the change.
-   - After each commit: push and run verification.
+5. Coverage expansion
+   - Expand tests to meet coverage targets (90% thresholds / public API coverage). Add tests incrementally and run verify after each change.
 
-6. Integration tests required by policy (longer-running)
-   - Add tests/export-equivalence.test.ts and tests/package-installation.test.ts once core functionality and packaging are stable.
-   - Commit messages:
-     - test: add export-equivalence tests
-     - test: add package-installation integration test
-   - Push and run verification (these tests may take longer).
+6. Dependency housekeeping & security checks
+   - Re-run npm audit, align any peer/dev version mismatches (document via ADRs), and confirm supply-chain policies are applied in CI.
 
-7. Iterate test & implementation fixes to reach coverage targets
-   - Expand tests to cover public API, error scenarios, and edge cases until coverage thresholds are met.
-   - Keep changes small, test-driven, and follow the one-file-per-commit rule.
-   - Commit messages should be clear and focused (test: add X coverage; fix: handle X error case).
+Guiding constraints for LATER:
+- One-file logical changes per commit.
+- Create ADRs for dependency or consumer-impacting changes and commit ADRs together with the package.json edits.
+- Keep all outputs console-first and avoid creating temporary files in the repository.
 
-General LATER rules
-- Always make single-file logical changes per commit.
-- Create ADRs whenever adding/updating dependencies or changing exports that affect consumers.
-- After every change: git push origin main and run:
-  - npm run type-check && npm run build && npm test
-- Preserve repository cleanliness: do not create output files in the repo (use OS temp dirs if temporary files are absolutely necessary).
-- Maintain console-first diagnostics: prefer console.error/log rather than writing repo files for debugging.
+If you want, I can now perform the exact textual edit that should be made in the NOW step (i.e., provide the precise git command to run or the exact file change diff for .gitignore if you prefer to revert instead of persisting). Which single NOW action do you want to execute: (A) commit the current .gitignore change (as planned above), or (B) revert the .gitignore change instead?

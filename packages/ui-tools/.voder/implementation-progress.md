@@ -1,285 +1,264 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-08-21T23:20:01.032Z
+**Generated:** 2025-08-21T23:23:23.303Z
 
 ![Progress Chart](./progress-chart.png)
 
 Projection: flat (no recent upward trend)
 
-## IMPLEMENTATION STATUS: INCOMPLETE (68% ± 5% COMPLETE)
+<scratchpad>
+- Need to include short reasoning notes per developer instruction.
+- Must present overall status header exactly as required.
+- Emphasize VERSION_CONTROL (30%) and TESTING (45%) as highest priority next steps.
+- Provide concise actionable next steps in correct order, referencing verify loop.
+- Keep tone decisive and minimal.
+</scratchpad>
+
+## IMPLEMENTATION STATUS: INCOMPLETE (67% ± 5% COMPLETE)
 
 ## OVERALL ASSESSMENT
-- What’s complete
-  - Core jsdom testing helpers and environment: renderComponent, simulateClick/simulateKeypress, waitForNextFrame/waitForAnimation, and setupJsdomTestEnvironment exist and are exercised by unit tests. (FUNCTIONALITY: 40%)
-  - Documentation and ADRs are robust: README, multiple ADRs, and usage docs exist and describe architecture and policies. (DOCUMENTATION: 70%)
-  - Dependency posture is healthy: recent versions selected, vitest and its coverage provider are aligned; an npm audit previously reported zero vulnerabilities. (DEPENDENCIES: 85%)
-  - Security posture is reasonable for a tooling package; the primary risk is supply‑chain/plugin execution which the repo already documents/addresses. (SECURITY: 85%)
-  - Version control is in good shape: working tree clean, branch synced to origin/main. (VERSION_CONTROL: 85%)
-  - Many build/test scripts exist and earlier runs have succeeded; a prior verification succeeded before the most recent TypeScript/test import issues. (EXECUTION: 75%)
+- What is complete
+  - Core build helpers implemented and tested: createPostCSSConfig (Autoprefixer) and createViteLibraryConfig (ESM-only library factory) are implemented and have unit tests. (FUNCTIONALITY ~65%)
+  - Jsdom test environment and DOM testing helpers (renderComponent, simulateClick, simulateKeypress, waitForNextFrame, waitForAnimation) are implemented with unit tests. (CODE_QUALITY ~78%)
+  - Project metadata, TypeScript config, README, and ADRs exist and document intended architecture and policies. (DOCUMENTATION ~75%)
+  - Dependencies are modern and aligned with ADR guidance (Vitest + @vitest/coverage-v8 aligned). Prior audit ran with no reported vulnerabilities. (DEPENDENCIES ~85%; SECURITY ~85%)
+  - Build artifacts exist in dist/ from previous successful builds; build/test scripts are wired. (EXECUTION ~70%)
 
-- What’s missing / problematic
-  - Feature completeness: Several planned features in the UI-tools spec are not implemented or are only present in dist (not as tracked source): build factory source files, accessibility utilities, linting factories, dual exports, and the standardized scripts (lint/lint:md/format/verify). This limits full consumer and LLM-friendly behavior (FUNCTIONALITY: 40%).
-  - Tests & coverage: Test coverage is narrow and misses many required test categories (export-equivalence, package-installation integration tests, build/config tests). The project policy target (≥90% coverage, public API coverage) is not met. Also, TypeScript test import issues are currently blocking a clean test run. (TESTING: 40%)
-  - Code correctness issues: Two concrete quality/functional issues were found that block verification:
-    1) Tests import paths end with “.ts” (TS5097) — must remove those extensions or change compiler options.  
-    2) renderComponent unmount semantics remove caller-owned containers (semantic bug) and helper swallows mount/unmount errors silently. These need small single-file fixes. (CODE_QUALITY: 65%)
-  - Execution reliability: The verification sequence (npm run type-check && npm run build && npm test) currently fails due to the TypeScript import-extension errors and the prior cleanup import problem (the latter has been fixed). Until the import fixes and any follow-on single-file issues are addressed, execution cannot be considered fully validated. (EXECUTION: 75%)
+- What is missing or blocking
+  - Tests are currently blocked by TypeScript import-extension issues and a recent uncommitted change:
+    - Several test files import source with a trailing “.ts” extension (TS5097) which prevents type-check/build/test runs. (TESTING assessed at ~45%)
+    - There is one unstaged change (.gitignore) in the working tree; repository is not in a fully clean, committed state. (VERSION_CONTROL ~30%)
+  - Functional gaps vs. the implementation guide:
+    - Accessibility testing utilities (jest-axe helpers) and linting config factories (HTML/CSS/accessibility) are described but not implemented.
+    - The package does not yet expose the full public API surface (dedicated subpath exports like "./testing", "./linting") or the mandatory scripts (lint, lint:fix, format, lint:md, verify).
+    - Required integration tests mandated by policy (export-equivalence, package-installation) are not present.
+  - Some code-quality items to address:
+    - renderComponent currently swallows errors silently; console-first policy suggests logging to stderr.
+    - Use of any casts around PostCSS merging weakens type safety.
+  - Because of the above, a full verify (npm run type-check && npm run build && npm test) does not currently complete green.
 
-- Per-sub-assessment references
-  - FUNCTIONALITY: 40% — core test helpers implemented, but many requested factories/utilities and dual export patterns missing or only present as compiled artifacts.
-  - CODE_QUALITY: 65% — solid structure and intent, but concrete bugs (test imports, renderComponent lifecycle, silent catches, missing IComponent typing, inconsistent source vs dist) reduce quality.
-  - TESTING: 40% — unit tests exist for helpers and setup, but major integration tests (export-equivalence, package-installation) and coverage are missing; TypeScript import errors block current test runs.
-  - EXECUTION: 75% — previously succeeded but currently failing due to small issues; build artifacts exist in dist and scripts are present.
-  - DOCUMENTATION: 70% — README and ADRs are good; missing a compact API reference and a few developer docs (templates, CHANGELOG, precise markdown-lint generation instructions).
-  - DEPENDENCIES: 85% — recent and aligned; one minor mismatch (jest-axe peer vs dev) should be aligned.
-  - SECURITY: 85% — no glaring code-level vulnerabilities; main risk is supply-chain and optional plugin execution—policies exist.
-  - VERSION_CONTROL: 85% — clean working tree and synced branch; confirm that ignored files (e.g., src/build/ if intended) are intentionally ignored.
+- Reference to sub-assessments
+  - FUNCTIONALITY: 65% — core features present but many guide-required features missing.
+  - CODE_QUALITY: 78% — well-structured code; small issues to harden.
+  - TESTING: 45% — tests exist and target the right areas but are blocked and coverage is insufficient vs policy.
+  - EXECUTION: 70% — build and tools mostly work; recent TypeScript/test errors block full verification.
+  - DOCUMENTATION: 75% — strong governance and usage docs; missing concise API reference and a few automation artifacts.
+  - DEPENDENCIES: 85% — modern and aligned; re-run audit recommended.
+  - SECURITY: 85% — no code-level vuln; supply-chain is primary risk and ADRs exist.
+  - VERSION_CONTROL: 30% — working tree not fully clean (unstaged .gitignore modification).
 
 ## NEXT PRIORITY
-Highest priority: get the verification pipeline green by fixing the small, blocking issues that scored lowest (FUNCTIONALITY / TESTING / CODE_QUALITY).
+Highest priority immediate work (single-file/small commits, follow the one-change-per-commit verify loop):
 
-1) Fix test import-extension errors (single-file edits)
-   - Edit tests/testing/helpers.test.ts: change import from '../../src/testing/helpers.ts' to '../../src/testing/helpers'
-   - Edit tests/testing/setup.test.ts: change import from '../../src/testing/setup.ts' to '../../src/testing/setup'
-   - Commit with an explicit single-file message (e.g., "test: remove .ts extension from imports in helpers test" and "test: remove .ts extension from imports in setup test"), push, then run:
-     npm run type-check && npm run build && npm test
+1. Clean working tree (VERSION_CONTROL)
+   - Action: Commit or revert the modified .gitignore so the repository is clean.
+   - Why: A clean working tree is required for reliable verification and publishing; current uncommitted change reduces VC score to 30%.
+   - Example:
+     - git add .gitignore
+     - git commit -m "chore: persist intended .gitignore change" (or git restore .gitignore if accidental)
+     - git push origin main
 
-2) Fix renderComponent lifecycle and error visibility (single-file edit)
-   - Modify src/testing/helpers.ts to:
-     - Track whether the helper created/attached the container (createdByHelper boolean).
-     - Append container to document.body only when createdByHelper is true.
-     - Remove the container on unmount only when createdByHelper is true.
-     - Replace silent catch blocks around mount/unmount with console.error(...) so errors are surfaced to stderr (console-first policy).
-     - Optionally introduce a minimal IComponent interface for typing.
-   - Commit with message: "fix: renderComponent only removes created container and log mount/unmount errors"
-   - Push and run the verification sequence again.
+2. Fix TypeScript test import errors (TESTING)
+   - Action: Remove `.ts` extensions from test imports so they use runtime-resolvable paths (e.g., change '../../src/testing/helpers.ts' → '../../src/testing/helpers').
+   - Why: TS5097 import-extension errors block type-check/build. Fixing these will allow verify (type-check/build/test) to run and surface remaining runtime failures.
+   - Follow the project's incremental policy: edit only tests/testing/helpers.test.ts first (as planned), commit, push, then run verification.
+   - After committing that change, immediately run:
+     - npm run type-check && npm run build && npm test
+   - If the verification run surfaces a second test file with `.ts` imports (e.g., setup.test.ts), apply the same single-file fix and repeat.
 
-3) Re-run verification (after each change)
-   - After each single-file change: run npm run type-check && npm run build && npm test and observe output.
-   - If additional single-file failures appear, fix them one at a time following the same cycle.
+3. Re-run verify loop and fix any test failures iteratively
+   - Action: After the import fixes, run the full verify sequence and address failures one file at a time following the established plan:
+     - If renderComponent lifecycle tests fail, apply the targeted helper update (track ownership of created container and emit console.error on mount/unmount failures).
+     - If other failures appear, fix one file per commit and re-run verify.
+   - Why: This will move TESTING and EXECUTION to green and expose functional gaps.
 
-4) Once verification is green:
-   - Expand tests to cover createPostCSSConfig and createViteLibraryConfig (small unit tests), then add integration tests required by the Universal Guide (export-equivalence and package-installation tests) incrementally.
-   - Add missing scripts (lint/lint:fix, lint:md/lint:md:fix, format/format:check, verify) and the minimal documentation files recommended earlier (API reference and templates doc).
+4. Medium-term priorities (after verification is green)
+   - Implement missing guided features incrementally:
+     - src/testing/accessibility.ts (jest-axe helpers) and tests.
+     - src/linting/* factories and tests for HTML/CSS/accessibility.
+     - Add full package.json scripts (lint, format, lint:md, verify) and ensure .markdownlint.json generation is implemented (or documented).
+     - Add package exports for dedicated subpaths if intended, and the required export-equivalence and package-installation integration tests.
+   - Rationale: These address FUNCTIONALITY gaps and the repository policy requirements for dual exports, markdown linting, and coverage.
 
-Rationale: the highest-impact, smallest-scope fixes are the failing test imports and the renderComponent behavior. They are one-file changes each and will unblock verification and allow work on the larger missing features and coverage targets.
+5. Security & dependencies housekeeping
+   - Re-run npm audit and supply-chain scans in CI locally.
+   - Resolve any version mismatches (e.g., jest-axe peer/dev divergence) and document dependency decisions in ADRs when necessary.
 
-If you want, I can:
-- apply the exact single-file edits for the first step (remove .ts extensions in tests) and run the verification sequence, then report the results; or
-- apply the renderComponent fix as the next single-file change and run verification.
+Summary of immediate actionable next step:
+- Commit or revert .gitignore to clean the working tree, then remove `.ts` extensions from test imports (one file → commit → push → verify). This will unblock the verification pipeline and provide deterministic next failures to fix in single-file iterations.
 
-Which single-file change should I make first?
-
+If you want, I can: (A) make the single-file edit to tests/testing/helpers.test.ts to remove the .ts extension, add a commit message, and prepare the next verify step; or (B) produce the exact sequence of commands to run locally for the immediate steps above. Which would you like me to do next?
 
 
-## FUNCTIONALITY ASSESSMENT (40% ± 15% COMPLETE)
-- Implemented / working:
-  - Core jsdom test utilities: renderComponent, simulateClick, simulateKeypress, waitForNextFrame, waitForAnimation — implemented in src/testing/helpers.ts and covered by unit tests (tests/testing/helpers.test.ts).
-  - jsdom test environment setup: setupJsdomTestEnvironment implemented in src/testing/setup.ts and has a smoke test (tests/testing/setup.test.ts).
-  - README and ADR documentation: package README and several ADRs exist and document intended architecture, policies, and decisions.
-  - Build outputs present: compiled artifacts exist under dist/ (dist/src/index.js, dist/src/index.d.ts, and dist tests), so the package’s published entry points (main/types) reference real compiled files.
-  - Package metadata and dev deps: package.json includes peerDependencies and devDependencies aligned with the guide (postcss/autoprefixer/jsdom/vitest/etc.), and basic npm scripts for build, type-check, test, prepare are present.
 
-- Partially implemented / fragile:
-  - PostCSS and Vite library factories: compiled versions are present in dist, and the public export barrel (src/index.ts) re-exports them, but source-level build files under src/build/ (postcss.ts, vite-library.ts) are not present in the repository snapshot you provided. This means source-first development and tests that import source paths may be brittle or non-existent for these factories. Consumers relying on dist will work, but source expectations from the guide (src/build/*) are not fully met.
-  - Package exports: package.json exports only the main entry (".": import → ./dist/src/index.js). The recommended "dual export" pattern and dedicated subpath exports (e.g., "./testing", "./prettier", "./eslint") are not implemented, limiting granular consumer imports and tree-shaking patterns mandated by the guide.
-  - Linting / formatting / markdown-lint tooling and scripts: required scripts like lint, lint:fix, lint:md, lint:md:fix, format, format:check, verify are missing or incomplete (only prepare, voder, type-check, build, test scripts exist). The guide mandates these scripts and markdown-lint setup, so the package does not yet satisfy those operational requirements.
-  - Accessibility helpers (jest-axe integration) and linting config factories (HTML/CSS/accessibility factories) are specified in the design but not present in src (they are present in the guide only). Those features are planned but not implemented.
-  - Dual-export equivalence and integration tests: required integration tests for package export paths and export-equivalence (per universal guide) are not present or not exercised. The package-structure test exists and validates package.json.exports point to dist files — that passes because dist contains the compiled files — but broader export-equivalence and package-installation integration tests are missing.
-  - Coverage & quality thresholds: the universal testing/coverage requirements (90% thresholds, public API coverage) are not yet satisfied — current tests exercise helpers and setup only, not the broader API surface.
-  - Source-level consistency: several tests currently import .ts extension paths (causing TypeScript complaints previously) — there are remnants of that and the verification loop indicates outstanding test/import path fixes were needed. This indicates the repo is close but still requires small source/test fixes to stabilize verification.
+## FUNCTIONALITY ASSESSMENT (65% ± 10% COMPLETE)
+- Implemented core features
+  - PostCSS configuration factory (createPostCSSConfig) implemented with Autoprefixer defaults and overridable plugins — unit tests present.
+  - Vite library configuration factory (createViteLibraryConfig) implemented: ESM-only build options, external handling, PostCSS merge, cssCodeSplit option — unit tests present.
+  - Basic jsdom test environment setup (setupJsdomTestEnvironment) implemented and tested.
+  - DOM testing helpers implemented (renderComponent, simulateClick, simulateKeypress, waitForNextFrame, waitForAnimation) with unit tests covering lifecycle and interaction semantics.
+  - Package metadata, tsconfig, README, and several ADRs and documentation files exist and reflect design decisions.
+  - Build outputs (dist/) and compiled artifacts are present and package.json exports point to the dist entry — package-structure and smoke tests target those artifacts.
+  - Test infrastructure (Vitest) and scripts for build/type-check/test exist and are wired (type-check, build, test, test:ci).
 
-- Risk / verification status:
-  - The repo has had prior successful build/test runs, but the most recent verification runs surfaced TypeScript import-extension and API import issues that required single-file fixes. The verification loop is in progress; some fixes have been committed (e.g., removing invalid cleanup import).
-  - Relying on compiled dist artifacts masks missing source files for certain factories; while dist contains working JS, long-term maintenance and LLM-guided development expect source files to be present and tested.
+- Partially implemented / working but not complete
+  - Tests: there are unit and smoke tests for the implemented pieces (postcss, vite-library, helpers, setup, package-structure). This gives good coverage of current code, but universal requirements expect many more categories (export-equivalence, package-installation integration, installation/exports for multiple subpaths). Those are not present.
+  - The package-level public API barrel (src/index.ts) currently only exports the build helpers (PostCSS & Vite). The testing helpers and test-environment are implemented in src/ but not re-exported through the main public barrel as recommended by the UI-tools guide. Consumers would need to import testing utilities via internal paths rather than the package root API.
+  - Dist contains compiled JS for only a subset of the guided exports; the wider export structure recommended in the guide (dedicated subpath exports like "./testing", "./linting", "./accessibility") is not implemented in package.json exports or in dist.
+  - Documentation and templates are present in prose (prompts/docs) but the package does not include the example templates (templates/ files referenced in the guide are not in src/templates).
 
-Summary judgment:
-- The project has a solid core: jsdom setup and DOM-testing helpers implemented and tested, documentation/ADRs in place, and compiled outputs that make the package consumable.
-- However, many features from the specification are only partially present or entirely missing: source build factories, accessibility utilities, linting factories, dual exports, the standardized scripts (lint/format/markdown-lint/verify), and the required comprehensive tests (export-equivalence, packaging integration, coverage thresholds).
-- Functionality completeness is therefore moderate: primary test helper functionality is implemented, but the full scope of the @voder/ui-tools feature set and the universal package requirements are not yet fully realized.
+- Missing required features per the guide/spec
+  - Accessibility testing utilities (expectAccessible, getAccessibilityViolations, expectAriaAttributes, expectFocusable, accessibilityTests using jest-axe) are described in the guide but are not implemented in src/testing/accessibility.ts.
+  - Linting configuration factories (HTML/CSS/accessibility lint config creators) described in the guide are not present in src/linting/.
+  - Mandatory package scripts from the Universal Guide (lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify, lint:md scripts with generated .markdownlint.json) are missing. The prepare/voder scripts exist but the suite of quality scripts required by the policy is incomplete.
+  - Package dual-export strategy and the corresponding tests (export-equivalence tests, package-installation integration tests) required for configuration packages are not implemented.
+  - Coverage and testing policy: the universal guide requires high coverage thresholds and many categories of tests (90% thresholds and 100% public API coverage). Current tests exercise key functions but do not meet those comprehensive coverage requirements.
+  - ESLint / Prettier integration files and package-local eslint.config.js / prettier.config.js are not present as mandated by the repo-wide style rules.
 
-## CODE QUALITY ASSESSMENT (65% ± 10% COMPLETE)
-- The codebase is mostly well-structured and follows the project's architectural patterns (clear module barrels, separate testing helpers, test coverage intent). However there are several concrete correctness and quality issues that prevent the code from being considered fully working and clean.
-
-Key problems and impact
-- Import paths with .ts extensions in tests
-  - tests/testing/helpers.test.ts and tests/testing/setup.test.ts import '../../src/... .ts'. TypeScript (with current tsconfig) rejects imports that end with .ts (TS5097) unless allowImportingTsExtensions is enabled. This is a compile/test blocker and will fail the type-check/build/test verification.
-  - Fix: remove the explicit .ts extensions in test imports (use '../../src/testing/helpers' and '../../src/testing/setup'), or enable allowImportingTsExtensions (not recommended for this project).
-- renderComponent lifecycle bug (functional correctness)
-  - renderComponent always removes the container on unmount (container.parentNode?.removeChild(container)), even when the container was supplied by the caller and already present in the document.
-  - Tests expect caller-owned containers to remain after unmount; current behavior will break those tests and is a semantic bug. The helper should track whether it created/attached the container and only remove it when created-by-helper.
-- Silent swallowing of mount/unmount errors
-  - The helper catches and silently ignores exceptions when calling component.mount/unmount. Silently swallowing errors hides useful diagnostics; per project policy console-first diagnostics are preferred (e.g., log to stderr) so failures in mount/unmount are visible in test output/history.
-- Inconsistent module/file layout vs import specifiers
-  - src/index.ts re-exports from './build/postcss.js' and './build/vite-library.js' while there is no src/build/*.ts tracked in the source tree (src/build/ appears to be git-ignored). That mismatch can be confusing for contributors and may cause resolution surprises in different environments (editor/tooling vs test runner). Favor having source files in src/build/ (tracked) or adjust imports consistently.
-- Weak typing and missing IComponent contract
-  - The code uses any for component types in helpers; the project documentation refers to an IComponent type but it is not present. Public APIs should expose/refence concrete types (or a minimal IComponent interface) to satisfy interface-first principles and enable stronger type-checking.
-- Tests referencing source JS extension (potentially brittle)
-  - tests/smoke.test.ts imports '../src/index.js' (JS extension pointing at source). This can work with the test toolchain but is brittle and inconsistent with TypeScript source files; prefer importing source modules without explicit extension or using the compiled dist in package-structure tests per the project convention.
-- Minor style/consistency issues
-  - Catch blocks that swallow errors, broad use of any, and a few places with // @ts-ignore reduce code clarity and safety.
-  - Tests and source should consistently follow the project's module resolution conventions (NodeNext, ESM, explicit .js when referring to compiled output).
-
-Summary judgement
-- Functional correctness: Not fully correct. There are at least two failing/incorrect behaviors currently (test import extension errors and renderComponent unmount semantics) that will break verification runs.
-- Testability: Tests are present and well-targeted, but a small number of test import issues and helper bugs prevent them from passing.
-- Maintainability: Good high-level structure and documentation, but missing types (IComponent), inconsistent imports, and silent error handling lower maintainability and make debugging harder.
-- Adherence to standards: The code mostly follows the project's ESM/TS layout and console-first philosophy, but needs fixes to error logging and typing to align fully with project guidelines.
-
-Actionable fixes (minimal, one-file steps recommended)
-1. Update tests/testing/helpers.test.ts imports to remove .ts extension.
-2. Update tests/testing/setup.test.ts imports to remove .ts extension.
-3. Modify src/testing/helpers.ts:
-   - Track createdByHelper boolean (only append/remove container when createdByHelper is true).
-   - Replace silent catch blocks with console.error(...) to surface mount/unmount errors.
-   - Tighten types by adding a minimal IComponent interface.
-4. Ensure src/build source files exist/tracked or make import targets consistent and documented.
-
-After those small targeted changes the code quality will be much closer to green; current state is roughly mid-to-high 60s because structure and intent are solid but a few straightforward bugs block full correctness.
-
-## TESTING ASSESSMENT (40% ± 20% COMPLETE)
-- There is a small, focused Vitest test suite in place that exercises core helper behavior and basic package integrity:
-  - Unit tests for DOM helpers: tests/testing/helpers.test.ts (renderComponent, simulateClick, waitForNextFrame / waitForAnimation).
-  - Test for jsdom environment setup: tests/testing/setup.test.ts.
-  - Smoke test ensuring the main source barrel exports createPostCSSConfig: tests/smoke.test.ts.
-  - Package structure validation: tests/package-structure.test.ts (verifies package.json exports point to dist/*).
-- Current test status: historically the verification run failed due to TypeScript import issues (tests importing source with a trailing “.ts” extension and an invalid cleanup import). The repo contains fixes staged/committed for the cleanup import; the tests still include imports that end with “.ts” (helpers.test.ts and setup.test.ts) which will trigger TS5097 unless either the tests are changed to remove “.ts” extensions or tsconfig enables allowImportingTsExtensions. Until those import-path issues are resolved and a full verification run is executed, the test run is unlikely to be green.
-- Coverage and scope adequacy:
-  - Coverage is narrowly focused on test helpers and basic package metadata checks. Important areas missing coverage include:
-    - Build/config factories (createViteLibraryConfig, createPostCSSConfig) — no unit tests in src/tests/build/* or tests/build/* are present in the tracked source.
-    - Linting configuration factories (html/css/accessibility) and template files.
-    - Accessibility utilities (jest-axe helpers) — planned but not implemented/tested yet.
-    - Export-equivalence, package-installation integration tests, and broader API surface tests required by the Universal Guide are missing.
-  - The repository currently lacks the comprehensive integration and installation tests mandated by the guide (package-installation.test.ts, export-equivalence.test.ts, etc.), so final consumer-facing guarantees are not covered.
-  - The project’s policy target (>=90% coverage, full public API coverage) is not met by the present tests.
-- Risk / reliability:
-  - Given the current test set, regressions in the build/config factories, linting exports, or accessibility helpers would likely go unnoticed.
-  - The package-structure test depends on built artifacts under dist/ (which are git-ignored but present in .voder visibility). That test can block CI unless build outputs are produced reliably before test runs; ensure build is run (pretest is configured to run build, but verification needs to be executed to confirm).
-- Recommended next steps (testing-focused, small and incremental):
-  1. Fix the remaining TypeScript import-path issues in tests (remove trailing “.ts” from test imports or enable allowImportingTsExtensions). Re-run the verification sequence to confirm tests run cleanly.
-  2. Add unit tests for createPostCSSConfig and createViteLibraryConfig (simple shape assertions and PostCSS inclusion) — these are small gains in coverage and catch common export mistakes.
-  3. Implement accessibility utilities and corresponding unit tests (jest-axe) as planned.
-  4. Add the required integration tests: export-equivalence and package-installation tests (these are longer-running but required by policy).
-  5. Run coverage and iterate until coverage thresholds meet project policy.
-- Summary judgment: the testing foundation is present and targeted at core helpers and package metadata, but overall test coverage is limited and incomplete. Work is needed to fix existing TypeScript test import issues, expand tests to cover build/config factories, accessibility/linting exports, and add the mandated integration tests to approach the repository’s quality goals.
-
-## EXECUTION ASSESSMENT (75% ± 10% COMPLETE)
-- The project is mostly implemented and many verification steps have succeeded in prior runs (TypeScript compilation, builds, and Vitest runs passed at earlier points). The repository contains compiled outputs in dist/, a valid package.json with build/test scripts, and comprehensive tests. However the most recent non-interactive verification failed and the current state is *not* fully validated: a TypeScript check failed (TS5097) due to test files importing source modules with a trailing `.ts` extension, and those test-import extension issues remain in the working tree. One earlier TypeScript error (invalid named import of cleanup from @testing-library/dom) was fixed and committed, but the remaining `.ts`-extension import errors prevent a clean type-check / build / test sequence now. Therefore the build/test scripts are not reliably passing in the current repository state and full verification (npm run type-check && npm run build && npm test) will fail until the test import paths are corrected (and any other single-file failures revealed after that are addressed).
-
-## DOCUMENTATION ASSESSMENT (70% ± 10% COMPLETE)
-- The repository contains solid foundational documentation: a clear, consumer-facing README.md with quick start, examples (vite, vitest, PostCSS), security posture, and verification steps; a set of MADR ADRs under docs/decisions that document design choices and dependency rationales; and a couple of library-usage pages (docs/libraries/usage/*) that add useful context (PostCSS and dev-config usage). The implementation guides in prompts/development-ui-tools.md are thorough and include API-like descriptions and examples for the main helpers (PostCSS factory, Vite factory, Vitest jsdom factory, testing helpers, linting configs).
-
-- What’s good
-  - README is well written, self-contained, and consumer oriented (no internal links), with examples and security notes.
-  - ADRs are present and comprehensive — they document decisions relevant to the package and inherited policy choices.
-  - There are useful usage pages for related tooling (dev-config) and for PostCSS.
-  - The prompts/development-ui-tools.md contains detailed API descriptions and examples (very helpful for implementers and reviewers).
-
-- Gaps / missing or incomplete items
-  - No explicit, dedicated API reference pages for package exports (e.g., a docs/api.md or typed reference that lists each exported function, its full options signature, default values, and return shape). Consumers and integrators rely on examples but not a compact reference.
-  - The in-repo API-level documentation is split between README, docs/usage, and prompts/ (the latter is an internal prompt asset). Relying on prompts/ for API docs is fragile because README must remain public-facing and prompts/ is an internal artifact.
-  - No documented examples or instructions for the mandatory markdown lint generation flow (.markdownlint.json generation) beyond a short mention in README — the repo relies on the prepare script but lacks an example or the generated file in docs to show expected content/behaviour.
-  - Template files under templates/ are referenced in the design doc but there's no human-oriented docs page describing their purpose and when/why to copy/use them.
-  - No CHANGELOG.md present (the template is referenced by the universal guide but not instantiated here).
-  - No concise "Developer reference" section documenting package scripts and expected local workflow (verify workflow is mentioned but the exact scripts like lint/lint:md/format/verify are not all present in package.json or fully documented).
-  - No generated API docs nor typed docs (e.g., a simple docs/api.md referencing TypeScript types) to make the public surface easy to scan without reading source.
-
-- Recommended minimal next steps (small, incremental, low-risk)
-  1. Add an API reference doc (docs/api.md) that lists the public exports (createPostCSSConfig, createViteLibraryConfig, createVitestJsdomConfig, renderComponent, testing utilities, lint config factories) with short signatures, default values, and brief examples. This is one file → one commit.
-  2. Add docs/usage/templates.md that lists and explains the files in templates/ and shows a copy/paste example for consumers (one file → one commit).
-  3. Add a short docs/dev-workflow.md describing the exact npm scripts, local verification sequence, and how to generate `.markdownlint.json` (one file → one commit).
-  4. Create a CHANGELOG.md from the provided template (even a placeholder with instructions) so release notes have a known location (one file → one commit).
-
-- Overall judgement
-  - The existing documentation is strong on rationale (ADRs) and has practical examples in README and the implementation prompt. However, it lacks a compact API reference and a few developer-facing convenience docs (templates, markdown-lint generation, CHANGELOG) that would make the package easier to adopt and maintain. Addressing those missing, small docs will move the project toward complete, discoverable, and maintainable documentation.
-
-## DEPENDENCIES ASSESSMENT (85% ± 10% COMPLETE)
-- Overall status: Dependencies look current and intentionally selected for this UI tooling package. The repo history indicates an npm audit run that reported zero vulnerabilities at the time the deps were installed, and the core toolchain (TypeScript, Vitest + @vitest/coverage-v8, jsdom, postcss/autoprefixer, testing-library) uses recent, compatible releases—so there are no obvious, high‑risk or stale packages present.
-- Security: Per the recorded history a full npm audit was run with no reported vulnerabilities. That’s a strong signal, but not a permanent guarantee — continue to run automated audits regularly and monitor advisories for transitive deps.
-- Compatibility / alignment:
-  - Good: Vitest and its coverage provider are version‑aligned (devDependency vitest ^3.2.4 with @vitest/coverage-v8 ^3.2.4) as required by ADR-0005 — this avoids the common “Cannot find module '@vitest/coverage-v8'” and peer alignment problems.
-  - Good: postcss (8.x) and autoprefixer (10.x) are present and the dev/peer versions are consistent (devDeps provide concrete versions that satisfy the peer ranges).
-  - Issue to fix: jest-axe is declared in peerDependencies as ^9.0.0 but devDependencies include ^10.0.0. That mismatch can lead to confusing peer warnings for consumers or subtle API incompatibilities in tests. Align the peer and dev versions (either bump peer to ^10 or pin dev to ^9) depending on intended consumer compatibility and ADR guidance.
-  - Note: vite is declared as a peer (^6.0.0). If Vite 6 is still speculative for some consumers, that may force consumers to upgrade; this is a policy choice but worth verifying against the broader monorepo consumer matrix.
-- Risk factors & recommendations:
-  - Keep running npm audit / dependabot/renovate checks and apply security patches for transitive dependencies regularly.
-  - Resolve the jest-axe peer/dev version mismatch to avoid consumer install-time warnings or runtime differences in the accessibility helpers/tests.
-  - Reconfirm peer ranges (vite, vitest, jsdom, prettier, etc.) are intentionally set to the ranges you want consumers to install; document any exact‑version constraints in ADRs as required by the repo policy.
-  - Because most packages are devDependencies (tooling only), supply‑chain risk is lower at runtime, but CI and developer machines still need vigilance.
-- Conclusion: No immediate, high‑severity issues found. With the single corrective action (align jest-axe versions) and continuing routine audits, the dependency set is healthy and compatible with the package goals.
-
-## SECURITY ASSESSMENT (85% ± 10% COMPLETE)
-- Overall summary
-  - I found no obvious active vulnerabilities in the repository code (no use of eval, no raw child-process spawning in production code, no network calls, no direct file writes to repo paths). The package is a developer-tooling library (build/test helpers), so most risky operations are confined to development-time code and optional plugin loading. The largest security exposure is the supply chain (npm dependencies and optional plugins) and the runtime execution of third‑party plugin code when present.
-
-- Notable risk areas
-  1. Supply‑chain / dependency risk (highest risk)
-     - Many devDependencies and peerDependencies (vitest, @vitest/coverage-v8, postcss, autoprefixer, jsdom, jest-axe, markdownlint-cli2, testing-library, etc.). Any of these could contain vulnerabilities or malicious releases. The repo contains ADRs and notes about supply‑chain auditing and registry mirrors — good — but this remains the primary attack surface.
-     - Mitigation: enforce lockfile usage, regular `npm audit` in CI, supply‑chain scans (Snyk/OSSF/other), and the existing registry‑mirror/audit policies described in ADRs.
-
-  2. Dynamic plugin import in vite.config.ts
-     - The config dynamically imports an optional plugin ('vite-plugin-inline-source') and will execute its default export if present. If a malicious or compromised plugin is installed in the dev environment, this will execute arbitrary code at config load time.
-     - Mitigation: restrict/verify optional plugin installation, prefer whitelisting vetted plugins, run builds in constrained CI environments, and review installed plugin versions (pin or use signed artifacts where possible).
-
-  3. Use of child-process / exec in example/test snippets (potential future risk)
-     - Several documentation/test examples (in prompts/docs) show use of execSync to pack/install and run Node scripts. Those examples are not currently part of runtime code, but similar patterns if introduced into tests or scripts (and run automatically) could be abused or cause command injection if user-controlled input is passed.
-     - Mitigation: avoid running shell commands with untrusted input; when necessary use safe argument arrays and avoid shell interpolation.
-
-  4. DOM helpers & handling untrusted HTML
-     - renderComponent and test helpers manipulate jsdom and expect consumers to pass component instances or DOM nodes. If these helpers are used with untrusted HTML/content, there is a risk of DOM-based XSS or leaking test-runner environment details (e.g., when tests log DOM contents).
-     - Mitigation: document that helpers are for controlled test inputs only; require consumers to sanitize untrusted markup before testing; avoid using innerHTML anywhere (current code does not).
-
-  5. Silent error swallowing in helpers
-     - renderComponent currently swallows exceptions during mount without reporting. While not a direct security flaw, this can hide unexpected behavior and delay discovery of issues. The plan already suggests improving logging.
-     - Mitigation: log errors to stderr (console.error) so test harnesses and auditors can detect anomalies.
-
-  6. Test environment mocks & globals
-     - setup.ts sets global mocks (IntersectionObserver, ResizeObserver, matchMedia) using vitest vi.fn(). This is fine in tests but ensure test-only code is not shipped in production consumers. Tests should run in isolated environments; global mocks should not leak into consumer runtime.
-     - Mitigation: ensure test setup is only used by tests and not executed in production.
-
-- Code constructs causing low/medium concerns
-  - No direct file writes to the repository (policy enforced). Good.
-  - package.json is private + UNLICENSED (no accidental public publishing). Good.
-  - TypeScript config includes "declaration": true (produces .d.ts in dist), but dist/ is gitignored — OK.
-  - Requiring Node >= 22.6.0 and use of experimental flags for Prettier config (per ADR) is not a security vulnerability but requires care in CI/OS setup.
-
-- Recommendations (practical)
-  1. Strengthen supply‑chain controls:
-     - Ensure lockfiles are committed and CI validates them.
-     - Run `npm audit`/SCA in CI on every change and fail builds on critical/high issues.
-     - Use the ADR's registry‑mirror policy and make CI use an internal mirror / vetted registry.
-  2. Pin or tightly constrain versions for security‑sensitive dev tools (or add automated alerts for upgrades).
-  3. Vet optional plugins before allowing them in dev environments; consider a plugin‑whitelist for CI.
-  4. Improve error visibility:
-     - Log mount/unmount errors in renderComponent to stderr so failures are visible in CI logs.
-  5. Sanitize and document:
-     - Clarify in README and helper docs that DOM helpers are for controlled test inputs and not for untrusted HTML.
-  6. Limit shell/exec usage:
-     - If you add tests that call external commands (execSync), ensure no user-controlled data is passed to shell and run in sandboxed CI workers.
-  7. CI isolation: run tests/builds in isolated containers with limited network access where possible.
+- Risk / Practical consequences
+  - Consumers who expect the full set of ui-tools features (testing utilities available from package root, accessibility helpers, linting factories) will not find those APIs via the public package exports; integration and convenience are limited.
+  - Policy-driven CI/verify expectations (verify script, markdown linting setup, export-equivalence tests) are not met, so the package would fail the repository's mandatory verification workflow without additional commits.
+  - Missing accessibility and linting modules reduce the package's value for the intended target (component-library teams expecting an integrated UI tooling surface).
 
 - Conclusion
-  - There are no glaring code-level security vulnerabilities (injection, auth leaks, unsafe file writes) in the committed source. The primary concerns are supply‑chain risk and executing third‑party plugin code during configuration/build steps; these are typical for tooling packages and are already addressed by ADRs and policies in the repository. Following the mitigations above will materially reduce the remaining risk.
+  - The repository contains a solid, working core: PostCSS factory, Vite factory, jsdom setup, and DOM testing helpers with tests — these are correct and exercised by unit tests. That covers a large portion of the "library build configuration" and "basic testing helpers" responsibilities.
+  - However, substantial guided requirements remain unimplemented: accessibility helpers, linting factories, standardized scripts, public exports for testing utilities, and the full set of mandatory tests and exports. Until those are added and the verify pipeline scripts are completed, the package does not meet the full functional requirements of the provided implementation guides and policies.
 
-## VERSION CONTROL ASSESSMENT (85% ± 5% COMPLETE)
+## CODE QUALITY ASSESSMENT (78% ± 10% COMPLETE)
+- Overall the code is well organized, modular, and follows the stated architecture: small focused files, clear public API surface, ESM-first patterns, and comprehensive test coverage goals. The implementation uses safe patterns (guarded dynamic imports for optional plugins, PostCSS/Vite factories, isolated jsdom setup, and dedicated testing helpers). Comments and types improve readability and intent.
+- Tests and tooling are present and realistic (Vitest, jsdom mocks, accessibility helpers planned). The repo includes package metadata and scripts aligned with the project conventions.
+- Issues / bugs that prevent a clean verification:
+  - TypeScript import extension errors in tests: several test files import source modules using explicit “.ts” extensions (e.g., tests/testing/helpers.test.ts → import '../../src/testing/helpers.ts'). The tsconfig does not enable allowImportingTsExtensions, so these imports cause TS5097 errors and block type-check/build. Some other imports use “.js” extensions intentionally for runtime ESM resolution (this is acceptable under NodeNext), but the .ts-extension imports in tests are incorrect.
+  - Silent error swallowing in renderComponent: mount/unmount are wrapped in try/catch without any console logging. That hides failures and violates the console-first diagnostic guidance — making debugging harder and tests less informative. The unmount try/finally hides errors as well.
+  - Minor test fragility / cleanup: setup.ts manually removes document.body children (ok) but differs from testing-library cleanup semantics; tests assume specific lifecycle semantics (ownership of appended container). Current helpers mostly satisfy tests, but behavioral edge cases exist (ownership tracking).
+  - Use of any casts and runtime type casts in places (to satisfy tsc) reduce type-safety in the test/merge code paths (e.g., mergedPostcss: Record<string, unknown>, many (any) casts). These are pragmatic but reduce the strictness guarantees.
+- Style / standards observations:
+  - Good: files are small, responsibilities are separated, naming is consistent, and comments/docstrings provide intent. The tests exercise key behaviors.
+  - Improvement areas: prefer emitting diagnostics (console.error) when catching exceptions in test helpers, reduce unnecessary any casts by improving types, and ensure test imports follow NodeNext/tsconfig rules (use .js runtime extensions or enable allowImportingTsExtensions if intentional).
+- Risk summary:
+  - The single most pressing blocker is the .ts-extension imports in test files which cause type-check/build failures. Fixing those imports (remove the .ts extension) will unblock verification runs.
+  - Less severe but important: replace silent swallow-catches with logged errors to preserve console-first debugging and make test failures visible in history.
+- Actionable recommendations (minimal, targeted):
+  1. Update test imports that end in ‘.ts’ to omit the extension (e.g., '../../src/testing/helpers' and '../../src/testing/setup') — this is a single-file-per-change small edit pattern.
+  2. Adjust renderComponent to log mount/unmount errors to stderr (console.error) and track whether the helper created the container before removing it.
+  3. Replace a few any casts with precise types where practical (especially around postcss merging) to improve type safety.
+- Final assessment: the codebase is structurally sound and largely correct, but a few focused changes (test import extensions and improving error diagnostics) are required to reach a clean, reliable verification state and to satisfy the project's console-first and type-safety expectations.
 
-- The repository is in a clean, synchronized state: git reports "nothing to commit, working tree clean" and "Your branch is up to date with 'origin/main'". There are no staged/unstaged changes and no local commits waiting to be pushed — so points for 1) ALL CHANGES COMMITTED and 2) ALL COMMITS PUSHED are satisfied.
+## TESTING ASSESSMENT (45% ± 10% COMPLETE)
+- There is a sensible set of Vitest suites covering the package's key responsibilities: PostCSS config, Vite library config, public export shape (package-structure), smoke tests for the main export, and DOM/testing helpers + setup. This gives good surface-area coverage for core factory helpers and test utilities.
+- However, tests are currently not reliably runnable because of TypeScript import-extension issues: several test files import source modules using a trailing ".ts" extension (e.g., tests/testing/helpers.test.ts and tests/testing/setup.test.ts), and the tsconfig does not enable allowImportingTsExtensions. This causes TS5097 errors during type-check/build and prevents the test run from executing.
+- The test suite also previously reported a TS2305 error (named import cleanup from @testing-library/dom) which was fixed by replacing cleanup() with explicit DOM teardown in src/testing/setup.ts — that file now passes its basic "does not throw" test.
+- Functional test coverage is incomplete:
+  - Accessibility helpers (jest-axe integration) are not implemented/tested.
+  - Integration/package-installation tests and export-equivalence tests required by the policy are not present.
+  - Error-paths and deeper API surface tests (edge cases, thrown errors) are minimal or absent.
+- Because of the type-check / import issues the verification loop currently fails at the TypeScript step; until that is fixed tests do not run and coverage cannot be measured.
+- Overall assessment:
+  - Test presence and focus: good (targets the right modules).
+  - Test pass status: currently failing due to TypeScript import-extension issues (blocking).
+  - Coverage adequacy vs. project policy: insufficient — the repository requires high coverage thresholds (90%+), but current test suites are small and do not approach that target.
 
-- Proper file‑tracking / ignore hygiene is mostly correct:
-  - Build outputs (dist/), node_modules/, prompt-assets/, and other tool artifacts are present in the git‑ignore list — this is correct and intentional for a TypeScript package.
-  - .voder/ has been untracked and added to .gitignore, which matches the project policy to keep those working files out of VCS.
+Summary recommendation (brief):
+- Fix imports in test files to remove '.ts' extensions (or enable allowImportingTsExtensions if intentional). After that, run the verify sequence to surface any remaining runtime test failures.
+- Implement/add the missing integration and accessibility tests to reach the policy-mandated coverage goals.
 
-- One caution that reduces the completeness score: some project/source/test files appear to be intentionally git‑ignored (listed under "Git-ignored files"):
-  - src/build/ and tests/build/vite-library.test.ts are in the gitignore list. The project summary and implementation guide expect src/build and tests/build entries (build config factories and their tests). If those are supposed to be source or test files, being git‑ignored is potentially incorrect and should be reviewed.
-  - The file-tracking summary shows "Project files tracked: 27/33" and "Total git-ignored files: 6" — ~6 project files are ignored. If those ignored files are intentionally build outputs or temporary, that's fine; if any are legitimate source or tests accidentally ignored, they must be unignored and committed.
+## EXECUTION ASSESSMENT (70% ± 10% COMPLETE)
+- The project has made substantial progress and the build/test toolchain is mostly functional: TypeScript compilation (tsc) has produced dist/ outputs and there are compiled artifacts under dist/, and Vitest test suites have passed in earlier verification runs. The package.json contains working scripts for type-check, build, and test, and many tests and build helpers are implemented.
+- However, the most recent full verification (npm run type-check && npm run build && npm test) failed due to TypeScript errors in test imports (notably: TS2305 from an invalid named import cleanup from @testing-library/dom and TS5097 for imports that include a .ts extension). One of those issues (the cleanup import) was fixed and committed, but the verification loop has not completed cleanly since — there remain test-import path issues that are being iteratively addressed.
+- Conclusion: The core build pipeline works in large part (dist exists, build steps have worked previously), but the current repository state is not fully validated end-to-end because outstanding TypeScript/test import errors are preventing a successful, repeatable verify run.
 
-- Specifics:
-  - Uncommitted changes: none (working tree clean).
-  - Unpushed commits: none (branch up-to-date with origin/main).
-  - Untracked important files: none reported as untracked, but several project files are git-ignored (src/build/, tests/build/vite-library.test.ts). This is the main reason the assessment is not 100%.
+## DOCUMENTATION ASSESSMENT (75% ±10% COMPLETE)
+- The repository contains strong, well‑structured documentation for process, governance and high‑level usage: a clear README with quick start, examples (vite/vitest/postcss), security posture, and verification steps; extensive ADRs in docs/decisions that record rationale and constraints; a usage doc for related dev-config and a PostCSS library note. Inline code comments and the implementation guides (prompts/*.md) further explain intended APIs, patterns, and test requirements. However, the package lacks a concise, complete API reference for @voder/ui-tools (no generated API docs or a dedicated reference page that lists signatures, options, and return shapes for createPostCSSConfig, createViteLibraryConfig, and the testing helpers), limited examples for testing utilities and linting factories, and no CHANGELOG or explicit markdownlint generation artifact (.markdownlint.json is only described, not present). There is also a mismatch between recommended dual‑export patterns in the universal guide and the package exports (documentation expects dedicated subpath exports for testing/linting/etc.), which should be documented or reconciled. Recommended next documentation work (small, prioritized): add a short API reference (function signatures + option descriptions + example snippets) for build and testing utilities; document testing helper usage and lifecycle expectations; add a CHANGELOG placeholder and a note or script to generate .markdownlint.json; and update README to call out exact subpath exports supported (or document why they’re intentionally omitted). Overall the docs are thorough on governance and usage intent but missing targeted API reference and a few packaging / docs automation artifacts.
 
-Recommendations (single-step):
-- Confirm whether src/build/ and tests/build/ files are intended to be ignored. If they are source or test files, remove them from .gitignore, git add and commit them.
-- If they are intentionally ignored (build artifacts/templates), leave as-is; consider documenting the rationale in an ADR or README to avoid accidental omissions.
+## DEPENDENCIES ASSESSMENT (85% ±10% COMPLETE)
+- Freshness
+  - Overall the package uses modern toolchain versions: TypeScript 5.9.x, Vitest 3.2.x, @vitest/coverage-v8 3.2.4, jsdom 26.x and @types/node 24.x. These are current major/minor lines consistent with the project’s Node >= 22.6.0 guidance.
+  - PostCSS / Autoprefixer are on PostCSS 8 / Autoprefixer 10.x lines — still widely used and compatible with Vite; autoprefixer is pinned at 10.4.21 (dev), which is up-to-date within the 10.x line.
+  - markdownlint-cli2, @testing-library packages, jest-axe, and other dev tools are on reasonable, recent versions for development tooling.
 
-Summary: version control hygiene is strong (clean working directory, all commits pushed), but the presence of several project files in .gitignore (27/33 tracked vs 33 expected) warrants a quick verification. If those ignored files are intentional build artifacts, the repository is effectively 100% healthy; if not, unignore and commit them to reach full completeness.
+- Security (vulnerabilities)
+  - The project history indicates an npm audit was run previously across the dependency graph and reported zero vulnerabilities. That strongly suggests there were no immediate known high/critical findings at the last scan.
+  - I cannot run a live audit here. Recommendation: re-run `npm audit` (and any org SCA tooling) in CI or locally to confirm no new vulnerabilities have appeared since the last scan.
+
+- Compatibility / Policy alignment
+  - Vitest and @vitest/coverage-v8 versions are aligned (3.2.x), matching the ADR that requires version alignment for the V8 provider — this is correct and avoids peer-compatibility problems for coverage.
+  - TypeScript and @types/node versions match the NodeNext/ES2022 target and the project’s Node version guidance.
+  - The package correctly puts several runtime build tools into peerDependencies (vite, postcss, autoprefixer, vitest) which is appropriate for a config/tooling package.
+  - One notable mismatch to review: jest-axe appears in peerDependencies as "^9.0.0" but the devDependency is "^10.0.0". That divergence can cause confusion for consumers (peer warns about v9 while local dev uses v10). Align the peer range with the tested/dev version or document/justify the mismatch in an ADR.
+  - Another policy note (not a security issue but worth verifying): markdownlint-cli2 is present as a devDependency. The Universal Guide suggests markdownlint-cli2 may be a peer for dev-config packages — ensure this placement is correct for this package's intended consumer model.
+
+- Version ranges & update strategy
+  - The package mostly uses caret (^) ranges for devDependencies and peerDependencies, which allows minor/patch updates while avoiding major bumps. This is fine for dev tooling but keep an eye on major releases (e.g., Vitest 4.x) that may require ADR/test work.
+  - ADRs in the repo explicitly require exact alignment for vitest/provider — that policy is respected here.
+
+- Risks & recommended actions
+  - Re-run `npm audit` and any org supply-chain scanners now to confirm there are still no vulnerabilities.
+  - Align the jest-axe peer/dev versions (either set peer=>^10 or change dev=>^9) to avoid consumer confusion and potential mismatch warnings.
+  - Periodically sweep major dev-tool upgrades (Vitest, jsdom, TypeScript, PostCSS) and run the verify pipeline; create ADRs for any dependency changes that affect consumers or require version alignment.
+  - Consider automating dependency updates (Dependabot/renovate) and SCA in CI to surface issues promptly.
+
+Summary: dependencies appear current and consistent with the package's Node/TS targets; prior audit reported zero vulnerabilities. The main actionable item is to resolve the jest-axe version mismatch and to re-run an up-to-date vulnerability scan to confirm no new issues.
+
+<scratchpad>
+- Review code and tests for runtime exposures: src files mostly create config objects, DOM helpers, mocks. No network calls, no eval, no writing to repo files.
+- Dynamic imports: vite.config.ts does dynamic import of optional plugin (vite-plugin-inline-source). If that plugin is installed, it executes plugin code at build time. That's expected behavior but is supply-chain risk.
+- package.json prepare script runs node ../../setup-package-docs.js on npm install — could execute arbitrary JS at install time. Ensure script is reviewed and trusted.
+- DevDependencies include many third-party tools (postcss, autoprefixer, jsdom, jest-axe, vitest, markdownlint-cli2). These are dev-time but still represent supply-chain risk for contributors/CI.
+- Tests: some examples use execSync and child_process in documentation; not used in src tests. But if integration tests added that execSync npm pack and npm install, they will execute shell commands—need careful sanitization and isolation.
+- createViteLibraryConfig uses resolve(entry) — path resolution is local; consumers pass entry so no arbitrary remote code. Merging postcss plugins allows arbitrary plugin functions; consumers must trust plugins they pass.
+- setup test environment removed cleanup import; uses vi mocks — no vulnerabilities.
+- Dist files are present in repository listing; if compiled artifacts are tracked they could differ from source; ensure dist not committed to avoid hidden malicious code in built files.
+- No handling of untrusted HTML outside test environment; accessibility helpers running axe on DOM could execute JS if consumers pass untrusted markup — note caution.
+- Recommendations: enforce lockfile, run npm audit regularly, pin/blocklist risky transitive deps, review prepare script, avoid executing shell commands with unsanitized inputs in tests, ensure dist is gitignored and not committed, use reproducible registries/mirrors, limit optional dynamic plugin execution or document trust requirements.
+</scratchpad>
+
+## SECURITY ASSESSMENT (85% ± 10% COMPLETE)
+- Overall risk posture: Low-to-moderate. The package is a development tooling library (dev-time utilities, config factories, test helpers) and intentionally does not perform network I/O or persist data at runtime. There are no obvious high‑severity coding vulnerabilities (no eval, no direct filesystem writes to the repository, no deserialization of untrusted payloads). The primary security exposure is supply‑chain: third‑party devDependencies and any code executed during build/test/install time.
+
+Key findings and potential vulnerabilities
+- Supply‑chain risk (primary concern)
+  - Many third‑party packages are referenced (postcss, autoprefixer, jsdom, vitest, jest-axe, markdownlint-cli2, etc.). Even as devDependencies, these run in developer/CI environments and can execute arbitrary code during install/build/test.
+  - There is an ADR and mention of supply‑chain audit and registry‑mirror policy, which is good, but ongoing vigilance is required (npm audit, lockfile verification, registry mirrors, provenance checks).
+- Execution at package lifecycle hooks
+  - package.json contains a "prepare" script (node ../../setup-package-docs.js). Scripts run during npm install can execute arbitrary JS. Ensure the referenced script is reviewed, trusted, and does not process untrusted inputs.
+- Dynamic plugin execution
+  - vite.config.ts dynamically imports an optional plugin if installed. If a compromised plugin is present, it will execute at build time. This is expected but should be documented as a trust boundary.
+- Test/integration commands that run shell processes
+  - While the repo’s tests currently avoid unsafe shell usage, some example/integration patterns (npm pack + execSync in documentation) demonstrate running shell commands. If integration tests are added that execute shell commands in CI, they must ensure paths and command inputs are not influenced by untrusted data.
+- Tracked build artifacts / dist visibility
+  - Dist output is intended to be gitignored; tracked compiled artifacts in the repository can be a security concern (build vs source mismatch). Ensure compiled artifacts are not committed or are reviewed as part of release process. The repository currently shows dist/ files in the project root listing — confirm they are not tracked in git (and if they are, remove them).
+- API surface that accepts executable plugins
+  - createPostCSSConfig and createViteLibraryConfig accept plugin arrays/overrides. Those plugin objects/functions will be executed by PostCSS/Vite in consumers’ build environments. Consumers must only supply trusted plugins.
+- Running accessibility checks on untrusted HTML
+  - Accessibility helpers run jest-axe on DOM nodes. If consumers feed untrusted HTML into these helpers in production contexts (not just tests), there could be risks (e.g., scripts within HTML in non‑jsdom environments). Document that helpers are intended for test environments and should not be used on untrusted content without sanitization.
+
+Recommendations / best practices
+- Strengthen supply‑chain controls
+  - Maintain and commit a lockfile (package-lock.json) and ensure CI uses npm ci.
+  - Run regular npm audit and incorporate supply‑chain scanning (SCA) in CI.
+  - Use registry mirrors and lockfile signing / integrity checks where possible.
+  - Consider pinning critical packages or adding automatic alerts for dependency changes.
+- Treat lifecycle scripts as high‑risk
+  - Audit the prepare script and any other lifecycle scripts; avoid executing unreviewed code in install hooks. Document and restrict their behavior.
+- Limit dynamic execution and document trust boundaries
+  - Clearly document that optional plugins and passed-in PostCSS plugins are executed and must be trusted. Consider adding warnings in the README and inline JSDoc.
+- Avoid committing compiled artifacts
+  - Ensure dist/* is properly ignored and not tracked. If dist must appear for LLM inspection, keep it excluded from releases and verify content during packaging.
+- Secure test/shell execution
+  - When adding integration tests that call child_process.execSync or run shell commands, run them in an isolated temporary directory and avoid interpolating user-controlled strings into commands.
+- Harden CI and developer environments
+  - Enforce use of Node >= required version and apply process isolation for test runs (containerized CI runners).
+  - Use least‑privilege runners and ephemeral workspaces for packaging steps that run third‑party code.
+
+Summary
+- No immediate code-level vulnerabilities (e.g., injection/eval) were found in src files. The dominant risk is supply‑chain (devDependencies and any lifecycle scripts or optional plugins that run during build/test). With established ADRs about auditing and registry mirrors, the project is aware of these risks; follow the recommendations above (lockfiles, audits, script review, not committing dist) to reduce residual risk.
+
+## VERSION CONTROL ASSESSMENT (30% ± 10% COMPLETE)
+
+- The repository is partially well-managed but not fully clean or synchronized for a publishable state. There is one unstaged/uncommitted change (modified .gitignore), so not all changes are committed. Because any uncommitted change reduces completeness heavily, this limits the score to the lower band.
+- Specific status observations:
+  - Uncommitted changes: Yes — git status shows a modified file: .gitignore (Changes not staged for commit). This alone forces the assessment into the low-complete range.
+  - Unpushed commits: None — branch is up to date with origin/main (no "ahead" commits).
+  - File tracking: Reasonable — tracked files counts are present and there are no untracked important files reported. Common build outputs (dist/, node_modules/, etc.) are listed in .gitignore and also appear in the "Git-ignored files" list, which is correct. The .voder metadata has been appropriately handled (excluded from the VC assessment).
+  - Clean working state: Not clean — the working tree has a modified file that needs to be staged/committed (and pushed if the commit is new). That prevents the repo from being considered publishable in this moment.
+- Recommendation (concise): Commit the .gitignore modification (or restore it if the modification was accidental) and re-run verification. After the working tree is fully clean (no modified/unstaged files) and all local commits are pushed, the repository would move into a high completeness range (>80%).

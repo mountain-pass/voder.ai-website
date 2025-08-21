@@ -1,69 +1,100 @@
-## PLAN (focused on the NEXT PRIORITY: create a small, safe vertical slice, commit it, and validate)
-
 ## NOW
-Run a single commit to record the current scaffold and documentation so we have a clean VCS baseline:
-- Command to run now (single, non-interactive):
-  git add . && git commit -m "chore(ui-tools): initial docs and package scaffold"
 
-Reason: version control must be clean before we add code and run installs; this unblocks reproducible work and preserves current ADRs/docs.
+Commit and push the modified .voder tracking files so the repository is in a clean, synchronized state.
 
-## NEXT
-After the commit above, implement a minimal vertical slice that makes the package runnable and testable (PostCSS factory + test). Perform these steps in order (all non-interactive POSIX commands):
+Rationale: the assessment’s NEXT PRIORITY requires a clean VCS state before implementing the vertical slice. Do this as a single atomic action now (stage the modified .voder files, commit with a clear message, and push the branch to origin).
 
-1. Ensure prepare script won't execute arbitrary external code during npm install:
-   - Check for the referenced prepare script and, if missing, safely replace it with a no-op (non-interactive):
-     node -e "const fs=require('fs'); if(!fs.existsSync('../../setup-package-docs.js')){const p=JSON.parse(fs.readFileSync('package.json','utf8')); p.scripts = p.scripts||{}; p.scripts.prepare = 'echo \"prepare skipped\"'; fs.writeFileSync('package.json', JSON.stringify(p,null,2)); console.error('prepare replaced with no-op');} else console.error('prepare exists, leaving unchanged');"
+Suggested command to run locally (POSIX, non-interactive):
+git add .voder && git commit -m "chore(ui-tools): update voder tracking files" && git push
 
-2. Create source files for the vertical slice:
-   - mkdir -p src/build tests/build
-   - Create src/build/postcss.ts (implement createPostCSSConfig as described in the guide).
-   - Create src/index.ts that exports createPostCSSConfig.
-   - Create tests/build/postcss.test.ts — Vitest test that imports createPostCSSConfig and asserts it returns an object containing autoprefixer in plugins or an expected structure.
-
-   (Use your preferred non-interactive file creation method, e.g., cat > src/build/postcss.ts <<'EOF' ... EOF)
-
-3. Add a minimal tsconfig.json covering src/ and tests/:
-   - Create tsconfig.json with strict mode, module ESNext, target ES2022 and include src and tests and prettier.config.ts if present.
-
-4. Update package.json scripts to support type-check and tests:
-   - Add/update scripts:
-     - "type-check": "tsc --noEmit"
-     - "test": "vitest run"
-     - "test:watch": "vitest"
-     - "build": "tsc -p tsconfig.json"
-   - (Modify package.json in-place via a small node script or editor; non-interactive example: node -e "...read/modify/write package.json...")
-
-5. Install minimal devDependencies required for this vertical slice (non-interactive):
-   - npm install --no-audit --no-fund --save-dev typescript vitest @types/node postcss autoprefixer @testing-library/dom jest-axe
-   - (Keep package-lock.json committed for reproducibility after install.)
-
-6. Run local validation (console-first):
-   - npm run type-check
-   - npm test
-
-7. Commit the vertical-slice implementation and lockfile:
-   - git add src/ tests/ tsconfig.json package.json package-lock.json
-   - git commit -m "feat(ui-tools): add minimal PostCSS factory + tests; add tsconfig and test scripts"
-
-8. Iterate to fix any failing tests or type errors until the vitest run and type-check succeed. Capture all output to console (history file will record automatically).
-
-Rationale: this is the smallest, useful feature that validates the build/test pipeline, demonstrates working code + tests, and forms a pattern for incremental additions.
-
-## LATER
-Once the vertical slice is committed and tests pass, continue expanding the package in small increments (each increment: implement + test + commit):
-
-- Implement createViteLibraryConfig (src/build/vite-library.ts) with tests (tests/build/vite-library.test.ts).
-- Implement testing utilities (src/testing/*): createVitestJsdomConfig, helpers, accessibility, setup; add corresponding tests and DOM environment tests.
-- Implement linting config factories (src/linting/*) and tests validating structure.
-- Add package-structure and export-equivalence tests (tests/package-structure.test.ts, tests/export-equivalence.test.ts) and, if needed, a small dist build to verify exports per the Universal Guide.
-- Restore or adopt a safe prepare script if required (and document its behavior); re-enable the original prepare only after reviewing its code.
-- Add standardized scripts per the Universal Guide: clean, lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify, dev, test:ci; and install corresponding devDependencies (eslint, prettier, markdownlint-cli2, etc.) accompanied by ADRs for any new dependencies.
-- Add README.md (consumer-facing) using the provided README template; run markdown linting and include it in CI/verify.
-- Run npm audit and address high/critical findings; add automated SCA to verify pipeline and add the engines field ("node": ">=22.6.0") if TypeScript-config-as-code patterns are used.
-- Add ADRs for any new direct dependencies (per governance), and add automated tests for version alignment (e.g., vitest vs @vitest/coverage-v8) if/when those dependencies are added.
-
-Ordering principle: always make one small, testable change, run the test/type-check/build cycle, commit the change, then proceed.
+(If you prefer not to run commands right now, perform the equivalent in your environment — the single action is: commit and push the .voder/* modifications to origin/main.)
 
 ---
 
-If you want, I can now generate the exact minimal file contents (src/build/postcss.ts, src/index.ts, tests/build/postcss.test.ts, tsconfig.json) and the node snippets to patch package.json scripts so you can apply the NEXT steps non-interactively. Which would you like me to prepare next?
+## NEXT
+
+After the NOW action completes successfully, implement the minimal safe vertical slice (PostCSS factory + test + TS config + scripts + dev toolchain) and validate it end-to-end. Execute the following steps in order, each as a small iteration (make one change → validate → commit → push):
+
+1) Create source + test directories and files
+- mkdir -p src/build tests/build
+
+2) Add PostCSS factory source
+- src/build/postcss.ts as described in the vertical-slice plan (createPostCSSConfig using autoprefixer).
+
+3) Add a minimal public export barrel
+- src/index.ts exporting createPostCSSConfig and type.
+
+4) Add a small Vitest unit test
+- tests/build/postcss.test.ts that imports the factory and asserts that cfg.plugins is an array and contains autoprefixer (the test shown in the previous plan is appropriate).
+
+5) Add a minimal tsconfig.json
+- Include src and tests and enable declaration generation and strict mode (use the tsconfig content from the previous plan).
+
+6) Update package.json scripts (type-check, test, test:watch, build)
+- Add "type-check": "tsc --noEmit", "test": "vitest run", "test:watch": "vitest", "build": "tsc -p tsconfig.json".
+
+7) Install minimal devDependencies (non-interactive)
+- npm install --no-audit --no-fund --save-dev typescript vitest @types/node postcss autoprefixer @testing-library/dom jest-axe
+
+8) Run local validation (console-first)
+- npm run type-check
+- npm test
+- If either fails, fix the smallest failing issue in-source, re-run the two commands, and repeat until both succeed.
+
+9) Commit and push the vertical slice
+- Stage committed files: src/, tests/, tsconfig.json, package.json, package-lock.json
+- Commit message: "feat(ui-tools): add minimal PostCSS factory + tests; add tsconfig and test scripts"
+- Push to origin/main
+
+Notes and constraints for NEXT:
+- Do each change in small commits so each validation step is atomic and reversible.
+- Do not modify files under .voder/ or prompts/.
+- All commands must be non-interactive and POSIX-compatible.
+- Keep console output visible: record and review type-check and test outputs before committing.
+- If a new direct dependency is introduced beyond the minimal set, note it for an ADR (per governance) and add the ADR when committing package.json changes.
+
+---
+
+## LATER
+
+Once the vertical slice is green and pushed, continue incrementally (each change: implement → validate → commit → push). Prioritized sequence:
+
+1) Implement createViteLibraryConfig
+- Add src/build/vite-library.ts per the guide.
+- Add tests tests/build/vite-library.test.ts that assert formats ['es'] and css.postcss exists.
+- Validate type-check and tests, commit, push.
+
+2) Implement core testing utilities (jsdom)
+- Add src/testing/vitest-jsdom.ts, src/testing/helpers.ts, src/testing/accessibility.ts, src/testing/setup.ts (start small; e.g., implement setup + basic helpers and tests).
+- Add corresponding unit tests and validate.
+
+3) Implement linting configuration factories and tests
+- Add src/linting/html.ts, src/linting/css.ts, src/linting/accessibility.ts and unit tests validating returned shapes.
+
+4) Add standard package scripts & quality tooling (incrementally)
+- Add clean, lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify, dev, test:ci to package.json.
+- Incrementally install eslint, prettier, markdownlint-cli2, and other tooling as devDependencies. For each new direct dependency, create an ADR and include it with the package.json change.
+
+5) Add README.md (consumer-facing) and CHANGELOG.md (use template)
+- Ensure README is self-contained (no internal paths) and includes the security posture. Run markdown linting (lint:md) and fix issues.
+
+6) Add package-structure and export-equivalence tests
+- Implement tests to verify package.json exports point to dist/ artifacts. If required to validate these tests, add a minimal build step that produces dist/ files in a gitignored way.
+
+7) Supply-chain & engines
+- Add "engines": { "node": ">=22.6.0" } to package.json (per ADR) when TS config exports are added.
+- Run `npm audit` and remediate high/critical issues. Integrate SCA into the verify pipeline.
+
+8) Revisit prepare script safely
+- After performing an audit of ../../setup-package-docs.js (or implementing a local safe alternative), re-enable prepare behavior or keep it intentionally skipped with documentation.
+
+9) Expand test coverage and CI-style checks
+- Add package-installation integration tests (temp package install) and export integration tests as described.
+- Work toward the coverage thresholds and other success criteria defined in the Universal Guide.
+
+10) Ongoing governance
+- For every new direct dependency added beyond the minimal dev set, author an ADR documenting rationale and include it in the same commit as the package.json change.
+
+---
+
+If you want, I can now produce the exact file contents and POSIX commands for the NEXT steps (create files, package.json edits, and npm install commands) so you can run them non-interactively. Which step should I prepare the concrete file+command artifacts for next — NOW (commit .voder files) or the first NEXT step (create src/build/postcss.ts and test)?

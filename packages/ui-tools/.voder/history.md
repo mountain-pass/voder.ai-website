@@ -1,133 +1,61 @@
+History so far
 
+- Created/updated repository ignore files with a single POSIX command run from the project root:
+  - .gitignore added rules to ignore:
+    - Node/build outputs and caches: node_modules/, dist/, build/, .cache/, .vite/, .nyc_output/, *.tsbuildinfo
+    - Temporary/output/log files and dirs: *.log, *.txt, *.out, *.tmp, logs/, temp/, tmp/, artifacts/, diagnostics/
+    - Tool/editor artifacts: .eslintcache, .vscode/, .idea/, *.suo, *.user, *.swp
+    - OS artifacts: Thumbs.db, .DS_Store
+    - Secrets/local environment: .env
+    - Some build/test variants: dist-*/, coverage-*/
+    - Intentionally did not ignore package.json or lockfiles (package-lock.json, yarn.lock)
+  - .voderignore created to expose specific build artifacts to the LLM inspector via negations:
+    - !dist/
+    - !coverage/lcov-report/
+    - !build/types/
+    - Intentionally did not negate large runtime dirs like node_modules/
+  - The command completed successfully and echoed the created file contents.
+  - A note was included that if sensitive files (e.g., .env) are already tracked, they should be removed from the git index before committing.
 
-**Most recently we've executed the following fallback action (due to request too large):**
+- Most recent action: recorded the current scaffold and documentation in a single non-interactive commit by running:
+  git add . && git commit -m "chore(ui-tools): initial docs and package scaffold"
+  - Result: commit completed on branch main (5234902)
+  - Summary: 24 files changed, 3,331 insertions(+)
+  - Files created in the commit (paths shown as created):
+    - packages/ui-tools/.gitignore
+    - packages/ui-tools/.voder/file-plan.md
+    - packages/ui-tools/.voder/history.md
+    - packages/ui-tools/.voder/implementation-progress.md
+    - packages/ui-tools/.voder/last-action.md
+    - packages/ui-tools/.voder/plan.md
+    - packages/ui-tools/.voder/progress-chart.png
+    - packages/ui-tools/.voder/progress-log-areas.csv
+    - packages/ui-tools/.voder/progress-log.csv
+    - packages/ui-tools/.voderignore
+    - packages/ui-tools/docs/decisions/0001-ui-tools-css-preprocessing.md
+    - packages/ui-tools/docs/decisions/README.md
+    - packages/ui-tools/docs/decisions/inherited-0001-use-standard-development-tools-as-devdependencies.md (symlink)
+    - packages/ui-tools/docs/decisions/inherited-0002-require-peer-dependencies-for-consumer-tools.md (symlink)
+    - packages/ui-tools/docs/decisions/inherited-0003-adopt-eslint-and-prettier-for-code-quality.md (symlink)
+    - packages/ui-tools/docs/decisions/inherited-0004-use-typescript-for-prettier-config.md (symlink)
+    - packages/ui-tools/docs/decisions/inherited-0005-require-exact-version-alignment-for-vitest-packages.md (symlink)
+    - packages/ui-tools/docs/decisions/inherited-0006-select-markdownlint-cli2-for-markdown-linting.md (symlink)
+    - packages/ui-tools/docs/decisions/inherited-0007-supply-chain-audit-and-registry-mirror-policy.md (symlink)
+    - packages/ui-tools/docs/libraries/usage/voder-dev-config.md (symlink)
+    - packages/ui-tools/package-lock.json
+    - packages/ui-tools/package.json
+    - packages/ui-tools/prompts/development-ui-tools.md (symlink)
+    - packages/ui-tools/prompts/universal-guide.md (symlink)
+
+**Most recently we've executed the following action:**
 
 ---
-Action: Create or update the repository .gitignore and .voderignore at the repo root with the specified patterns.
-
-Goal: Exclude generated/large/temp files from VCS while allowing LLM inspection of selected build artifacts.
-
-Run this single POSIX command from the project root to create/update both files in one step (non‑interactive):
-
-sh -lc 'cat > .gitignore <<'\''GIT'\'' 
-# Node / build outputs / caches
-node_modules/
-dist/
-build/
-coverage/
-.cache/
-.vite/
-.nyc_output/
-*.tsbuildinfo
-
-# Temporary / output / logs (forbidden in repo)
-*.log
-*.txt
-*.out
-*.tmp
-*.dump
-logs/
-temp/
-tmp/
-diagnostics/
-artifacts/
-
-# Tool artifacts & editors/IDE
-.eslintcache
-.DS_Store
-.vscode/
-.idea/
-*.suo
-*.user
-*.swp
-
-# OS / platform artifacts
-Thumbs.db
-.DS_Store
-
-# Secrets / local environment
-.env
-
-# Build/test specific alternatives
-dist-*/
-coverage-*/
-
-# Keep package.json and lockfiles tracked (do NOT ignore)
-# (Intentionally not ignoring package-lock.json, yarn.lock, package.json)
-GIT
-cat > .voderignore <<'\''VOD'\'' 
-# Negations to make specific gitignored build outputs visible to LLM agents
-!dist/
-!coverage/lcov-report/
-!build/types/
-
-# Keep this file minimal; do NOT negate node_modules/ or other large runtime dirs.
-VOD'
-
-After running that command, verify:
-- .gitignore and .voderignore exist at ./ (project root)
-- package.json and package-lock.json are NOT listed in .gitignore
-- .env is listed in .gitignore and should not be committed
-
-(If any sensitive files like .env are accidentally already tracked, remove them from the index with a follow-up git command before committing.)
+node -e "const fs = require('fs'); const pPath = 'package.json'; const pkg = JSON.parse(fs.readFileSync(pPath,'utf8')); if(!fs.existsSync('../../setup-package-docs.js')) { pkg.scripts = pkg.scripts || {}; pkg.scripts.prepare = 'echo \"prepare skipped\"'; fs.writeFileSync(pPath, JSON.stringify(pkg, null, 2)); console.error('prepare replaced with no-op'); } else { console.error('prepare exists, leaving unchanged'); }"
 ---
 
 **This was the result:**
 ---
-`bash -lc cat > .gitignore <<'GIT'
-# Node / build outputs / caches
-node_modules/
-dist/
-build/
-coverage/
-.cache/
-.vite/
-.nyc_output/
-*.tsbuildinfo
-
-# Temporary / output / logs (forbidden in repo)
-*.log
-*.txt
-*.out
-*.tmp
-*.dump
-logs/
-temp/
-tmp/
-diagnostics/
-artifacts/
-
-# Tool artifacts & editors/IDE
-.eslintcache
-.DS_Store
-.vscode/
-.idea/
-*.suo
-*.user
-*.swp
-
-# OS / platform artifacts
-Thumbs.db
-.DS_Store
-
-# Secrets / local environment
-.env
-
-# Build/test specific alternatives
-dist-*/
-coverage-*/
-
-# Keep package.json and lockfiles tracked (do NOT ignore)
-# (Intentionally not ignoring package-lock.json, yarn.lock, package.json)
-GIT
-cat > .voderignore <<'VOD'
-# Negations to make specific gitignored build outputs visible to LLM agents
-!dist/
-!coverage/lcov-report/
-!build/types/
-
-# Keep this file minimal; do NOT negate node_modules/ or other large runtime dirs.
-VOD` completed.
+`node -e const fs = require('fs'); const pPath = 'package.json'; const pkg = JSON.parse(fs.readFileSync(pPath,'utf8')); if(!fs.existsSync('../../setup-package-docs.js')) { pkg.scripts = pkg.scripts || {}; pkg.scripts.prepare = 'echo "prepare skipped"'; fs.writeFileSync(pPath, JSON.stringify(pkg, null, 2)); console.error('prepare replaced with no-op'); } else { console.error('prepare exists, leaving unchanged'); }` completed.
 Output:
 
 ---

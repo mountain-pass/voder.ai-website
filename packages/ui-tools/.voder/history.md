@@ -1,42 +1,61 @@
 Summary of work completed so far
 
-- Added a comprehensive .gitignore to exclude Node build outputs/caches, temp/log files, editor/tool and OS artifacts, secrets (.env), and build/test variants while keeping package.json and lockfiles tracked.
+- Repository ignore files
+  - Added a comprehensive .gitignore for Node build outputs/caches, temp/log files, editor/tool and OS artifacts, secrets (.env), and build/test variants.
+  - Added .voderignore to keep large directories ignored while exposing selected artifacts to the LLM inspector (!dist/, !coverage/lcov-report/, !build/types/).
 
-- Created .voderignore that exposes specific artifacts to the LLM inspector (!dist/, !coverage/lcov-report/, !build/types/) and keeps large dirs (e.g., node_modules/) ignored; the file was echoed into the repo.
+- Initial scaffold and metadata
+  - Created the initial scaffold commit on main (commit 5234902) with package scaffolding, .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs), docs/decisions (including symlinked decision docs), symlinked prompts/docs, and packages/ui-tools/package.json + package-lock.json. (24 files changed, ~3,331 insertions.)
 
-- Made the initial scaffold commit on main (commit 5234902): added package scaffolding, many .voder metadata files (file-plan.md, history.md, implementation-progress.md, last-action.md, plan.md, progress-chart.png, progress logs, .voderignore), docs/decisions (including symlinked decision docs), symlinked prompts/docs, and packages/ui-tools/package.json and package-lock.json (24 files changed, ~3,331 insertions).
+- package.json / scripts edits
+  - Multiple commits adjusted package.json scripts, including toggling package.scripts.prepare and later restoring standard dev/test scripts while preserving prepare and voder fields. Notable commit: "chore(ui-tools): restore dev/test scripts" (6278399).
 
-- Ran non-interactive Node one-liners to update package.json in-place in multiple steps, e.g., setting package.scripts.prepare to a no-op when ../../setup-package-docs.js did not exist and later replacing the root "scripts" section with standard type-check/build/test/clean scripts while preserving prepare and voder fields.
+- .voder metadata lifecycle and stash workflows
+  - Numerous .voder metadata commits and updates with extensive stash activity: stashed/restored local .voder changes, created filtered stashes for non-.voder changes, resolved pathspec errors restoring .voder metadata, and used git ls-files + git restore to idempotently restore tracked .voder paths.
+  - Persisted and pushed .voder metadata in commit 1802445.
+  - Large .voder update in commit da44748 (18 files changed, 853 insertions, 1,219 deletions); deleted some prompt files and made setup-package-docs.js executable.
 
-- Committed and pushed .voder tracking updates (example commit c7fe9bb) and recorded multiple additional .voder metadata commits (examples: ee49965, 76f67ed, abc228f).
+- Source additions and public exports
+  - Added packages/ui-tools/src/build/postcss.ts implementing PostCSSConfigOptions and createPostCSSConfig (ESM autoprefixer import, JSDoc, default browsers list).
+  - Added public export barrel at packages/ui-tools/src/index.ts exporting createPostCSSConfig and PostCSSConfigOptions (commit 8c4e390).
 
-- Implemented packages/ui-tools/src/build/postcss.ts: added PostCSSConfigOptions interface and createPostCSSConfig function with ESM autoprefixer import, JSDoc, default browsers list, and plugins array; the file was written to the repo.
+- TypeScript config and documentation
+  - Added packages/ui-tools/tsconfig.json (ES2022/ESNext target, NodeNext resolution, strict settings, declaration output) (commit 4e74df7).
+  - Committed an ADR documenting devDependency decisions at packages/ui-tools/docs/decisions/0002-add-dev-deps-for-ui-tools.md (accepted, 2025-08-21) in commit afbbe30.
 
-- Added a minimal public export barrel at packages/ui-tools/src/index.ts exporting createPostCSSConfig and PostCSSConfigOptions from './build/postcss.js' (commit 8c4e390).
+- Repo state, pushes, and notable commits
+  - Observed various working-tree states with unstaged/modified files, deleted/modified prompt files, and untracked files at different times.
+  - Repo was ahead of origin/main by two commits at one point; used stash/restore workflows and then persisted/pushed .voder metadata and other changes.
+  - Finalized staged package metadata in commit 207ad8a ("chore(ui-tools): finalize staged package metadata") — 2 files changed, 2,352 insertions, 272 deletions.
+  - Executed a successful git push to origin/main after staging and committing the package metadata.
 
-- Performed numerous stash operations and manipulations around .voder metadata: stashed local .voder changes, restored/applied stashes, attempted add/commit, dropped stashes, and handled the repo being ahead of origin/main by two commits at one point.
+- Developer toolchain installs
+  - Ran a non-interactive npm install adding devDependencies: typescript, vitest@3.2.4, @vitest/coverage-v8@3.2.4, @types/node, postcss, autoprefixer, @testing-library/dom, jest-axe, markdownlint-cli2. Install added 152 packages and updated 2 packages.
+  - Later ran npm install --no-audit --no-fund --save-dev jsdom@^26.0.0 (completed, up to date).
 
-- Captured repo status showing unstaged modified files, deleted and modified prompt files, modified setup files, and several untracked files (including packages/services docs and package-lock.json).
+- Test creation and git-ignore conflict
+  - Created packages/ui-tools/tests/build/postcss.test.ts with a Vitest unit test importing createPostCSSConfig and asserting the returned config includes plugins.
+  - Initial git add/commit failed because the tests/build path was ignored by .gitignore; the test was later force-added and committed.
 
-- Created a filtered stash to save non-.voder changes (saving all changed files except .voder paths), encountered a pathspec error when restoring .voder metadata for packages/ui-tools/.voder/, and then performed an idempotent restore of tracked .voder paths via git ls-files and git restore.
+- Final add/commit (force-add)
+  - Force-added the ignored test and committed: commit 1d761f9 "test(ui-tools): add PostCSS factory unit test" — 1 file changed, 11 insertions; create mode 100644 packages/ui-tools/tests/build/postcss.test.ts.
 
-- Persisted and pushed .voder metadata in commit 1802445 (added/updated .voder files, pushed to origin/main).
-
-- Added packages/ui-tools/tsconfig.json via a POSIX heredoc with compilerOptions targeting ES2022/ESNext, NodeNext resolution, strict settings, declaration output to dist, and includes ["src","tests","prettier.config.ts"]; staged and committed in commit 4e74df7 ("chore(ui-tools): add tsconfig for build and tests").
-
-- Created an ADR documenting devDependency decisions at packages/ui-tools/docs/decisions/0002-add-dev-deps-for-ui-tools.md (status: accepted, date: 2025-08-21); added, committed and pushed in commit afbbe30 ("chore(ui-tools): add ADR for devDependencies").
-
-- Most recent file change and commit: staged and committed the modified package.json with the message "chore(ui-tools): restore dev/test scripts" (commit 6278399). Git output: "[main 6278399] chore(ui-tools): restore dev/test scripts — 1 file changed, 7 insertions(+), 2 deletions(-)".
+- Most recent action
+  - Staged dependency manifest and lockfile from the repository root with: git add -- package.json package-lock.json — command completed successfully.
 
 **Most recently we've executed the following action:**
 
 ---
-git push origin main
+Run a git commit to record the staged package metadata changes (package.json and package-lock.json):
+
+git commit -m "chore(ui-tools): record dependency/lockfile changes" -- package.json package-lock.json
 ---
 
 **This was the result:**
 ---
-`git push origin main` completed.
+`git commit -m chore(ui-tools): record dependency/lockfile changes -- package.json package-lock.json` completed.
 Output:
+[main 3943c9d] chore(ui-tools): record dependency/lockfile changes
+ 2 files changed, 49 insertions(+), 44 deletions(-)
 
 ---

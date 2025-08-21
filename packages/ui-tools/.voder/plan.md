@@ -1,84 +1,66 @@
-## PLAN (now / next / later)
-
 ## NOW
-Commit and push the modified .voder metadata files to the main branch with a single atomic commit:
-- Action: Commit the currently modified files under .voder/ with message "chore: persist .voder metadata updates" and push to origin/main.
 
-(Goal: restore a clean, committed repository state for reliable verification. Do not modify any other files in this step.)
+Stage all legitimate changes while keeping package-internal .voder metadata unstaged, commit, and push the result:
+- git add -A && git reset -- 'packages/ui-tools/.voder/*' || true && git commit -m "chore: commit source & documentation changes (exclude .voder metadata)" || true && git push origin main || true
 
 ## NEXT
-After the .voder metadata commit is pushed, perform the following sequence (follow the conditional flow exactly; each remediation must be a single focused change/commit/push and then re-run the canonical verification):
 
-1. Run the canonical verification once (capture console output):
-   - Command: npm run type-check && npm run build && npm test
+After the NOW command completes, run these non-interactive, idempotent verification steps (execute each line as a single shell command). Follow them in order and stop only to make focused source/test fixes if the verification pipeline fails — never modify files under any .voder/ directory.
 
-2. If the canonical verification PASSES:
-   - a) Confirm working tree is clean:
-       - Command: git status --porcelain
-       - If any non-.voder changes appear, stage & commit them as single logical commits following the atomic rule.
-   - b) Ensure build outputs are not tracked:
-       - Check: git ls-files | grep '^dist/' || true
-       - If any dist/ files are tracked, perform exactly one atomic remediation: git rm --cached -r dist/ && git commit -m "chore: remove tracked build artifacts (dist/)" && git push origin main, then re-run the canonical verification.
+1) If any dist/ files are tracked, untrack them, commit the removal, and push:
+- if git ls-files | grep -q '^dist/'; then git rm --cached -r dist/ && git commit -m "chore: remove tracked build artifacts (dist/)" && git push origin main; fi
 
-   - After verification and untracked dist/ are confirmed, proceed to LATER.
+2) Ensure package-internal .voder files remain unstaged (safety guard):
+- git restore --staged 'packages/ui-tools/.voder/*' || true
 
-3. If the canonical verification FAILS:
-   - a) Run diagnostics (non-interactive, capture console output):
-       - git ls-files | grep '^dist/' || true
-       - tsc -p tsconfig.json --listEmittedFiles || true
-       - npm run build
-   - b) Based on diagnostics, choose exactly one focused remediation (one logical change → one commit → push → re-run canonical verification). Only one remediation is allowed per failure cycle. Pick the remediation that matches the diagnostic result:
-       - If package-structure tests fail because dist files are missing: run npm run build, then if that produces legitimate files that must be tracked (rare), commit only the necessary build-related repository changes and push; otherwise re-run verification.
-       - If package-structure tests fail because dist files are tracked: run git rm --cached -r dist/ && git commit -m "chore: remove tracked build artifacts (dist/)" && git push origin main.
-       - If TypeScript errors indicate outDir collisions or TS5055: update tsconfig.json.outDir to a non-overlapping path (single edit), commit that one change with a clear message, push, then re-run verification.
-       - If tests fail due to ESM import file-extension errors: fix the single failing import to use the correct .js extension (single file change), commit, push, re-run verification.
-       - If tests fail with "Cannot find module '<pkg>'": install only that single missing devDependency non-interactively (npm install --no-audit --no-fund --save-dev <pkg>), create an ADR describing the dependency (if this is a new direct dependency), commit package.json/package-lock.json and the ADR together, push, then re-run verification.
+3) Confirm the working tree is clean (porcelain output for automation/debugging):
+- git status --porcelain
 
-   - c) After the single remediation and re-run, repeat the diagnostics/remediation loop only if verification still fails. Always make one focused change per loop.
+4) Run the canonical verification pipeline (type-check → build → tests):
+- npm run type-check && npm run build && npm test
 
-Operational rules for NEXT
-- Do not modify files under .voder except to commit the tracked changes already made (.voder files may be committed only in the NOW step or if previously staged).
-- Keep each remediation atomic: exactly one logical change, one commit, one push, then re-run the canonical verification.
-- All console output from commands must be captured to the console (history persists to .voder/history.md).
-- All commands must be non-interactive and run in the current working directory.
+If step 4 fails:
+- Make one small focused fix that touches only source or tests (do NOT edit any files under any .voder/ directory), run the NEXT sequence again beginning at step 1, and repeat until the verification pipeline passes.
 
 ## LATER
-Once the repository is clean and the canonical verification runs reliably, advance implementation incrementally (one logical change + tests + verification per commit):
 
-1. Implement core missing modules (one module + tests per commit):
-   - Commit A: src/build/vite-library.ts + tests/build/vite-library.test.ts — implement createViteLibraryConfig (ESM-only formats + postcss injection), run canonical verification.
-   - Commit B: src/testing/vitest-jsdom.ts + tests/testing/vitest-jsdom.test.ts — implement createVitestJsdomConfig, run verification.
-   - Commit C: src/testing/setup.ts + tests for setup utilities — implement setupJsdomTestEnvironment, run verification.
-   - Commit D..: src/testing/helpers.ts and src/testing/accessibility.ts + unit tests — implement renderComponent, simulateClick, expectAccessible, getAccessibilityViolations, accessibilityTests; run verification after each.
+Once the repository is clean and the canonical verification pipeline passes reliably, proceed with small, fully-tested vertical slices. After each slice, run the verification pipeline and push only when green.
 
-2. Add mandated scripts and documentation (one logical addition per commit):
-   - Add lint, lint:fix, format, format:check scripts to package.json (each script can be its own commit).
-   - Add lint:md and lint:md:fix and required prepare/voder scripts if not yet present.
-   - Add a self-contained README.md (draft) at package root (single commit).
-   - Add CHANGELOG.md stub (single commit).
-   - Generate or add .markdownlint.json via the prescribed getConfig() pattern (single commit).
+1) Add pretest build guard
+- Add "pretest": "npm run build" to package.json scripts; run npm run type-check && npm run build && npm test and commit.
 
-3. Implement dual-export strategy and integration tests incrementally:
-   - Add dedicated exports in package.json (one export path per commit, e.g., "./testing", "./postcss", "./linting"), update src/index.ts accordingly, add tests verifying export-equivalence and package-exports behavior after each export addition, run verification.
+2) Implement Vite library factory (first feature slice)
+- Add src/build/vite-library.ts exporting createViteLibraryConfig that integrates createPostCSSConfig.
+- Add tests/tests/build/vite-library.test.ts asserting formats === ['es'], lib.name set, and css.postcss defined.
+- Run verification; commit & push when successful.
 
-4. Expand test coverage iteratively:
-   - Add package-installation integration test (tests/package-installation.test.ts) after dist exports and lockfile are stable.
-   - Add error-condition and public-API tests to reach coverage goals (iterate until coverage threshold met).
-   - Add automated tests to assert dependency/version alignment where ADRs require it (e.g., vitest vs @vitest/coverage-v8 alignment).
+3) Add PostCSS unit tests & verify emitted dist
+- Add tests/tests/build/postcss.test.ts verifying autoprefixer presence and default browsers.
+- Confirm tsc emits dist/src/build/postcss.js and .d.ts during build; run verification; commit & push.
 
-5. ADR & dependency governance:
-   - For any new direct dependency introduced during LATER work, author and commit an ADR in docs/decisions/ that documents the dependency change and rationale, and commit it together with package.json/package-lock.json changes.
+4) Implement jsdom testing utilities incrementally
+- Add src/testing/vitest-jsdom.ts + tests.
+- Add src/testing/helpers.ts + tests for renderComponent, simulateClick, waitForNextFrame.
+- Add src/testing/setup.ts and a test that initializes the jsdom setup.
+- Run verification after each small change; commit & push when green.
 
-6. Housekeeping:
-   - Remove any accidental tracked build outputs (if still present) in a single atomic commit (git rm --cached -r <paths>).
-   - Tighten types / small refactors (e.g., remove broad any in vite.config.ts) as separate, small commits with verification.
+5) Implement linting factories and markdown lint scripts
+- Add src/linting/{html,css,accessibility}.ts with unit tests.
+- Add generation of .markdownlint.json from @voder/dev-config and add "lint:md" / "lint:md:fix" scripts plus lint, lint:fix, format, format:check per the Universal Guide.
+- Run verification; commit & push.
 
-General constraints that apply throughout LATER
-- Each change must be small and atomic (one logical change per commit), include tests where applicable, and be validated by the canonical verification immediately after the commit.
-- Do not modify or create files under .voder except to commit previously staged/tracked changes from NOW.
-- Always produce console-first diagnostic output; do not create repository-visible temporary/log files.
-- Follow ADR rules: bundle ADRs with dependency changes.
+6) Expand exports and add package-level integration tests
+- After building corresponding dist artifacts, add dedicated export paths to package.json (e.g., "./testing": "./dist/testing/index.js") and update types as needed.
+- Add tests/export-equivalence.test.ts and tests/package-exports.test.ts verifying dedicated-path vs index imports and package.json export resolution.
+- Run the canonical verification pipeline; commit & push.
 
----
+7) Consumer docs & housekeeping
+- Add README.md (self-contained, UNLICENSED, quick-start, Node engine note, security posture) and CHANGELOG.md.
+- Reconcile dependency discrepancies (e.g., align jest-axe versions between peer/dev), and add "engines": { "node": ">=22.6.0" } to package.json if appropriate.
+- Re-run verification and commit & push.
 
-If you want, I can now produce the exact non-interactive commands for the NOW step (git add/commit/push) or proceed to run the canonical verification after you confirm the .voder commit has been made. Which would you like me to prepare next?
+REMINDERS / CONSTRAINTS
+- Never modify, commit, or remove files under any .voder/ directory.
+- All git commands must be non-interactive and scoped to the current repository.
+- Keep changes small and test-driven; run the verification pipeline after each change and only push when it succeeds.
+- If any step fails, fix only source/tests (never .voder), re-run NEXT from step 1, and continue iterating until green.

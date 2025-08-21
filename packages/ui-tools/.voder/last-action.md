@@ -1,19 +1,13 @@
 # Last Action Executed
 
-**Timestamp:** 2025-08-21T17:39:45.052Z
+**Timestamp:** 2025-08-21T18:25:09.657Z
 
 ## Plan
 
 ```
-<scratchpad>
-We need to provide exactly one actionable command: git push origin main.
-Must instruct to run from project root and explain goal: synchronize local main with remote.
-Do not include any other commands or steps.
-</scratchpad>
+Revert any working-tree edits to the package-internal .voder files so they match HEAD (no changes in working tree for packages/ui-tools/.voder/*):
 
-Run this from the project root to publish your local commits and synchronize with the remote branch:
-
-git push origin main
+git restore --source=HEAD 'packages/ui-tools/.voder/*' || true
 ```
 
 ## Action
@@ -23,11 +17,10 @@ git push origin main
 **Parameters:**
 ```json
 {
-  "command": "git",
+  "command": "bash",
   "parameters": [
-    "push",
-    "origin",
-    "main"
+    "-lc",
+    "git restore --source=HEAD 'packages/ui-tools/.voder/*' || true"
   ],
   "timeout": 60000
 }
@@ -36,7 +29,7 @@ git push origin main
 ## Handler Response
 
 ```
-`git push origin main` completed.
+`bash -lc git restore --source=HEAD 'packages/ui-tools/.voder/*' || true` completed.
 Output:
 
 ```

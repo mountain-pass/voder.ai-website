@@ -223,8 +223,8 @@ LLM agents operate as **solo developers** with **complete autonomy**:
 ```gitignore
 # Build outputs
 node_modules/
-dist/
-build/
+/dist/
+/build/
 coverage/
 
 # Tool artifacts  

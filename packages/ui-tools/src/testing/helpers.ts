@@ -16,29 +16,51 @@ export interface ComponentTestResult {
  * - Appends a container element (or uses provided one)
  * - Calls component.mount(container)
  * - Returns helpers to unmount and update the component
+ *
+ * Behavior:
+ * - Tracks whether the helper created/attached the container (createdByHelper)
+ * - Only removes the container on unmount if createdByHelper === true
+ * - Surface mount/unmount errors via console.error with component context
  */
 export function renderComponent(
   component: any,
   options: RenderComponentOptions = {}
 ): ComponentTestResult {
   const container = options.container || document.createElement('div');
+
+  // Track whether we created/attached the container so we don't remove
+  // caller-owned containers on unmount.
+  let createdByHelper = false;
   if (!options.container) {
     document.body.appendChild(container);
+    createdByHelper = true;
   } else {
-    // If a provided container isn't already in the document, append it
+    // If a provided container isn't already in the document, append it and mark createdByHelper
     if (!document.body.contains(container)) {
       document.body.appendChild(container);
+      createdByHelper = true;
     }
   }
 
-  // Call mount if available (may be sync)
+  // Call mount if available (may be sync or async). Surface errors to console.
   if (typeof component?.mount === 'function') {
-    // Allow mount to be sync or return a promise; don't await here to keep call-site simple
-    // Consumers/tests can await any async side-effects inside mount if needed
     try {
+      // Allow mount to be sync or return a promise; don't await here to keep call-site simple.
+      // Consumers/tests can await any async side-effects inside mount if needed.
       (component.mount as Function)(container);
-    } catch {
-      // swallow to keep behavior minimal and deterministic for tests that don't rely on mount throwing
+    } catch (err: unknown) {
+      // Console-first: surface the error with context for debugging and history capture.
+      try {
+        const compName = component?.constructor?.name ?? typeof component;
+        console.error('[voder/ui-tools] Error during component.mount', {
+          component: compName,
+          error: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined
+        });
+      } catch {
+        // If logging fails for any reason, fall back to a minimal message.
+        console.error('[voder/ui-tools] Error during component.mount (logging failed)');
+      }
     }
   }
 
@@ -51,9 +73,21 @@ export function renderComponent(
           // Support unmount returning a promise or being sync
           await (component.unmount as Function)();
         }
+      } catch (err: unknown) {
+        // Surface unmount errors to console with context
+        try {
+          const compName = component?.constructor?.name ?? typeof component;
+          console.error('[voder/ui-tools] Error during component.unmount', {
+            component: compName,
+            error: err instanceof Error ? err.message : String(err),
+            stack: err instanceof Error ? err.stack : undefined
+          });
+        } catch {
+          console.error('[voder/ui-tools] Error during component.unmount (logging failed)');
+        }
       } finally {
-        // Remove container if it is still in the document and we created/attached it
-        if (container.parentNode) {
+        // Remove container only if this helper created/attached it.
+        if (createdByHelper && container.parentNode) {
           container.parentNode.removeChild(container);
         }
       }

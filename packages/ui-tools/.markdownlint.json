@@ -1,0 +1,11 @@
+{
+  "MD001": {
+    "level": 2
+  },
+  "MD040": true,
+  "MD033": {
+    "allowed_elements": []
+  },
+  "MD013": false,
+  "MD034": true
+}

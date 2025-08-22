@@ -1,71 +1,37 @@
 ## NOW
-Run a single commit to record the pending test edit:
-- git commit -am "test: remove .ts extension from imports in helpers test"
+Run the non-interactive commit that records the ESLint autofix changes:
+git add -A && git commit -m "fix(lint): apply eslint fixes to src and tests" || true
 
 ## NEXT
-1. Push the committed change and run the full verification pipeline to observe the first failing error:
+1. Install dev tooling reproducibly so lint/type/test commands are available:
+   - npm ci --silent --no-audit --no-fund
+
+2. Remove redundant local .eslintignore if present (non-interactive) and commit the removal:
+   - if [ -f .eslintignore ]; then git rm .eslintignore && git commit -m "chore(lint): consolidate ignores into eslint.config.js" || true; fi
+
+3. Run the full verification pipeline and capture console output for diagnosis:
+   - npm run verify
+   - If verify succeeds → continue to step 5.
+   - If verify fails due to ESLint parsing / project-scope errors (ESLint attempting type-check on files outside src/tests), update tsconfig.eslint.json to restrict ESLint scope:
+     - Edit tsconfig.eslint.json "include" to ["src","tests"] and "exclude" to ["dist","build","coverage","node_modules"]
+     - Then run the type-aware ESLint autofix using the restricted config and commit fixes:
+       - npx eslint "src/**" "tests/**" --ext .ts,.js --parser-options "project=./tsconfig.eslint.json" --fix || true
+       - git add -A && git commit -m "fix(lint): apply eslint fixes using tsconfig.eslint.json" || true
+     - Re-run: npm run verify
+
+4. If verify still fails, inspect the failing category:
+   - Lint errors: re-run ESLint with the above command, address remaining errors (types, parserOptions) and commit.
+   - Type-check errors: run npm run type-check, fix TypeScript errors in source/tests, commit fixes.
+   - Build/test failures: run npm run build and npm test separately to capture logs and fix root causes; commit fixes.
+
+5. Once `npm run verify` completes green locally, push the validated changes:
    - git push origin main
-   - npm run type-check && npm run build && npm test
-   - Carefully inspect console/stderr output (it will be captured in .voder/history.md) and identify the first failing error reported.
-
-2. Enter the single-file reactive loop for that first failure:
-   - If the first error is TS5097 for tests/testing/setup.test.ts (import path ends with .ts):
-     - Edit exactly one file: tests/testing/setup.test.ts — change the import from '../../src/testing/setup.ts' to '../../src/testing/setup'
-     - git add tests/testing/setup.test.ts
-     - git commit -m "test: remove .ts extension from imports in setup test"
-     - git push origin main
-     - npm run type-check && npm run build && npm test
-     - Re-inspect console/stderr and repeat the loop for the next first failure.
-   - Else if the first failing item is a test assertion about renderComponent lifecycle (container ownership / mount/unmount):
-     - Edit exactly one file: src/testing/helpers.ts to:
-       - Track whether the helper created/attached the container (createdByHelper boolean).
-       - Only append to document.body when the helper created the container.
-       - Only remove the container on unmount when createdByHelper is true.
-       - Replace silent catches around mount/unmount with console.error(...) so errors appear in stderr.
-     - git add src/testing/helpers.ts
-     - git commit -m "fix: renderComponent only removes created container and log mount/unmount errors"
-     - git push origin main
-     - npm run type-check && npm run build && npm test
-     - Re-inspect console/stderr and repeat the loop for the next first failure.
-   - Else for any other first failure (TypeScript compile error or failing test):
-     - Make one focused change to the single file that directly addresses the reported first failure.
-     - git add <file>
-     - git commit -m "<short, focused message>"
-     - git push origin main
-     - npm run type-check && npm run build && npm test
-     - Re-inspect console/stderr and repeat until the verification sequence completes without errors.
-
-Notes for NEXT:
-- Always inspect verification console output before choosing the next file to edit.
-- Make exactly one logical file change per commit.
-- Preserve console-first diagnostics (use console.error/console.log rather than creating repository files).
-- If a dependency change is required, include the ADR in docs/decisions/ bundled with the package.json change (prefer to avoid dependency edits unless essential).
 
 ## LATER
-Once the single-file reactive loop yields a consistently green verification run, proceed iteratively (one logical file change per commit), running the verification sequence after each change:
-
-1. Implement src/testing/vitest-jsdom.ts (createVitestJsdomConfig) and add tests validating jsdom environment and coverage thresholds.
-2. Implement src/testing/accessibility.ts (jest-axe helpers: expectAccessible, getAccessibilityViolations, accessibilityTests) and add tests exercising accessibility checks.
-3. Add linting factory modules and tests:
-   - src/linting/html.ts
-   - src/linting/css.ts
-   - src/linting/accessibility.ts
-4. Add example template files (one per commit):
-   - templates/vitest.config.ts
-   - templates/vite.config.ts
-   - templates/test-setup.jsdom.ts
-5. Incrementally add standardized package scripts (lint, lint:fix, format, format:check, lint:md, lint:md:fix, verify). If adding new devDependencies, include an ADR in docs/decisions/ bundled with the package.json change.
-6. Implement dual/dedicated exports in package.json (e.g., "./testing", "./prettier", "./eslint") and add export-equivalence and package-installation integration tests to validate consumer import paths.
-7. Increase test coverage toward the 90% target by adding tests for newly implemented modules and public API surfaces.
-8. Small quality/security improvements (each as separate commits):
-   - Add engines.node to package.json (Node >= 22.6.0) if desired (include ADR if considered a policy change).
-   - Validate/normalize consumer-provided postcssConfig inputs in createViteLibraryConfig.
-   - Replace remaining silent catches with console-first diagnostics.
-   - Add automated test that verifies vitest / @vitest/coverage-v8 version alignment per ADR.
-
-General constraints to observe throughout:
-- One logical file change per commit.
-- Run verification after every commit: npm run type-check && npm run build && npm test.
-- Do not modify .voder/ or prompts/.
-- Use only non-interactive POSIX-compatible commands.
-- Bundle ADR with package.json changes when adding dependencies.
+1. Add a unit test verifying the jsdom setup guard (tests/testing/setup-vitest-guard.test.ts) so the test-only patches run only under Vitest; run tests and commit.
+2. Implement a markdown-lint generator script:
+   - Create scripts/generate-markdownlint.ts (uses @voder/dev-config/linters/markdown.getConfig()) and a package.json script "generate:markdownlint": "node ./scripts/generate-markdownlint.js"
+   - Optionally integrate into prepare and ensure .markdownlint.json is generated consistently.
+3. Add CONTRIBUTING.md with Node version, quick-start, and `npm run verify` instructions; commit.
+4. Add an optional package-installation integration test (tests/installation/*) that packs the package and installs it into a temp consumer; make it opt-in or gated so it doesn't cause flakiness.
+5. After local validation, coordinate periodic dependency audits and record any required ADRs for pinned/critical devDependency changes (document in docs/decisions/).

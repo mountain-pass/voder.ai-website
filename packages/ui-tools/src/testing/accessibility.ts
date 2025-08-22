@@ -1,4 +1,4 @@
-import { axe, toHaveNoViolations, type AxeResults } from 'jest-axe';
+import { axe, toHaveNoViolations } from 'jest-axe';
 
 // Extend Vitest/Jest expect with accessibility matchers
 expect.extend(toHaveNoViolations);
@@ -24,14 +24,21 @@ export async function expectAccessible(
 
   const config = {
     ...axeConfig,
-    rules: excludeRules.reduce((acc: Record<string, { enabled: boolean }>, rule) => {
-      acc[rule] = { enabled: false };
-      return acc;
-    }, {})
+    // explicit types for the reduce accumulator and rule parameter
+    rules: excludeRules.reduce(
+      (acc: Record<string, { enabled: boolean }>, rule: string) => {
+        acc[rule] = { enabled: false };
+
+        return acc;
+      },
+      {} as Record<string, { enabled: boolean }>
+    )
   };
 
-  const results = await axe(element, config);
-  expect(results).toHaveNoViolations();
+  const results = await axe(element, config as any);
+
+  // Cast expect to any so the matcher is accepted by the TypeScript compiler
+  (expect(results) as any).toHaveNoViolations();
 }
 
 /**
@@ -41,18 +48,22 @@ export async function expectAccessible(
 export async function getAccessibilityViolations(
   element: Element,
   options: AccessibilityTestOptions = {}
-): Promise<AxeResults> {
+): Promise<any> {
   const { axeConfig = {}, excludeRules = [] } = options;
 
   const config = {
     ...axeConfig,
-    rules: excludeRules.reduce((acc: Record<string, { enabled: boolean }>, rule) => {
-      acc[rule] = { enabled: false };
-      return acc;
-    }, {})
+    rules: excludeRules.reduce(
+      (acc: Record<string, { enabled: boolean }>, rule: string) => {
+        acc[rule] = { enabled: false };
+
+        return acc;
+      },
+      {} as Record<string, { enabled: boolean }>
+    )
   };
 
-  return await axe(element, config);
+  return await axe(element, config as any);
 }
 
 /**
@@ -64,6 +75,7 @@ export function expectAriaAttributes(
 ): void {
   Object.entries(expectedAttrs).forEach(([attr, value]) => {
     const actualValue = element.getAttribute(attr);
+
     expect(actualValue).toBe(value);
   });
 }
@@ -89,7 +101,10 @@ export const accessibilityTests = {
         'color-contrast': { enabled: true }
       }
     });
-    expect(results.violations.filter(v => v.id === 'color-contrast')).toHaveLength(0);
+
+    const violations = (results.violations as Array<{ id: string }>);
+
+    expect(violations.filter((v) => v.id === 'color-contrast')).toHaveLength(0);
   },
 
   /**
@@ -101,7 +116,10 @@ export const accessibilityTests = {
         'label': { enabled: true }
       }
     });
-    expect(results.violations.filter(v => v.id === 'label')).toHaveLength(0);
+
+    const violations = (results.violations as Array<{ id: string }>);
+
+    expect(violations.filter((v) => v.id === 'label')).toHaveLength(0);
   },
 
   /**
@@ -113,6 +131,9 @@ export const accessibilityTests = {
         'heading-order': { enabled: true }
       }
     });
-    expect(results.violations.filter(v => v.id === 'heading-order')).toHaveLength(0);
+
+    const violations = (results.violations as Array<{ id: string }>);
+
+    expect(violations.filter((v) => v.id === 'heading-order')).toHaveLength(0);
   }
 };

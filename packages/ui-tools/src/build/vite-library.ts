@@ -1,5 +1,6 @@
-import { defineConfig, type UserConfig } from 'vite';
 import { resolve } from 'path';
+import { defineConfig, type UserConfig } from 'vite';
+
 import { createPostCSSConfig, type PostCSSConfigOptions } from './postcss.js';
 
 export interface ViteLibraryOptions {
@@ -44,7 +45,9 @@ export function createViteLibraryConfig(options: ViteLibraryOptions) {
   };
 
   const basePlugins = (basePostcss as any).plugins ?? [];
+
   const overridePlugins = (postcssConfig as any).plugins ?? [];
+
   mergedPostcss.plugins = [...basePlugins, ...overridePlugins];
 
   return defineConfig({

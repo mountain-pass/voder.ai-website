@@ -31,6 +31,7 @@ export function renderComponent(
   // Track whether we created/attached the container so we don't remove
   // caller-owned containers on unmount.
   let createdByHelper = false;
+
   if (!options.container) {
     document.body.appendChild(container);
     createdByHelper = true;
@@ -52,6 +53,7 @@ export function renderComponent(
       // Console-first: surface the error with context for debugging and history capture.
       try {
         const compName = component?.constructor?.name ?? typeof component;
+
         console.error('[voder/ui-tools] Error during component.mount', {
           component: compName,
           error: err instanceof Error ? err.message : String(err),
@@ -77,6 +79,7 @@ export function renderComponent(
         // Surface unmount errors to console with context
         try {
           const compName = component?.constructor?.name ?? typeof component;
+
           console.error('[voder/ui-tools] Error during component.unmount', {
             component: compName,
             error: err instanceof Error ? err.message : String(err),

@@ -289,6 +289,13 @@ export interface AccessibilityTestOptions {
 
 /**
  * Accessibility testing helper (jsdom/browser-only)
+ * 
+ * IMPORTANT: Color contrast testing is NOT supported in JSDOM environments.
+ * See: https://github.com/dequelabs/axe-core/issues/595
+ * 
+ * For color contrast testing, use:
+ * - Real browser environments (Playwright, Puppeteer, Cypress)
+ * - Exclude 'color-contrast' from JSDOM tests via excludeRules
  */
 export async function expectAccessible(
   element: Element,
@@ -311,6 +318,11 @@ export async function expectAccessible(
 /**
  * Check for specific accessibility violations
  * Now applies excludeRules (aligned with expectAccessible)
+ * 
+ * IMPORTANT: Color contrast violations cannot be detected in JSDOM.
+ * Results for 'color-contrast' rule will appear in the 'incomplete' array,
+ * not the 'violations' array, because axe-core cannot determine color
+ * contrast without browser rendering capabilities.
  */
 export async function getAccessibilityViolations(
   element: Element,
@@ -350,10 +362,24 @@ export function expectFocusable(element: Element): void {
 
 /**
  * Common accessibility test scenarios
+ * 
+ * NOTE: colorContrast test will NOT work in JSDOM environments.
+ * Use browser-based testing for color contrast validation.
  */
 export const accessibilityTests = {
   /**
    * Test for color contrast violations
+   * 
+   * ⚠️ WARNING: This test will NOT work in JSDOM environments.
+   * Color contrast testing requires actual browser rendering.
+   * 
+   * For JSDOM tests, exclude 'color-contrast' rule:
+   * await expectAccessible(element, { excludeRules: ['color-contrast'] });
+   * 
+   * For color contrast testing, use:
+   * - Playwright: Real browser automation
+   * - Cypress: Browser-based testing
+   * - Puppeteer: Headless Chrome testing
    */
   async colorContrast(element: Element): Promise<void> {
     const results = await axe(element, {
@@ -365,7 +391,7 @@ export const accessibilityTests = {
   },
 
   /**
-   * Test for missing form labels
+   * Test for missing form labels (works in JSDOM)
    */
   async formLabels(element: Element): Promise<void> {
     const results = await axe(element, {
@@ -377,7 +403,7 @@ export const accessibilityTests = {
   },
 
   /**
-   * Test for proper heading structure
+   * Test for proper heading structure (works in JSDOM)
    */
   async headingStructure(element: Element): Promise<void> {
     const results = await axe(element, {
@@ -652,18 +678,62 @@ describe('Vite Library Configuration', () => {
 
 // tests/testing/accessibility.test.ts
 describe('Accessibility Testing', () => {
-  it('should detect color contrast violations', async () => {
+  it('should detect missing form labels (JSDOM-compatible)', async () => {
+    const wrapper = document.createElement('main');
+    document.body.appendChild(wrapper);
+
+    // Unlabeled form input - this WILL be detected in JSDOM
+    const form = document.createElement('form');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'unlabeled-input';
+    form.appendChild(input);
+    wrapper.appendChild(form);
+
+    const violations = await getAccessibilityViolations(wrapper);
+    expect(violations.violations.some(v => v.id === 'label')).toBe(true);
+    
+    document.body.removeChild(wrapper);
+  });
+  
+  it('should exclude color-contrast from JSDOM tests', async () => {
+    const wrapper = document.createElement('main');
+    document.body.appendChild(wrapper);
+
+    // Even with bad contrast, this should pass when color-contrast is excluded
     const badButton = document.createElement('button');
     badButton.style.color = '#ccc';
     badButton.style.backgroundColor = '#ddd';
     badButton.textContent = 'Bad Button';
-    document.body.appendChild(badButton);
+    wrapper.appendChild(badButton);
 
-    const violations = await getAccessibilityViolations(document.body);
-    expect(violations.violations.some(v => v.id === 'color-contrast')).toBe(true);
+    // This should pass because we exclude color-contrast rule
+    await expectAccessible(wrapper, { 
+      excludeRules: ['color-contrast'] 
+    });
     
-    document.body.removeChild(badButton);
+    document.body.removeChild(wrapper);
   });
+
+  // NOTE: Color contrast tests should be in browser-based test suites
+  // Example for Playwright/Cypress integration tests:
+  /*
+  describe('Color Contrast (Browser Required)', () => {
+    it('should detect color contrast violations', async () => {
+      // This test would run in Playwright/Cypress, not JSDOM
+      const page = await browser.newPage();
+      await page.setContent(`
+        <button style="color: #ccc; background-color: #ddd;">
+          Bad Contrast Button
+        </button>
+      `);
+      
+      const results = await injectAxe(page);
+      const violations = await checkA11y(page);
+      expect(violations.violations.some(v => v.id === 'color-contrast')).toBe(true);
+    });
+  });
+  */
 });
 ```
 
@@ -740,12 +810,16 @@ import {
 import { Button } from '../src/Button';
 
 describe('Button Component', () => {
-  it('should render and be accessible', async () => {
+  it('should render and be accessible (excluding color-contrast)', async () => {
     const button = new Button({ text: 'Click me' });
     const { container, unmount } = renderComponent(button);
     
     expect(container.querySelector('button')).toBeInTheDocument();
-    await expectAccessible(container);
+    
+    // Exclude color-contrast rule for JSDOM testing
+    await expectAccessible(container, { 
+      excludeRules: ['color-contrast'] 
+    });
     
     await unmount();
   });
@@ -764,5 +838,120 @@ describe('Button Component', () => {
   });
 });
 ```
+
+## 🚨 **JSDOM ACCESSIBILITY TESTING LIMITATIONS**
+
+### **Color Contrast Testing Issue**
+
+**Known Issue**: Color contrast testing does not work in JSDOM environments due to fundamental limitations in the DOM simulation.
+
+**Root Cause**: 
+- **GitHub Issue**: https://github.com/dequelabs/axe-core/issues/595
+- **Missing APIs**: JSDOM lacks `range.getClientRects()` and proper CSS rendering
+- **No Visual Rendering**: Color contrast requires actual pixel-level analysis
+- **Axe-core Behavior**: Color contrast results appear in `incomplete` array, not `violations`
+
+### **Affected Functionality**
+- ❌ `accessibilityTests.colorContrast()` - Will not detect violations in JSDOM
+- ❌ Color contrast expectations in `getAccessibilityViolations()` - Will always return empty
+- ❌ Any test expecting color-contrast violations from axe-core in JSDOM
+
+### **Recommended Solutions**
+
+#### **1. Exclude Color Contrast in JSDOM Tests (Recommended)**
+```typescript
+// Recommended approach for JSDOM component tests
+await expectAccessible(container, { 
+  excludeRules: ['color-contrast'] 
+});
+
+// Test other accessibility rules that work in JSDOM
+await accessibilityTests.formLabels(container);
+await accessibilityTests.headingStructure(container);
+```
+
+#### **2. Browser-Based Testing for Color Contrast**
+```typescript
+// Playwright example (for integration/e2e tests)
+test('color contrast validation', async ({ page }) => {
+  await page.setContent(`
+    <button style="color: #ccc; background-color: #ddd;">
+      Low Contrast Button
+    </button>
+  `);
+  
+  await injectAxe(page);
+  const violations = await checkA11y(page);
+  expect(violations.some(v => v.id === 'color-contrast')).toBe(true);
+});
+
+// Cypress example
+cy.checkA11y(null, {
+  rules: {
+    'color-contrast': { enabled: true }
+  }
+});
+```
+
+#### **3. Manual Color Contrast Validation**
+```typescript
+// Custom color contrast checker (for design system validation)
+function validateContrastRatio(foreground: string, background: string): boolean {
+  const ratio = calculateContrastRatio(foreground, background);
+  return ratio >= 4.5; // WCAG AA standard
+}
+
+// Use in design system tests
+expect(validateContrastRatio('#000', '#fff')).toBe(true);
+expect(validateContrastRatio('#ccc', '#ddd')).toBe(false);
+```
+
+### **Documentation Requirements**
+
+**README.md sections must include:**
+
+1. **Accessibility Testing Limitations**:
+   ```markdown
+   ## ⚠️ Accessibility Testing Limitations
+   
+   ### Color Contrast Testing
+   Color contrast testing is **not supported** in JSDOM environments. This is a known limitation of axe-core when running in simulated DOM environments.
+   
+   **For JSDOM tests**: Always exclude the `color-contrast` rule:
+   \`\`\`typescript
+   await expectAccessible(element, { excludeRules: ['color-contrast'] });
+   \`\`\`
+   
+   **For color contrast testing**: Use browser-based testing tools:
+   - Playwright for automated browser testing
+   - Cypress for integration testing  
+   - Manual design system validation
+   ```
+
+2. **Testing Strategy Guidance**:
+   ```markdown
+   ## Testing Strategy
+   
+   ### Unit Tests (JSDOM)
+   - ✅ Form labels and ARIA attributes
+   - ✅ Keyboard navigation and focus management
+   - ✅ Heading structure and landmarks
+   - ❌ Color contrast (use browser tests)
+   
+   ### Integration Tests (Browser)
+   - ✅ Full accessibility validation including color contrast
+   - ✅ Visual regression testing
+   - ✅ Real user interaction simulation
+   ```
+
+3. **Migration Notes**:
+   ```markdown
+   ## Migration from Other Tools
+   
+   If migrating from tools that claimed to test color contrast in JSDOM:
+   1. Those tests were likely giving false positives
+   2. Add `excludeRules: ['color-contrast']` to existing accessibility tests
+   3. Set up browser-based testing for color contrast validation
+   ```
 
 This implementation guide provides a comprehensive foundation for the `@voder/ui-tools` package that serves as the specialized development tooling for UI component libraries. The package includes optimized build configurations, comprehensive testing utilities, and quality assurance tools specifically designed for browser-based UI development while maintaining simplicity and LLM-friendliness.

@@ -1,19 +1,22 @@
-import { describe, test, expect, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
+
 import {
   renderComponent,
   simulateClick,
-  waitForNextFrame,
-  waitForAnimation
-} from '../../src/testing/helpers.js';
+  waitForAnimation,
+  waitForNextFrame} from '../../src/testing/helpers.js';
 
 describe('testing helpers', () => {
   test('renderComponent mounts and removes created container on unmount', async () => {
     const mountSpy = vi.fn((container: Element) => {
       const el = document.createElement('span');
+
       el.textContent = 'mounted';
       container.appendChild(el);
     });
+
     const unmountSpy = vi.fn(async () => Promise.resolve());
+
     const updateConfigSpy = vi.fn(async (_props: any) => Promise.resolve());
 
     const component = {
@@ -23,6 +26,7 @@ describe('testing helpers', () => {
     };
 
     const result = renderComponent(component);
+
     const { container, unmount } = result;
 
     // container should be attached to document by the helper
@@ -38,15 +42,18 @@ describe('testing helpers', () => {
   test('renderComponent does not remove caller-owned container on unmount', async () => {
     const mountSpy = vi.fn((container: Element) => {
       const el = document.createElement('span');
+
       el.textContent = 'mounted';
       container.appendChild(el);
     });
+
     const unmountSpy = vi.fn(async () => Promise.resolve());
 
     const component = { mount: mountSpy, unmount: unmountSpy };
 
     // caller-owned container that we append to the document
     const container = document.createElement('div');
+
     document.body.appendChild(container);
 
     const result = renderComponent(component, { container });
@@ -65,7 +72,9 @@ describe('testing helpers', () => {
 
   test('simulateClick triggers click handler', () => {
     const btn = document.createElement('button');
+
     const handler = vi.fn();
+
     btn.addEventListener('click', handler);
     document.body.appendChild(btn);
 

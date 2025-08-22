@@ -1,6 +1,6 @@
-import { describe, test, expect } from 'vitest';
-import { readFileSync, existsSync } from 'fs';
+import { existsSync,readFileSync } from 'fs';
 import { join } from 'path';
+import { describe, expect,test } from 'vitest';
 
 /**
  * Version guard: ensure package-lock.json contains versions for jest-axe and axe-core.
@@ -9,10 +9,13 @@ import { join } from 'path';
 describe('Dependency version alignment: jest-axe & axe-core', () => {
   test('package-lock.json contains jest-axe and axe-core versions', () => {
     const lockPath = join(process.cwd(), 'package-lock.json');
+
     expect(existsSync(lockPath)).toBe(true);
 
     const lockRaw = readFileSync(lockPath, 'utf8');
+
     let lock: any;
+
     try {
       lock = JSON.parse(lockRaw);
     } catch (err) {
@@ -27,15 +30,18 @@ describe('Dependency version alignment: jest-axe & axe-core', () => {
       // npm v3 package-lock (packages map)
       if (lock.packages) {
         const key = `node_modules/${pkg}`;
+
         if (lock.packages[key] && lock.packages[key].version) {
           return lock.packages[key].version;
         }
       }
+
       // Fallbacks not implemented (yarn/pnpm); return undefined if not found.
       return undefined;
     }
 
     const jestAxeVersion = findVersion('jest-axe');
+
     const axeCoreVersion = findVersion('axe-core');
 
     // Log discovered versions to stdout

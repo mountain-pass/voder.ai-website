@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect,it } from 'vitest';
+
 import { createVitestJsdomConfig } from '../../src/testing/vitest-jsdom.js';
 
 describe('Vitest jsdom configuration factory', () => {
@@ -16,6 +17,7 @@ describe('Vitest jsdom configuration factory', () => {
 
     // coverage thresholds (narrow typing to avoid TS union property error)
     const coverage = config.test?.coverage as any;
+
     expect(coverage.thresholds).toEqual({
       branches: 90,
       functions: 90,

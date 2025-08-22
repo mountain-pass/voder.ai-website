@@ -1,4 +1,5 @@
-import { describe, test, expect } from 'vitest';
+import { describe, expect,test } from 'vitest';
+
 import { setupJsdomTestEnvironment } from '../../src/testing/setup.js';
 
 describe('jsdom test environment setup', () => {

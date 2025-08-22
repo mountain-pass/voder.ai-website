@@ -11,7 +11,7 @@ export interface PostCSSConfigOptions {
   /** Autoprefixer browser targets (override the default list) */
   browsers?: string[];
   /** Additional PostCSS plugins to append */
-  plugins?: Array<any>;
+  plugins?: any[];
 }
 
 /**

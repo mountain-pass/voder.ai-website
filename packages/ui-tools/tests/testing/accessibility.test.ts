@@ -1,77 +1,95 @@
-import { describe, test, expect } from 'vitest';
+import { describe, expect,test } from 'vitest';
+
 import {
-  getAccessibilityViolations,
   expectAccessible,
   expectAriaAttributes,
-  expectFocusable
-} from '../../src/testing/accessibility.js';
+  expectFocusable,
+  getAccessibilityViolations} from '../../src/testing/accessibility.js';
 
 describe('Accessibility helpers', () => {
-  test('getAccessibilityViolations detects color-contrast and missing label violations', async () => {
-    // Low-contrast button
+  test('getAccessibilityViolations detects missing label violations (JSDOM-compatible)', async () => {
+    // Create a single landmark wrapper for all fixtures to avoid unrelated axe landmark warnings
+    const wrapper = document.createElement('main');
+
+    document.body.appendChild(wrapper);
+
+    // Low-contrast button (color-contrast is not reliable in JSDOM; exclude it)
     const badButton = document.createElement('button');
+
     badButton.style.color = '#ccc';
     badButton.style.backgroundColor = '#ddd';
     badButton.textContent = 'Bad Button';
-    document.body.appendChild(badButton);
+    wrapper.appendChild(badButton);
 
     // Unlabeled form input
     const form = document.createElement('form');
+
     const input = document.createElement('input');
+
     input.type = 'text';
     input.id = 'unlabeled-input';
     form.appendChild(input);
-    document.body.appendChild(form);
+    wrapper.appendChild(form);
 
-    const results = await getAccessibilityViolations(document.body);
+    // Exclude color-contrast from JSDOM accessibility checks
+    const results = await getAccessibilityViolations(wrapper, { excludeRules: ['color-contrast'] });
 
-    // Expect a color-contrast violation
-    expect(results.violations.some((v: any) => (v as any).id === 'color-contrast')).toBe(true);
-
-    // Expect a missing label (label) violation
+    // Expect a missing label (label) violation (JSDOM-compatible)
     expect(results.violations.some((v: any) => (v as any).id === 'label')).toBe(true);
 
-    // Cleanup
-    document.body.removeChild(badButton);
-    document.body.removeChild(form);
+    // Cleanup wrapper and its children
+    document.body.removeChild(wrapper);
   });
 
   test('expectAccessible succeeds on a corrected fixture', async () => {
+    const wrapper = document.createElement('main');
+
+    document.body.appendChild(wrapper);
+
     // High-contrast button
     const goodButton = document.createElement('button');
+
     goodButton.style.color = '#000';
     goodButton.style.backgroundColor = '#fff';
     goodButton.textContent = 'Good Button';
-    document.body.appendChild(goodButton);
+    wrapper.appendChild(goodButton);
 
     // Labeled input
     const form = document.createElement('form');
+
     const label = document.createElement('label');
+
     label.htmlFor = 'named-input';
     label.textContent = 'Name';
     const input = document.createElement('input');
+
     input.id = 'named-input';
     form.appendChild(label);
     form.appendChild(input);
-    document.body.appendChild(form);
+    wrapper.appendChild(form);
 
     // Should not throw / should pass accessibility check
-    await expectAccessible(document.body);
+    await expectAccessible(wrapper);
 
-    // Cleanup
-    document.body.removeChild(goodButton);
-    document.body.removeChild(form);
+    // Cleanup wrapper and its children
+    document.body.removeChild(wrapper);
   });
 
   test('expectAriaAttributes and expectFocusable validate element attributes', () => {
+    const wrapper = document.createElement('main');
+
+    document.body.appendChild(wrapper);
+
     const el = document.createElement('div');
+
     el.setAttribute('aria-label', 'Close');
     el.setAttribute('tabindex', '0');
-    document.body.appendChild(el);
+    wrapper.appendChild(el);
 
     expectAriaAttributes(el, { 'aria-label': 'Close' });
     expectFocusable(el);
 
-    document.body.removeChild(el);
+    // Cleanup wrapper and its children
+    document.body.removeChild(wrapper);
   });
 });

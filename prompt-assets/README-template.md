@@ -9,10 +9,11 @@ npm install @voder/[package-name]
 ```
 
 ```typescript
-// Basic usage example
 import { [primaryExport] } from '@voder/[package-name]';
 
-// Minimal setup example
+const config = [primaryExport]({
+  // Basic configuration
+});
 ```
 
 ## 🎯 Purpose
@@ -97,25 +98,7 @@ import { [export], [anotherExport] } from '@voder/[package-name]';
 
 **Returns:** `[ReturnType]` - [description]
 
-## 🔄 Migration Guide
-
-### From [Previous Version/Tool]
-
-**Before:**
-```typescript
-// Old configuration
-```
-
-**After:**
-```typescript
-// New configuration
-```
-
-**Key Changes:**
-- [Change 1]: [description and reasoning]
-- [Change 2]: [description and reasoning]
-
-## 🔧 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -134,6 +117,68 @@ npm install [module-name]
 - **Resolution**: [how to fix it]
 
 > **Hint**: If you see "Cannot find module" errors for non-@voder/* imports, add the missing package to your package.json dependencies and install it. This package exports configurations; it does not bundle third-party tools.
+
+## 🤝 Development & Contributing
+
+**Requirements:**
+- Node.js 18.0.0+ (ESM only)
+- TypeScript 5.0+ (optional but recommended)
+- All quality checks must pass before commits
+
+**Local Development:**
+```bash
+# Clone and setup
+npm install
+
+# Start development mode (if applicable)
+npm run dev
+
+# Run all quality checks
+npm run verify
+
+# Build the package
+npm run build
+```
+
+**Quality Standards:**
+- ✅ All tests must pass (`npm test`)
+- ✅ Code must pass linting (`npm run lint`)
+- ✅ TypeScript compilation must succeed (`npm run build`)
+- ✅ Maintain 90%+ code coverage
+- ✅ Run `npm run verify` before all commits
+
+**Testing Strategy:**
+- **Unit Tests**: Test individual functions and classes
+- **Integration Tests**: Test package exports and real-world usage
+- **Smoke Tests**: Verify basic functionality
+- **Package Structure Tests**: Validate export paths and build artifacts
+
+**Change Process:**
+1. Implement changes with comprehensive tests
+2. Run full verification suite (`npm run verify`)
+3. Update documentation as needed
+4. Commit with clear, descriptive messages
+
+**Build Process:**
+The package uses TypeScript compilation with asset copying for distribution.
+
+## 🔄 Migration Guide
+
+### From [Previous Version/Tool]
+
+**Before:**
+```typescript
+// Old configuration
+```
+
+**After:**
+```typescript
+// New configuration
+```
+
+**Key Changes:**
+- [Change 1]: [description and reasoning]
+- [Change 2]: [description and reasoning]
 
 ## 📈 Versioning & Breaking Changes
 
@@ -164,64 +209,6 @@ See [Releases](https://github.com/[org]/[repo]/releases) for detailed changelog 
 **Reporting Security Issues:**
 Security concerns should be reported through appropriate channels (contact information available separately).
 
-## 🤝 Contributing
-
-**Development Requirements:**
-- Node.js 18.0.0+
-- All tests must pass (`npm test`)
-- Code must pass linting (`npm run lint`)
-- TypeScript compilation must succeed (`npm run build`)
-
-**Development Workflow:**
-```bash
-# Install dependencies
-npm install
-
-# Run tests
-npm test
-
-# Run all quality checks
-npm run verify
-
-# Build the package
-npm run build
-```
-
-**Testing:**
-- Write tests for all new features
-- Maintain 90%+ code coverage
-- Include both unit and integration tests
-- Test all public API exports
-
-**Change Process:**
-1. Implement changes with comprehensive tests
-2. Run full verification suite (`npm run verify`)
-3. Update documentation as needed
-4. Commit with clear, descriptive messages
-
 ## 📄 License
 
 This software is proprietary and not open-source. No license is granted to use, copy, modify, distribute, or sublicense except as explicitly agreed in writing by the owners. All rights reserved.
-
-## 🏗️ Development
-
-**Local Development:**
-```bash
-# Clone and setup
-npm install
-
-# Start development mode
-npm run dev
-
-# Run quality checks
-npm run verify
-```
-
-**Build Process:**
-The package uses TypeScript compilation with asset copying for distribution.
-
-**Testing Strategy:**
-- **Unit Tests**: Test individual functions and classes
-- **Integration Tests**: Test package exports and real-world usage
-- **Smoke Tests**: Verify basic functionality
-- **Package Structure Tests**: Validate export paths and build artifacts

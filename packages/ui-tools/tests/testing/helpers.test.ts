@@ -1,92 +1,66 @@
 import { describe, expect, test, vi } from 'vitest';
-
-import {
-  renderComponent,
-  simulateClick,
-  waitForAnimation,
-  waitForNextFrame} from '../../src/testing/helpers.js';
+import { renderComponent, simulateClick, simulateKeypress, waitForAnimation, waitForNextFrame } from '../../src/testing/helpers.js';
 
 describe('testing helpers', () => {
   test('renderComponent mounts and removes created container on unmount', async () => {
-    const mountSpy = vi.fn((container: Element) => {
+    const mountSpy = vi.fn((container) => {
       const el = document.createElement('span');
-
       el.textContent = 'mounted';
       container.appendChild(el);
     });
-
     const unmountSpy = vi.fn(async () => Promise.resolve());
-
-    const updateConfigSpy = vi.fn(async (_props: any) => Promise.resolve());
-
-    const component = {
-      mount: mountSpy,
-      unmount: unmountSpy,
-      updateConfig: updateConfigSpy
-    };
-
-    const result = renderComponent(component);
-
-    const { container, unmount } = result;
-
-    // container should be attached to document by the helper
+    const updateConfigSpy = vi.fn(async () => Promise.resolve());
+    const component = { mount: mountSpy, unmount: unmountSpy, updateConfig: updateConfigSpy };
+    const { container, unmount } = renderComponent(component);
     expect(document.body.contains(container)).toBe(true);
     expect(mountSpy).toHaveBeenCalled();
-
     await unmount();
-
-    // when the helper created/attached the container it should be removed on unmount
     expect(document.body.contains(container)).toBe(false);
   });
 
   test('renderComponent does not remove caller-owned container on unmount', async () => {
-    const mountSpy = vi.fn((container: Element) => {
+    const mountSpy = vi.fn((container) => {
       const el = document.createElement('span');
-
       el.textContent = 'mounted';
       container.appendChild(el);
     });
-
     const unmountSpy = vi.fn(async () => Promise.resolve());
-
-    const component = { mount: mountSpy, unmount: unmountSpy };
-
-    // caller-owned container that we append to the document
     const container = document.createElement('div');
-
     document.body.appendChild(container);
-
-    const result = renderComponent(component, { container });
-
+    const { unmount } = renderComponent({ mount: mountSpy, unmount: unmountSpy }, { container });
     expect(document.body.contains(container)).toBe(true);
     expect(mountSpy).toHaveBeenCalled();
-
-    await result.unmount();
-
-    // caller-owned container should still be present after unmount
+    await unmount();
     expect(document.body.contains(container)).toBe(true);
-
-    // cleanup
-    container.parentNode?.removeChild(container);
+    container.remove();
   });
 
   test('simulateClick triggers click handler', () => {
     const btn = document.createElement('button');
-
     const handler = vi.fn();
-
     btn.addEventListener('click', handler);
     document.body.appendChild(btn);
-
     simulateClick(btn);
-
     expect(handler).toHaveBeenCalled();
+    btn.remove();
+  });
 
-    document.body.removeChild(btn);
+  test('simulateKeypress triggers both keydown and keyup with correct key', () => {
+    const el = document.createElement('div');
+    const down = vi.fn();
+    const up = vi.fn();
+    el.addEventListener('keydown', down);
+    el.addEventListener('keyup', up);
+    document.body.appendChild(el);
+    simulateKeypress(el, 'Enter');
+    expect(down).toHaveBeenCalledTimes(1);
+    expect(up).toHaveBeenCalledTimes(1);
+    expect(down.mock.calls[0][0].key).toBe('Enter');
+    expect(up.mock.calls[0][0].key).toBe('Enter');
+    el.remove();
   });
 
   test('waitForNextFrame and waitForAnimation resolve', async () => {
-    // these should resolve without throwing
     await waitForNextFrame();
     await waitForAnimation(10);
     expect(true).toBe(true);

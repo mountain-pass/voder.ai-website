@@ -79,6 +79,19 @@ import { renderComponent, simulateClick, expectAccessible } from '@voder/ui-tool
 
 ---
 
+## Linting Configuration Usage
+
+```ts
+import { createHTMLLintConfig } from '@voder/ui-tools';
+
+const htmlLintConfig = createHTMLLintConfig({
+  // disable specific rules or leave blank for defaults
+  excludeRules: ['title-require']
+});
+
+console.log(htmlLintConfig);
+```
+
 ## Scripts / Verification
 
 The package includes the following relevant npm script targets (run from the package root):

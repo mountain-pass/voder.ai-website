@@ -11,5 +11,8 @@ describe('Package root exports', () => {
     expect(typeof mod.renderComponent).toBe('function');
     expect(typeof mod.expectAccessible).toBe('function');
     expect(typeof mod.setupJsdomTestEnvironment).toBe('function');
+    expect(typeof mod.createHTMLLintConfig).toBe('function');
+    expect(typeof mod.createCSSLintConfig).toBe('function');
+    expect(typeof mod.createAccessibilityLintConfig).toBe('function');
   });
 });

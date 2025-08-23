@@ -5,6 +5,8 @@ export default [
   // and from attempting type-aware parsing of local configuration files.
   {
     ignores: [
+      '**/dist/**',
+      '**/*.d.ts',
       'dist/',
       'build/',
       'coverage/',
@@ -13,8 +15,7 @@ export default [
       '.vite/',
       '.eslintcache',
 
-      // Local config files that should not be type-checked by ESLint
-      // (explicit list keeps ESLint from parsing these with project TS config)
+      // Exact config filenames to ignore so ESLint doesn't try to type-parse them
       'vite.config.ts',
       'vite.config.*',
       'vitest.config.ts',
@@ -26,7 +27,7 @@ export default [
       'eslint.config.cjs',
       '.eslintrc.*',
 
-      // Other local tooling scripts that may execute during installs
+      // Other local tooling scripts that should not be type-checked by ESLint
       'setup-package-docs.js'
     ],
 

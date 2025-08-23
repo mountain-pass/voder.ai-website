@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { defineConfig, type UserConfig } from 'vite';
 
-import { createPostCSSConfig, type PostCSSConfigOptions } from './postcss.js';
+import { createPostCSSConfig, type PostCSSConfigOptions } from './postcss.ts';
 
 export interface ViteLibraryOptions {
   /** Library name (metadata only; ESM-only build) */

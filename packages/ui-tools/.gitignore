@@ -1,40 +1,28 @@
-# Node / build outputs / caches
-prompt-assets/
-
+### Build outputs
 node_modules/
-dist/
-/build/
 coverage/
-.cache/
-.vite/
-.nyc_output/
-*.tsbuildinfo
-# Temporary / output / logs (forbidden in repo)
-*.log
-*.txt
-*.out
-*.tmp
-*.dump
+dist/
+
+### IDE files
+.vscode/
+.idea/
+
+### Temp & logs
 logs/
 temp/
 tmp/
-diagnostics/
-artifacts/
-# Tool artifacts & editors/IDE
-.eslintcache
-.DS_Store
-.vscode/
-.idea/
-*.suo
-*.user
-*.swp
-# OS / platform artifacts
-Thumbs.db
-# Secrets / local environment
-.env
-# Build/test specific alternatives
-dist-*/
-coverage-*/
-# Keep package.json and lockfiles tracked (do NOT ignore)
-# (Intentionally not ignoring package-lock.json, yarn.lock, package.json)
+*.log
+*.tmp
 
+# System files
+.DS_Store
+Thumbs.db
+
+.cache/
+.vite/
+.eslintcache
+.nyc_output/
+
+.env
+prompt-assets/
+.voder/

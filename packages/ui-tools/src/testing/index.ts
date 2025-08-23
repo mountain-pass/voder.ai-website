@@ -9,7 +9,7 @@ export {
   expectAccessible,
   expectAriaAttributes,
   expectFocusable,
-  getAccessibilityViolations} from './accessibility.js';
+  getAccessibilityViolations} from './accessibility.ts';
 export {
   type ComponentTestResult,
   renderComponent,
@@ -17,8 +17,8 @@ export {
   simulateClick,
   simulateKeypress,
   waitForAnimation,
-  waitForNextFrame} from './helpers.js';
-export { createVitestJsdomConfig, type VitestJsdomOptions } from './vitest-jsdom.js';
+  waitForNextFrame} from './helpers.ts';
+export { createVitestJsdomConfig, type VitestJsdomOptions } from './vitest-jsdom.ts';
 
 // Test environment setup (single authoritative API)
-export { setupJsdomTestEnvironment } from './setup.js';
+export { setupJsdomTestEnvironment } from './setup.ts';

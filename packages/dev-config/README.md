@@ -73,6 +73,11 @@ yarn add -D @voder/dev-config
 
 ```js
 // eslint.config.js
+export { complete as default } from '@voder/dev-config/eslint';
+```
+
+```js
+// eslint.config.js
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier';
 import { base, dx, performance } from '@voder/dev-config/eslint';

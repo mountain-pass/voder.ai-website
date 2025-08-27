@@ -1,1 +1,1 @@
-declare module '*.json' assert { type: 'json'; }
+declare module '*.json';

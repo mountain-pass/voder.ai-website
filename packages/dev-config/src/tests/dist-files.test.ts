@@ -1,11 +1,13 @@
-import { execSync, spawnSync } from 'child_process';
+import { execSync } from 'child_process';
 import { writeFile } from 'fs/promises';
-import { join, resolve } from 'path';
+import { join } from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { setupTestPackageInstallation, teardownTestEnvironment } from './helpers/common.ts';
+
+import { setupTestPackageInstallation, teardownTestEnvironment } from './helpers/common.js';
 
 describe('package installation integration tests', () => {
   let tempDir: string;
+
   let packagePath: string;
 
   beforeAll(async () => {
@@ -33,6 +35,7 @@ describe('package installation integration tests', () => {
     );
 
     const result = execSync(`node ${testFile}`, { cwd: packagePath, encoding: 'utf8' });
+
     const output = JSON.parse(result.trim());
 
     expect(output.success).toBe(true);
@@ -59,6 +62,7 @@ describe('package installation integration tests', () => {
     );
 
     const result = execSync(`node ${testFile}`, { cwd: packagePath, encoding: 'utf8' });
+
     const output = JSON.parse(result.trim());
 
     expect(output.success).toBe(true);
@@ -85,6 +89,7 @@ describe('package installation integration tests', () => {
     );
 
     const result = execSync(`node ${testFile}`, { cwd: packagePath, encoding: 'utf8' });
+
     const output = JSON.parse(result.trim());
 
     expect(output.success).toBe(true);

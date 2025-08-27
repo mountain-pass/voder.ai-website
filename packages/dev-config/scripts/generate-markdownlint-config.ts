@@ -8,7 +8,7 @@
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 
-import { getConfig } from '../linters/markdown/index.ts';
+import { getConfig } from '../linters/markdown/index.js';
 
 // Retrieve the base Markdown lint rules
 const config = getConfig();

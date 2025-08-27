@@ -1,25 +1,27 @@
-import { describe, it, expect } from 'vitest';
-import tsconfigEslint from '@voder/dev-config/typescript/tsconfig.eslint.json' assert { type: 'json' };
-import tsconfigConfig from '@voder/dev-config/typescript/tsconfig.config.json' assert { type: 'json' };
+import tsconfigConfig from '@voder/dev-config/typescript/tsconfig.config.json';
+import tsconfigEslint from '@voder/dev-config/typescript/tsconfig.eslint.json';
+import { describe, expect, it } from 'vitest';
 
 describe('TypeScript JSON config exports', () => {
-  it('tsconfig.eslint.json has correct "extends" and compilerOptions', () => {
+  it('tsconfig.eslint.json has correct "extends", types, and isolatedModules', () => {
+    // matches typescript/tsconfig.eslint.json
     expect(tsconfigEslint).toHaveProperty('extends', './base.json');
-    expect(tsconfigEslint).toHaveProperty('compilerOptions');
-    expect(Array.isArray((tsconfigEslint.compilerOptions as any).types)).toBe(true);
-    expect((tsconfigEslint.compilerOptions as any).types).toEqual(
-      expect.arrayContaining(['node', 'vitest/globals'])
-    );
-    expect((tsconfigEslint.compilerOptions as any)).toHaveProperty('isolatedModules', false);
+    const optsEslint = tsconfigEslint.compilerOptions as any;
+
+    expect(optsEslint).toHaveProperty('types');
+    expect(Array.isArray(optsEslint.types)).toBe(true);
+    expect(optsEslint.types).toEqual(expect.arrayContaining(['node', 'vitest/globals']));
+    expect(optsEslint).toHaveProperty('isolatedModules', false);
   });
 
-  it('tsconfig.config.json has correct "extends" and compilerOptions', () => {
+  it('tsconfig.config.json has correct "extends", types, and isolatedModules', () => {
+    // matches typescript/tsconfig.config.json
     expect(tsconfigConfig).toHaveProperty('extends', './base.json');
-    expect(tsconfigConfig).toHaveProperty('compilerOptions');
-    expect(Array.isArray((tsconfigConfig.compilerOptions as any).types)).toBe(true);
-    expect((tsconfigConfig.compilerOptions as any).types).toEqual(
-      expect.arrayContaining(['node'])
-    );
-    expect((tsconfigConfig.compilerOptions as any)).toHaveProperty('isolatedModules', false);
+    const optsConfig = tsconfigConfig.compilerOptions as any;
+
+    expect(optsConfig).toHaveProperty('types');
+    expect(Array.isArray(optsConfig.types)).toBe(true);
+    expect(optsConfig.types).toEqual(expect.arrayContaining(['node']));
+    expect(optsConfig).toHaveProperty('isolatedModules', false);
   });
 });

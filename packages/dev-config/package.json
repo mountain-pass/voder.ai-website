@@ -7,7 +7,10 @@
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
-    ".": { "import": "./dist/src/index.js", "types": "./dist/src/index.d.ts" },
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
     "./typescript/tsconfig.eslint.json": "./dist/typescript/tsconfig.eslint.json",
     "./typescript/tsconfig.config.json": "./dist/typescript/tsconfig.config.json",
     "./testing": {

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "resolveJsonModule": true,    "declaration": true,
+    "resolveJsonModule": true,
+    "declaration": true,
     "declarationMap": true,
     "composite": true,
     "skipLibCheck": true,

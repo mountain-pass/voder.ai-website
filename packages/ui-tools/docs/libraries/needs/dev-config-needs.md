@@ -18,14 +18,49 @@ export default complete;
 
 ### Consumer Usage Target
 
-```javascript
-// eslint.config.js - Target implementation (1-2 lines)
-export { complete as default } from '@voder/dev-config/eslint';
-
-// Alternative syntax
+```typescript
+// eslint.config.ts - Target implementation (simple with necessary overrides)
 import { complete } from '@voder/dev-config/eslint';
-export default complete;
+
+export default [
+  ...complete,
+  {
+    files: ['**/*.test.{js,ts}', 'src/testing/**/*.{js,ts}', 'tests/**/*.{js,ts}'],
+    languageOptions: {
+      globals: {
+        expect: 'readonly',
+        describe: 'readonly', 
+        it: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        vi: 'readonly',
+        test: 'readonly',
+        // DOM globals for jsdom tests
+        document: 'readonly',
+        window: 'readonly',
+        global: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        setTimeout: 'readonly',
+        requestAnimationFrame: 'readonly'
+      }
+    }
+  },
+  {
+    files: ['scripts/**/*.ts'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly'
+      }
+    }
+  }
+];
 ```
+
+**Note**: While the ideal target is a 1-line configuration, practical ESLint configurations require environment-specific globals for different file types. The above represents the simplest realistic configuration that properly handles all environments.
 
 ## Core Requirement: Universal File Linting
 
@@ -47,6 +82,14 @@ The complete ESLint configuration MUST lint all relevant files in a TypeScript p
 - Standard ignore patterns for build outputs and dependencies
 - Integration with existing dev-config rule layers (base, dx, performance)
 
+**✅ Environment-specific globals that consumers must add:**
+- **Vitest test globals**: `expect`, `describe`, `it`, `beforeEach`, `afterEach`, `beforeAll`, `afterAll`, `vi`, `test`
+- **DOM globals for jsdom**: `document`, `window`, `global`, `setTimeout`, `requestAnimationFrame`
+- **Node.js script globals**: `console`, `process` for script files
+- **Test environment globals**: `console`, `process` for test files
+
+**Rationale**: Different file types require different runtime environments. While the complete config handles parsing and rules, environment-specific globals must be specified per file pattern to avoid false `no-undef` errors.
+
 **✅ Must work with standard ESLint flat config scripts:**
 ```json
 {
@@ -59,6 +102,14 @@ The complete ESLint configuration MUST lint all relevant files in a TypeScript p
 ```
 
 ## Setup Requirements
+
+### Required Dependencies
+
+The complete ESLint configuration requires these dependencies to be installed by consumers:
+
+**Required for TypeScript config loading:**
+- `jiti` - Required for ESLint to load TypeScript configuration files
+- Installation: `npm install --save-dev jiti`
 
 ### Required TypeScript Configuration Files
 
@@ -88,6 +139,7 @@ Since linting TypeScript configuration files requires dedicated TypeScript confi
 
 When setup is incomplete, provide actionable error messages:
 - Missing required TypeScript configuration files
+- Missing required dependencies (especially `jiti`)
 - Invalid project structure  
 - Dependency conflicts or missing dependencies
 
@@ -97,6 +149,7 @@ The complete config should validate:
 - Required directory structure exists (`src/`, `package.json`, etc.)
 - TypeScript configuration files are present and valid
 - Dev-config dependencies are properly installed
+- `jiti` dependency is installed for TypeScript config loading
 
 ## Testing Requirements
 
@@ -104,8 +157,10 @@ Dev-config must include tests that verify:
 
 1. **Complete config exports correctly**
 2. **All source, test, and config files are linted**
-3. **No consumer configuration is required**
+3. **Minimal consumer configuration works with necessary environment overrides**
 4. **Integration with real TypeScript projects works**
+5. **Required dependencies (jiti) are properly documented**
+6. **Environment-specific globals are properly handled in consumer configurations**
 
 ## Documentation Requirements
 
@@ -113,9 +168,25 @@ Dev-config must include tests that verify:
 
 Clear guide showing:
 1. How to install dev-config
-2. How to create required TypeScript configuration files using dev-config exports
-3. Single-line ESLint setup
-4. How to validate that all files are being linted correctly
+2. How to install required dependencies (including `jiti` for TypeScript config loading)
+3. How to create required TypeScript configuration files using dev-config exports
+4. Minimal ESLint setup with necessary environment-specific overrides
+5. How to validate that all files are being linted correctly
+
+### Required Dependencies Documentation
+
+Dev-config documentation must clearly specify:
+- **jiti** is required for ESLint to load TypeScript configuration files
+- Installation command: `npm install --save-dev jiti`
+- This dependency is needed even though Node.js ≥ 22.6.0 has native TypeScript config loading, because ESLint requires jiti specifically
+
+### Environment-Specific Configuration Documentation
+
+Dev-config documentation must provide:
+- Complete examples showing necessary globals for test files
+- Complete examples showing necessary globals for script files  
+- Explanation of why environment-specific overrides are required
+- Template configurations for common project patterns
 
 ### TypeScript Configuration Templates
 

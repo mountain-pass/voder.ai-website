@@ -202,6 +202,9 @@ Install `@typescript-eslint/parser` and point `parserOptions.project` to your `t
 
 ## 🤝 Contributing
 
+For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+
 ```bash
 npm install
 npm run verify

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "declaration": true,
+    "resolveJsonModule": true,    "declaration": true,
     "declarationMap": true,
     "composite": true,
     "skipLibCheck": true,
@@ -13,6 +13,7 @@
   },
   "include": [
     "src",
+    "src/types",
     "eslint",
     "typescript",
     "eslint.config.ts",

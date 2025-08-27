@@ -7,10 +7,9 @@
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "exports": {
-    ".": {
-      "import": "./dist/src/index.js",
-      "types": "./dist/src/index.d.ts"
-    },
+    ".": { "import": "./dist/src/index.js", "types": "./dist/src/index.d.ts" },
+    "./typescript/tsconfig.eslint.json": "./dist/typescript/tsconfig.eslint.json",
+    "./typescript/tsconfig.config.json": "./dist/typescript/tsconfig.config.json",
     "./testing": {
       "import": "./dist/src/testing/index.js",
       "types": "./dist/src/testing/index.d.ts"
@@ -27,10 +26,10 @@
       "import": "./dist/typescript/index.js",
       "types": "./dist/typescript/index.d.ts"
     },
-    "./typescript/base.json": "./typescript/base.json",
-    "./typescript/library.json": "./typescript/library.json",
-    "./typescript/node.json": "./typescript/node.json",
-    "./typescript/test.json": "./typescript/test.json",
+    "./typescript/base.json": "./dist/typescript/base.json",
+    "./typescript/library.json": "./dist/typescript/library.json",
+    "./typescript/node.json": "./dist/typescript/node.json",
+    "./typescript/test.json": "./dist/typescript/test.json",
     "./linters/markdown": {
       "import": "./dist/linters/markdown/index.js",
       "types": "./dist/linters/markdown/index.d.ts"
@@ -57,13 +56,14 @@
     "test:ci": "vitest run --coverage --reporter=verbose --testTimeout=120000",
     "format": "NODE_OPTIONS=\"--experimental-strip-types\" prettier \"**/*.{ts,tsx,js,jsx,json,md}\" --write",
     "format:check": "NODE_OPTIONS=\"--experimental-strip-types\" prettier \"**/*.{ts,tsx,js,jsx,json,md}\" --check",
-    "lint": "eslint . --ext .ts,.js --config ./eslint.config.ts",
-    "lint:fix": "eslint . --ext .ts,.js --config ./eslint.config.ts --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint . --max-warnings 0",
     "lint:md": "markdownlint-cli2 README.md docs/**/*.md",
     "lint:md:fix": "markdownlint-cli2 --fix README.md docs/**/*.md",
     "voder": "node ../../../voder/apps/voder-cli/index.js",
     "format:fix": "npm run format",
-    "verify": "npm audit fix --force && npm run lint:fix && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
+    "verify": "npm audit fix --force && npm run lint:check && npm run lint:fix && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
     "audit:ci": "npm audit --audit-level=high"
   },
   "peerDependencies": {

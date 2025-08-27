@@ -1,0 +1,1 @@
+declare module '*.json' assert { type: 'json'; }

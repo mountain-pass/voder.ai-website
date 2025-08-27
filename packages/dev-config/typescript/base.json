@@ -7,6 +7,7 @@
     "esModuleInterop": false,
     "skipLibCheck": true,
     "verbatimModuleSyntax": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   }
 }

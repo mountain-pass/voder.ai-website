@@ -1,46 +1,19 @@
 import { execSync, spawnSync } from 'child_process';
-import { mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
-import { tmpdir } from 'os';
+import { writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { setupTestPackageInstallation, teardownTestEnvironment } from './helpers/common.ts';
 
 describe('package installation integration tests', () => {
   let tempDir: string;
-
   let packagePath: string;
 
   beforeAll(async () => {
-    // Create temp directory
-    tempDir = await mkdtemp(join(tmpdir(), 'voder-test-'));
-
-    // Pack the current package
-    const result = spawnSync('npm', ['pack'], { encoding: 'utf8', shell: false });
-
-    if (result.error) throw result.error;
-    const packResult = result.stdout;
-
-    const tarball = packResult.trim().split('\n').pop();
-
-    // Create test package.json in temp dir
-    packagePath = join(tempDir, 'test-package');
-    await mkdir(packagePath, { recursive: true });
-    await writeFile(
-      join(packagePath, 'package.json'),
-      JSON.stringify({
-        name: 'test-consumer',
-        type: 'module',
-        dependencies: {
-          '@voder/dev-config': `file:${resolve(tarball!)}`,
-        },
-      }),
-    );
-
-    // Install the package
-    execSync('npm install', { cwd: packagePath });
-  }, 60000); // 60 second timeout for setup
+    ({ tempDir, packagePath } = await setupTestPackageInstallation());
+  }, 60000);
 
   afterAll(async () => {
-    await rm(tempDir, { recursive: true, force: true });
+    await teardownTestEnvironment(tempDir);
   });
 
   it('testing factory exists and returns node environment', async () => {
@@ -60,7 +33,6 @@ describe('package installation integration tests', () => {
     );
 
     const result = execSync(`node ${testFile}`, { cwd: packagePath, encoding: 'utf8' });
-
     const output = JSON.parse(result.trim());
 
     expect(output.success).toBe(true);
@@ -81,13 +53,12 @@ describe('package installation integration tests', () => {
         hasGetConfig: typeof getConfig === 'function',
         hasCreateCLI: typeof createCLICommand === 'function',
         hasMD013: cfg && cfg.MD013 === false,
-        hasMD001: cfg && typeof cfg.MD001 === 'object'
+        hasMD001: cfg && cfg.MD001 && typeof cfg.MD001.level === 'number'
       }));
     `,
     );
 
     const result = execSync(`node ${testFile}`, { cwd: packagePath, encoding: 'utf8' });
-
     const output = JSON.parse(result.trim());
 
     expect(output.success).toBe(true);
@@ -114,7 +85,6 @@ describe('package installation integration tests', () => {
     );
 
     const result = execSync(`node ${testFile}`, { cwd: packagePath, encoding: 'utf8' });
-
     const output = JSON.parse(result.trim());
 
     expect(output.success).toBe(true);

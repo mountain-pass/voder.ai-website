@@ -461,6 +461,32 @@ export function setupJsdomTestEnvironment(): void {
     unobserve: vi.fn(),
     disconnect: vi.fn(),
   }));
+
+  // Provide Canvas 2D mock to prevent axe-core crashes in JSDOM
+  // See: Canvas API Mocking section below for details
+  if (typeof HTMLCanvasElement !== 'undefined') {
+    HTMLCanvasElement.prototype.getContext = function (contextType: string) {
+      if (contextType === '2d') {
+        return {
+          createImageData: (width: number, height: number) => ({
+            data: new Uint8ClampedArray(width * height * 4),
+            width,
+            height,
+          }),
+          getImageData: (_x: number, _y: number, width: number, height: number) => ({
+            data: new Uint8ClampedArray(width * height * 4),
+            width,
+            height,
+          }),
+          putImageData: () => { /* no-op */ },
+          drawImage: () => { /* no-op */ },
+          fillRect: () => { /* no-op */ },
+          clearRect: () => { /* no-op */ },
+        };
+      }
+      return null;
+    };
+  }
 }
 ```
 
@@ -851,10 +877,64 @@ describe('Button Component', () => {
 - **No Visual Rendering**: Color contrast requires actual pixel-level analysis
 - **Axe-core Behavior**: Color contrast results appear in `incomplete` array, not `violations`
 
+### **Canvas API Mocking Issue**
+
+**Known Issue**: Axe-core probes for Canvas API support during accessibility testing, which causes crashes in JSDOM environments.
+
+**Root Cause**:
+- **Error**: `Not implemented: HTMLCanvasElement.prototype.getContext`
+- **Trigger**: Axe-core calls `canvas.getContext('2d')` to check browser capabilities
+- **JSDOM Limitation**: Canvas APIs are not implemented in JSDOM environment
+- **Impact**: Tests crash during accessibility rule execution, even for non-visual rules
+
+**Workaround Solution**:
+```typescript
+// Mock Canvas 2D context to prevent axe-core crashes
+if (typeof HTMLCanvasElement !== 'undefined') {
+  HTMLCanvasElement.prototype.getContext = function (contextType: string) {
+    if (contextType === '2d') {
+      return {
+        createImageData: (width: number, height: number) => ({
+          data: new Uint8ClampedArray(width * height * 4),
+          width,
+          height,
+        }),
+        getImageData: (_x: number, _y: number, width: number, height: number) => ({
+          data: new Uint8ClampedArray(width * height * 4),
+          width,
+          height,
+        }),
+        putImageData: () => { /* no-op */ },
+        drawImage: () => { /* no-op */ },
+        fillRect: () => { /* no-op */ },
+        clearRect: () => { /* no-op */ },
+      };
+    }
+    return null;
+  };
+}
+```
+
+**Important Notes**:
+- This mock prevents crashes but does NOT enable color-contrast testing
+- Color contrast testing still requires real browser environments
+- The mock provides minimal Canvas 2D API surface for axe-core compatibility
+
+### **Canvas Mock Requirements**
+
+When setting up accessibility testing in JSDOM environments, Canvas mocking is **required**:
+
+- **Purpose**: Prevents "Not implemented: HTMLCanvasElement.prototype.getContext" errors
+- **Scope**: Required for any accessibility testing in JSDOM environments
+- **Implementation**: Must provide minimal 2D context API surface for axe-core compatibility
+- **Limitation**: Does not enable actual Canvas functionality or color-contrast testing
+- **Integration**: Automatically included in `setupJsdomTestEnvironment()` function
+
 ### **Affected Functionality**
 - ❌ `accessibilityTests.colorContrast()` - Will not detect violations in JSDOM
 - ❌ Color contrast expectations in `getAccessibilityViolations()` - Will always return empty
 - ❌ Any test expecting color-contrast violations from axe-core in JSDOM
+- ✅ Other accessibility rules work correctly with Canvas mock in place
 
 ### **Recommended Solutions**
 
@@ -936,22 +1016,14 @@ expect(validateContrastRatio('#ccc', '#ddd')).toBe(false);
    - ✅ Form labels and ARIA attributes
    - ✅ Keyboard navigation and focus management
    - ✅ Heading structure and landmarks
+   - ✅ Canvas mock prevents axe-core crashes during accessibility testing
    - ❌ Color contrast (use browser tests)
    
    ### Integration Tests (Browser)
    - ✅ Full accessibility validation including color contrast
    - ✅ Visual regression testing
    - ✅ Real user interaction simulation
-   ```
-
-3. **Migration Notes**:
-   ```markdown
-   ## Migration from Other Tools
-   
-   If migrating from tools that claimed to test color contrast in JSDOM:
-   1. Those tests were likely giving false positives
-   2. Add `excludeRules: ['color-contrast']` to existing accessibility tests
-   3. Set up browser-based testing for color contrast validation
+   - ✅ Actual Canvas API functionality
    ```
 
 This implementation guide provides a comprehensive foundation for the `@voder/ui-tools` package that serves as the specialized development tooling for UI component libraries. The package includes optimized build configurations, comprehensive testing utilities, and quality assurance tools specifically designed for browser-based UI development while maintaining simplicity and LLM-friendliness.

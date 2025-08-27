@@ -69,6 +69,26 @@ yarn add -D @voder/dev-config
 }
 ```
 
+## TypeScript JSON Config Exports
+
+You can extend your project’s tsconfig.json directly from this package:
+
+```jsonc
+// tsconfig.json
+{
+  "extends": "@voder/dev-config/typescript/tsconfig.eslint.json",
+  // ...your overrides
+}
+```
+
+```jsonc
+// tsconfig.json (for config files)
+{
+  "extends": "@voder/dev-config/typescript/tsconfig.config.json",
+  // ...your overrides
+}
+```
+
 ### ESLint Flat Config Usage
 
 ```js

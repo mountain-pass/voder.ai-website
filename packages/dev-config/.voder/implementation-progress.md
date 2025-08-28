@@ -1,162 +1,164 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-08-28T17:00:57.713Z
+**Generated:** 2025-08-28T20:04:57.301Z
 
 ![Progress Chart](./progress-chart.png)
 
 Projection: flat (no recent upward trend)
 
-## IMPLEMENTATION STATUS: INCOMPLETE (82.25% ± 12% COMPLETE)
+## IMPLEMENTATION STATUS: INCOMPLETE (82.375% ± 12% COMPLETE)
 
 ## OVERALL ASSESSMENT
-Overall the project is largely functional, building and testing correctly with comprehensive docs and dependency management. However, code quality is materially impacted by documented duplicated content and needs focused consolidation; security and documentation improvements are also recommended.
+The project is largely functional, well-tested, and executable with strong documentation and dependency hygiene. However code quality is the primary blocker (substantial duplicated content and redundant artifacts per ADR-0013), which prevents an overall COMPLETE rating. Addressing duplication and small housekeeping will raise the overall quality to the desired threshold.
 
 ## NEXT PRIORITY
-Consolidate duplicate docs and refactor duplicated utilities per ADR-0013 (small focused commits), then run full verify (lint, format, build, test) to validate improvements.
+Consolidate and commit ADR-0013 canonicalization (remove untracked duplicate-detect JS variants, merge duplicate docs) and re-run the full verify pipeline.
 
 
 
-## FUNCTIONALITY ASSESSMENT (90% ± 15% COMPLETE)
-- The repository implements the requested dev-config features (ESLint layers and complete export, TypeScript presets, Prettier config, Vitest factory, markdown linter abstraction, build/test scripts and comprehensive tests). Most public APIs, scripts, and test suites are present and aligned with the documented requirements; only minor implementation cleanup and verification steps remain.
-- Core exports implemented: eslint (base, dx, performance, complete), typescript presets (base,node,library,test), testing.createVitestNodeConfig(), and prettier default export.
-- Markdown linter abstraction implemented (linters/markdown.getConfig and createCLICommand) matching ADR-0006 and tests exercising it are present.
-- Build & packaging pipeline present: tsconfig.build.json, build script (tsc -p ...), copy-assets & generate-markdownlint-config scripts, and package.json scripts including verify and test:ci.
-- Comprehensive Vitest test suites exist that exercise export equivalence, package export paths, scripts unit+integration tests, and smoke tests — reflecting the dual testing strategy.
-- Istanbul coverage selection is implemented in testing factory (provider: 'istanbul') and vitest config excludes test/config files per ADRs.
-- Package.json exports point to dist/ artifacts (consistent with dual-export strategy); build is required before consumers can import runtime JS files referenced in tests.
-- Minor discrepancies observed: @vitest/coverage-v8 still appears in devDependencies (leftover) while project favors @vitest/coverage-istanbul per ADR-0009; this is low-risk but worth aligning.
-- The copy-assets script filters for eslint/*.js in source; eslint sources are TypeScript (.ts) and are compiled by tsc to dist/eslint/*.js before copy-assets runs in the build step — ensure build order is preserved (currently tsc runs before copy:assets).
-- A local unstaged doc change (docs/libraries/usage/vitest.md) exists in working tree; non-functional but should be committed/cleaned to keep verify reproducible.
-- Runtime validation utilities (validateRuntimeEnvironment, jsonLoader) and required TypeScript JSON templates (typescript/tsconfig.*.json) are present and used by tests.
-
-**Next Steps:**
-- Run a full clean build and verify locally (npm ci / npm run build / npm run test:ci) to confirm all dist paths referenced by tests are generated and tests pass in CI-like environment.
-- Remove or rationalize leftover @vitest/coverage-v8 devDependency if not needed; update package.json and regenerate lockfile as per ADR plan.
-- Stage and commit the modified docs/libraries/usage/vitest.md change so repository is clean for automated verify and CI runs.
-- Consider a quick grep for any other stale coverage-v8 references and align devDependencies/peerDependencies to @vitest/coverage-istanbul for consistency with ADR-0009.
-- After the above, run npm run verify to ensure lint, markdown-lint, format, build, and test:ci all pass before pushing dependency-alignment changes.
-
-## CODE_QUALITY ASSESSMENT (35% ± 12% COMPLETE)
-- Project demonstrates strong tooling (ESLint flat config, Prettier, Vitest, markdownlint, tsconfigs, verify script) and comprehensive tests, but the repository contains documented duplicate-content findings (ADR-0013 / duplicate-detection runs). Per the scoring rules, any detected substantial duplication triggers the 35% maximum cap despite otherwise good quality tooling and enforcement.
-- Quality tooling is present and configured: ESLint flat-config layers (eslint/), Prettier (prettier.config.ts), Vitest tests and vitest.config.ts factory, markdown lint abstraction (linters/markdown) and generation script, and TypeScript presets under typescript/.
-- package.json includes required scripts (lint, lint:fix, lint:check, lint:md, lint:md:fix, format, format:check, build, test, verify) and the verify pipeline includes the mandated `npm audit fix --force` step.
-- Comprehensive test suites exist (many Vitest tests covering scripts, exports, integration/pack tests, and utilities). Dual-testing strategy for scripts (unit + integration) is implemented and tests follow it.
-- Exports follow the dual-export strategy; tests verify export-equivalence and package export integration which aligns with project guidance.
-- TypeScript configs and ESLint/Prettier usage match the documented consumer patterns (tsconfig extends, eslint flat layers, prettier re-export), showing strong adherence to guidance.
-- Automated enforcement: verify script enforces lint/format/build/test; repository history indicates CI/verify workflows were added and used during development.
-- Duplicate content: ADR-0013 and duplicate-detection tooling were run and recorded. The project explicitly documents duplicate findings and remediation steps. The scoring rules mandate an immediate CAP when any substantial duplicate content patterns are detected.
-- Repository hygiene: no obvious tracked temporary files or editor backups present; .gitignore covers build artifacts and common noise. Scripts and utilities are small, focused, and testable.
-- Minor gap: no visible pre-commit hook configuration (e.g., husky) in repository root to enforce checks locally before commits; CI-based enforcement appears present but local commit-time enforcement could be improved.
+## FUNCTIONALITY ASSESSMENT (92% ± 17% COMPLETE)
+- The package implements the requested dev-config features (TypeScript presets, ESLint flat-config layers and a complete export, Prettier TS config, Vitest testing factory with Istanbul coverage, markdown-linter abstraction, export paths, build scripts and comprehensive tests). Most consumer-facing requirements are present and exercised by tests and build outputs.
+- TypeScript presets are exported and accessible (typescript/* JSON exports and runtime index present).
+- ESLint provides base/dx/performance layers and a complete flat-config that includes file patterns, test and script globals; root eslint.config.ts uses the package export as intended.
+- Prettier is provided as a TypeScript config (prettier.config.ts) and exported; src and compiled dist artifacts exist and tests assert expected properties.
+- Testing: createVitestNodeConfig() factory implemented; vitest config uses Istanbul provider and coverage thresholds are enforced in tests; many Vitest suites exist and historically report high coverage.
+- Markdown lint abstraction (getConfig / createCLICommand) implemented and documented; package.json declares markdownlint-cli2 as a peerDependency.
+- Build scripts and utilities (copy-assets, generate-markdownlint-config, safeSpawn, ensureDir, jsonLoader) are implemented with unit + integration tests following the dual-testing strategy.
+- Package.json exports point to dist artifacts and types; tsconfig build files and runtime validation utilities are present to support consumer usage.
+- Repository contains ADRs and decision docs required by governance; docs include consumer quickstart and libraries/usage documentation.
+- Minor operational items visible but not blocking functionality: there are two untracked ADR todo/classification files and planned cleanup steps (duplicate-detection JS variants removed/untracked).
 
 **Next Steps:**
-- Complete ADR-0013 remediation work: consolidate or document canonical copies for user-facing duplicated docs and remove or reclassify truly redundant tracked files to eliminate the duplication trigger for scoring.
-- Run the duplicate-detect.sh pipeline regularly (CI job) and prevent tracked duplicates from reappearing; incorporate its output into PR checks.
-- Add lightweight local enforcement (pre-commit hooks) to run lint:fix/format and a fast test/validate step to catch problems before pushing.
-- After duplicates are resolved, re-evaluate code quality score—tooling and test coverage indicate the project can reach a much higher score once duplication is addressed.
-- Consider documenting the duplicate-detection and ADR remediation process in CONTRIBUTING.md so future contributors avoid creating tracked duplicate content.
+- Run a fresh npm run verify locally to reconfirm all checks (lint, md-lint, format, build, test:ci) in the current working tree before pushing.
+- Commit the two untracked ADR docs or incorporate them into ADR-0013 as a small, focused commit so repository state is clean.
+- Execute the planned removal of any remaining untracked duplicate-detect JS files (rm -f scripts/duplicate-detect.js scripts/duplicate-detect.cjs) and commit the canonicalization per ADR-0013.
+- After verify is green, push the branch upstream and run CI to confirm no environment-specific failures.
+- Optional: run a targeted review of consumer-facing examples (CONSUMER-QUICKSTART.md and docs/libraries/usage) to ensure no mismatches between export paths and runtime expectations for consumers.
 
-## TESTING ASSESSMENT (90% ± 14% COMPLETE)
-- The test suite is comprehensive, includes many unit and integration tests, and a recent full verify (lint/build/tests) completed successfully. Coverage requirements are enforced and tests exercise the package exports, scripts, and config generation. A few brittle/integration tests and subprocess usages present moderate flakiness risk but do not appear to have caused recent failures.
-- A recent full local verify run (npm ci + npm run verify) completed successfully per the project history, indicating a recent full green run.
-- The repository contains extensive Vitest suites: unit tests for scripts (copy-assets, generate-markdownlint-config), integration/npm-pack tests, export-equivalence, package-structure, and smoke tests.
-- Coverage policy (80% across metrics) is enforced and many tests are explicitly designed for coverage (unit + integration dual strategy for scripts).
-- There are integration tests that pack/install the package (npm pack, temporary consumer projects) and subprocess-based tests that can be slower and more environment-sensitive.
-- Some tests are explicitly brittle or flagged (e.g., NODE_V8_COVERAGE debugging, a skipped jiti-negative test) and rely on environment variables or global require.resolve stubbing—these are potential flakiness sources.
-- Dependency- and lockfile-dependent tests (dependency-alignment) require a deterministic package-lock.json; project history shows a lockfile was generated and used for successful verification.
+## CODE_QUALITY ASSESSMENT (30% ± 12% COMPLETE)
+- Strong adherence to the project's quality tooling and enforcement (ESLint flat config, Prettier, Vitest with Istanbul, markdownlint, verify script with npm audit fix), but repository contains documented duplicate/near-duplicate content in decision/docs files and some redundant artifacts which triggers the project’s duplicate-content quality cap, substantially limiting the score.
+- Tooling & enforcement: package.json exposes required scripts (lint, lint:fix, lint:check, lint:md, lint:md:fix, format, verify) and verify includes `npm audit fix --force` as required by guidance.
+- ESLint: flat-config layers implemented (eslint/base.ts, eslint/dx.ts, eslint/performance.ts) and exported as `complete`; consumer-facing root eslint.config.ts is the simple `export { complete as default } from '@voder/dev-config/eslint';` pattern required by guidance.
+- Prettier: TypeScript prettier.config.ts present and exported via src/prettier.config.ts; format and format:check scripts use NODE_OPTIONS for TypeScript configs per ADR-0004.
+- Testing & coverage: Vitest configuration factory (createVitestNodeConfig) exists and uses the Istanbul provider per ADR-0009; many unit and integration tests present; coverage-focused patterns (dual testing strategy) implemented.
+- Markdown linting: linters/markdown provides getConfig() and createCLICommand(); scripts/generate-markdownlint-config writes .markdownlint.json atomically; docs/decisions confirm markdownlint-cli2 choice and peer dependency guidance is present.
+- Automated checks: verify script ties linting/formatting/build/tests together; package exports and dist artifacts are validated by tests (package-structure, dist-imports), indicating enforcement in test suite and build.
+- Duplicate content issue (hard cap trigger): multiple near-duplicate ADR/doc files exist (several ADR-0013 variants and related consolidation files). The project's own rules treat any substantial duplication as an immediate quality cap (max 35%).
+- Redundant/unnecessary files: there are a few untracked/redundant items and multiple ADR variants (consolidation-todo, duplicate-classification, cleanup doc) that increase maintenance burden and suggest incomplete consolidation work.
+- Project guidance mostly followed: TypeScript strict mode, ESM modules, exported tsconfig templates, and required peerDependencies are present and tests exist to validate them—this offsets many other concerns but duplication remains the dominant issue.
 
 **Next Steps:**
-- Run the full verify sequence in CI for the current branch to confirm the green run is reproducible in the CI environment.
-- Stabilize brittle tests: convert env-dependent tests to controlled mocks or mark them as manual/optional, and replace global require.resolve mutation with dependency-injection or mocking helpers.
-- Reduce reliance on npx in tests by invoking local binaries directly (resolve via node_modules/.bin or package.json scripts) to avoid network fetches and speed up integration tests.
-- Add targeted flaky-test detection (retries or quarantined test lists) and schedule periodic full-verify runs to detect regressions early.
-- Document and harden subprocess invocations by sanitizing environment variables passed to child processes and limiting test-side effects (use temp dirs and strict cleanup).
+- Consolidate duplicate ADR/doc files (merge 0013 variants into a single canonical ADR) in focused commits, run `npm run lint:md:fix` and `npm run format`, then run full `npm run verify`.
+- Remove or properly ignore any redundant/untracked helper scripts (e.g., legacy duplicate-detect JS variants) and commit the canonical choice, referencing ADR-0013 per the repository policy.
+- Re-run repository-wide duplicate-detection and include the report in ADR-0013 (console-first output saved to /tmp) to demonstrate the cleanup.
+- After consolidation, re-run the full verify pipeline to ensure no regressions; address any minor style/test failures in small commits.
+- Consider adding a small CI/automation check (periodic run of scripts/duplicate-detect.sh) to prevent duplicate-doc regressions in future and document the approach in ADR-0013 follow-ups.
+
+## TESTING ASSESSMENT (95% ± 16% COMPLETE)
+- The repository has a comprehensive Vitest test suite (unit + integration), a documented dual testing strategy, and historical full green verify runs with 100% coverage reported. Tests exercise exports, scripts, packaging, and config generation; only environment-dependent risks remain.
+- Extensive Vitest suite present (~30+ test files covering unit, integration, smoke, export-equivalence, packaging and script tests).
+- Dual testing strategy implemented for scripts (unit tests for coverage + subprocess integration tests for E2E validation).
+- Coverage engine configured to Istanbul with enforced thresholds (80%); project history reports 100% coverage and many tests exercising coverage-critical code paths.
+- Package export and packaging integration tests (npm pack + temporary consumer) validate real consumer experience and compiled dist artifacts.
+- Recent project history documents successful `npm run verify` and build cycles; verify order includes `npm audit fix --force`, linting, format, build, and test:ci.
+- Some tests have environment dependencies (Node >=22.6.0 for TS config loading, jiti, file-system operations, and `npm pack`), which require correct CI/host configuration to be reproducible.
+- There is at least one intentionally skipped test (validateRuntime jiti-resolution case), showing test authors handle non-deterministic scenarios; some integration tests are relatively heavyweight and may slow CI.
+- Overall test coverage and scope are excellent and well-aligned with project goals (exports, scripts, linters, config generation).
+
+**Next Steps:**
+- Run `npm run verify` locally/CI on the current branch to reproduce the most recent full green run and capture logs into /tmp for auditability.
+- Ensure CI runners use Node >=22.6.0 and install peer dependencies like `jiti` so environment-dependent tests consistently pass.
+- Consider marking very heavy integration tests (pack/install) with longer timeouts or as optional matrix jobs to reduce flakiness and speed feedback for common PRs.
+- Add or confirm a nightly CI job that runs the full `verify` pipeline to detect regressions early and maintain the "recent full green run" status.
 
 ## EXECUTION ASSESSMENT (95% ± 18% COMPLETE)
-- Execution validation is successful: local verify (lint, format, build, tests) and packaging/integration steps have been run and passed. Build artifacts (dist/) and lockfile were produced and consumer-installation tests executed, indicating the software runs and builds correctly.
-- The project reports a successful local verification run: npm run verify completed (audit, lint:fix, lint:check, lint:md:fix, format, build, test:ci).
-- npm ci and deterministic lockfile generation were performed; a package-lock.json was created and used for reproducible installs.
-- TypeScript build step completed and produced dist/ artifacts that tests reference (tests check for dist/src/prettier.config.js and other compiled outputs).
-- Vitest test suites (unit, integration, smoke, export-equivalence) were exercised; integration tests used npm pack and a temporary consumer project to validate exports.
-- Scripts for config generation and asset copying run successfully (generate-markdownlint-config.ts and scripts/copy-assets.ts have unit and integration tests that passed during verify).
-- Package export integration tests use real package.json exports and succeeded in prior runs (npm pack -> install -> runtime checks), demonstrating consumer-facing APIs work.
-- A small working-tree note: docs/libraries/usage/vitest.md is modified and not staged; this is a documentation change only and does not appear to affect build/test execution.
+- The repository builds and tests have been exercised and report success: the TypeScript build produced dist artifacts matching package.json exports, the verify pipeline has been run and completed, and Vitest suites (including package-export and smoke tests) were added and reported passing with coverage. Only minor housekeeping (two untracked ADR docs and removal of untracked duplicate-detect JS variants) remains and does not block runtime functionality.
+- npm build/verify pipeline has been executed previously and reported successful completion (build produced dist/ with JS and .d.ts matching package.json exports).
+- Vitest test suites are comprehensive and were reported to reach 100% coverage in the history; tests include unit + integration patterns (scripts unit tests and CLI integration tests).
+- package.json exports point at ./dist artifacts and package-structure/package-exports tests verify those exports are present and functional.
+- Scripts implemented as testable functions (copy-assets, generate-markdownlint-config) are covered by both unit and integration tests and include CLI guards and istanbul ignores per policy.
+- Markdown linter abstraction (linters/markdown) is implemented and generator script correctly writes .markdownlint.json; scripts exist to regenerate and tests verify output.
+- Dependency alignment test requires package-lock.json; a lockfile was regenerated and verification runs succeeded after fixes.
+- Current git working tree has two untracked decision files (docs/decisions/0013-*) and previously-discussed untracked duplicate-detect JS variants remain to be removed from disk—these are housekeeping items and not runtime failures.
+- A previously-observed verify failure caused by build-order/import timing was fixed as recorded in the history; no remaining critical runtime errors are reported.
 
 **Next Steps:**
-- On the current branch run a fresh, non-cached verify: rm -rf node_modules dist coverage && npm ci --no-audit --no-fund && npm run verify to re-validate in a clean environment.
-- Stage and commit the single modified doc file (or confirm intentional change) so working tree is clean before creating dependency alignment branch.
-- Push the branch and run CI to ensure the same verify steps succeed in the CI environment (catch env-specific issues).
-- If you plan dependency/alignment changes (deps/align-vitest-coverage), follow the planned non-interactive steps and fail-fast on verification failures; update lockfile only after verify succeeds.
-- Optionally run the duplicate-detection report on CI or an isolated runner to ensure no tracked duplicates exist before merging documentation cleanups.
+- Run a fresh, local `npm ci && npm run verify` to reproduce the green verification in your environment and capture logs to /tmp as the console-first policy requires.
+- Perform the planned NOW action: remove the two untracked duplicate-detect JS files (rm -f scripts/duplicate-detect.js scripts/duplicate-detect.cjs) and commit the canonicalization per the documented plan.
+- Add and commit the two ADR files (if they are intended to be tracked) or move them to the canonical ADR location; then re-run `npm run lint:md:fix` and `npm run format` and commit any automated fixes.
+- Once local verify is green, push the branch upstream and record push logs; if verify fails, iterate with small focused fixes as described in the project plan.
 
-## DOCUMENTATION ASSESSMENT (88% ± 16% COMPLETE)
-- Documentation is thorough and well-organized: README, API reference, usage guides, ADRs, and library-specific usage docs are present and mostly complete. A few clarity and workflow gaps remain (minor), and one local doc change is outstanding in the working tree.
-- README.md is comprehensive: quick start, installation, compatibility, API snippets, peer-dependency guidance, troubleshooting, and verify/build/test instructions are present.
-- API reference (docs/API.md) exists and documents testing, eslint, prettier, typescript, and markdown exports with expected shapes and usage notes.
-- Library usage docs under docs/libraries/usage cover key dependencies (esbuild, eslint-plugin-import, unicorn, markdownlint-cli2, vitest) with practical examples and guidance for consumers.
-- ADR collection (docs/decisions/) is robust and documents architecture, dependency and testing decisions (including markdownlint selection, Istanbul coverage, dual testing strategy, peer dependency policy). This supports governance and rationale for current configuration.
-- Scripts and developer flows are documented (generate-markdownlint-config, copy-assets, verify pipeline) and corresponding documentation links and tests exist to dog-food the flows.
-- Markdown linting guidance and a generator script are provided; README and docs/libraries/usage/markdown-lint.md explain usage and package.json script examples for consumers.
-- TypeScript presets and tsconfig templates are exposed and documented; tests validate exported JSON presets (tsconfig exports test coverage present).
-- Some documentation references advanced Node flags (NODE_OPTIONS="--experimental-strip-types") and jiti requirements — these are present but would benefit from a short, explicit step-by-step note in one place for new contributors.
-- There is a modified docs/libraries/usage/vitest.md file in the working tree (git shows it modified) — ensure that change is committed so docs and repo state are consistent.
-- A few places reference internal policies (console-first, .voder/history capture). Those are documented but may be unfamiliar to outside consumers; consider a brief 'developer onboarding' pointer in the README that highlights the console-first policy and .voder expectations.
+## DOCUMENTATION ASSESSMENT (88% ± 15% COMPLETE)
+- Documentation coverage is strong: README, API reference, consumer quickstart, ADRs, and per-dependency usage guides are present and practical. A few inconsistencies and duplicate fragments reduce clarity and warrant consolidation per ADR-0013.
+- README.md is comprehensive: quickstart, install instructions, peerDeps list, usage examples (tsconfig, eslint, prettier, vitest, markdown). It documents jiti requirement and NODE_OPTIONS usage for TypeScript config files.
+- docs/API.md provides a concise reference for main exports (testing, eslint layers, prettier, typescript, markdown). This helps consumers programmatically discover available helpers.
+- Consumer Quickstart (docs/CONSUMER-QUICKSTART.md) contains copy/paste-ready snippets for tsconfig, eslint, prettier, vitest, and package.json scripts — very useful for adoption.
+- docs/libraries/usage/ contains targeted dependency usage docs (esbuild, eslint-plugin-import, unicorn, vitest, markdown-lint) which are helpful for integrators and LLM agents.
+- Comprehensive ADRs under docs/decisions/ document governance and technical rationale (supply-chain, coverage engine, markdown tool choice, testing strategy). This is valuable for maintainers and auditability.
+- linters/markdown implementation and scripts/generate-markdownlint-config.ts are documented and tested; docs/libraries/usage/markdown-lint.md clearly explains generation and CLI usage.
+- Prettier and Vitest configuration guidance (TypeScript prettier.config.ts, createVitestNodeConfig) is present and aligned with package implementation; coverage provider and thresholds are documented.
+- There is some duplicated and slightly messy documentation (multiple near-duplicate ADR drafts and TODO files in docs/decisions/), which the repository already tracks (ADR-0013) and plans to consolidate.
+- A notable inconsistency exists: docs/decisions/0003 (adopting classic ESLint extends) conflicts with the rest of the repo which uses ESLint v9 flat config and exports flat-config layers. This could confuse consumers and should be reconciled.
+- Some user-facing checks assume consumers will import compiled files under dist/ (package.json exports) — docs explain this, but consumers must be aware to install peer deps (jiti, eslint plugins). The guidance is present but should be emphasized in one short 'Prerequisites' block.
 
 **Next Steps:**
-- Commit the outstanding docs change (docs/libraries/usage/vitest.md) so repository docs and working tree are aligned.
-- Add a short, explicit 'Developer setup' subsection in README (or a single docs page) that lists the exact initial steps: install peer deps (including jiti), set NODE_OPTIONS for Prettier when needed, and run npm ci / npm run verify — this reduces on-boarding friction.
-- Consolidate a small 'Troubleshooting' checklist in README linking to ADRs and common diagnostics (missing jiti, tsconfig issues, audit failures) so users can quickly follow remediation steps without scanning multiple files.
-- Consider an authoritative single-line example for ESLint consumer usage that demonstrates the intended 'complete' import pattern (export default complete) to reinforce the one-line target and avoid consumer confusion.
-- Verify and surface any small inconsistencies between README, API.md, and docs/libraries/usage pages (e.g., exact Node version requirements, recommended package versions) and harmonize wording where necessary.
+- Consolidate duplicated documentation and remove or merge the provisional ADR drafts as planned under ADR-0013 so consumers see a single authoritative source for each topic.
+- Resolve the ESLint guidance inconsistency: either update ADR-0003 to reflect flat-config usage or add a short note in README/docs/decisions explaining why the flat-config approach supersedes that ADR to avoid confusion.
+- Add a short, prominent 'Prerequisites & Troubleshooting' section in README (or top of Consumer Quickstart) that highlights Node >=22.6.0, jiti installation, and the NODE_OPTIONS flags required for TypeScript config files so consumers hit fewer surprises.
+- Run markdownlint and Prettier over docs after consolidation (the repo already has scripts) and commit the auto-fixes to ensure uniform formatting and remove minor wording/typo issues.
+- Verify API.md and the examples are kept in sync with package.json exports (after build); consider a short note in API.md linking to the package export paths and explaining the consumer pattern (dedicated paths vs main index).
 
 ## DEPENDENCIES ASSESSMENT (88% ± 16% COMPLETE)
-- Dependencies are generally well-managed, with explicit peerDependency declarations, an up-to-date lockfile, and ADR-driven exact-version alignment for Vitest coverage. A few developer-only packages are pinned intentionally; one or two dev deps (notably esbuild) warrant review for freshness.
-- Peer dependencies declared for consumer-facing tools (eslint, prettier, typescript, vitest, markdownlint-cli2, etc.), which improves consumer clarity and avoids bundling dev tools.
-- DevDependencies include exact/aligned versions for vitest and coverage providers (vitest@3.2.4 and @vitest/coverage-istanbul@3.2.4) per ADR-0005/0009 — this is deliberate to avoid peer mismatches.
-- A top-level package-lock.json exists (lockfileVersion 3) and the project history indicates npm audit / verify was run successfully, suggesting no outstanding high-severity vulnerabilities at last verification.
-- Some devDependencies are pinned to exact versions (e.g., @vitest/coverage-istanbul: "3.2.4", vitest: "3.2.4"); this is acceptable for test-alignment but requires care when performing upgrades.
-- There is both @vitest/coverage-istanbul and @vitest/coverage-v8 present in devDependencies; peerDependencies expose istanbul as the canonical provider. Keeping v8 in devDependencies is harmless but could be removed to reduce maintenance surface if not needed.
-- Tooling versions are mostly modern (TypeScript ^5.x, ESLint 9.x, Prettier 3.x), but a few packages (e.g., esbuild ^0.25.9 in devDependencies) look unusually old relative to typical recent releases and should be validated for compatibility and security.
-- markdownlint-cli2 is correctly specified as a peer dependency in consumer guidance and implemented via an abstraction layer (linters/markdown), which is good for long-term maintainability.
-- The repository follows ADR and governance policies around dependency changes (ADRs required for new direct dependencies), which improves change traceability and reduces accidental risky upgrades.
+- Dependency posture is strong: lockfile present, verify script enforces npm audit, and historical npm audit runs report zero vulnerabilities. Package uses appropriate peerDependency declarations and deliberate version alignment for Vitest/coverage providers. A few devDeps (notably esbuild) look potentially dated and should be checked/upgraded regularly.
+- Security: Project history shows npm audit runs and a regenerated lockfile with reported 0 vulnerabilities; verify script includes `npm audit fix --force` as a first step which enforces continuous remediation.
+- Lockfile & reproducibility: package-lock.json is present and used in tests, improving reproducible installs; dev/test flows pack/install the tarball for integration tests, which exercises the actual lockfile-resolved tree.
+- Peer dependency management: Consumer-facing tools (eslint, prettier, typescript, vitest, markdownlint-cli2, etc.) are declared as peerDependencies, which is correct for a configuration package.
+- Deliberate pinning: Vitest and related coverage providers are pinned/aligned (3.2.4) per ADR-0005 to avoid peer-version incompatibilities — this is intentional and appropriate for test stability.
+- DevDependencies currency: Most tooling (eslint 9.x, prettier 3.x, typescript ^5.x) uses modern ranges; however `esbuild` is at `^0.25.9` in devDependencies which appears older than typical current releases and should be reviewed for updates.
+- Mixed exact and caret ranges: A pragmatic mixture exists (exact pins for vitest provider alignment, caret ranges for other peers) — acceptable when documented and tested, but requires vigilance to avoid transitive conflicts.
+- Redundant coverage providers: Both `@vitest/coverage-istanbul` and `@vitest/coverage-v8` appear in devDependencies; docs/ADRs state Istanbul is chosen. Keeping the V8 provider may be intentional for fallback/testing but should be documented to avoid confusion.
+- Automation & policy risks: `npm audit fix --force` is aggressive and can introduce breaking updates; the repo mitigates this by immediately running lint/build/test in verify, but this policy requires continued investment in tests to catch regressions early.
 
 **Next Steps:**
-- Run a fresh npm audit and supply-chain scan (npm ci then npm audit --audit-level=high) to confirm current state and capture machine-readable results (/tmp/npm-audit.json) before making upgrades.
-- Review and consider upgrading or validating esbuild (^0.25.9) against current releases and compatibility matrix; if the pinned version is intentional, document reasoning in an ADR.
-- If @vitest/coverage-v8 is not required for local experimentation, remove it from devDependencies to reduce maintenance or document its purpose in ADR-0005/0009.
-- Establish a periodic dependency review (Dependabot/Renovate) configured to open PRs for non-breaking updates and require the existing `npm run verify` pipeline to pass before merging.
-- Before any mass upgrades, regenerate lockfile (`npm install --package-lock-only`) in a feature branch and run the full verify sequence (lint, build, tests) to detect breakages early.
+- Run `npm outdated` and evaluate upgrades for devDependencies (start with esbuild) in a small, tested PR; prioritize dependency upgrades that fix vulnerabilities or improve compatibility.
+- Document rationale for keeping both `@vitest/coverage-v8` and `@vitest/coverage-istanbul` (if intentional), or remove the unused provider to reduce surface area.
+- Schedule periodic dependency refresh cadence (dependabot or cron job) and ensure the verify pipeline runs after each upgrade to catch breaking changes early.
+- Consider running `npm audit` in CI without `--force` occasionally to surface potential breaking fixes before auto-applying them, and record any forced-fixes in the change log/ADR if they cause test failures.
+- Add a short automation test that validates peerDependency compatibility (e.g., install consumer tool versions listed in peerDependencies into a temp project) to catch integration issues proactively.
 
-## SECURITY ASSESSMENT (78% ± 12% COMPLETE)
-- Overall security posture is good for a configuration package: explicit peer/dev dependencies, committed lockfile, ADRs addressing supply-chain policy, and tests that use temporary directories. The main concerns are supply-chain exposure via an outdated esbuild devDependency, the project-wide practice of automatically running `npm audit fix --force` in verify (operational risk), and multiple uses of child_process.execSync/npx with inherited environment variables (potential for secret leakage or command-injection when inputs are not strictly controlled).
-- Committed package-lock.json and explicit peerDependencies reduce runtime dependency ambiguity — positive for supply-chain hygiene.
-- Project enforces `npm audit fix --force` in the verify script. While this reduces reported vulnerabilities, the forced auto-fix can introduce breaking changes and unintentionally pull in upgrades that change behavior or create transient security gaps. It also masks audit results in CI unless audit logs are captured separately.
-- DevDependency `esbuild` is pinned to a very old range (^0.25.9) which historically had multiple security advisories. Older build tooling in devDependencies can be a supply-chain risk for contributors and CI unless isolated and regularly audited/updated.
-- Multiple tests and scripts spawn subprocesses via `execSync` (and `npx`) and pass `process.env` through. These patterns can expose secrets or cause inconsistent behavior if environment variables are not sanitized. Using `npx` in tests can also trigger network lookups if a binary isn't present locally.
-- Scripts write configuration files into the current working directory (e.g. `.markdownlint.json`) and run `npm pack`/`npm install` in temporary consumers. This is expected behavior but requires careful sandboxing and should avoid running on untrusted input/paths to prevent accidental overwrites or code execution.
-- Some tests temporarily override or mock module resolution (e.g., `require.resolve`), which is flagged/skipped in one case. Care should be taken to avoid altering global resolver behavior in ways that could hide supply-chain problems or create false positives/negatives during automated validation.
-- Use of `NODE_OPTIONS="--experimental-strip-types"` in scripts (Prettier) relies on an experimental Node flag; this is operationally acceptable but should be constrained to developer/CI environments matching the documented Node versions to avoid inconsistent behavior.
-- Good: `.gitignore` prevents committing build artifacts and `.voderignore` allows LLM inspection without leaking artifacts to VCS. Project adheres to console-first policy (no diagnostic files committed).
-- Good: ADRs and documentation (ADR-0007, ADR-0009, ADR-0010, etc.) show conscious supply-chain and coverage engine decisions — helpful for auditing and for establishing policies when upgrading dependencies.
-
-**Next Steps:**
-- Perform a focused dependency SCA scan (e.g., Snyk, GitHub Dependabot, or npm audit) against the committed package-lock.json and treat devDependency advisories as actionable items; immediately investigate esbuild (^0.25.9) and upgrade to a supported, patched release if feasible.
-- Replace `npm audit fix --force` in the normal local `verify` flow with a controlled remediation workflow: capture audit output to logs, surface findings, and require a dedicated dependency-upgrade commit/branch with regression tests rather than forcing in-place fixes. (Preserve the ADR that mandates audits but change the auto-fix practice.)
-- Limit use of `execSync`/`npx` in tests and scripts where possible. Prefer direct invocation of local binaries (node_modules/.bin or programmatic APIs), spawnFile/execFile with args array, and explicit environment whitelisting to avoid shell injection and secret propagation.
-- Sanitize environment passed to subprocesses in tests and scripts (whitelist known variables or pass a curated env object). Avoid blindly forwarding `process.env` into child processes in CI and tests.
-- Add CI SCA and lockfile integrity checks that fail builds on high/critical advisories and verify `package-lock.json` authenticity (tooling like `npm ci --prefer-offline` + lockfile checks).
-- Pin critical tooling (build/test/coverage provider) to exact versions in devDependencies and ensure peer/dev version alignment via automated tests (there are already tests checking vitest/provider alignment — keep and extend these).
-- Introduce a minimal security checklist in CONTRIBUTING.md: node engine requirements, how to run local SCA, how to test dependency upgrades, and guidelines for modifying verify/audit behavior.
-- Consider adding an `engines.node` field in package.json to enforce the minimal Node.js version required for features (reduces risk of running experimental flags on unsupported runtimes).
-
-## VERSION_CONTROL ASSESSMENT (94% ± 9% COMPLETE)
-- Version control is healthy: only one unstaged modification, no untracked files, proper ignore patterns, and no conflicts detected. Commit and push the small change to keep history synchronized.
-- Working directory has a single unstaged modification: docs/libraries/usage/vitest.md (no other modified, staged, or untracked files).
-- No untracked files reported and 7 sensible git-ignored patterns (node_modules/, dist/, coverage/, tmp/, etc.) — ignore rules appear correctly configured for build artifacts.
-- No merge conflicts or repository corruption reported in git status output; repository appears consistent and usable.
-- Critical source, config, and docs are tracked. A top-level package-lock.json is present per repository history, and previous verify/build/test runs were executed successfully.
-- Branch is 'cleanup/dup-docs-and-utils' with one local modification; git status does not show a backlog of unpushed commits in the provided snapshot.
+## SECURITY ASSESSMENT (76% ± 12% COMPLETE)
+- Overall the codebase shows generally sound secure patterns for a development-configuration package (no obvious secret leakage or high-risk telemetry). Notable strengths include path-traversal checks, atomic file writes, a safeSpawn implementation (no shell), and limited attack surface (private package). Remaining risks are operational (dependency handling, use of execSync, environment merging) and should be addressed with a few targeted mitigations.
+- Good: copy-assets.copyMatchingFiles includes path traversal checks (resolved path startsWith source dir) and skips symlinks, reducing file traversal risk.
+- Good: generate-markdownlint-config writes atomically to a temp file then rename, reducing partial-write race conditions.
+- Good: safeSpawn uses spawn with shell:false and validates arguments synchronously, avoiding shell injection when used correctly.
+- Issue: many tests and scripts use execSync with interpolated command strings (e.g. `npx tsx ${scriptPath}` and `execSync('npm pack')`). If untrusted data ever flows into those strings this could allow command injection; currently usage appears to be with repo-local trusted paths but is a fragile pattern.
+- Issue: several places still call execSync directly (tests and integration helpers). These calls inherit process.env and may execute scripts or binaries; they can lead to privilege or supply-chain issues if run in hostile environments or with manipulated PATH.
+- Issue: verify script mandates `npm audit fix --force`. While it enforces zero-vuln state, `--force` can upgrade transitive dependencies to breaking versions automatically and mask root-cause issues; it also runs network operations during CI that can change dependency graph nondeterministically unless lockfile is strictly enforced.
+- Issue: safeSpawn merges provided opts.env into process.env without sanitization. This allows callers to override PATH, LD_PRELOAD, NODE_OPTIONS, or other sensitive env vars when launching subprocesses; recommend sanitizing or documenting allowed env overrides.
+- Issue: tests perform `npm install` in ephemeral directories and execute installed package code (npm install may run lifecycle scripts). Running installs of arbitrary tarballs without disabling lifecycle scripts is a supply-chain risk; the current flow uses local tarball of this repo but is a pattern to harden.
+- Issue: validateRuntimeEnvironment uses `require.resolve('jiti')` from ESM context; relying on require.resolve behavior across environments may create unexpected failures but is low-security-risk; ensure behavior is consistent in CI nodes.
+- Observation: package.json marks the package private and many dev deps are pinned reasonably; however frequent automatic audit-fix and broad peer dependency ranges could lead to unexpected version skew—consider stricter pinning for critical tools.
 
 **Next Steps:**
-- Stage and commit the modified file (git add docs/libraries/usage/vitest.md; git commit -m "docs: update vitest usage wording") and push the branch to remote.
-- Run the project's verify sequence (npm run verify) locally before pushing to ensure lint/format/build/test pass.
-- Keep working changes small and commit frequently to avoid accumulation; ensure branches are pushed promptly to maintain collaboration hygiene.
+- Replace remaining execSync invocations used for operational tasks with safeSpawn or a wrapper that validates inputs and disallows shell interpolation; where execSync is retained for tests document and isolate it.
+- Sanitize environment merging in safeSpawn (explicit allowlist of env keys or drop sensitive vars like PATH, LD_PRELOAD, LD_LIBRARY_PATH, NODE_OPTIONS by default) or add an explicit opts.safeEnv parameter.
+- Harden dependency workflow: require a committed lockfile for CI installs (use npm ci) and avoid `npm audit fix --force` in automated pipelines without a manual review step; instead surface audit results and triage upgrades in discrete PRs or apply scripted but reviewed updates.
+- Add SCA tooling (Dependabot/renovate + Snyk or OSS security scanner) and configure alerts; add periodic reproducible SCA scans in CI and enforce lockfile verification before verify runs.
+- When packing/installing the package for integration tests, set npm install flags to disable lifecycle scripts (e.g., `--ignore-scripts`) or assert the tarball is local and trusted; document this test assumption explicitly.
+- Add unit tests and code-review checks ensuring any new scripts that accept external paths validate and canonicalize inputs; add a linter rule or checklist to avoid unchecked execSync usages in future commits.
+
+## VERSION_CONTROL ASSESSMENT (95% ± 18% COMPLETE)
+- Version control is healthy: working tree is essentially clean (only 2 untracked files), critical sources and configs are tracked, ignores are correct, and there are no conflicts reported. Small, actionable housekeeping remains (commit the two untracked docs).
+- Total uncommitted files (staged + unstaged + untracked) = 2 (well under the 10-file threshold).
+- No modified tracked files are listed as changed/unstaged; only two untracked decision-doc files are present.
+- Tracked files count and project structure appear correct: source, configs, scripts, and tests are tracked.
+- .gitignore contains standard entries (dist/, node_modules/, coverage/, tmp, logs etc.) so build artifacts and deps are properly excluded.
+- No merge conflicts or repository corruption are reported by git status; current branch is 'cleanup/security-hardening-20250828T183725Z'.
+- History indicates active, incremental commits and prior successful verify/build runs; no evidence of many unpushed commits in the provided status.
+- Two untracked files: docs/decisions/0013-consolidation-todo-20250828T183725Z.md and docs/decisions/0013-duplicate-classification-20250828T000000Z.md — likely in-progress ADR work that should be committed or intentionally ignored.
+
+**Next Steps:**
+- Decide whether the two untracked docs should be committed; if so: git add docs/decisions/0013-* && git commit -m "docs(adr): add consolidation artifacts; refs ADR-0013"
+- Run the project's verify pipeline (npm run verify) after committing to ensure no auto-fix or formatting surprises before pushing.
+- Push the branch (git push) once verify is green to avoid accumulating unpushed commits.
+- If the two files are temporary, either remove them or add an appropriate .gitignore entry (and document the reason) to avoid future untracked noise.

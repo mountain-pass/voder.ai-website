@@ -1,4 +1,0 @@
-# Ignore generated transient artifacts created during scripts/tests
-# These files are not source and should not be linted.
-
-tmp/

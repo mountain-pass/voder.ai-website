@@ -1,87 +1,102 @@
 ## NOW
+Add a conservative ignore for generated transient artifacts and commit it:
+- Action: Append a single line `tmp/` to `.eslintignore` and commit that change with message:
+  "chore(eslint): ignore generated tmp/ artifacts to avoid linting transient files — refs ADR-0013"
 
-Run a single non-interactive commit that records the autofix changes already applied to tracked files:
-- git commit -am "fix: apply eslint --fix to targeted files (copy-assets, generate-markdownlint-config, safe-spawn) — refs ADR-0013" 2>&1 | tee /tmp/git-commit-autofix.log || true
-
-## NEXT
-
-After the commit above completes, perform these non-interactive verification and remediation steps in order. Inspect each /tmp/*.log produced before moving to the next step.
-
-1) Run a strict lint check and capture remaining problems:
-- npm run lint:check 2>&1 | tee /tmp/lint-check-after-autofix.log || true
-
-2) Produce a concise list of files reported by ESLint and get full ESLint output for them:
-- grep -oE '([./A-Za-z0-9_@/.-]+\.ts|[./A-Za-z0-9_@/.-]+\.js)' /tmp/lint-check-after-autofix.log | sed 's/^[[:space:]]*//;s/[,:;]$//' | sort -u > /tmp/lint-remaining-files.txt || true
-- npx eslint -f unix $(cat /tmp/lint-remaining-files.txt 2>/dev/null || true) 2>&1 | tee /tmp/lint-remaining-details.log || true
-
-3) Apply minimal non-interactive fixes and commit them file-by-file (rules: prefix unused params/vars with `_`, rename unused catch variables to `_err` or similar, remove obviously-unused imports/vars, avoid structural changes). For each file listed in /tmp/lint-remaining-files.txt run:
-- while IFS= read -r f; do \
-    [ -z "$f" ] && continue; \
-    # Attempt auto-fix first (non-interactive)
-    npx eslint --fix "$f" 2>&1 | tee "/tmp/eslint-fix-post-manual-$(basename "$f").log" || true; \
-    # If still lint problems related to unused params/vars, apply minimal sed edits to prefix unused identifiers with `_` (non-destructive pattern-based attempt)
-    # (This sed is conservative: add leading underscore to function args named exactly 'err' or 'signal' or 'unlinkErr' when present)
-    if grep -qE '(^|[,([:space:]])(err|signal|unlinkErr)([[:space:]),])' "$f" 2>/dev/null; then \
-      sed -E -i.bak -e 's/(^|[,([:space:]])err([[:space:]),])/\\1_err\\2/g' -e 's/(^|[,([:space:]])signal([[:space:]),])/\\1_signal\\2/g' -e 's/(^|[,([:space:]])unlinkErr([[:space:]),])/\\1_unlinkErr\\2/g' "$f" 2>&1 || true; \
-    fi; \
-    # Run eslint --fix again after sed edits
-    npx eslint --fix "$f" 2>&1 | tee -a "/tmp/eslint-fix-post-manual-$(basename "$f").log" || true; \
-    # If file changed, commit it (one commit per file)
-    if ! git diff --quiet -- "$f"; then \
-      git add "$f"; \
-      git commit -m "fix(${f}): minimal lint edits (unused params/console adjustments) — refs ADR-0013" 2>&1 | tee "/tmp/git-commit-manual-$(basename "$f").log" || true; \
-    else \
-      echo "No manual changes required for $f" > "/tmp/git-commit-manual-$(basename "$f").log"; \
-    fi; \
-  done < /tmp/lint-remaining-files.txt
-
-4) Re-run the strict lint check and capture final results:
-- npm run lint:check 2>&1 | tee /tmp/lint-check-final.log || true
-
-5) If lint is now clean (inspect /tmp/lint-check-final.log), run markdown autofix and Prettier and commit formatting changes:
-- npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix.log || true
-- npm run format 2>&1 | tee /tmp/format-after-fix.log || true
-- git add . && git commit -m "chore(format/docs): markdown & prettier autofix after lint fixes — refs ADR-0013" 2>&1 | tee /tmp/git-commit-format-docs.log || true
-
-6) Run the full verification pipeline and capture output:
-- npm run verify 2>&1 | tee /tmp/verify-after-fix.log || true
-
-7) If `npm run verify` fails, gather targeted logs for the failing stage and iterate (do not run interactively):
-- If build fails:
-  - npm run build 2>&1 | tee /tmp/build-fail.log || true
-- If tests fail:
-  - npx vitest run --reporter=verbose 2>&1 | tee /tmp/test-fail.log || true
-- Examine the relevant logs (/tmp/build-fail.log, /tmp/test-fail.log, /tmp/verify-after-fix.log) and apply focused minimal fixes (one-file commits), then repeat step 6 until verify succeeds.
-
-Notes for NEXT:
-- All edits must be minimal and non-structural; prefer prefixing unused identifiers with `_` over removing function parameters.
-- Preserve CLI-only guards and istanbul ignore comments.
-- Inspect the produced /tmp/*.log files after each step to maintain console-first history and decide whether further manual edits are needed.
-
-## LATER
-
-Once lint is clean and `npm run verify` succeeds locally, perform the stabilization and risk-reduction tasks in small, focused commits:
-
-1) Run duplicate detection and record confirmation in ADR-0013:
-- sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.post-verify.log || true
-- printf "\n\n## Confirmation\nCanonicalization and lint/format applied on $(date -u +%Y-%m-%dT%H:%M:%SZ). See /tmp/verify-after-fix.log and /tmp/duplicate-detect.post-verify.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
-- git add docs/decisions/0013-cleanup-duplicate-docs.md && git commit -m "docs(adr): confirm canonicalization & verify results — refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-confirm.log || true
-
-2) Incrementally replace execSync usages with safeSpawn (one refactor per commit):
-- grep -RIn --line-number "execSync(" src scripts tests | tee /tmp/execsync-locations.log
-- For each reported location: create a small refactor commit that replaces execSync with safeSpawn (preserve behavior), add/update unit tests, run `npm run verify`, and commit: "refactor(<file>): use safeSpawn instead of execSync — refs ADR-0013"
-
-3) Enable lightweight pre-commit checks and CI duplicate-detect:
-- Add/enable Husky pre-commit hook + lint-staged configuration to run `npx eslint --fix` and `npm run format` on staged files; commit these files as a single chore commit.
-- Propose a CI job to run `sh ./scripts/duplicate-detect.sh` and fail if tracked duplicates are found; create an ops doc or PR describing the CI addition.
-
-4) Docs & troubleshooting improvements:
-- Add a short Troubleshooting section to docs/CONSUMER-QUICKSTART.md (non-interactive file edit) documenting jiti, NODE_OPTIONS, and lockfile guidance; run markdownlint and prettier; commit as "docs: add quick troubleshooting notes — refs ADR-0013".
-- Consolidate any remaining ADR duplicates into single canonical ADR files per ADR-0013 (small commits), run markdownlint autofix and format, then commit.
-
-5) Schedule periodic maintenance:
-- Propose and document a cadence (weekly or biweekly) for dependency audits and verify runs in SECURITY.md or an ops doc, and automate alerts for new high-severity vulnerabilities.
+(Do this as one atomic edit/commit so ESLint no longer processes transient tmp/* artifacts that are responsible for most current errors.)
 
 ---
 
-If you want, I can now run (simulate) the single NOW command for you (the non-interactive git commit) or output the exact shell command lines to paste into your terminal.
+## NEXT
+After the NOW commit completes and you have inspected the commit log, run the following non‑interactive sequence (inspect each produced /tmp/*.log before moving to the next step):
+
+1) Produce focused per-file ESLint diagnostics for the remaining files referenced by the latest lint run
+- Command:
+  npx eslint -f unix $(cat /tmp/lint-remaining-files.txt 2>/dev/null || true) 2>&1 | tee /tmp/lint-remaining-details.log || true
+- Inspect: /tmp/lint-remaining-details.log
+
+2) Apply conservative automated fixes and minimal renames, committing each file separately
+- For each file listed in /tmp/lint-remaining-files.txt run:
+  - npx eslint --fix "<file>" 2>&1 | tee "/tmp/eslint-fix-$(basename "<file>").log" || true
+  - If warnings remain that are simple unused-param / unused-catch-name issues, perform minimal edits (rename unused catches/vars to `_name` or `_err` as appropriate) and run eslint --fix again.
+  - If the file changed, git add "<file>" && git commit -m "fix(<file>): minimal lint edits (unused params / catch renames) — refs ADR-0013" 2>&1 | tee "/tmp/git-commit-$(basename "<file>").log" || true
+- Inspect: /tmp/eslint-fix-*.log and /tmp/git-commit-*.log
+- Safety: If any commit introduced a build/test regression, revert that single commit (git revert <commit>) and address the file manually.
+
+3) Re-run strict lint check and capture results
+- Command:
+  npm run lint:check 2>&1 | tee /tmp/lint-check-final.log || true
+- Inspect: /tmp/lint-check-final.log
+- If errors remain, return to step 2 for the remaining files.
+
+4) When lint is clean (no errors in /tmp/lint-check-final.log), run markdown + Prettier autofix and commit
+- Commands:
+  npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix.log || true
+  npm run format 2>&1 | tee /tmp/format-after-fix.log || true
+  git add . && git commit -m "chore(format/docs): markdown & prettier autofix after lint fixes — refs ADR-0013" 2>&1 | tee /tmp/git-commit-format-docs.log || true
+- Inspect: /tmp/lint-md-fix.log, /tmp/format-after-fix.log, /tmp/git-commit-format-docs.log
+
+5) Run the full verification pipeline and capture output
+- Command:
+  npm run verify 2>&1 | tee /tmp/verify-after-fix.log || true
+- Inspect: /tmp/verify-after-fix.log
+
+6) If `npm run verify` fails, collect targeted logs and iterate with focused fixes:
+- If build fails:
+  npm run build 2>&1 | tee /tmp/build-fail.log || true
+- If tests fail:
+  npx vitest run --reporter=verbose 2>&1 | tee /tmp/test-fail.log || true
+- Inspect: /tmp/build-fail.log, /tmp/test-fail.log, /tmp/verify-after-fix.log and fix the smallest possible set of files per failure (one file per commit) then re-run step 5.
+- Always revert the last commit if a single automated commit causes regression and then apply a narrowly scoped manual fix.
+
+Notes for NEXT:
+- Inspect the logs after each step — do not proceed without reading the corresponding /tmp/*.log.
+- Keep commits minimal and focused; prefer single-file commits for easier reverts.
+- Use the exact commit message patterns above to keep ADR traceability.
+
+---
+
+## LATER
+After lint is clean and `npm run verify` completes successfully, continue with the planned hardening and polish tasks:
+
+1) Replace execSync usages incrementally with safeSpawn (one file per commit)
+- Find locations:
+  grep -RIn --line-number "execSync(" src scripts tests | tee /tmp/execsync-locations.log
+- For each location:
+  - Refactor to use safeSpawn from src/utils/safe-spawn.js
+  - Add/update unit tests for the refactor
+  - Run `npm run verify`
+  - Commit: git add <file(s)> && git commit -m "refactor(<file>): use safeSpawn instead of execSync — refs ADR-0013" 2>&1 | tee /tmp/git-commit-refactor-<name>.log || true
+
+2) Finalize ADR-0013 canonicalization and duplicate-detection confirmation
+- Run duplicate-detect and capture:
+  sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.post-verify.log || true
+- Append confirmation note to ADR:
+  printf "\n\n## Confirmation\nCanonicalization and lint/format applied on $(date -u +%Y-%m-%dT%H:%M:%SZ). See /tmp/verify-after-fix.log and /tmp/duplicate-detect.post-verify.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
+- Commit:
+  git add docs/decisions/0013-cleanup-duplicate-docs.md && git commit -m "docs(adr): confirm canonicalization & duplicate-detect results — refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-confirm.log || true
+
+3) Enable and commit repository hooks (husky + lint-staged)
+- Add or update husky + lint-staged config; run:
+  npx husky install
+  git add .husky package.json && git commit -m "chore(hooks): enable husky + lint-staged pre-commit hooks — refs ADR-0013" 2>&1 | tee /tmp/git-commit-husky.log || true
+
+4) Audit and schedule dependency maintenance
+- Commands:
+  npm outdated 2>&1 | tee /tmp/npm-outdated.log || true
+- Create ADRs for major upgrades (esbuild, nyc, etc.) as needed and schedule non-breaking upgrades tested via `npm run verify`.
+
+5) Post-stabilization housekeeping
+- Remove any temporary/overly-broad .eslintignore entries if they masked real problems; prefer targeted ignores only for true generated folders.
+- Add CI checks that run the same verify pipeline to prevent regressions.
+
+---
+
+Notes & Constraints (must be followed)
+- NEVER touch or modify prompts/, prompt-assets/, or .voder/ (do not mention or change those directories).
+- All commands must be non-interactive and run from repository root.
+- Inspect produced /tmp/*.log files after each step and do not proceed until you confirm their contents.
+- If any automated commit causes regressions, revert it immediately and apply a narrowly scoped manual fix.
+- Keep commits minimal and focused with the exact commit message patterns given so ADR traceability is preserved.
+
+This plan makes the NOW step the primary remediation recommended in the assessment (prevent linting of transient tmp/ artifacts), and then continues with the previously validated, conservative stepwise remediation and verification workflow.

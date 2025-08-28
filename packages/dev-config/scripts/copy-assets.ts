@@ -13,9 +13,10 @@
  * This file uses TypeScript and tsx for execution.
  */
 
-import { chmod, copyFile, mkdir, readdir, stat, lstat } from 'fs/promises';
+import { chmod, copyFile, lstat,mkdir, readdir, stat } from 'fs/promises';
 import { join, resolve, sep } from 'path';
 import { exit, stderr } from 'process';
+
 import { ensureDir } from '../src/utils/fs.js';
 
 /**
@@ -33,6 +34,7 @@ export async function copyMatchingFiles(
 
     // Ensure we have an absolute, normalized source directory for validation
     const absSrcDir = resolve(srcDir);
+
     const absSrcDirWithSep = absSrcDir.endsWith(sep) ? absSrcDir : `${absSrcDir}${sep}`;
 
     for (const ent of entries) {
@@ -53,6 +55,7 @@ export async function copyMatchingFiles(
 
       // Lstat to detect symbolic links and non-regular files. Skip symlinks.
       let lst;
+
       try {
         lst = await lstat(srcPath);
       } catch (lstatErr) {

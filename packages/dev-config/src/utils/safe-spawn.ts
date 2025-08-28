@@ -1,10 +1,10 @@
 import { spawn } from 'child_process';
 
-export type SafeSpawnResult = {
+export interface SafeSpawnResult {
   stdout: string;
   stderr: string;
   code: number;
-};
+}
 
 /**
  * Spawn a subprocess safely without a shell, collecting stdout/stderr and exit code.
@@ -34,10 +34,12 @@ export async function safeSpawn(
   return await new Promise<SafeSpawnResult>((resolve, reject) => {
     const env = opts?.env ? { ...process.env, ...opts.env } : undefined;
 
-    let stdoutBuffers: Buffer[] = [];
-    let stderrBuffers: Buffer[] = [];
+    const stdoutBuffers: Buffer[] = [];
+
+    const stderrBuffers: Buffer[] = [];
 
     let child;
+
     try {
       // spawn without a shell to avoid shell interpretation of arguments
       child = spawn(cmd, args, {
@@ -70,6 +72,7 @@ export async function safeSpawn(
 
     child.on('close', (code, signal) => {
       const stdout = Buffer.concat(stdoutBuffers).toString('utf8');
+
       const stderr = Buffer.concat(stderrBuffers).toString('utf8');
 
       // If the process terminated due to a signal, code will be null. Map that

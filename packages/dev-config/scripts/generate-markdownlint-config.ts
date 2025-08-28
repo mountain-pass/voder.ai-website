@@ -5,7 +5,7 @@
  * Generates .markdownlint.json in the project root by invoking getConfig()
  * from the markdown linter abstraction.
  */
-import { writeFileSync, renameSync, unlinkSync, existsSync } from 'fs';
+import { existsSync,renameSync, unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { getConfig } from '../linters/markdown/index.js';

@@ -1,97 +1,87 @@
 ## NOW
 
-Run a single non‑interactive commit that records the current formatting/markdown autofix changes (tracked modifications only) and capture the git output:
-
-git commit -am "chore(docs): apply formatting auto-fixes after markdown fixes; refs ADR-0013" 2>&1 | tee /tmp/git-commit-docs-format.log || true
+Run a single non-interactive commit that records the autofix changes already applied to tracked files:
+- git commit -am "fix: apply eslint --fix to targeted files (copy-assets, generate-markdownlint-config, safe-spawn) — refs ADR-0013" 2>&1 | tee /tmp/git-commit-autofix.log || true
 
 ## NEXT
 
-After the NOW commit completes, perform these ordered non‑interactive steps (run each only after the previous succeeds; capture outputs to /tmp). These steps directly implement the "Consolidate and commit documentation/formatting fixes (refs ADR-0013), run npm run verify until green, then push the branch" NEXT PRIORITY from the assessment.
+After the commit above completes, perform these non-interactive verification and remediation steps in order. Inspect each /tmp/*.log produced before moving to the next step.
 
-1) Run the full verify pipeline and capture logs:
+1) Run a strict lint check and capture remaining problems:
+- npm run lint:check 2>&1 | tee /tmp/lint-check-after-autofix.log || true
 
-npm run verify 2>&1 | tee /tmp/verify-after-canonicalize.log
+2) Produce a concise list of files reported by ESLint and get full ESLint output for them:
+- grep -oE '([./A-Za-z0-9_@/.-]+\.ts|[./A-Za-z0-9_@/.-]+\.js)' /tmp/lint-check-after-autofix.log | sed 's/^[[:space:]]*//;s/[,:;]$//' | sort -u > /tmp/lint-remaining-files.txt || true
+- npx eslint -f unix $(cat /tmp/lint-remaining-files.txt 2>/dev/null || true) 2>&1 | tee /tmp/lint-remaining-details.log || true
 
-2) If verify fails, iterate small focused fixes until green (repeat the loop per failure):
+3) Apply minimal non-interactive fixes and commit them file-by-file (rules: prefix unused params/vars with `_`, rename unused catch variables to `_err` or similar, remove obviously-unused imports/vars, avoid structural changes). For each file listed in /tmp/lint-remaining-files.txt run:
+- while IFS= read -r f; do \
+    [ -z "$f" ] && continue; \
+    # Attempt auto-fix first (non-interactive)
+    npx eslint --fix "$f" 2>&1 | tee "/tmp/eslint-fix-post-manual-$(basename "$f").log" || true; \
+    # If still lint problems related to unused params/vars, apply minimal sed edits to prefix unused identifiers with `_` (non-destructive pattern-based attempt)
+    # (This sed is conservative: add leading underscore to function args named exactly 'err' or 'signal' or 'unlinkErr' when present)
+    if grep -qE '(^|[,([:space:]])(err|signal|unlinkErr)([[:space:]),])' "$f" 2>/dev/null; then \
+      sed -E -i.bak -e 's/(^|[,([:space:]])err([[:space:]),])/\\1_err\\2/g' -e 's/(^|[,([:space:]])signal([[:space:]),])/\\1_signal\\2/g' -e 's/(^|[,([:space:]])unlinkErr([[:space:]),])/\\1_unlinkErr\\2/g' "$f" 2>&1 || true; \
+    fi; \
+    # Run eslint --fix again after sed edits
+    npx eslint --fix "$f" 2>&1 | tee -a "/tmp/eslint-fix-post-manual-$(basename "$f").log" || true; \
+    # If file changed, commit it (one commit per file)
+    if ! git diff --quiet -- "$f"; then \
+      git add "$f"; \
+      git commit -m "fix(${f}): minimal lint edits (unused params/console adjustments) — refs ADR-0013" 2>&1 | tee "/tmp/git-commit-manual-$(basename "$f").log" || true; \
+    else \
+      echo "No manual changes required for $f" > "/tmp/git-commit-manual-$(basename "$f").log"; \
+    fi; \
+  done < /tmp/lint-remaining-files.txt
 
-- Inspect logs:
-  - Review /tmp/verify-after-canonicalize.log and /tmp/git-commit-docs-format.log to identify the failing stage.
-- Fix one issue per commit (make the smallest possible change that addresses the specific failure), then verify the individual failing step before the full verify:
-  - If the failure is linting:
-    - npm run lint:fix 2>&1 | tee /tmp/lint-fix.log || true
-    - npm run lint:check 2>&1 | tee /tmp/lint-check.log
-  - If the failure is markdown linting:
-    - npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix.log || true
-    - npm run lint:md 2>&1 | tee /tmp/lint-md-check.log
-  - If the failure is formatting:
-    - npm run format 2>&1 | tee /tmp/format-after-fix.log || true
-  - If the failure is build:
-    - npm run build 2>&1 | tee /tmp/build-after-fix.log
-  - If the failure is tests:
-    - npm run test:ci 2>&1 | tee /tmp/test-ci-after-fix.log
-    - For faster iteration, run the targeted vitest invocation that fails (see test output).
-- For each focused fix (after verifying the failing step succeeds), commit the change with a small focused message referencing ADR-0013 and capture output:
-  - git add <file(s)> && git commit -m "fix(<area>): <short description> - address verify failure; refs ADR-0013" 2>&1 | tee /tmp/git-commit-fix-<short>.log
-- Re-run the full verify after each fix:
-  - npm run verify 2>&1 | tee /tmp/verify-after-canonicalize.log
-- Repeat until `npm run verify` completes successfully.
+4) Re-run the strict lint check and capture final results:
+- npm run lint:check 2>&1 | tee /tmp/lint-check-final.log || true
 
-3) When `npm run verify` is green (no errors):
+5) If lint is now clean (inspect /tmp/lint-check-final.log), run markdown autofix and Prettier and commit formatting changes:
+- npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix.log || true
+- npm run format 2>&1 | tee /tmp/format-after-fix.log || true
+- git add . && git commit -m "chore(format/docs): markdown & prettier autofix after lint fixes — refs ADR-0013" 2>&1 | tee /tmp/git-commit-format-docs.log || true
 
-- Push the branch and capture output:
-  - git push --set-upstream origin HEAD 2>&1 | tee /tmp/git-push-after-verify.log
+6) Run the full verification pipeline and capture output:
+- npm run verify 2>&1 | tee /tmp/verify-after-fix.log || true
 
-4) Confirm duplicates status and capture output:
+7) If `npm run verify` fails, gather targeted logs for the failing stage and iterate (do not run interactively):
+- If build fails:
+  - npm run build 2>&1 | tee /tmp/build-fail.log || true
+- If tests fail:
+  - npx vitest run --reporter=verbose 2>&1 | tee /tmp/test-fail.log || true
+- Examine the relevant logs (/tmp/build-fail.log, /tmp/test-fail.log, /tmp/verify-after-fix.log) and apply focused minimal fixes (one-file commits), then repeat step 6 until verify succeeds.
 
-- sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.post-verify.log
-
-5) Record confirmation in ADR-0013 (append a short, non-interactive note) and commit it:
-
-- printf "\n\n## Confirmation\n\nCanonicalization and initial markdown/format auto‑fixes applied and verified on $(date -u +%Y-%m-%dT%H:%M:%SZ). verify completed and duplicate-detect run; see /tmp/verify-after-canonicalize.log and /tmp/duplicate-detect.post-verify.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
-- git add docs/decisions/0013-cleanup-duplicate-docs.md
-- git commit -m "docs(adr): confirm canonicalization recorded and verify completed; refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-confirm.log || true
-
-Notes for NEXT
-- Always tee outputs to /tmp so console-first logs are preserved and discoverable by the agent.
-- If `npm audit fix --force` (run by verify) updates dependencies and causes failures, treat that as a regular verify failure and resolve with the small-fix loop above; commit each small fix and re-run verify.
-- Keep commits minimal and focused; include "refs ADR-0013" in commit messages for documentation-related changes.
-- Do not modify prompts/, prompt-assets/, or .voder/ — those are off-limits.
+Notes for NEXT:
+- All edits must be minimal and non-structural; prefer prefixing unused identifiers with `_` over removing function parameters.
+- Preserve CLI-only guards and istanbul ignore comments.
+- Inspect the produced /tmp/*.log files after each step to maintain console-first history and decide whether further manual edits are needed.
 
 ## LATER
 
-After the branch is pushed with a green verify and ADR confirmation recorded, proceed with conservative consolidation and safe refactors in small, auditable commits (each referencing ADR-0013 and running verify after the commit). Suggested ordered tasks:
+Once lint is clean and `npm run verify` succeeds locally, perform the stabilization and risk-reduction tasks in small, focused commits:
 
-1) Consolidate user‑facing duplicate documentation (one duplicate group → one commit)
-- For each duplicate group recorded in ADR-0013:
-  - Merge & dedupe content into canonical docs/<canonical-file>.md
-  - npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix-consolidation-<n>.log || true
-  - npm run format 2>&1 | tee /tmp/format-consolidation-<n>.log || true
-  - git add docs/<canonical-file>.md
-  - git commit -m "docs: consolidate <removed-file> -> <canonical-file>; refs ADR-0013" 2>&1 | tee /tmp/git-commit-consolidate-<n>.log
-  - npm run verify 2>&1 | tee /tmp/verify-after-consolidation-<n>.log
+1) Run duplicate detection and record confirmation in ADR-0013:
+- sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.post-verify.log || true
+- printf "\n\n## Confirmation\nCanonicalization and lint/format applied on $(date -u +%Y-%m-%dT%H:%M:%SZ). See /tmp/verify-after-fix.log and /tmp/duplicate-detect.post-verify.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
+- git add docs/decisions/0013-cleanup-duplicate-docs.md && git commit -m "docs(adr): confirm canonicalization & verify results — refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-confirm.log || true
 
-2) Finalize ADR-0013 summary and final duplicate check
-- sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.final.log
-- printf "\n\n## Finalization\n\nConsolidation completed on $(date -u +%Y-%m-%dT%H:%M:%SZ). Final duplicate-detect log: /tmp/duplicate-detect.final.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
-- git add docs/decisions/0013-cleanup-duplicate-docs.md
-- git commit -m "docs(adr): finalize ADR-0013 consolidation summary; refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-final.log
-- npm run verify 2>&1 | tee /tmp/verify-after-finalization.log
+2) Incrementally replace execSync usages with safeSpawn (one refactor per commit):
+- grep -RIn --line-number "execSync(" src scripts tests | tee /tmp/execsync-locations.log
+- For each reported location: create a small refactor commit that replaces execSync with safeSpawn (preserve behavior), add/update unit tests, run `npm run verify`, and commit: "refactor(<file>): use safeSpawn instead of execSync — refs ADR-0013"
 
-3) Low‑risk code refactors (extract duplicated utilities)
-- Identify small duplicated fragments in scripts/ and src/, extract them to src/utils/<name>.ts, add unit tests
-- For each extraction:
-  - git add src/utils/<util>.ts src/tests/utils/<util>.test.ts
-  - git commit -m "refactor(utils): extract <utility>; add tests; refs ADR-0013" 2>&1 | tee /tmp/git-commit-refactor-<util>.log
-  - npm run verify 2>&1 | tee /tmp/verify-after-refactor-<util>.log
+3) Enable lightweight pre-commit checks and CI duplicate-detect:
+- Add/enable Husky pre-commit hook + lint-staged configuration to run `npx eslint --fix` and `npm run format` on staged files; commit these files as a single chore commit.
+- Propose a CI job to run `sh ./scripts/duplicate-detect.sh` and fail if tracked duplicates are found; create an ops doc or PR describing the CI addition.
 
-4) Plan and stage replacing execSync with safeSpawn (author ADR-0014 + incremental replacements)
-- Create ADR-0014 documenting approach, then incrementally replace execSync usages one file at a time with safeSpawn, adding/adjusting tests per change and running verify after each commit.
+4) Docs & troubleshooting improvements:
+- Add a short Troubleshooting section to docs/CONSUMER-QUICKSTART.md (non-interactive file edit) documenting jiti, NODE_OPTIONS, and lockfile guidance; run markdownlint and prettier; commit as "docs: add quick troubleshooting notes — refs ADR-0013".
+- Consolidate any remaining ADR duplicates into single canonical ADR files per ADR-0013 (small commits), run markdownlint autofix and format, then commit.
 
-5) Operationalize periodic duplicate detection (document-only)
-- Add guidance to ADR-0013 recommending cadence (e.g., weekly) and location for running duplicate-detect (run outside repo in operator context). Do NOT add CI workflow files to the repo.
+5) Schedule periodic maintenance:
+- Propose and document a cadence (weekly or biweekly) for dependency audits and verify runs in SECURITY.md or an ops doc, and automate alerts for new high-severity vulnerabilities.
 
-Important constraints recap
-- Do not modify prompts/, prompt-assets/, or .voder/.
-- All commands must be non‑interactive and POSIX-compatible.
-- Tee outputs to /tmp for console-first traceability.
-- Keep each change small, focused, and verified by `npm run verify` before pushing.
+---
+
+If you want, I can now run (simulate) the single NOW command for you (the non-interactive git commit) or output the exact shell command lines to paste into your terminal.

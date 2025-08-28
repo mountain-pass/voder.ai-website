@@ -9,6 +9,7 @@ import { join } from 'node:path';
  */
 export async function createTempDir(prefix: string): Promise<string> {
   const dir = await mkdtemp(join(tmpdir(), `${prefix}-`));
+
   return dir;
 }
 

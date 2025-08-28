@@ -3,7 +3,7 @@ import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { copyAssets, copyMatchingFiles, ensureDir } from '../../../scripts/copy-assets.js';
-import { createTempDir, cleanupTempDir } from '../helpers/fs-utils';
+import { cleanupTempDir,createTempDir } from '../helpers/fs-utils';
 
 describe('copy-assets script units', () => {
   let testDir: string;

@@ -3,8 +3,8 @@ import { mkdir, readdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { createTempDir, cleanupTempDir } from '../helpers/fs-utils';
 import { safeSpawn } from '../../utils/safe-spawn';
+import { cleanupTempDir,createTempDir } from '../helpers/fs-utils';
 
 // Helper to run script as subprocess for integration testing using safeSpawn
 function runScriptAsSubprocess(
@@ -19,6 +19,7 @@ function runScriptAsSubprocess(
 
 describe('copy-assets script', () => {
   let testDir: string;
+
   let originalCwd: string;
 
   beforeEach(async () => {

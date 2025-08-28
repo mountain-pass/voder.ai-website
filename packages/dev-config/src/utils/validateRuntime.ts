@@ -1,4 +1,5 @@
 import { existsSync } from 'fs';
+import { createRequire } from 'module';
 import { resolve } from 'path';
 
 /**
@@ -10,9 +11,10 @@ import { resolve } from 'path';
 export function validateRuntimeEnvironment(): void {
   // 1) Ensure `jiti` is installed
   try {
-    // this will throw if jiti is not installed
+    // Use ESM-compatible resolver
+    const require_ = createRequire(import.meta.url);
 
-    require.resolve('jiti');
+    require_.resolve('jiti');
   } catch {
     throw new Error(
       'Missing required peer dependency "jiti".\n' +

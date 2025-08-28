@@ -6,7 +6,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { validateRuntimeEnvironment } from '../utils/validateRuntime.js';
 
 describe('validateRuntimeEnvironment()', () => {
-  it.skip('throws if jiti cannot be resolved', () => {
+-  it.skip('throws if jiti cannot be resolved', () => {
++  it('throws if jiti cannot be resolved', () => {
     // Mock require.resolve to throw for jiti specifically
     const originalRequire = global.require;
 

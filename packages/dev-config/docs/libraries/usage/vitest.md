@@ -23,12 +23,12 @@ export default defineConfig(createVitestNodeConfig());
 
 ### Coverage Thresholds
 
-The returned config includes V8 coverage settings with thresholds:
+The returned config includes Istanbul coverage settings with thresholds:
 
-- branches: 90%
-- functions: 90%
-- lines: 90%
-- statements: 90%
+- branches: 80%
+- functions: 80%
+- lines: 80%
+- statements: 80%
 
 You can override or extend these settings by passing an object:
 

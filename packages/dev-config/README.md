@@ -172,7 +172,7 @@ Returns a Vitest config object tuned for Node:
 - **Properties:**
   - `.test.environment` = `"node"`
   - `.test.setupFiles` = `["./src/test-setup.node.ts"]`
-  - `.test.coverage.thresholds` = `{ branches: 90, functions: 90, lines: 90, statements: 90 }`
+  - `.test.coverage.thresholds` = `{ branches: 80, functions: 80, lines: 80, statements: 80 }`
 
 ### `testing.testSetup.node`
 

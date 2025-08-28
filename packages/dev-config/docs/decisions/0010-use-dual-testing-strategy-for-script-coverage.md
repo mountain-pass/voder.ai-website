@@ -17,7 +17,7 @@ depends-on: [ADR-0009]
 
 ## Context and Problem Statement
 
-Build scripts (like `copy-assets.ts` and `generate-markdownlint-config.ts`) need comprehensive test coverage to meet the project's 90% coverage threshold. These scripts are designed to be executed both as CLI tools and as importable functions. The question arose: should we attempt to collect coverage metrics from subprocess execution of these scripts, or use a different approach?
+Build scripts (like `copy-assets.ts` and `generate-markdownlint-config.ts`) need comprehensive test coverage to meet the project's 80% coverage threshold. These scripts are designed to be executed both as CLI tools and as importable functions. The question arose: should we attempt to collect coverage metrics from subprocess execution of these scripts, or use a different approach?
 
 Initial coverage reports showed 0% coverage for scripts when tested only through subprocess execution, despite the scripts running successfully and producing correct outputs.
 
@@ -25,7 +25,7 @@ This decision builds upon ADR-0009 (Adopt Istanbul as Coverage Engine), which pr
 
 ## Decision Drivers
 
-- **Coverage Threshold Compliance**: Project requires 90% coverage across all metrics (statements, branches, functions, lines)
+- **Coverage Threshold Compliance**: Project requires 80% coverage across all metrics (statements, branches, functions, lines)
 - **Script Testability**: Scripts must be tested both as CLI tools (integration) and as functions (unit testing)
 - **Maintainability**: Testing approach should be sustainable and not overly complex
 - **Tool Limitations**: Coverage tools may have limitations with subprocess execution
@@ -59,7 +59,7 @@ Chosen option: "**Dual Testing Strategy (Unit + Integration)**", because it prov
 
 Implementation compliance can be confirmed by:
 
-- **Coverage Reports**: Scripts achieve >90% coverage through unit tests importing script functions
+- **Coverage Reports**: Scripts achieve >80% coverage through unit tests importing script functions
 - **Integration Validation**: CLI execution validated through subprocess integration tests
 - **Architecture Review**: Script functions are properly exported and unit-testable
 - **CLI Minimization**: CLI-only code paths are limited to argument parsing, execution, basic output, and error handling with coverage exclusion comments

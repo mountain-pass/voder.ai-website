@@ -11,7 +11,7 @@ informed: [future developers, LLM agents working on this codebase]
 
 ## Context and Problem Statement
 
-Vitest supports multiple coverage providers for measuring test coverage: V8 and Istanbul. The project requires comprehensive coverage measurement to meet the 90% coverage threshold across all metrics (statements, branches, functions, lines). We need to choose the most appropriate coverage engine that provides accurate measurements, good tooling support, and flexibility for our testing strategy.
+Vitest supports multiple coverage providers for measuring test coverage: V8 and Istanbul. The project requires comprehensive coverage measurement to meet the 80% coverage threshold across all metrics (statements, branches, functions, lines). We need to choose the most appropriate coverage engine that provides accurate measurements, good tooling support, and flexibility for our testing strategy.
 
 The choice of coverage engine affects:
 

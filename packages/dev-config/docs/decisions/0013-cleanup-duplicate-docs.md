@@ -18,11 +18,13 @@ The objective of this ADR is to authorize a focused, conservative cleanup that c
 ## Scope
 
 Included (may be modified as part of this ADR):
+
 - docs/ (user-facing documentation), README.md, CHANGELOG.md, CONTRIBUTING.md, SECURITY.md, docs/libraries/usage/*
 - Top-level published documentation that consumers rely on (files tracked in git and not under prompts/ or .voder/)
 - Code duplication in source trees where refactoring is low-risk and testable: src/, eslint/, scripts/, linters/
 
 Explicitly excluded (protected; DO NOT MODIFY):
+
 - prompts/ (all content under prompts/ is protected and must not be edited)
 - prompt-assets/ (template assets are protected; record duplicates only)
 - .voder/ (history and agent metadata)
@@ -81,16 +83,19 @@ This approach prioritizes safety, test coverage, and small, traceable commits.
 ## Consequences
 
 Positive:
+
 - Reduced maintenance burden and clearer, single-source documentation for consumers.
 - Improved code reuse and a smaller surface for bugs.
 - Better repository quality scores and easier ADR/decision traceability.
 
 Negative / Risks:
+
 - Mistakes during consolidation could alter consumer-facing guidance if not carefully verified.
 - Refactors may transiently break TypeScript build if not performed atomically and tested.
 - Work requires careful attention to not modify protected files (prompts/, .voder/).
 
 Mitigations:
+
 - Respect the protected scope; log duplicates for prompts/ in this ADR without editing them.
 - Make small, focused commits and run the project's verify pipeline before pushing.
 - Revert the last refactor commit if multiple top-level tsc errors occur and perform single-file moves as prescribed.
@@ -112,15 +117,17 @@ Day-to-day executor: the single-agent maintainer performing the changes (documen
 ADR recorded by: voder-dev-team on 2025-08-28
 
 ADR notes:
+
 - Any intentional exceptions (duplicates that must remain) must include a short rationale in that canonical file and link back to this ADR.
 - Longer-term improvements (CI duplicate checks, CONTRIBUTING updates) will be proposed as follow-up ADRs once consolidation completes.
 - Focus on small commits and run verify after each.
 
 ## Duplicate classification (finalized)
 
-The entries below replace the earlier auto-stubbed placeholders with conservative canonical choices and one-line rationale for each duplicate group. Canonical choices preferentially use coverage/lcov-report/* for coverage assets and files under typescript/dist/* for built declaration artifacts. These choices are conservative: prefer keeping the copy under coverage/lcov-report/ (human-readable report layout) and keeping declarations under typescript/dist/* (standard build output layout).
+The entries below replace the earlier auto-stubbed placeholders with conservative canonical choices and one-line rationale for each duplicate group. Canonical choices preferentially use coverage/lcov-report/*for coverage assets and files under typescript/dist/* for built declaration artifacts. These choices are conservative: prefer keeping the copy under coverage/lcov-report/ (human-readable report layout) and keeping declarations under typescript/dist/* (standard build output layout).
 
 Duplicate group — representative files:
+
 1) ./coverage/base.css  <-->  ./coverage/lcov-report/base.css  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/base.css  
@@ -167,14 +174,18 @@ Duplicate group — representative files:
    rationale: the package-level dist index.d.ts is the canonical declaration for consumers; nested typescript/ paths are redundant generated artifacts.
 
 # Notes and next steps (reference)
+
 - The canonical choices above are intentionally conservative to minimize build/test impact; the operational cleanup will remove non-canonical tracked duplicates where safe and document exceptions in this ADR when a tracked file must remain.
 - Do NOT modify any content under prompts/, prompt-assets/, or .voder/ as part of cleanup.
 - When a tracked generated file removal causes verify failures, restore the tracked file and update this ADR to record the exception.
 - After any removal or consolidation, run the full conservative verify sequence and stop on the first failure.
 
 # Action log placeholder
+
 - Duplicate classification finalized and recorded in this ADR (2025-08-28).
 - Implementation of removal/consolidation steps will be performed in small, focused commits referencing ADR-0013.
 
 - Generated & intentionally ignored: coverage/* — canonical location is coverage/lcov-report/; top-level coverage artifacts are generated and should remain ignored.
 - Generated & intentionally ignored: typescript/dist/* — compiled artifacts are generated and intentionally ignored.
+- [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files: 
+- [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files: 

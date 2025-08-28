@@ -191,3 +191,18 @@ Duplicate group — representative files:
 - [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files: 
 - [CLASSIFIED] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact (heuristic: generated or vendor file)
 - [NO-ACTION] 0005f2900e1fccf134ab517e31bc278f4e40c257 — no tracked files to untrack
+
+## Post-verify failure note
+
+- date: 2025-08-28
+- summary: Attempted to run the non-interactive verify sequence from a clean state, but the initial `npm ci` step failed because a package-lock.json (or npm-shrinkwrap.json) was not present in the repository. As a result the full `npm run verify` did not execute.
+- key errors observed (from /tmp/verify-npm-ci.log):
+  - "npm error The `npm ci` command can only install with an existing package-lock.json or npm-shrinkwrap.json"
+  - "npm error audit This command requires an existing lockfile. Try creating one first with: npm i --package-lock-only"
+- logs produced:
+  - /tmp/verify-npm-ci.log  (primary log from the attempted clean install)
+  - the `npm run verify` step did not run; /tmp/verify-run-verify.log was not created.
+  - additional npm debug logs may be available at: /Users/tomhoward/.npm/_logs/2025-08-28T15_59_25_085Z-debug-0.log and /Users/tomhoward/.npm/_logs/2025-08-28T15_59_25_716Z-debug-0.log
+- next steps taken: stop further automatic remediation and record this failure for triage. Do NOT run pushes, package-lock commits, or untrack operations until a human maintainer reviews the logs and approves the next action.
+
+- 2025-08-28T00:00:00+00:00 — duplicate-detection: no tracked non-canonical duplicates found; report at /tmp/duplicate-report.txt

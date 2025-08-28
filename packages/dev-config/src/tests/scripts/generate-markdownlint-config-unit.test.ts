@@ -1,31 +1,12 @@
-import { mkdir, readFile, rmdir, stat } from 'fs/promises';
-import { tmpdir } from 'os';
+import { mkdir, readFile, stat } from 'fs/promises';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { generateMarkdownlintConfig } from '../../../scripts/generate-markdownlint-config.js';
+import { createTempDir, cleanupTempDir } from '../helpers/fs-utils';
 
 describe('generate-markdownlint-config script units', () => {
   let testDir: string;
-
-  async function createTempDir(prefix: string): Promise<string> {
-    const dir = join(
-      tmpdir(),
-      `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-    );
-
-    await mkdir(dir, { recursive: true });
-
-    return dir;
-  }
-
-  async function cleanupTempDir(dir: string): Promise<void> {
-    try {
-      await rmdir(dir, { recursive: true });
-    } catch {
-      // Ignore cleanup errors
-    }
-  }
 
   beforeEach(async () => {
     testDir = await createTempDir('markdownlint-config-unit-test');

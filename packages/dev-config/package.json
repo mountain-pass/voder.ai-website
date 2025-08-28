@@ -65,7 +65,6 @@
     "lint:check": "eslint . --max-warnings 0",
     "lint:md": "markdownlint-cli2 *.md docs/**/*.md",
     "lint:md:fix": "markdownlint-cli2 --fix *.md docs/**/*.md",
-    "voder": "node ../../../voder/apps/voder-cli/index.js",
     "format:fix": "npm run format",
     "verify": "npm audit fix --force && sh scripts/duplicate-detect.sh && npm run lint:fix && npm run lint:check && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
     "audit:ci": "npm audit --audit-level=high"

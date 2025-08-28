@@ -61,104 +61,15 @@ npm install --save-dev jiti
 npm install --save-dev @voder/dev-config
 
 # pnpm
-pnpm add -D @voder/dev-config
+pnpm add -D @voder-dev-config
 
 # yarn
 yarn add -D @voder/dev-config
 ```
 
-## 🚀 Usage
+## 📦 Consumer Quickstart
 
-## Consumer Integration Guide
-
-Use the examples below to integrate `@voder/dev-config` into your project for TypeScript, ESLint, Vitest, and Markdown linting.
-
-### TypeScript Presets Usage
-
-```jsonc
-// tsconfig.json - Main development configuration
-{
-  "extends": "@voder/dev-config/typescript/library.json",
-  "compilerOptions": { "outDir": "dist" },
-}
-```
-
-```jsonc
-// tsconfig.build.json - Build-specific configuration
-{
-  "extends": "@voder/dev-config/typescript/build.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": ".",
-  },
-  "include": ["src", "scripts"],
-  "exclude": ["**/*.test.ts", "**/*.test.js", "node_modules", "dist"],
-}
-```
-
-**Note:** Due to TypeScript's extends resolution constraints, `tsconfig.build.json` requires path settings (`outDir`, `rootDir`, `include`, `exclude`) that cannot be shared from subdirectory configs. The shared config provides compiler options only.
-
-## TypeScript JSON Config Exports
-
-You can extend your project’s tsconfig.json directly from this package:
-
-```jsonc
-// tsconfig.json
-{
-  "extends": "@voder/dev-config/typescript/tsconfig.eslint.json",
-  // ...your overrides
-}
-```
-
-```jsonc
-// tsconfig.json (for config files)
-{
-  "extends": "@voder/dev-config/typescript/tsconfig.config.json",
-  // ...your overrides
-}
-```
-
-### ESLint Flat Config Usage
-
-```js
-// eslint.config.js
-export { complete as default } from '@voder/dev-config/eslint';
-```
-
-### Prettier Usage
-
-```js
-// prettier.config.js
-import prettierConfig from '@voder/dev-config/prettier';
-export default prettierConfig;
-```
-
-### Vitest Usage
-
-```ts
-// vitest.config.ts
-import { createVitestNodeConfig } from '@voder/dev-config/testing';
-export default createVitestNodeConfig();
-```
-
-### Markdown Lint Usage
-
-```ts
-// .markdownlint.json (generate via script)
-import { getConfig } from '@voder/dev-config/linters/markdown';
-import { writeFileSync } from 'fs';
-writeFileSync('.markdownlint.json', JSON.stringify(getConfig(), null, 2));
-```
-
-```jsonc
-// package.json scripts
-{
-  "scripts": {
-    "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md",
-    "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md",
-  },
-}
-```
+See [Consumer Quickstart](docs/CONSUMER-QUICKSTART.md) for detailed integration instructions.
 
 ## 📖 API Reference
 

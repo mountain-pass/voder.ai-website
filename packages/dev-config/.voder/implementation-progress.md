@@ -1,178 +1,167 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-08-28T04:27:31.295Z
+**Generated:** 2025-08-28T13:40:16.550Z
 
 ![Progress Chart](./progress-chart.png)
 
 Projection: flat (no recent upward trend)
 
-## IMPLEMENTATION STATUS: INCOMPLETE (62% ± 7% COMPLETE)
+## IMPLEMENTATION STATUS: INCOMPLETE (60.13% ± 12% COMPLETE)
 
 ## OVERALL ASSESSMENT
-
-Overall INCOMPLETE: core features exist but the TypeScript build is blocked by rootDir errors, repository contains many untracked/compiled artifacts and code-quality problems, and execution/build verification is not yet complete.
+The project has most high-level artifacts implemented (ESLint layers, Prettier config, Vitest factory, markdown linter abstraction, many tests and docs), but it is functionally incomplete: TypeScript compilation fails due to TS6059 rootDir issues, preventing reliable builds and a recent full green test run. Code quality shows duplication and some guidance deviations. Documentation and dependency management are strong; security posture and version control are good. Resolve the build errors first to unlock accurate testing and packaging verification.
 
 ## NEXT PRIORITY
+Resolve TS6059 rootDir errors: move the single top-level file reported by tsc into src (one git mv), re-run tsc, repeat one-file moves until compilation is clean, then run npm run build and the focused packaging tests.
 
-Resolve TypeScript build errors by moving offending top-level config/scripts into src (one file per iteration), re-run tsc until clean, then rebuild and run tests.
 
-## FUNCTIONALITY ASSESSMENT (85% ± 12% COMPLETE)
 
-- Core configuration exports and tooling features are implemented (ESLint complete export, TypeScript presets, Prettier TS config, Vitest factory, markdown linter abstraction and CLI helper). Most required functionality exists, but build/test verification and a final clean build pass remain to be confirmed.
-- ESLint: `eslint/index.ts` and compiled `eslint/index.js` export a `complete` flat-config that includes file coverage, ignores, and test/script globals as required.
-- Prettier: `prettier.config.ts` exists and is a direct re-export of the package prettier config as required by ADRs.
-- TypeScript: `typescript/*.json` presets exist (base, node, library, test) and are re-exported under `@voder/dev-config/typescript` including tsconfig.eslint/config JSON exports.
-- Testing: `createVitestNodeConfig()` factory and `testSetup` mapping are implemented and tested in multiple suites.
-- Markdown linting: `linters/markdown` provides `getConfig()` and `createCLICommand()` per ADR-0006 and scripts exist to generate `.markdownlint.json`.
-- Package exports: `package.json` includes dual export paths (main index and dedicated paths) pointed at `dist/` artifacts; tests exist to validate export equivalence and package integration.
-- Build tooling: `scripts/copy-assets.ts` and `scripts/generate-markdownlint-config.ts` are implemented to copy JSON assets and generate markdownlint configs for packaging.
-- Automated tests: Extensive Vitest suites exist (export-equivalence, smoke, package-structure, dist/imports, markdown linter, JSON loader, runtime validation, dependency alignment).
-- Outstanding build hygiene: TypeScript compilation previously failed with TS6059/TS2209 (rootDir vs top-level files). Some top-level files were moved into `src/` and changes staged, but a full, current clean `tsc -p tsconfig.build.json` run and `npm run build` verification remain to be completed.
-- Repository cleanliness: Compiled JS/.d.ts/.map artifacts are present in the working tree (many untracked compiled files). They appear not to be committed, but a cleanup (ensure no compiled artifacts are tracked) and final commit of source moves is required.
+## FUNCTIONALITY ASSESSMENT (40% ± 12% COMPLETE)
+- Core features (ESLint layers, Prettier config, Vitest factory, markdown linter abstraction, build scripts and many tests) are implemented, but the package is not functionally complete: TypeScript build is failing due to files outside rootDir (TS6059), and repository contains a .eslintignore which per project policy indicates the exported `complete` ESLint config is incomplete. Until the build and root-config issues are resolved, packaging/consumer scenarios and many export-integration tests cannot be trusted.
+- TypeScript compilation fails: tsc reports TS6059 errors for top-level files (scripts/*, vitest.config.ts, prettier.config.ts, etc.) not under configured rootDir -> prevents producing dist/ artifacts required by package.exports and tests.
+- Project contains top-level configuration/scripts that tsc expects to be in src; current tsconfig.build.json includes those files which triggers rootDir mismatch. The planned incremental file-move approach is required.
+- There is a .eslintignore in the repository for dist/, build/, coverage/, node_modules/, typescript/ — per the Universal Development Guide this is definitive evidence that the exported `complete` ESLint config does not internally handle ignores, which caps functionality and indicates consumer experience is incomplete.
+- Markdown linting abstraction (linters/markdown) is implemented and exports getConfig/createCLICommand; generate-markdownlint-config script exists and tests exercise it — this area appears well-covered.
+- Vitest factory createVitestNodeConfig and test setup mapping exist and are used across tests; coverage provider configured for istanbul, but packaging tests depend on a successful build to validate runtime exports.
+- package.json exports target files under dist/ and types pointing to dist/*.d.ts. Because tsc/build is failing, those runtime artifacts may be outdated or inconsistent with source, breaking export-integration and consumer-install tests.
+- Extensive Vitest test suite is present (many focused tests for scripts, copy-assets, packaging), indicating good test coverage, but many tests assume a successful build and/or package packing step which currently cannot be trusted due to the compile errors.
+- Dependency and policy requirements (verify script includes npm audit fix --force, peerDependencies declared for tooling, ADRs present for decisions) are in place, which is strong governance, but functional deliverables (build outputs and complete ESLint export behavior) are not yet satisfied.
 
 **Next Steps:**
+- Follow the incremental plan: move the first file reported by tsc into src with a single git mv (e.g., scripts/copy-assets.ts -> src/scripts/copy-assets.ts), re-run `npx tsc -p tsconfig.build.json`, and repeat one-file moves until TS6059 errors are resolved or a different error appears.
+- Remove or refactor the .eslintignore workaround: either ensure the exported `complete` config internally sets the required ignores (preferred) or refactor root ESLint exports so consumers do not need `.eslintignore`. This is required to exceed the documented 50% functionality cap.
+- After compilation succeeds, run `npm run build` and confirm copy-assets completed (look for the script's stderr output message). Then run the focused packaging tests (package-exports, dist-files, package-structure) and fix any remaining runtime export/path issues.
+- If any packaging artifacts are missing under dist/, adjust file locations or the copy-assets script so that declared package.json exports resolve to actual files; do not commit dist/ artifacts (keep them gitignored).
+- Re-run dependency-alignment tests; if they fail due to node_modules vs lockfile changes, run `npm ci` to align and, if necessary, prepare an ADR before changing lockfile or dependency versions.
+- Once build and packaging tests pass locally, run `npm run verify` and address any lint/format/test failures before committing the minimal file-move changes.
+- Document any layout decisions in a short ADR or README note (especially if top-level config files are moved into src) so future maintainers understand the one-file-move policy and rootDir constraints.
 
-- Run a full TypeScript build: npx tsc -p tsconfig.build.json and fix any remaining TS errors (follow single-file-move policy if TS6059 resurfaces).
-- Execute packaging build: npm run build and verify copy-assets writes completion messages to stderr (confirm dist/prettier.config.js, dist/src/index.js, dist/eslint/index.js, dist/typescript/\*.json exist).
-- Run focused packaging tests: npx vitest run src/tests/package-exports.test.ts src/tests/dist-files.test.ts src/tests/package-structure.test.ts and address any runtime import/export issues.
-- Run dependency-alignment test: npx vitest run src/dependency-alignment.test.ts and, if needed, align package-lock.json via npm ci or update with an ADR if lockfile change required.
-- Remove or .gitignore any stray compiled artifacts from the repository root, stage and commit only the minimal source moves/tsconfig edits required to pass builds/tests, then push.
-- After a clean build and test pass, run full verification: npm run verify and only then publish or merge changes.
-
-## CODE_QUALITY ASSESSMENT (25% ± 10% COMPLETE)
-
-- Project has strong tooling (ESLint flat config, Prettier, Vitest, markdownlint abstraction, TypeScript presets and scripts) but repository contains substantial duplication of compiled artifacts and redundant files which harms maintainability and forces a conservative quality score.
-- Required quality tools are present and configured: eslint (flat v9 layers + complete export), prettier (TypeScript config re-export), vitest (many tests, coverage settings), and markdownlint abstraction with generator script.
-- package.json includes the recommended verification scripts (lint, lint:check, lint:md, format, build, verify) showing enforcement paths are available.
-- Substantial duplication of content detected: many source .ts files have corresponding compiled .js, .d.ts, and .map files present in repository directories (eslint/_.ts vs eslint/_.js, scripts/_.ts vs scripts/_.js, prettier.config.ts and prettier.config.js, vitest.config.ts and vitest.config.js). This indicates copy of build outputs into source tree or uncleaned build artifacts.
-- Redundant/unnecessary files and noise: numerous generated artifacts and source duplicates are untracked or mixed into repo (many .js/.d.ts/.map files listed as untracked), plus a previously-present .eslintignore workaround was created which the guidance explicitly forbids.
-- Project guidance is largely implemented (dual export strategy, ADRs, TypeScript presets, tests). However the existence of generated/duplicate files and temporary workarounds violates the 'source-only repository' and 'no workaround files' policies and increases maintenance burden.
-
-**Next Steps:**
-
-- Remove compiled artifacts from source directories and ensure only TypeScript source files are tracked; add a clean-up commit that removes .js/.d.ts/.map duplicates (do not remove dist/ if intentionally exposed to voder).
-- Run a repository-wide clean (git clean -fd) after verifying untracked build artifacts are safe to remove, and ensure .gitignore covers all build outputs and temporary files.
-- Keep only one canonical copy of each config file under src/ (or documented root-layer re-exports) to avoid duplication; revert any copied .js/.d.ts files tracked in source tree.
-- Re-run npm run verify and the TypeScript build to confirm no lingering TS6059/TS2209 issues and that packaging tests pass using only source files.
-- Consider adding a small CI/pre-commit check to prevent committing compiled artifacts and to enforce the 'no workaround files' rules described in the project guidance.
-
-## TESTING ASSESSMENT (80% ± 12% COMPLETE)
-
-- The repository contains a comprehensive Vitest test suite with many targeted integration and smoke tests and high claimed coverage, but recent TypeScript build issues are blocking reliable full runs in this workspace.
-- There is broad test coverage: unit, export-equivalence, package-structure, packaging-integration, markdown linter, and runtime validation tests are present (many files under src/tests/).
-- Tests exercise real packaging scenarios (npm pack, temp consumer installs) and verify package.json exports, which is high-value integration testing.
-- Documentation and ADR-driven tests exist (dependency-alignment, validateRuntimeEnvironment) that guard governance rules as code.
-- The project history indicates earlier full runs passed (high coverage claimed), but the most recent work shows TypeScript compile errors (TS6059/TS2209) and build failures that prevent a clean, repeatable full test run in the current working tree.
-- Some tests depend on compiled artifacts (dist/) or on a successful build/pack step; until build issues are resolved those tests cannot reliably pass in CI/local runs.
+## CODE_QUALITY ASSESSMENT (30% ± 12% COMPLETE)
+- The repository has many required quality tools and extensive tests, but noticeable documentation/config duplication, several guidance deviations, and redundant/unclear files reduce maintainability and adherence to the project's strict guidance.
+- Quality tooling is present and configured: ESLint (flat config), Prettier (TS config), Vitest tests, markdownlint abstraction and npm scripts (lint, lint:fix, lint:md, format, verify) exist and are wired into package.json.
+- Extensive test suites and build scripts are present; scripts follow the project's dual-testing strategy and CI-style verify ordering (npm audit fix --force present in verify script).
+- Substantial duplicate or near-duplicate documentation files and ADRs exist (multiple decision files with overlapping content and empty/duplicated ADR stubs). The project guidance mandates documentation hygiene and unique ADRs — duplication hurts maintainability (triggers the automatic duplicate-content cap).
+- There are redundant or unclear files: several decision/ADR files appear duplicated or empty (e.g., multiple 0009/0011 variants, adr- files with no content). This introduces clutter and makes it harder to reason about authoritative decisions.
+- Some root-config guidance is not strictly followed: vitest.config.ts wraps and mutates the factory result (adding exclude entries) instead of being a single createVitestNodeConfig() call as required for >50% functionality by the guide; small deviations like this reduce conformity to the project's strict target patterns.
+- TypeScript build issues historically surfaced (TS6059 rootDir errors) and required moving top-level config/scripts into src; while steps were taken, the existence of these recent build problems indicates friction between source layout and tsconfig expectations.
+- Coverage/threshold expectations are inconsistent across docs: some places require 90% while other modules use 80%. This inconsistency weakens a single authoritative quality bar for the repo.
+- Automated enforcement exists (verify script, many tests), so lack of enforcement is not a problem. However, the presence of duplicated docs and guidance deviations reduce the effective enforceability and clarity of the quality rules.
 
 **Next Steps:**
+- Remove or consolidate duplicate decision/ADR files: merge duplicates, remove empty stubs, and keep a single canonical ADR per decision (small, documented commits).
+- Audit docs/decisions and prompt files for near-duplicate content and consolidate into authoritative records to remove copy-paste drift.
+- Align root config files with the project's required target patterns: make vitest.config.ts a simple factory call (createVitestNodeConfig()) or document and justify deviations via ADRs.
+- Resolve any remaining top-level source layout issues by following the one-file-move policy: move necessary top-level build-time scripts/configs into src and verify tsc builds cleanly.
+- Unify coverage threshold expectations across documentation and config (decide 80% vs 90% and apply consistently), documenting the choice in an ADR.
+- Run a repository hygiene pass to remove redundant or unused files (empty stubs, misplaced ADR copies) and re-run npm run verify to validate the full pipeline.
 
-- Fix the TypeScript build errors (follow the planned single-file move approach to resolve TS6059) and re-run the full test suite (npx vitest run or npm test).
-- After a clean compile, run focused packaging tests (pack + temp install tests) and then the entire test suite to confirm a recent full green run.
-- If any tests fail post-build, address failures iteratively (start with build/runtime import errors, then unit/integration failures), and re-run tests until consistently green.
-- Add/verify a CI job that runs tsc → build → focused packaging tests → full test suite to ensure ongoing recent-green validation.
-
-## EXECUTION ASSESSMENT (30% ± 8% COMPLETE)
-
-- Build/test pipeline is not yet validated end-to-end: a TypeScript rootDir error was observed and only a single file move was performed; the TypeScript compile and full build have not been re-run to confirm success.
-- Previous tsc run failed with TS6059/TS2209 (files not under rootDir).
-- A single corrective action was taken: eslint.config.ts was moved into src/ (now untracked in git status).
-- TypeScript compile (npx tsc -p tsconfig.build.json) has not been re-run after the move; no evidence of a successful clean compilation.
-- There are many untracked compiled artifacts (.js, .d.ts, .map) present in the working tree indicating prior builds; repository hygiene must be addressed before committing.
-- package.json exports point to ./dist artifacts and dist/ exists, but build outputs in dist/ are not a substitute for verifying the current source build step.
-- package-lock.json was modified; dependency/lock alignment may need verification (dependency-alignment test exists).
-- Prebuild step generates .markdownlint.json (scripts exist), and copy-assets exists, but copy-assets completion has not been observed in a successful build run after the recent edits.
-
-**Next Steps:**
-
-- Run: npx tsc -p tsconfig.build.json and capture the first error; if TS6059 references another top-level file, move that single file into src/ (one move per iteration) and re-run tsc until zero errors.
-- Once tsc passes, run: npm run build and confirm copy-assets writes its completion message to stderr (copy-assets prints progress to stderr).
-- Run focused packaging tests: npx vitest run src/tests/package-exports.test.ts src/tests/dist-files.test.ts src/tests/package-structure.test.ts and fix any missing artifact or runtime import issues.
-- Run dependency alignment check: npx vitest run src/dependency-alignment.test.ts; if it fails, run npm ci to align node_modules and re-run the test. If lockfile changes are required, prepare ADR and bundle with package.json + package-lock.json changes.
-- When all verification steps pass, stage only the minimal moved files and a brief tsconfig.build.json edit (if any), run npm run verify, then commit with a focused message and push.
-
-## DOCUMENTATION ASSESSMENT (88% ± 12% COMPLETE)
-
-- Documentation is comprehensive and developer-focused: good README/QuickStart, API reference, ADRs, usage guides (ESLint, TypeScript, Vitest, Markdown), and CONTRIBUTING/security guidance. A few minor inconsistencies and missing quick references (Node version, small setup/troubleshooting steps) reduce the score slightly.
-- README.md: strong Quick Start, usage examples for testing, prettier, eslint, and markdown lint integration; lists peer deps and scripts clearly.
-- API.md: concise reference for exports (testing, eslint, prettier, typescript, markdown helpers) useful for consumers and automated checks.
-- docs/decisions/: full set of ADRs documenting key governance decisions (peer deps, markdownlint selection, prettier TS config, vitest alignment, supply-chain policy).
-- docs/libraries/usage/: targeted usage docs for dependencies (esbuild, eslint-plugin-import, unicorn, vitest, markdownlint) — helpful for implementers and LLM-agent consumption.
-- CONTRIBUTING.md & SECURITY.md: provide clear contributor workflow, verify steps, and supply-chain audit policy.
-- Scripts & examples: generate-markdownlint-config and copy-assets scripts are present and documented; package.json scripts align with documentation.
-- TypeScript config templates: tsconfig presets are present under typescript/ and exposed via package exports; tests validate tsconfig exports (tsconfig-exports.test.ts).
-- Consistency issues: small mismatches across docs (e.g., Node version recommendations appear in different places/templates) that can confuse users about the precise minimum Node requirement.
-- Dogfooding caveat: some repo state (e.g., presence of .eslintignore in the working tree) appears inconsistent with assertive doc statements that such files should not exist — docs should be reconciled with current repo state.
-- Missing micro-guides: while examples are present, step-by-step troubleshooting for common consumer issues (e.g., 'Cannot find module jiti', NODE_OPTIONS usage for prettier TS config) could be consolidated into a short Troubleshooting section.
+## TESTING ASSESSMENT (45% ± 6% COMPLETE)
+- Test suite is extensive with many unit and integration tests and historically high coverage, but recent TypeScript build errors prevented a recent full green run so testing quality cannot be rated above 50%.
+- There is a comprehensive Vitest test suite covering scripts, lint helpers, TypeScript presets, ESLint layers, prettier export, and packaging integration (many src/tests/*.ts files).
+- Historical notes indicate tests achieved very high coverage (claimed 100% in past runs) and many focused tests exist for dual testing strategy (unit + integration) for scripts.
+- Several tests depend on compiled artifacts under dist/ (package-exports, dist-files, package-structure, packaging integration). These require a successful tsc build + copy-assets to run reliably.
+- Most recent developer activity shows TypeScript compiler errors (TS6059/TS2209) due to files outside rootDir (scripts/, vitest.config.ts, top-level config files). The last recorded command (npx tsc -p tsconfig.build.json) failed with these errors.
+- Because the build failed, a full test run was not completed recently; per the hard cap rule, absence of a recent fully green run limits the score to 50% or below.
+- There are dedicated tests checking dependency/lockfile alignment (src/dependency-alignment.test.ts) and packaging tests that will fail or be skipped if the build or install steps are broken, increasing fragility until the build is fixed.
 
 **Next Steps:**
+- Fix TypeScript build errors first (follow the incremental single-file move plan): move the top-level files reported by tsc into src/ one at a time (git mv), re-run `npx tsc -p tsconfig.build.json` after each move, and stop on the first non-TS6059/TS2209 error.
+- When tsc succeeds, run `npm run build` to produce dist/ and confirm `copy-assets` completed (look for '🎉 copy-assets completed successfully' on stderr).
+- Run the focused packaging tests that rely on dist: `npx vitest run src/tests/package-exports.test.ts src/tests/dist-files.test.ts src/tests/package-structure.test.ts` and fix any runtime import/export issues.
+- Re-run the full test suite (`npx vitest run` or `npm test`) and ensure all tests pass; only after a successful full green run should testing completeness be rescored above 50%.
+- If dependency / lockfile misalignment arises in dependency-alignment tests, run `npm ci` to align node_modules, or follow the ADR process if lockfile updates are required.
 
-- Reconcile and state a single authoritative Node.js requirement (update README and ADRs/templates to match).
-- Add a short Troubleshooting subsection in README or docs (jiti missing, NODE_OPTIONS for prettier TS configs, common ESLint import/parsing errors) with exact commands and expected symptoms.
-- Audit docs for any contradictory statements (for example, claims that .eslintignore should not exist) and either update text or align repository state to the doc.
-- Add a one‑page Quick Reference that maps package.json exports → consumer import paths and the minimal steps to wire up ESLint/Prettier/Vitest (copy‑pasteable snippets), to reduce onboarding friction.
-- Maintain docs/libraries/usage files when updating peer dependency ranges and record the change in ADRs so the usage guides always match supported versions.
+## EXECUTION ASSESSMENT (30% ± 12% COMPLETE)
+- Build/test pipeline is partially implemented but not currently successful: TypeScript compilation fails (TS6059) due to files outside the configured rootDir, so the build scripts do not complete end-to-end.
+- Recent tsc invocation (npx tsc -p tsconfig.build.json) failed with multiple TS6059 errors: files such as scripts/copy-assets.ts, scripts/generate-markdownlint-config.ts, and vitest.config.ts are reported as 'not under rootDir'.
+- Prebuild step (generate-markdownlint-config) succeeded previously, and some assets (dist/) exist in the repository, but the TypeScript build step does not complete because top-level build-time files are outside the TypeScript rootDir used by the compiler invocation.
+- package.json build pipeline (prebuild -> build -> copy:assets) is defined, but tsc errors prevent npm run build from succeeding end-to-end at this time.
+- Several repository moves were attempted (eslint.config.ts moved into src/), but at least the scripts directory and other top-level .ts config files still trigger TS6059 and block compilation.
+- Because tsc fails early, downstream packaging tests (which rely on a successful dist/ layout and compiled artifacts) cannot be relied upon until compilation issues are resolved.
+
+**Next Steps:**
+- Reproduce the failure locally: run npx tsc -p tsconfig.build.json to confirm the first TS6059 failure path and identify the single file referenced first.
+- Follow the single-file-move discipline from the plan: git mv the first file reported by tsc into src/ (preserving directory structure), then re-run npx tsc -p tsconfig.build.json. Repeat one file move per tsc run until TS6059 errors disappear or a non-TS6059 error appears.
+- If a non-TS6059/TS2209 error appears after moves, stop moving files and fix that compiler error before further file moves.
+- Once tsc completes cleanly, run npm run build and confirm copy-assets finishes (look for '🎉 copy-assets completed successfully' on stderr).
+- Run the focused packaging tests (package-exports, dist-files, package-structure) and address any missing artifacts by moving the single missing source into src or fixing export paths as required.
+- After packaging tests pass, run npm run verify and fix any remaining lint/format/test failures before committing minimal, focused changes (only the moved files and any absolutely necessary tiny tsconfig adjustments).
+
+## DOCUMENTATION ASSESSMENT (75% ± 12% COMPLETE)
+- Overall documentation is comprehensive and largely consumer-ready: README, API reference, usage guides, ADRs, CONTRIBUTING, SECURITY, and many dependency usage docs exist. There are a few inconsistencies and minor gaps (coverage thresholds, duplicated/empty ADR files, and a couple of cross-references) that reduce clarity for some consumers and maintainers.
+- High-value top-level docs present: README.md (quick start, examples, compatibility, API highlights), CONTRIBUTING.md, CHANGELOG.md, and SECURITY.md — these provide clear onboarding for users and contributors.
+- API reference exists (docs/API.md) and documents primary exports (testing, eslint, prettier, typescript, markdown helpers) with example shapes and return values.
+- Comprehensive usage docs are present under docs/libraries/usage (vitest, markdown-lint, eslint-plugin docs, etc.), which help developers integrate dependencies correctly.
+- Decision records (docs/decisions/) are largely present and detailed for many key choices (markdownlint selection, Istanbul vs V8, dual-testing strategy, peer deps policy). This is excellent for governance and maintainers.
+- Scripts and helpers are documented and examples for consumer integration (tsconfig extends, eslint.config.ts, vitest.config.ts, prettier) are included in README and other docs — good dogfooding coverage.
+- Inconsistency: multiple places show differing coverage thresholds (README and some vitest docs mention 90% while other docs/guide content references 80%). This can confuse consumers about the enforced target.
+- Some ADR files appear duplicated or empty (e.g., repeated 0009 and 0011 placeholders) and a few decision files reference related ADR content inconsistently, which reduces documentation cleanliness and discoverability.
+- The markdown-lint generation workflow is documented, and code + script exist; README explains jiti requirement for TypeScript configs. Still, a short, single-page 'consumer checklist' tying required peer deps and tsconfig files to the exact steps a consumer must run would improve first-run experience.
+- Package export expectations and packaging tests are documented and supported by tests, but API.md could more explicitly map package.json exports -> runtime paths (consumers currently infer from README/exports).
+- Minor: some docs reference policies (e.g., verify order, .voder/history policies) that are internal process heavy. They are useful for LLM/agent workflows but may be overwhelming for human consumers; consider a condensed 'consumer quickstart' aside.
+
+**Next Steps:**
+- Unify coverage thresholds across docs: decide on 80% vs 90% (or differentiate package types) and update README, vitest docs, and the Universal Guide to match a single authoritative value.
+- Clean up ADRs: remove or consolidate duplicated/empty ADR files (e.g., duplicate 0009, empty 0011 files) and ensure each ADR has status/front-matter and links to related decisions.
+- Add a short 'Consumer Quickstart Checklist' in README (or a new docs/quickstart.md) showing the minimal steps: install peer deps (including jiti), create/extend tsconfig.eslint and tsconfig.config, drop in eslint.config.ts/prettier.config.ts/vitest.config.ts examples, and run the lint/generate scripts.
+- Add an explicit mapping table in docs/API.md or README that shows package.json exports -> expected consumer import paths (e.g., './eslint' -> dist/eslint/index.js and TypeScript declaration path), to simplify export verification for consumers.
+- Correct any small contradictions (verify script ordering examples, coverage provider mentions) so the documentation presents a single consistent workflow for both human and automated consumers.
 
 ## DEPENDENCIES ASSESSMENT (85% ± 12% COMPLETE)
-
-- Overall dependency posture is good: peer/dev requirements are declared, vitest and @vitest/coverage-v8 are version-aligned per ADR, and repository audit history indicates zero high-severity findings. There are minor concerns about duplicated peer/dev declarations and a possibly stale esbuild entry that warrant targeted updates and ongoing automated monitoring.
-- Repository contains explicit peerDependencies for consumer tools (eslint, prettier, typescript, vitest, markdownlint-cli2, etc.), which improves consumer clarity and avoids bundling toolchains.
-- DevDependencies mirror many peers (eslint, @typescript-eslint, prettier, vitest, markdownlint-cli2, jiti) enabling local development and tests; this duplication is intentional but should be kept in sync.
-- Vitest and @vitest/coverage-v8 are pinned/aligned to 3.2.4 in devDependencies (exact) satisfying ADR-0005 and avoiding peer-version mismatches — strong positive.
-- Project history indicates an audit was run and vulnerabilities were reduced to zero; package-lock.json was regenerated as part of maintenance.
-- Prettier, ESLint, TypeScript, and major tooling are declared with reasonable semver ranges (carets) allowing non-breaking upgrades while preserving compatibility.
-- The package lists jiti in peers/dev and relies on it for TypeScript config loading in ESLint — this is required and documented, but consumers must install it (documented in README).
-- esbuild is listed as devDependency at ^0.25.9 which appears older relative to recent esbuild major/minor cadence; this should be validated (possible upgrade candidate).
-- Mix of caret ranges and exact pins (e.g., vitest exact) is deliberate for alignment but increases maintenance burden; automated tooling should monitor mismatches.
-- package-lock.json shows modifications in the working tree — ensure lockfile and package.json remain committed together when performing dependency updates.
+- Overall dependency management appears deliberate and reasonably current: dev vs peer separation is correct, vitest/coverage alignment is enforced, and project history reports a successful supply-chain audit. A few packages (notably esbuild) look older/oddly pinned and there is some overlap between coverage providers that warrant cleanup and routine SCA checks.
+- Project distinguishes peerDependencies (consumer tools) from devDependencies (authoring tools) which is good practice for a configs package.
+- History states an audit was run and vulnerabilities were reduced to zero; the verify script enforces `npm audit fix --force` which helps keep dependencies current (but requires monitoring for introduced breaking changes).
+- Vitest and @vitest/coverage-v8 are intentionally version-aligned (devDependencies use exact 3.2.4) per ADR; peerDependencies declare compat ranges — alignment is implemented to satisfy the ADR.
+- Both Istanbul and V8 coverage provider packages are present (@vitest/coverage-istanbul and @vitest/coverage-v8). This is functionally acceptable for testing but creates potential confusion and increases maintenance surface; ADRs indicate preference for Istanbul for coverage-exclusion features.
+- Some package versions look unusual or potentially stale (for example esbuild listed as ^0.25.9). Without an external registry check I cannot assert a CVE, but older/minor versions of tooling like bundlers have historically had security or bug fixes and should be reviewed.
+- markdownlint-cli2, jiti, eslint, prettier, typescript, and vitest are declared in peers/devDeps as required — this is consistent with the package’s role as a configuration provider and mitigates consumer surprises when they install it.
+- Exact version pins for some devDependencies (e.g., vitest: "3.2.4", @vitest/coverage-v8: "3.2.4") are intentional to guarantee reproducible CI/test runs; this is beneficial but requires a maintenance process to update both in lockstep.
+- package.json includes useful scripts for auditing and verification (verify, audit:ci) which increases security posture if executed regularly in CI.
+- No direct runtime dependencies are present (package is private and ESM config-focused), reducing the attack surface for consumers.
 
 **Next Steps:**
-
-- Run a fresh automated scan: npm audit --audit-level=moderate && npm outdated && npm ls --depth=0 to list outdated or vulnerable packages.
-- Investigate and, if needed, update esbuild to a maintained recent release (test build/test suite after upgrade).
-- Maintain vitest/@vitest/coverage-v8 alignment policy when updating: update both together and include ADR when changing major versions.
-- Enable automated dependency updates (Dependabot/Renovate) configured to create grouped PRs for tooling stacks to preserve alignment.
-- Add CI SCA checks (e.g., npm audit or third-party SCA) to fail builds on high/critical vulnerabilities and surface changes in dependency tree.
-- When changing dependencies, update package.json and package-lock.json together and run npm ci locally/CI to validate reproducible installs.
-- Periodically review peer/dev duplicates and document the intended duplication policy in README/ADR to avoid accidental divergence.
+- Run a fresh `npm audit --json` and a modern SCA scan (Snyk/OSS Index or GitHub Dependabot alerts) to validate the current zero-vulnerability claim from a clean environment.
+- Inspect and consider upgrading tooling that looks older (notably esbuild) to a maintained minor/major line; run tests after upgrades and bundle ADRs for any pinned major bump.
+- Consolidate coverage provider usage intentionally: prefer one provider (Istanbul per ADR) to reduce maintenance and avoid accidental consumer confusion; if both must remain, document rationale in an ADR.
+- Ensure package-lock.json and node_modules are kept in sync in CI (use `npm ci`) and add a periodic dependency update cadence (dependabot/renovate) to surface updates and security fixes.
+- Keep the exact-version alignment practice for vitest+provider but automate checks (test that versions match in package.json and lockfile) to avoid drift and false negatives in `src/dependency-alignment.test.ts`.
 
 ## SECURITY ASSESSMENT (80% ± 12% COMPLETE)
-
-- Overall the codebase shows good security hygiene (private package, supply-chain ADRs, audit scripts, registry-mirror guidance) with low direct code-level vulnerabilities, but there are a few maintainability and supply-chain risks (outdated dev deps, scripts that write files and spawn processes) that should be mitigated.
-- Positive controls: package is private, ADRs require supply-chain audits and a registry-mirror policy, and an `audit:ci` script exists to fail on high-severity issues.
-- Dev/test scripts and build helpers (scripts/generate-markdownlint-config.ts, scripts/copy-assets.ts, test helpers) perform filesystem writes and spawn child processes; while intended for development/test, they increase attack surface if untrusted input or CI misuse occurs.
-- Tests and helpers use child_process.execSync (e.g., packaging/integration tests run `npm pack` and `npm install` on a generated tarball). These operations are normal for packaging tests but can execute lifecycle scripts from installed packages — treat carefully in CI and ephemeral environments.
-- A few dependency versions look dated in package.json devDeps (for example esbuild@^0.25.9) which may carry known vulnerabilities; keeping tooling dependencies current is important for SCA.
-- validateRuntimeEnvironment() asserts presence of `jiti` and tsconfig JSON files. It reports clear errors but relies on require.resolve — acceptable, but ensure runtime validation does not run in untrusted contexts.
-- jsonLoader.ts resolves JSON via a constructed path. It uses fixed relative paths in tests, but the loader could be abused if passed unvalidated external input — consider restricting usage to internal module-only contexts or adding sanity checks.
-- Scripts write files into the repository root (generate-markdownlint-config writes `.markdownlint.json`). Repository policy elsewhere discourages creating persistent output in the repo; generating files in repo can cause accidental commits of generated content and leaking of state — prefer OS temp or explicit consumer actions.
-- No obvious secrets or network calls are present in source code; no runtime network I/O or external credential handling was found.
-- package-lock.json is present and dependency-alignment tests exist; ensure lockfile integrity is enforced (CI) and lockfile updates are paired with ADRs when necessary.
-
-**Next Steps:**
-
-- Run a full SCA scan (npm audit, snyk/OSS-Fuzz/other) and remediate or upgrade flagged devDependencies (especially old esbuild).
-- Harden CI: enforce `npm audit --audit-level=high`, validate package-lock integrity, and ensure CI uses the approved registry mirror `.npmrc` to avoid rogue registries.
-- Limit and sandbox any test/build actions that run `npm install` on unpacked tarballs; run these in ephemeral containers or restricted CI agents to reduce risk from lifecycle scripts.
-- Avoid writing persistent generated files into the repository root during automated runs; use tmp directories or require an explicit developer action to generate repo files and add them to .gitignore if temporary.
-- Add dependency-update automation (Dependabot or Renovate) and pin/update transitive toolchain versions; add a periodic job to check for toolchain CVEs.
-- Add basic input validation or restrict APIs for utilities like jsonLoader if they may be called with dynamic input.
-- Consider signing or otherwise validating the lockfile in CI and documenting the process for ADRs when lockfile changes are required.
-
-## VERSION_CONTROL ASSESSMENT (20% ± 12% COMPLETE)
-
-- Version control hygiene is poor: 52 uncommitted files (7 modified + 45 untracked) and 2 local commits ahead of origin. While no conflicts are reported and critical sources appear tracked, the large number of uncommitted/untracked files (including compiled artifacts) and unpushed commits materially degrade collaboration safety.
-- Total uncommitted files = 52 (7 modified/unstaged + 45 untracked). This falls in the 50-99 range which imposes a hard cap of 25%.
-- Repository is ahead of origin by 2 commits (push pending). Being 2 commits ahead is a serious collaboration concern and further reduces effective score.
-- Many untracked files are compiled artifacts and generated maps (JS/.d.ts/.map) visible due to .voderignore negation. They are correctly listed in .gitignore but remain untracked in working tree — cluttering the workspace.
-- No merge conflicts or corruption are indicated in git status; CI/ADR docs and decision records are present and tracked.
-- Critical source files and configs appear tracked (src/, typescript/, eslint/, tests), which avoids catastrophic failure, but the uncommitted changes and unpushed commits harm team visibility and integration safety.
-- package-lock.json modified — dependency/lock alignment should be verified before pushing to avoid breaking CI or consumers.
+- Overall codebase shows a low-to-moderate security risk: there are no obvious remote network calls or secret leaks in source, but build/test scripts use child_process execution and file-system writes which increase attack surface in CI or when running untrusted contributions. Dependency surface and execSync usage deserve focused review and CI hardening.
+- No direct network calls or external HTTP requests are present in the source code; package is a config/tooling library and primarily performs file I/O and local process execution.
+- Scripts (scripts/copy-assets.ts, scripts/generate-markdownlint-config.ts) perform file writes and copy operations using resolved paths. They use path.resolve and join which avoids naive string concatenation, reducing path traversal risk for the current controlled usage patterns.
+- Multiple test and helper files invoke child_process.execSync (and execSync with npx) to run tsx, node, npm pack, and npm install for integration tests. Exec usage is with constructed paths from the repository; while not directly vulnerable here, execSync increases risk if inputs are ever attacker-controlled or if CI runs untrusted PRs in an environment with write/exec permissions.
+- generate-markdownlint-config and copy-assets write files into the repository (e.g. .markdownlint.json, dist/). While acceptable for dev tooling, writing to repository root can overwrite files unexpectedly; ensure CI runners and maintainers run these in controlled contexts.
+- validateRuntimeEnvironment uses require.resolve('jiti') which throws when missing; tests mock require.resolve. The presence of require.resolve checks is fine, but mocking in tests shows potential for accidental bypass of validation logic during test runs—ensure production CI enforces required peers.
+- Preservation of file mode bits (chmod) in copy-assets may set execute bits on copied content. Ensure source files are trusted; preserving modes is appropriate but could accidentally make files executable in environments where that is risky.
+- No obvious sanitization problems for the specific relative file names used (e.g., loadJSON uses fixed relative paths like './base.json'). The code does not accept arbitrary user-supplied paths for critical operations in the current repository layout.
+- package.json includes many devDependencies and peerDependencies; dependency supply-chain risks remain (transitive vulnerabilities). The repository already documents audit and registry-mirror policies (ADR-0007) and runs `npm audit` in verify scripts, which helps but requires continuous monitoring.
+- Tests create and execute JS modules in temporary dirs (writing test scripts then running them). Running such code in CI requires isolation and trust model controls (avoid executing untrusted PR code on shared runners).
+- No secrets (keys, tokens) are visible in repo files; .env and similar are in .gitignore. Good practice observed.
+- Some scripts rely on POSIX shell and tools (npm scripts using env var syntax, cp/rm). This is a portability concern more than a security issue, but CI should run these in POSIX environments as intended.
 
 **Next Steps:**
+- Perform a dependency SCA (software composition analysis) scan (e.g., `npm audit` / Snyk / GitHub Dependabot) and schedule regular automated scans; triage and patch high/critical findings promptly.
+- Harden CI: run tests and package-building in isolated ephemeral runners (no persistent credentials), restrict execution of untrusted PRs (use PR gating or run untrusted PRs in sandboxed environments).
+- Replace or avoid execSync calls where possible with child_process.spawn/execFile using argument arrays (no shell interpolation) and explicit environment controls; validate and sanitize any path inputs used with exec.
+- Limit file writes during test runs to temp directories (avoid writing into repo root) or ensure tests run in fully ephemeral workspaces; treat any test-created executable artifacts cautiously.
+- Add explicit checks/validation around any input used in subprocess calls or file operations. For integration tests that pack+install local tarballs, ensure the tarball and install contexts are trusted.
+- Continuously monitor and pin critical tooling versions (Vitest, Prettier, ESLint plugins) where necessary; maintain lockfile hygiene and ensure package-lock.json is present and validated by CI.
+- Add runtime / build-time integrity checks where appropriate (e.g., verify tarball checksums before local install in automated flows) and document the trust model for running build/test tasks.
+- Document CI runner security expectations (no secrets mounted during npm pack/install steps) and ensure registry-mirror configuration (per SECURITY.md) is enforced in CI environments.
 
-- Commit or stash the 7 modified files in small, focused commits with clear messages. Run full verify locally before pushing.
-- Decide on handling the 45 untracked files: remove generated build outputs from working tree (git clean) and ensure .gitignore covers them; keep only source files tracked. If any of the untracked files are source, add and commit them.
-- Push the 2 local commits immediately after verification to synchronize with remote (minimize collaboration friction).
-- If package-lock.json changed intentionally, run npm ci locally and re-run src/dependency-alignment.test.ts; prepare ADR if lockfile/package.json versions must change and include ADR with the commit.
-- Consider a short follow-up to remove committed build artifacts and ensure build outputs remain ignored; add pre-push or CI safeguards to prevent future accumulation of generated files in the working tree.
+## VERSION_CONTROL ASSESSMENT (96% ± 17% COMPLETE)
+- Repository exhibits excellent version-control hygiene: clean working tree, zero uncommitted files, and branch fully synchronized with origin. Critical sources and docs are tracked and common build artifacts are correctly git-ignored.
+- Working directory is clean: git status shows no staged/unstaged or untracked files (0 uncommitted files).
+- Branch is up to date with origin/main (no unpushed commits), so remote synchronization is good.
+- Key source files, configs, and documentation are tracked (src/, eslint/, typescript/, docs/).
+- Build outputs and transient files are excluded in .gitignore (dist/, node_modules/, coverage/, .eslintcache, etc.).
+- A small set of git-ignored files are visible to the tooling via .voderignore negation (intended for LLM inspection) but remain properly ignored by git.
+- No merge conflicts or repository corruption indicators are present in the provided status.
+- Project file counts are consistent (tracked files ~96, untracked 0); a minor note: a reported 'Project files tracked: 87/88' suggests one metadata mismatch to verify, but it does not indicate a version-control break.
+
+**Next Steps:**
+- Verify package-lock.json is tracked and aligned with node_modules (dependency-alignment tests reference it).
+- Run a quick local 'git status' and 'git log --oneline -n 5' before major changes to ensure no ephemeral local commits are left unpushed.
+- Periodically audit the repo for accidental committed build artifacts (git ls-files dist/ should return nothing); remove and add to .gitignore if found.
+- Optionally reconcile the 'Project files tracked' count discrepancy (87/88) to confirm no intended source file is missing from tracking.

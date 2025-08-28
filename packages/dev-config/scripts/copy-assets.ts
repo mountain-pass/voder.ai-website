@@ -16,17 +16,7 @@
 import { chmod, copyFile, mkdir, readdir, stat } from 'fs/promises';
 import { join, resolve } from 'path';
 import { exit, stderr } from 'process';
-
-/**
- * Ensures a directory exists, creating it recursively if needed
- */
-export async function ensureDir(dir: string): Promise<void> {
-  try {
-    await mkdir(dir, { recursive: true });
-  } catch (err) {
-    throw new Error(`Failed to create directory ${dir}: ${String(err)}`);
-  }
-}
+import { ensureDir } from '../src/utils/fs.js';
 
 /**
  * Copies files matching a predicate from source to destination directory

@@ -187,8 +187,8 @@ Duplicate group — representative files:
 
 - Generated & intentionally ignored: coverage/* — canonical location is coverage/lcov-report/; top-level coverage artifacts are generated and should remain ignored.
 - Generated & intentionally ignored: typescript/dist/* — compiled artifacts are generated and intentionally ignored.
-- [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files: 
-- [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files: 
+- [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files:
+- [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files:
 - [CLASSIFIED] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact (heuristic: generated or vendor file)
 - [NO-ACTION] 0005f2900e1fccf134ab517e31bc278f4e40c257 — no tracked files to untrack
 

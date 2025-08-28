@@ -1,75 +1,90 @@
-The previous plan was incorrect because the duplicate-detect JS files were already removed. I updated the plan so NOW records the canonicalization in git (single non-interactive command), and NEXT/LATER continue the canonicalization, doc regen, verify and push steps.
-
 ## NOW
-Run a single non-interactive command that stages the ADR note and all changes and records the canonicalization in one focused commit:
-- git add docs/decisions/0013-cleanup-duplicate-docs.md && git add -A && git commit -m "chore(dup-detect): record canonical duplicate-detect choice (POSIX script); removed untracked JS variants; refs ADR-0013"
+
+Run a single non-interactive commit to record the markdown autofix changes already applied to tracked files (this stages and commits all tracked modifications in one step so the working tree is clean for the subsequent verify steps):
+
+git commit -am "chore(docs): apply markdown autofix; refs ADR-0013" 2>&1 | tee /tmp/git-commit-docs-autofix.log
 
 ## NEXT
-After the NOW command succeeds, perform the ordered, non-interactive sequence below. Run each step only after the previous succeeds and capture console-first logs to /tmp.
 
-1) Regenerate markdown config, apply markdown auto-fixes, format repository, and commit auto-fixes (capture logs)
-- npm run generate:md-config 2>&1 | tee /tmp/generate-md-config.log || true
-- npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix.log || true
+After the NOW commit completes successfully, perform the ordered non-interactive sequence below (run each step only after the previous succeeds; capture outputs to /tmp). Keep commits small and reference ADR-0013 where relevant. Do NOT modify prompts/, prompt-assets/, or .voder/.
+
+1) Apply formatting auto-fixes, stage and commit:
 - npm run format 2>&1 | tee /tmp/format-after-docs.log || true
 - git add -A
-- git commit -m "chore(docs): apply markdown & format auto-fixes; refs ADR-0013" || true
+- git commit -m "chore(docs): apply formatting auto-fixes after markdown fixes; refs ADR-0013" 2>&1 | tee /tmp/git-commit-docs-format.log || true
 
-2) Run the full verify pipeline and iterate on failures until green (capture logs)
+2) Run full verify and iterate on failures until green:
 - npm run verify 2>&1 | tee /tmp/verify-after-canonicalize.log
-- If verify fails:
-  - Inspect logs: /tmp/verify-after-canonicalize.log, /tmp/format-after-docs.log, /tmp/lint-md-fix.log, /tmp/generate-md-config.log
-  - Make only small, focused fixes (one logical fix per commit). For each fix:
-    - Run the failing step locally (e.g., a specific test or lint command)
+- If npm run verify fails:
+  - Inspect logs: /tmp/verify-after-canonicalize.log, /tmp/format-after-docs.log, /tmp/git-commit-docs-autofix.log, /tmp/lint-md-fix.log
+  - Make a single focused fix per commit (one logical change). For each fix:
+    - Re-run the failing step (e.g., npm run lint:check, npm run test:ci, or the specific vitest command) to confirm it is resolved
     - git add <files>
-    - git commit -m "fix(<area>): <short description> - address verify failure; refs ADR-0013"
+    - git commit -m "fix(<area>): <short description> - address verify failure; refs ADR-0013" 2>&1 | tee /tmp/git-commit-fix-<short>.log
     - Re-run: npm run verify 2>&1 | tee /tmp/verify-after-canonicalize.log
-  - Repeat until `npm run verify` completes successfully.
+  - Repeat the small-fix → commit → verify loop until npm run verify succeeds
 
-3) When verify is green, push the branch upstream and capture output
+3) When verify is green, push the branch and capture output:
 - git push --set-upstream origin HEAD 2>&1 | tee /tmp/git-push-after-verify.log
 
+4) Confirm duplicate status after changes:
+- sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.post-verify.log
+
+5) Record confirmation in ADR-0013 and commit:
+- Append a one-paragraph confirmation with date to docs/decisions/0013-cleanup-duplicate-docs.md non-interactively:
+  - printf "\n\n## Confirmation\n\nCanonicalization and initial markdown/format auto-fixes applied and verified on $(date -u +%Y-%m-%dT%H:%M:%SZ). verify completed and duplicate-detect run; see /tmp/verify-after-canonicalize.log and /tmp/duplicate-detect.post-verify.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
+- git add docs/decisions/0013-cleanup-duplicate-docs.md
+- git commit -m "docs(adr): confirm canonicalization recorded and verify completed; refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-confirm.log || true
+
 Notes for NEXT
-- Preserve console-first policy: all outputs written to console and saved under /tmp.
-- Keep commits small and focused; every change related to consolidation must reference ADR-0013.
-- Do NOT modify contents under prompts/, prompt-assets/, or .voder/.
-- Use only non-interactive commands.
+- Always tee outputs to /tmp as shown so console-first logs are preserved.
+- If npm audit fix --force (run by verify) changes lockfile and causes failures, treat as a verify failure per step 2 and fix minimally (commit each small fix with ADR-0013 reference).
+- Keep all commits small, focused, and documented (include "refs ADR-0013" in messages where related).
+- Do not modify prompts/, prompt-assets/, or .voder/ at any point.
 
 ## LATER
-Once NOW and NEXT are complete and the branch is pushed with a green verify, perform these follow-up tasks in focused, auditable commits:
+
+After NOW and NEXT complete and the branch is pushed with a green verify, proceed with conservative consolidation and safe refactors in small, auditable commits (each commit referencing ADR-0013 and running verify after):
 
 1) Consolidate user-facing duplicate documentation (one duplicate-group → one commit)
-- For each duplicate-group from ADR-0013:
-  - Merge content into canonical docs/<file>.md
+- For each duplicate group recorded in ADR-0013:
+  - Merge and dedupe content into the chosen canonical docs/<file>.md
   - npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix-consolidation-<n>.log || true
   - npm run format 2>&1 | tee /tmp/format-consolidation-<n>.log || true
   - git add docs/<canonical-file>.md
-  - git commit -m "docs: consolidate <removed-file> -> <canonical-file>; refs ADR-0013"
-  - Run `npm run verify` and save log to `/tmp/verify-after-consolidation-<n>.log`
+  - git commit -m "docs: consolidate <removed-file> -> <canonical-file>; refs ADR-0013" 2>&1 | tee /tmp/git-commit-consolidate-<n>.log
+  - npm run verify 2>&1 | tee /tmp/verify-after-consolidation-<n>.log
 
-2) Finalize duplicate-detect cleanup & ADR update
-- ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect-final.log
-- Update ADR-0013 with a short canonicalization note and date; commit:
-  - git add docs/decisions/0013-cleanup-duplicate-docs.md
-  - git commit -m "docs(adr): confirm canonical duplicate-detect script and date; refs ADR-0013"
+2) Finalize ADR-0013 summary and final duplicate-detect:
+- sh ./scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.final.log
+- Update docs/decisions/0013-cleanup-duplicate-docs.md with final summary and timestamp:
+  - printf "\n\n## Finalization\n\nConsolidation completed on $(date -u +%Y-%m-%dT%H:%M:%SZ). Final duplicate-detect log: /tmp/duplicate-detect.final.log. refs ADR-0013\n" >> docs/decisions/0013-cleanup-duplicate-docs.md
+- git add docs/decisions/0013-cleanup-duplicate-docs.md
+- git commit -m "docs(adr): finalize ADR-0013 consolidation summary; refs ADR-0013" 2>&1 | tee /tmp/git-commit-adr-0013-final.log
 
-3) Tidy remaining housekeeping
-- If any transient artifacts should be ignored, add .gitignore entries and commit:
-  - git add .gitignore
-  - git commit -m "chore(git): ignore transient duplicate-detect artifacts; refs ADR-0013"
+3) Low-risk code refactors (extract duplicated utilities)
+- Identify small duplicated code fragments (e.g., in scripts/ and src/) and extract to src/utils/<name>.ts
+- Add unit tests under src/tests/utils/<name>.test.ts
+- For each extraction:
+  - git add src/utils/<util>.ts src/tests/utils/<util>.test.ts
+  - git commit -m "refactor(utils): extract <utility>; add tests; refs ADR-0013" 2>&1 | tee /tmp/git-commit-refactor-<util>.log
+  - npm run verify 2>&1 | tee /tmp/verify-after-refactor-<util>.log
 
-4) Small, safe refactors for duplication in code
-- Extract minimal shared utilities into src/utils/ (one utility per commit), add unit tests, run verify, and commit:
-  - git commit -m "refactor(utils): extract <utility>; add tests; refs ADR-0013"
+4) Plan and stage replacing execSync with safeSpawn (ADR-0014)
+- Draft ADR-0014 documenting the replacement approach and commit:
+  - git add docs/decisions/0014-replace-execSync-with-safeSpawn.md
+  - git commit -m "docs(adr): propose replacing execSync with safeSpawn; refs ADR-0014" 2>&1 | tee /tmp/git-commit-adr-0014.log
+- Replace execSync usages incrementally, one file at a time; add/adjust tests and run verify after each replacement:
+  - git add <changed-files> src/tests/<affected>.test.ts
+  - git commit -m "refactor(scripts): replace execSync in <file> with safeSpawn; add tests; refs ADR-0014" 2>&1 | tee /tmp/git-commit-exec-replace-<file>.log
+  - npm run verify 2>&1 | tee /tmp/verify-after-exec-replace-<file>.log
 
-5) Plan and stage safeSpawn rollout (ADR-0014) and replace execSync usage incrementally
-- Draft ADR-0014 describing the plan
-- Replace execSync usages one file at a time using safeSpawn, add tests, and run verify after each change
-- Commit each replacement as "refactor(scripts): replace execSync in <file> with safeSpawn; add tests; refs ADR-0014"
-
-6) Add monitoring automation (external)
-- Arrange an external scheduled job to run ./scripts/duplicate-detect.sh periodically and publish results to maintainers; document approach in ADR-0013 follow-up.
+5) Operationalize periodic duplicate-detect
+- Document recommended cadence and place in ADR-0013 follow-up notes (example: weekly duplicate-detect runs and a CI job that reports findings); do not add CI workflows in repo (per policy), just document the ops step in ADR.
 
 General Later notes
-- Always run `npm run verify` before committing changes that affect docs, scripts, or utilities.
-- Keep each change small, documented (mention ADR references), and tested.
-- Do not modify prompts/, prompt-assets/, or .voder/.
+- ALWAYS run npm run verify after each consolidation or refactor commit.
+- Keep changes small, tested, and clearly referenced to ADRs.
+- NEVER modify prompts/, prompt-assets/, or .voder/ as part of these steps.
+
+If you want, I will now run the single command in the NOW section and capture its output to /tmp/git-commit-docs-autofix.log. Do you want me to proceed?

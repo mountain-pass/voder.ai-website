@@ -4,30 +4,17 @@ import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createTempDir, cleanupTempDir } from '../helpers/fs-utils';
+import { safeSpawn } from '../../utils/safe-spawn';
 
-// Helper to run script as subprocess for integration testing
-// Note: This does NOT provide coverage data - use unit tests for coverage
+// Helper to run script as subprocess for integration testing using safeSpawn
 function runScriptAsSubprocess(
   scriptPath: string,
   cwd: string,
-): { stdout: string; stderr: string; success: boolean } {
-  try {
-    const result = execSync(`npx tsx ${scriptPath} 2>&1`, {
-      cwd,
-      encoding: 'utf8',
-      env: { ...process.env, NODE_ENV: 'test' },
-    });
-
-    return { stdout: result, stderr: result, success: true };
-  } catch (error: any) {
-    const output = error.stdout || error.message || '';
-
-    return {
-      stdout: output,
-      stderr: output,
-      success: false,
-    };
-  }
+) {
+  return safeSpawn('npx', ['tsx', scriptPath], {
+    cwd,
+    env: { ...process.env, NODE_ENV: 'test' },
+  });
 }
 
 describe('copy-assets script', () => {
@@ -55,7 +42,7 @@ describe('copy-assets script', () => {
     // Run the copy-assets script as subprocess (integration test)
     const scriptPath = join(originalCwd, 'scripts/copy-assets.ts');
 
-    const result = runScriptAsSubprocess(scriptPath, testDir);
+    const result = await runScriptAsSubprocess(scriptPath, testDir);
 
     // Should complete successfully (no error output)
     expect(result.stderr).toContain('🎉 copy-assets completed successfully');
@@ -86,7 +73,7 @@ describe('copy-assets script', () => {
     // Run the copy-assets script as subprocess (integration test)
     const scriptPath = join(originalCwd, 'scripts/copy-assets.ts');
 
-    const result = runScriptAsSubprocess(scriptPath, testDir);
+    const result = await runScriptAsSubprocess(scriptPath, testDir);
 
     // Should complete successfully
     expect(result.stderr).toContain('🎉 copy-assets completed successfully');
@@ -116,7 +103,7 @@ describe('copy-assets script', () => {
     // Run the copy-assets script as subprocess (integration test)
     const scriptPath = join(originalCwd, 'scripts/copy-assets.ts');
 
-    const result = runScriptAsSubprocess(scriptPath, testDir);
+    const result = await runScriptAsSubprocess(scriptPath, testDir);
 
     // Should complete successfully
     expect(result.stderr).toContain('🎉 copy-assets completed successfully');

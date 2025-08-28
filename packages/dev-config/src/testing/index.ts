@@ -30,6 +30,15 @@ export function createVitestNodeConfig(): Record<string, unknown> {
         reporter: ['text', 'html', 'lcov'],
         reportOnFailure: true, // Show coverage even when tests fail
         thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 },
+        include: ['src/**/*.ts', 'eslint/**/*.ts', 'linters/**/*.ts', 'typescript/**/*.ts'],
+        exclude: [
+          'scripts/**/*', // Exclude CLI scripts with many edge cases hard to test
+          'node_modules/**',
+          'dist/**',
+          'coverage/**',
+          '**/*.test.ts',
+          '**/*.spec.ts',
+        ],
       },
     },
   };

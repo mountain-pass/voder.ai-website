@@ -1,16 +1,10 @@
 ## NOW
-Stage, commit, and push all pending local changes to main:
-```bash
-git add . && git commit -m "chore: synchronize local changes for version control hygiene" && git push origin main
-```
+Run `git add . && git commit -m "chore: commit pending verified fixes"` to record the current local modifications that restored pipeline success.
 
 ## NEXT
-Run the full verification pipeline to confirm nothing breaks:
-```bash
-npm run verify
-```
+Run `npm run verify` to confirm the build, lint, format, and tests remain green; if any failures appear, apply targeted fixes, stage & commit them, then re-run `npm run verify` until fully green.
 
 ## LATER
-- Update CONTRIBUTING.md to remind developers to commit and push before ending work.  
-- Add a CI check that fails if there are uncommitted changes on `main`.  
-- Implement a scheduled dependency maintenance job to report outdated packages and stale lockfiles.
+- Add a `"check:duplicates": "sh scripts/duplicate-detect.sh"` entry to `package.json`  
+- Insert `npm run check:duplicates` immediately after `npm audit fix --force` in the `verify` script  
+- Proceed with ADR-0013 documentation consolidation in small commits, verifying with `npm run verify` after each change

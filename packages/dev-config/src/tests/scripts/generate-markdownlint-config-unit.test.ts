@@ -3,7 +3,7 @@ import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { generateMarkdownlintConfig } from '../../../scripts/generate-markdownlint-config.js';
-import { cleanupTempDir,createTempDir } from '../helpers/fs-utils';
+import { cleanupTempDir, createTempDir } from '../helpers/fs-utils';
 
 describe('generate-markdownlint-config script units', () => {
   let testDir: string;

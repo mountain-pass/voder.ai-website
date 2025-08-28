@@ -4,13 +4,10 @@ import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { safeSpawn } from '../../utils/safe-spawn';
-import { cleanupTempDir,createTempDir } from '../helpers/fs-utils';
+import { cleanupTempDir, createTempDir } from '../helpers/fs-utils';
 
 // Helper to run script as subprocess for integration testing using safeSpawn
-function runScriptAsSubprocess(
-  scriptPath: string,
-  cwd: string,
-) {
+function runScriptAsSubprocess(scriptPath: string, cwd: string) {
   return safeSpawn('npx', ['tsx', scriptPath], {
     cwd,
     env: { ...process.env, NODE_ENV: 'test' },

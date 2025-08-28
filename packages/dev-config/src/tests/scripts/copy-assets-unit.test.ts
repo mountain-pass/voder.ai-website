@@ -2,8 +2,9 @@ import { mkdir, readFile, stat, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { copyAssets, copyMatchingFiles, ensureDir } from '../../../scripts/copy-assets.js';
-import { cleanupTempDir,createTempDir } from '../helpers/fs-utils';
+import { copyAssets, copyMatchingFiles } from '../../../scripts/copy-assets.js';
+import { ensureDir } from '../../utils/fs.js';
+import { cleanupTempDir, createTempDir } from '../helpers/fs-utils.js';
 
 describe('copy-assets script units', () => {
   let testDir: string;

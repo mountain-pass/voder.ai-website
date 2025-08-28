@@ -75,7 +75,7 @@ We adopt a five-step, conservative workflow for cleanup and refactor:
      - npm run lint:fix && npm run lint:check
      - npm run lint:md:fix && npm run lint:md
      - npm run format && npm run build
-     - Run affected tests (npx vitest run <relevant files>) and, if uncertain, the full test suite.
+     - Run affected tests (npx vitest run `<relevant files>`) and, if uncertain, the full test suite.
    - Stop immediately on the first failure, fix the failure, and continue.
 
 This approach prioritizes safety, test coverage, and small, traceable commits.

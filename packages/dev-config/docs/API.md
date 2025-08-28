@@ -49,20 +49,26 @@
 ## markdown
 
 - `getConfig(overrides?: Record<string, unknown>): Record<string, unknown>`  
-  Returns the base markdownlint-cli2 ruleset merged with any overrides.  
+  Returns the base markdownlint-cli2 ruleset merged with any overrides.
 - `createCLICommand(opts?: { configPath?: string; fix?: boolean }): string`  
   Returns a shell command string to run markdownlint-cli2 over `README.md` and `docs/**/*.md`.
 
 ### markdown
 
 ```ts
-import { getConfig, createCLICommand } from '@voder/dev-config/linters/markdown';
+import {
+  getConfig,
+  createCLICommand,
+} from '@voder/dev-config/linters/markdown';
 
 // Programmatic config
 const rules = getConfig({ MD005: false });
 console.log(rules.MD005);
 
 // CLI invocation string
-const lintCmd = createCLICommand({ configPath: '.markdownlint.json', fix: true });
+const lintCmd = createCLICommand({
+  configPath: '.markdownlint.json',
+  fix: true,
+});
 console.log(lintCmd);
 ```

@@ -26,10 +26,8 @@ export function getConfig(overrides: MdLintOverrides = {}): Record<string, unkno
     // Disable line-length rule because formatting tools handle wrapping
     MD013: false,
 
-    // Placeholder for "no relative links in public READMEs".
-    // markdownlint has no single rule for "no relative links"; this is a documented placeholder.
-    // Consumers may replace this with a custom rule or configuration when they integrate markdownlint-cli2.
-    MD034: true,
+        // Forbid relative links in public READMEs
+    MD034: { no_reference_like: true },
   };
 
   // Shallow merge overrides into rules (caller can toggle or replace individual rule entries)

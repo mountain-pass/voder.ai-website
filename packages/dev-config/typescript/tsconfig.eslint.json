@@ -3,5 +3,6 @@
   "compilerOptions": {
     "types": ["node", "vitest/globals"],
     "isolatedModules": false
-  }
+  },
+  "exclude": ["dist", "build", "coverage", "typescript"]
 }

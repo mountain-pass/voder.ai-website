@@ -7,5 +7,7 @@
     "allowed_elements": []
   },
   "MD013": false,
-  "MD034": true
+  "MD034": {
+    "no_reference_like": true
+  }
 }

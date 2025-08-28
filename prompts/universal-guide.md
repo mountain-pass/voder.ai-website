@@ -274,7 +274,52 @@ For packages that compile TypeScript to JavaScript (like configuration packages)
 
 ---
 
-## 📦 **Package Development Guidelines**
+## � **LLM Dependency Documentation Requirements**
+
+### **🤖 Critical: docs/libraries/usage Directory**
+
+The `docs/libraries/usage/` directory contains **essential dependency usage documentation** that enables LLM agents to understand and correctly use project dependencies. **These files MUST NOT be removed or relocated.**
+
+**Purpose and Protection:**
+- **LLM Context**: Provides critical usage patterns and examples for complex dependencies
+- **Implementation Guidance**: Shows correct integration patterns that LLM agents need to implement features
+- **Error Prevention**: Prevents common integration mistakes by documenting known-good patterns
+- **Dependency Mastery**: Enables LLM agents to use dependencies effectively without external research
+
+**⚠️ CRITICAL PROTECTION POLICY:**
+- **✅ PRESERVE**: All files in `docs/libraries/usage/` are protected and essential
+- **✅ EXPAND**: Add new usage documentation as dependencies are added
+- **✅ UPDATE**: Keep usage examples current with dependency versions
+- **❌ NEVER REMOVE**: Do not delete, relocate, or "prune" these files
+- **❌ NEVER CONSOLIDATE**: Do not merge into other documentation - keep as dedicated reference files
+- **❌ NEVER RELOCATE**: Do not move to external repositories or different locations
+
+**What Gets Documented:**
+- **Complex Integration Patterns**: Dependencies requiring specific setup or configuration
+- **Common Usage Examples**: Practical examples of dependency usage in context
+- **Configuration Requirements**: How to configure dependencies correctly
+- **API Usage Patterns**: Key API calls and their proper usage
+- **Version-Specific Notes**: Important version compatibility information
+
+**Example Documentation Structure:**
+```
+docs/libraries/usage/
+├── eslint-plugin-unicorn.md     # Plugin-specific configuration and rules
+├── rollup-plugin-typescript.md  # Build tool integration patterns
+├── vitest.md                    # Testing framework usage patterns
+└── typescript-eslint-parser.md  # Parser configuration examples
+```
+
+**Why This Documentation Is Essential:**
+- **Prevents Research Overhead**: LLM agents don't need to research dependency usage from scratch
+- **Ensures Correct Implementation**: Provides tested, working examples of complex integrations
+- **Maintains Consistency**: All dependency usage follows documented patterns
+- **Reduces Integration Errors**: Common mistakes are avoided through clear guidance
+- **Enables Feature Development**: LLM agents can implement features requiring dependency interaction
+
+---
+
+## �📦 **Package Development Guidelines**
 
 ### **Dual Export Strategy for Configuration Packages**
 

@@ -28,6 +28,15 @@ It exports:
 ## 🔧 Compatibility & Requirements
 
 - **Node.js:** ≥ 22.6.0 (for native TypeScript config loading)
+
+**Required ESLint TS Config Loader**
+
+ESLint needs `jiti` to load TypeScript configuration files.  
+Install it in your project as a dev dependency:
+
+```bash
+npm install --save-dev jiti
+```
 - **TypeScript:** ≥ 5.0 (peer dependency)
 - **ESM-only**: `"type": "module"` in consumer projects
 - **Peer dependencies:**
@@ -58,6 +67,10 @@ yarn add -D @voder/dev-config
 ```
 
 ## 🚀 Usage
+
+## Consumer Integration Guide
+
+Use the examples below to integrate `@voder/dev-config` into your project for TypeScript, ESLint, Vitest, and Markdown linting.
 
 ### TypeScript Presets Usage
 
@@ -95,6 +108,8 @@ You can extend your project’s tsconfig.json directly from this package:
 // eslint.config.js
 export { complete as default } from '@voder/dev-config/eslint';
 ```
+
+> **Note:** The `complete` export automatically includes environment-specific globals for test files (Vitest & DOM) and script files (Node).
 
 ```js
 // eslint.config.js
@@ -148,6 +163,8 @@ writeFileSync('.markdownlint.json', JSON.stringify(getConfig(), null, 2));
 ```
 
 ## 📖 API Reference
+See [API Reference](docs/API.md)
+
 
 ### `testing.createVitestNodeConfig()`
 

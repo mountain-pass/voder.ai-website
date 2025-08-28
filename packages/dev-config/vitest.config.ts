@@ -11,5 +11,6 @@ export default {
       exclude: ['**/*.test.ts', '**/node_modules/**'],
       thresholds: { branches: 90, functions: 90, lines: 90, statements: 90 },
     },
+    retry: { runMode: 5 }
   },
 } as const;

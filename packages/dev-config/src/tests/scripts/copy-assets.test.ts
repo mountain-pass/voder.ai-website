@@ -1,8 +1,9 @@
 import { execSync } from 'child_process';
-import { mkdir, readdir, readFile, rmdir, writeFile } from 'fs/promises';
-import { tmpdir } from 'os';
+import { mkdir, readdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { createTempDir, cleanupTempDir } from '../helpers/fs-utils';
 
 // Helper to run script as subprocess for integration testing
 // Note: This does NOT provide coverage data - use unit tests for coverage
@@ -31,27 +32,7 @@ function runScriptAsSubprocess(
 
 describe('copy-assets script', () => {
   let testDir: string;
-
   let originalCwd: string;
-
-  async function createTempDir(prefix: string): Promise<string> {
-    const dir = join(
-      tmpdir(),
-      `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
-    );
-
-    await mkdir(dir, { recursive: true });
-
-    return dir;
-  }
-
-  async function cleanupTempDir(dir: string): Promise<void> {
-    try {
-      await rmdir(dir, { recursive: true });
-    } catch {
-      // Ignore cleanup errors
-    }
-  }
 
   beforeEach(async () => {
     testDir = await createTempDir('copy-assets-test');

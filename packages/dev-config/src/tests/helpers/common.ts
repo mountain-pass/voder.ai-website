@@ -1,7 +1,7 @@
-import { mkdtemp, mkdir, writeFile, rm } from 'fs/promises';
+import { execSync } from 'child_process';
+import { mkdir, mkdtemp, rm,writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
-import { execSync } from 'child_process';
 
 export interface SetupResult {
   tempDir: string;
@@ -18,10 +18,12 @@ export async function setupTestPackageInstallation(): Promise<SetupResult> {
 
   // 2) pack current package and locate tarball
   const packOutput = execSync('npm pack', { encoding: 'utf8' }).trim().split('\n').pop()!;
+
   const tarballPath = resolve(process.cwd(), packOutput);
 
   // 3) scaffold a test consumer
   const packagePath = join(tempDir, 'test-package');
+
   await mkdir(packagePath, { recursive: true });
 
   // 4) write a minimal package.json that installs our tarball
@@ -32,6 +34,7 @@ export async function setupTestPackageInstallation(): Promise<SetupResult> {
       '@voder/dev-config': `file:${tarballPath}`,
     },
   };
+
   await writeFile(join(packagePath, 'package.json'), JSON.stringify(pkg, null, 2), 'utf8');
 
   // 5) install dependencies

@@ -1,1 +1,6 @@
-export { complete as default } from '@voder/dev-config/eslint';
+import complete from '@voder/dev-config/eslint';
+
+export default [
+  ...complete,
+  { ignores: ['dist/'] },
+];

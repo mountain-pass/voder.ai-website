@@ -3,6 +3,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
+
 const __dirname = dirname(__filename);
 
 /**
@@ -11,6 +12,7 @@ const __dirname = dirname(__filename);
  */
 export function loadJSON(relPath: string): any {
   const fullPath = join(__dirname, relPath);
+
   return JSON.parse(readFileSync(fullPath, 'utf8'));
 }
 

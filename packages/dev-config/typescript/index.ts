@@ -1,17 +1,4 @@
-import { readFileSync } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = dirname(__filename);
-
-function loadJSON(relPath: string): any {
-  const fullPath = join(__dirname, relPath);
-
-  return JSON.parse(readFileSync(fullPath, 'utf8'));
-}
-
+import loadJSON from '../src/utils/jsonLoader.js';
 const base = loadJSON('./base.json');
 
 const node = loadJSON('./node.json');

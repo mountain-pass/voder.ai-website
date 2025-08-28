@@ -11,7 +11,7 @@ export function validateRuntimeEnvironment(): void {
   // 1) Ensure `jiti` is installed
   try {
     // this will throw if jiti is not installed
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+     
     require.resolve('jiti')
   } catch {
     throw new Error(
@@ -22,6 +22,7 @@ export function validateRuntimeEnvironment(): void {
 
   // 2) Ensure tsconfig.eslint.json exists
   const eslintConfig = resolve(process.cwd(), 'typescript/tsconfig.eslint.json')
+
   if (!existsSync(eslintConfig)) {
     throw new Error(
       `Missing TypeScript ESLint config at "${eslintConfig}".\n` +
@@ -31,6 +32,7 @@ export function validateRuntimeEnvironment(): void {
 
   // 3) Ensure tsconfig.config.json exists
   const configConfig = resolve(process.cwd(), 'typescript/tsconfig.config.json')
+
   if (!existsSync(configConfig)) {
     throw new Error(
       `Missing TypeScript config file at "${configConfig}".\n` +

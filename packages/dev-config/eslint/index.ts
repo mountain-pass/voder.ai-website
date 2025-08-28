@@ -30,7 +30,14 @@ export const complete: Linter.Config[] = [
       'scripts/**/*.{js,ts}',
       'eslint/**/*.{js,ts}',
       'linters/**/*.{js,ts}',    ],
-    ignores: ['dist/','build/','coverage/','node_modules/','typescript/']
+    ignores: ['dist/','build/','coverage/','node_modules/','typescript/'],
+    languageOptions: {
+      env: { node: true },
+      globals: {
+        require: 'readonly',
+        __filename: 'readonly'
+      }
+    }
   },
   js.configs.recommended,
   ...base,

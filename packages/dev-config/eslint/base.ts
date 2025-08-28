@@ -15,7 +15,9 @@ const config: Linter.Config[] = [
       sourceType: 'module',
       parserOptions: {
         // Point at the project's tsconfig when type-aware rules are needed.
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './tsconfig.build.json'],
+        // Support .json imports
+        extraFileExtensions: ['.json'],
       },
     },
     plugins: {

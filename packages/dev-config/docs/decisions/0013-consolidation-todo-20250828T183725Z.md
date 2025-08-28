@@ -2,7 +2,6 @@
 status: Proposed
 date: 2025-08-28T18:37:25Z
 deciders: [voder-dev-team]
-
 ---
 
 # ADR-0013: Consolidation TODO

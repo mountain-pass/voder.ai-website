@@ -19,7 +19,7 @@ The objective of this ADR is to authorize a focused, conservative cleanup that c
 
 Included (may be modified as part of this ADR):
 
-- docs/ (user-facing documentation), README.md, CHANGELOG.md, CONTRIBUTING.md, SECURITY.md, docs/libraries/usage/*
+- docs/ (user-facing documentation), README.md, CHANGELOG.md, CONTRIBUTING.md, SECURITY.md, docs/libraries/usage/\*
 - Top-level published documentation that consumers rely on (files tracked in git and not under prompts/ or .voder/)
 - Code duplication in source trees where refactoring is low-risk and testable: src/, eslint/, scripts/, linters/
 
@@ -124,51 +124,51 @@ ADR notes:
 
 ## Duplicate classification (finalized)
 
-The entries below replace the earlier auto-stubbed placeholders with conservative canonical choices and one-line rationale for each duplicate group. Canonical choices preferentially use coverage/lcov-report/*for coverage assets and files under typescript/dist/* for built declaration artifacts. These choices are conservative: prefer keeping the copy under coverage/lcov-report/ (human-readable report layout) and keeping declarations under typescript/dist/* (standard build output layout).
+The entries below replace the earlier auto-stubbed placeholders with conservative canonical choices and one-line rationale for each duplicate group. Canonical choices preferentially use coverage/lcov-report/_for coverage assets and files under typescript/dist/_ for built declaration artifacts. These choices are conservative: prefer keeping the copy under coverage/lcov-report/ (human-readable report layout) and keeping declarations under typescript/dist/\* (standard build output layout).
 
 Duplicate group — representative files:
 
-1) ./coverage/base.css  <-->  ./coverage/lcov-report/base.css  
+1. ./coverage/base.css <--> ./coverage/lcov-report/base.css  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/base.css  
-   rationale: coverage/lcov-report/ is the canonical generated HTML report location used by coverage consumers; top-level coverage/* copies are generated and should remain ignored.
+   rationale: coverage/lcov-report/ is the canonical generated HTML report location used by coverage consumers; top-level coverage/\* copies are generated and should remain ignored.
 
-2) ./coverage/sorter.js  <-->  ./coverage/lcov-report/sorter.js  
+2. ./coverage/sorter.js <--> ./coverage/lcov-report/sorter.js  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/sorter.js  
    rationale: keep assets under the lcov-report directory which is the canonical coverage report output.
 
-3) ./coverage/favicon.png  <-->  ./coverage/lcov-report/favicon.png  
+3. ./coverage/favicon.png <--> ./coverage/lcov-report/favicon.png  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/favicon.png  
    rationale: favicons are part of the lcov HTML report; prefer the lcov-report copy as canonical and ignore other generated copies.
 
-4) ./coverage/block-navigation.js  <-->  ./coverage/lcov-report/block-navigation.js  
+4. ./coverage/block-navigation.js <--> ./coverage/lcov-report/block-navigation.js  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/block-navigation.js  
    rationale: keep interactive report scripts inside the lcov-report directory where coverage viewers expect them.
 
-5) ./coverage/prettify.js  <-->  ./coverage/lcov-report/prettify.js  
+5. ./coverage/prettify.js <--> ./coverage/lcov-report/prettify.js  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/prettify.js  
    rationale: prettify.js is a coverage report asset — canonical under lcov-report.
 
-6) ./coverage/prettify.css  <-->  ./coverage/lcov-report/prettify.css  
+6. ./coverage/prettify.css <--> ./coverage/lcov-report/prettify.css  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/prettify.css  
    rationale: CSS assets belong with the HTML report in lcov-report.
 
-7) ./coverage/sort-arrow-sprite.png  <-->  ./coverage/lcov-report/sort-arrow-sprite.png  
+7. ./coverage/sort-arrow-sprite.png <--> ./coverage/lcov-report/sort-arrow-sprite.png  
    classification: other/protected (generated)  
    chosen canonical: ./coverage/lcov-report/sort-arrow-sprite.png  
    rationale: graphical assets are canonical in the lcov-report directory; other copies are generated duplicates.
 
-8) ./typescript/dist/src/index.test.d.ts  <-->  ./typescript/dist/src/testing/index.test.d.ts  
+8. ./typescript/dist/src/index.test.d.ts <--> ./typescript/dist/src/testing/index.test.d.ts  
    classification: code (build artifacts / duplicated declarations)  
    chosen canonical: ./typescript/dist/src/index.test.d.ts  
    rationale: prefer a single top-level generated declaration per compiled module path under typescript/dist/src/ to avoid nested duplication; keep the flat index.d.ts layout as canonical.
 
-9) ./typescript/dist/index.d.ts  <-->  ./typescript/dist/typescript/index.d.ts  
+9. ./typescript/dist/index.d.ts <--> ./typescript/dist/typescript/index.d.ts  
    classification: code (build artifacts / duplicated declarations)  
    chosen canonical: ./typescript/dist/index.d.ts  
    rationale: the package-level dist index.d.ts is the canonical declaration for consumers; nested typescript/ paths are redundant generated artifacts.
@@ -185,8 +185,8 @@ Duplicate group — representative files:
 - Duplicate classification finalized and recorded in this ADR (2025-08-28).
 - Implementation of removal/consolidation steps will be performed in small, focused commits referencing ADR-0013.
 
-- Generated & intentionally ignored: coverage/* — canonical location is coverage/lcov-report/; top-level coverage artifacts are generated and should remain ignored.
-- Generated & intentionally ignored: typescript/dist/* — compiled artifacts are generated and intentionally ignored.
+- Generated & intentionally ignored: coverage/\* — canonical location is coverage/lcov-report/; top-level coverage artifacts are generated and should remain ignored.
+- Generated & intentionally ignored: typescript/dist/\* — compiled artifacts are generated and intentionally ignored.
 - [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files:
 - [CANDIDATE] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact — files:
 - [CLASSIFIED] 0005f2900e1fccf134ab517e31bc278f4e40c257 : generated/build-artifact (heuristic: generated or vendor file)
@@ -200,9 +200,9 @@ Duplicate group — representative files:
   - "npm error The `npm ci` command can only install with an existing package-lock.json or npm-shrinkwrap.json"
   - "npm error audit This command requires an existing lockfile. Try creating one first with: npm i --package-lock-only"
 - logs produced:
-  - /tmp/verify-npm-ci.log  (primary log from the attempted clean install)
+  - /tmp/verify-npm-ci.log (primary log from the attempted clean install)
   - the `npm run verify` step did not run; /tmp/verify-run-verify.log was not created.
-  - additional npm debug logs may be available at: /Users/tomhoward/.npm/_logs/2025-08-28T15_59_25_085Z-debug-0.log and /Users/tomhoward/.npm/_logs/2025-08-28T15_59_25_716Z-debug-0.log
+  - additional npm debug logs may be available at: /Users/tomhoward/.npm/\_logs/2025-08-28T15_59_25_085Z-debug-0.log and /Users/tomhoward/.npm/\_logs/2025-08-28T15_59_25_716Z-debug-0.log
 - next steps taken: stop further automatic remediation and record this failure for triage. Do NOT run pushes, package-lock commits, or untrack operations until a human maintainer reviews the logs and approves the next action.
 
 - 2025-08-28T00:00:00+00:00 — duplicate-detection: no tracked non-canonical duplicates found; report at /tmp/duplicate-report.txt

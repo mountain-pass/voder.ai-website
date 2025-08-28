@@ -3,10 +3,11 @@
 This quickstart provides copy/paste-ready snippets to configure your project to use the shared dev-config exports from @voder/dev-config.
 
 Prerequisites
+
 - Node >= 22.6.0
 - Install dev-dependencies listed below in your project's devDependencies (see npm install command)
 
-1) Install packages (devDependencies / peer dependencies)
+1. Install packages (devDependencies / peer dependencies)
 
 Run the following in your project root:
 
@@ -14,7 +15,7 @@ Run the following in your project root:
 npm install -D @voder/dev-config jiti typescript prettier eslint husky vitest @vitest/coverage-istanbul markdownlint-cli2 eslint-plugin-import eslint-plugin-unicorn eslint-plugin-simple-import-sort eslint-config-prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin
 ```
 
-2) tsconfig files
+2. tsconfig files
 
 Create tsconfig.eslint.json with the following content:
 
@@ -59,7 +60,7 @@ tsconfig.config.json
 }
 ```
 
-3) ESLint config (eslintrc as TypeScript using jiti)
+3. ESLint config (eslintrc as TypeScript using jiti)
 
 Create a file eslint.config.ts with the following content:
 
@@ -78,7 +79,7 @@ const r = jiti(import.meta.url);
 export default r('@voder/dev-config/eslint');
 ```
 
-4) Prettier config (prettier.config.ts)
+4. Prettier config (prettier.config.ts)
 
 Create prettier.config.ts at project root with:
 
@@ -87,7 +88,7 @@ import r from 'jiti';
 export default r(import.meta.url)('@voder/dev-config/prettier');
 ```
 
-5) Vitest config (vitest.config.ts)
+5. Vitest config (vitest.config.ts)
 
 Create vitest.config.ts at project root with:
 
@@ -96,7 +97,7 @@ import r from 'jiti';
 export default r(import.meta.url)('@voder/dev-config/testing');
 ```
 
-6) package.json scripts
+6. package.json scripts
 
 Add the following scripts to your package.json:
 
@@ -114,7 +115,7 @@ Add the following scripts to your package.json:
 }
 ```
 
-7) One-line verification command
+7. One-line verification command
 
 Run the full verification locally with:
 
@@ -123,10 +124,12 @@ npm run verify
 ```
 
 Notes & Troubleshooting
+
 - Ensure you have Node >= 22.6.0 to support experimental strip types for prettier when using TypeScript configs in scripts.
 - If you encounter jiti resolution issues, ensure jiti is installed as a devDependency in the consumer project.
 - The exported paths in the package expose: @voder/dev-config/prettier, @voder/dev-config/eslint, @voder/dev-config/typescript/tsconfig.eslint.json and tsconfig.config.json — prefer using those exports to keep in sync with package changes.
 
 Further reading
+
 - docs/API.md for exported module details
 - docs/decisions/0001-use-standard-development-tools-as-devdependencies.md

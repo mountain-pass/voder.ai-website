@@ -30,7 +30,7 @@ export function generateMarkdownlintConfig(outputDir?: string): string {
   // Write atomically: write to a temp file in the same directory then rename
   const tempPath = resolve(
     resolvedOutputDir,
-    `.markdownlint.json.${process.pid}.${Date.now()}.tmp`
+    `.markdownlint.json.${process.pid}.${Date.now()}.tmp`,
   );
 
   // Serialize content (keep trailing newline for POSIX-friendliness)

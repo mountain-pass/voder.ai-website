@@ -1,7 +1,7 @@
 // Export ESLint v9 flat config layers (ESM)
 import js from '@eslint/js';
 import type { Linter } from 'eslint';
-import prettier from 'eslint-config-prettier';
+import globals from 'globals';
 
 import base from './base.js';
 import dx from './dx.js';
@@ -16,6 +16,11 @@ export type ESLintFlatConfig = Linter.Config;
 export type ESLintConfig = Linter.Config[];
 
 export const complete: Linter.Config[] = [
+  // Global ignores - must be first and separate
+  {
+    ignores: ['dist/', 'build/', 'coverage/', 'node_modules/', 'typescript/'],
+  },
+  // Main configuration
   {
     files: [
       'src/**/*.{js,ts}',
@@ -29,15 +34,15 @@ export const complete: Linter.Config[] = [
       '.eslintrc.*',
       'scripts/**/*.{js,ts}',
       'eslint/**/*.{js,ts}',
-      'linters/**/*.{js,ts}',    ],
-    ignores: ['dist/','build/','coverage/','node_modules/','typescript/'],
+      'linters/**/*.{js,ts}',
+    ],
     languageOptions: {
-      env: { node: true },
       globals: {
+        ...globals.node,
         require: 'readonly',
-        __filename: 'readonly'
-      }
-    }
+        __filename: 'readonly',
+      },
+    },
   },
   js.configs.recommended,
   ...base,
@@ -45,11 +50,7 @@ export const complete: Linter.Config[] = [
   ...performance,
   // Test files: vitest + DOM globals
   {
-    files: [
-      '**/*.test.{js,ts}',
-      'tests/**/*.{js,ts}',
-      'src/testing/**/*.{js,ts}'
-    ],
+    files: ['**/*.test.{js,ts}', 'tests/**/*.{js,ts}', 'src/testing/**/*.{js,ts}'],
     languageOptions: {
       globals: {
         expect: 'readonly',
@@ -67,9 +68,12 @@ export const complete: Linter.Config[] = [
         console: 'readonly',
         process: 'readonly',
         setTimeout: 'readonly',
-        requestAnimationFrame: 'readonly'
-      }
-    }
+        requestAnimationFrame: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off', // Allow console statements in test files for debugging
+    },
   },
   // Script files: Node globals
   {
@@ -77,9 +81,9 @@ export const complete: Linter.Config[] = [
     languageOptions: {
       globals: {
         console: 'readonly',
-        process: 'readonly'
-      }
-    }
+        process: 'readonly',
+      },
+    },
   },
 ];
 

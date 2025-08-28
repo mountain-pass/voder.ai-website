@@ -29,7 +29,7 @@ It exports:
 
 - **Node.js:** ≥ 22.6.0 (for native TypeScript config loading)
 
-**Required ESLint TS Config Loader**
+### Required ESLint TS Config Loader
 
 ESLint needs `jiti` to load TypeScript configuration files.  
 Install it in your project as a dev dependency:
@@ -37,6 +37,7 @@ Install it in your project as a dev dependency:
 ```bash
 npm install --save-dev jiti
 ```
+
 - **TypeScript:** ≥ 5.0 (peer dependency)
 - **ESM-only**: `"type": "module"` in consumer projects
 - **Peer dependencies:**
@@ -75,12 +76,27 @@ Use the examples below to integrate `@voder/dev-config` into your project for Ty
 ### TypeScript Presets Usage
 
 ```jsonc
-// tsconfig.json
+// tsconfig.json - Main development configuration
 {
   "extends": "@voder/dev-config/typescript/library.json",
   "compilerOptions": { "outDir": "dist" },
 }
 ```
+
+```jsonc
+// tsconfig.build.json - Build-specific configuration
+{
+  "extends": "@voder/dev-config/typescript/build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+  },
+  "include": ["src", "scripts"],
+  "exclude": ["**/*.test.ts", "**/*.test.js", "node_modules", "dist"],
+}
+```
+
+**Note:** Due to TypeScript's extends resolution constraints, `tsconfig.build.json` requires path settings (`outDir`, `rootDir`, `include`, `exclude`) that cannot be shared from subdirectory configs. The shared config provides compiler options only.
 
 ## TypeScript JSON Config Exports
 
@@ -107,24 +123,6 @@ You can extend your project’s tsconfig.json directly from this package:
 ```js
 // eslint.config.js
 export { complete as default } from '@voder/dev-config/eslint';
-```
-
-> **Note:** The `complete` export automatically includes environment-specific globals for test files (Vitest & DOM) and script files (Node).
-
-```js
-// eslint.config.js
-import js from '@eslint/js';
-import prettier from 'eslint-config-prettier';
-import { base, dx, performance } from '@voder/dev-config/eslint';
-
-export default [
-  js.configs.recommended,
-  ...base,
-  ...dx,
-  ...performance,
-  prettier,
-  { ignores: ['dist/', 'node_modules/', 'coverage/'] },
-];
 ```
 
 ### Prettier Usage
@@ -163,8 +161,8 @@ writeFileSync('.markdownlint.json', JSON.stringify(getConfig(), null, 2));
 ```
 
 ## 📖 API Reference
-See [API Reference](docs/API.md)
 
+See [API Reference](docs/API.md)
 
 ### `testing.createVitestNodeConfig()`
 
@@ -220,7 +218,6 @@ Install `@typescript-eslint/parser` and point `parserOptions.project` to your `t
 ## 🤝 Contributing
 
 For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
 
 ```bash
 npm install

@@ -4,19 +4,22 @@ Thank you for helping improve @voder/dev-config! Before you begin, please read a
 
 ## Branch Sync Guidelines
 
-1. Always work off `main`.  
-   - Fetch and update:  
+1. Always work off `main`.
+   - Fetch and update:
+
      ```bash
      git checkout main
      git pull origin main
      ```
 
-2. Create a new branch for your change:  
+2. Create a new branch for your change:
+
    ```bash
    git checkout -b feature/your-description
    ```
 
-3. Keep your branch up to date with `main` as you work:  
+3. Keep your branch up to date with `main` as you work:
+
    ```bash
    git fetch origin
    git rebase origin/main
@@ -29,12 +32,15 @@ Thank you for helping improve @voder/dev-config! Before you begin, please read a
 1. Write your code in small, self-contained commits.
 2. Add or update tests to cover your changes.
 3. Run local checks (see Pre-Push Verification below).
-4. Commit your changes with a clear, imperative message:  
+4. Commit your changes with a clear, imperative message:
+
    ```bash
    git add .
    git commit -m "feat: add X functionality"
    ```
-5. Push your branch:  
+
+5. Push your branch:
+
    ```bash
    git push origin feature/your-description
    ```
@@ -48,6 +54,7 @@ npm run verify
 ```
 
 This will perform:
+
 - `npm audit fix --force`
 - `npm run lint:check` and `npm run lint:fix`
 - `npm run lint:md:fix`

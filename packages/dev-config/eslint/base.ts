@@ -50,15 +50,6 @@ const config: Linter.Config[] = [
 
       // Keep console usage visible during development but not allowed silently
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-
-      // Basic import ordering
-      'import/order': [
-        'warn',
-        {
-          groups: [['builtin', 'external'], 'internal', 'parent', 'sibling', 'index'],
-          'newlines-between': 'always',
-        },
-      ],
     },
   },
 ];

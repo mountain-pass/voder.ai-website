@@ -1,22 +1,16 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./typescript/build.json",
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
-
     "outDir": "dist",
-    "emitDeclarationOnly": false
+    "rootDir": "."
   },
-  "include": [
-    "src",
-    "eslint",
-    "typescript",
-    "eslint.config.ts",
-    "linters",
-    "vitest.config.ts",
-    "prettier.config.ts"
-  ],
-  "exclude": ["node_modules", "dist", "build", "coverage"]
+  "include": ["src", "scripts", "eslint", "typescript", "linters"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.js",
+    "src/tests",
+    "src/test-setup.node.ts",
+    "node_modules",
+    "dist"
+  ]
 }

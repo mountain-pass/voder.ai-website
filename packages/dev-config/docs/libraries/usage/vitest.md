@@ -39,9 +39,9 @@ import { createVitestNodeConfig } from '@voder/dev-config/testing';
 export default defineConfig(
   createVitestNodeConfig({
     coverage: {
-      thresholds: { branches: 95, functions: 95, lines: 95, statements: 95 }
-    }
-  })
+      thresholds: { branches: 95, functions: 95, lines: 95, statements: 95 },
+    },
+  }),
 );
 ```
 
@@ -52,8 +52,8 @@ By default, the config points to `./src/test-setup.node.ts` for any global setup
 ```ts
 export default defineConfig(
   createVitestNodeConfig({
-    test: { setupFiles: ['./tests/setup.ts'] }
-  })
+    test: { setupFiles: ['./tests/setup.ts'] },
+  }),
 );
 ```
 

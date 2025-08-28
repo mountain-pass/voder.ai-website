@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import { mkdir, mkdtemp, rm,writeFile } from 'fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, resolve } from 'path';
 

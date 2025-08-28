@@ -7,12 +7,13 @@ This package implements the policy defined in ADR-0007 to ensure secure and reli
 ### 1. Automated Supply-Chain Audit
 
 - All contributors and CI workflows **must** run:
-  
+
   ```bash
   npm run audit:ci
   ```
 
-  This runs `npm audit --audit-level=high` and fails on any high-severity vulnerability.  
+  This runs `npm audit --audit-level=high` and fails on any high-severity vulnerability.
+
 - Regular audits help us catch and fix security issues before they reach production.
 
 ### 2. Registry-Mirror Configuration
@@ -30,4 +31,4 @@ This package implements the policy defined in ADR-0007 to ensure secure and reli
 
 ---
 
-*Last updated per [ADR-0007: Supply-chain Audit & Registry-Mirror Policy](docs/decisions/0007-supply-chain-audit-and-registry-mirror-policy.md).*
+_Last updated per [ADR-0007: Supply-chain Audit & Registry-Mirror Policy](docs/decisions/0007-supply-chain-audit-and-registry-mirror-policy.md)._

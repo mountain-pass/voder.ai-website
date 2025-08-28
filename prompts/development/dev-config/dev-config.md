@@ -34,6 +34,7 @@ This package provides development tooling configurations for other projects in a
 Every package that adopts `@voder/dev-config` MUST document, in its public README:
 - Test expectations and usage: Node environment testing with Vitest, coverage thresholds (90% all metrics), and testing utilities for server-side/tooling packages.
 - Code quality expectations and usage: ESLint 9 flat config via `eslint.config.js` or `eslint.config.ts`. Compose layers (base, dx, performance) using the flat exports provided by this package. Prettier is the single formatter.
+- Build script utilities: Availability of shared build functions for asset copying, configuration generation, and common build patterns.
 - Compatibility and peers: supported Node runtime, ESM-only note (if applicable), and required peer dependency ranges.
 - Quickstart orientation: where to place minimal configuration (tsconfig extends, `eslint.config.js`, `vitest.config.ts`, `vite.config.ts`/Rollup) using this package’s exports.
 - Governance: that deviations (e.g., different lint layers, coverage exceptions, alternative tools) REQUIRE an ADR per the Dependency Governance policy.
@@ -50,9 +51,10 @@ This package implements the dual export strategy defined in the Universal Develo
 import { createVitestNodeConfig } from '@voder/dev-config/testing';
 import prettierConfig from '@voder/dev-config/prettier';
 import { base, dx, performance } from '@voder/dev-config/eslint';
+import { copyAssets, generateMarkdownlintConfig } from '@voder/dev-config/scripts';
 
 // Main index (convenient for multiple imports)
-import { testing, prettier, eslint, typescript } from '@voder/dev-config';
+import { testing, prettier, eslint, typescript, scripts } from '@voder/dev-config';
 ```
 
 **Testing Requirements:**
@@ -70,6 +72,7 @@ See test files in `src/tests/` for implementation examples including package ins
 - ✅ **Formatting configuration** - Prettier integration for consistent, automated code style
 - ✅ **Testing configurations** - Vitest setups with coverage for Node.js environments
 - ✅ **Markdown linting** - Shared markdown linting configuration for documentation
+- ✅ **Build scripts** - Reusable build utilities for common package tasks
 
 ### **Required Functionality (Implementation Flexible)**
 | Capability | Required Features | Implementation Notes |
@@ -79,6 +82,7 @@ See test files in `src/tests/` for implementation examples including package ins
 | **Testing** | Vitest Node config factory with 90% coverage thresholds | Function export required, path flexible |
 | **Prettier** | Centralized formatting config with TypeScript support | Direct config access required |
 | **Linters** | Concrete markdown linting tool with working configuration | **REQUIRES IMPLEMENTATION** - select tool, configure rules, expose commands |
+| **Scripts** | Common build utilities (asset copying, config generation) | Export build functions for package reuse |
 
 ## **1. TypeScript Configuration**
 
@@ -100,13 +104,54 @@ Shared TypeScript presets with:
 // tsconfig.json - specific path depends on package implementation
 {
   "extends": "@voder/dev-config/typescript/library.json",
-  "compilerOptions": {
-    "outDir": "./dist"
   }
 }
 ```
 
-## **2. ESLint Configuration**
+## **2. Build Scripts**
+
+### **Core Purpose**
+Reusable build utilities that eliminate duplicate build logic across packages:
+- Asset copying (TypeScript configs, ESLint rules) with proper file handling
+- Configuration file generation for consuming packages
+- Common build patterns following the dual testing strategy
+- CLI utilities that can be imported as functions for maximum testability
+
+### **Required Script Functions**
+- **Asset copying** - Copy configuration files (TypeScript JSON, ESLint JS) from source to dist
+- **Config generation** - Generate configuration files (markdown linting, etc.) in consumer packages
+- **Directory utilities** - Ensure directories exist, handle file permissions
+- **Build helpers** - Common patterns for configuration package builds
+
+**Consumer Usage Pattern:**
+```typescript
+// Build script in consumer package
+import { copyAssets, generateMarkdownlintConfig } from '@voder/dev-config/scripts';
+
+// Copy configuration assets to dist/
+await copyAssets(process.cwd());
+
+// Generate .markdownlint.json in project root
+await generateMarkdownlintConfig(process.cwd());
+```
+
+**Script Architecture Requirements:**
+- **Exportable functions** - All business logic must be exportable for unit testing
+- **CLI wrappers** - Minimal CLI sections with coverage exclusion comments
+- **Error handling** - Proper error messages and exit codes for CLI usage
+- **Testability** - Follow dual testing strategy (unit tests for coverage + integration tests for CLI)
+
+**Export Structure:**
+```typescript
+// Example: @voder/dev-config/scripts exports
+export { copyAssets, ensureDir, formatCLIOutput } from './copy-assets.js';
+export { generateMarkdownlintConfig } from './generate-markdownlint-config.js';
+// Additional build utilities as needed
+```
+
+## **3. ESLint Configuration**
+
+## **3. ESLint Configuration**
 
 ### **Core Purpose**
 Comprehensive ESLint rules ensuring:
@@ -122,30 +167,162 @@ Comprehensive ESLint rules ensuring:
 - **DX (Developer Experience)** - Autofix patterns and modern JavaScript idioms (**mandatory for all consumers**)
 - **Performance** - Performance-focused linting for loops, memory, data structures, and V8 optimizations
 
-**Configuration Quality Validation:**
-The complexity of our own root configuration files serves as a direct indicator of configuration quality:
+### **Test File Overrides**
+The complete ESLint configuration automatically provides special handling for test files:
 
-✅ **Good Configuration** (Target):
-- **ESLint**: Root config follows the exact consumer pattern, no special cases
-- **TypeScript**: Simple extends with minimal overrides, no complex include/exclude patterns
-- **Prettier**: Direct import/export with no customization needed
-- **Vitest**: Simple factory function call with no additional configuration
-- All configurations handle common scenarios internally
+**Test File Patterns Covered:**
+- `**/*.test.{js,ts}` - Test files anywhere in the project
+- `tests/**/*.{js,ts}` - Files in dedicated test directories  
+- `src/testing/**/*.{js,ts}` - Testing utilities and helpers
 
-❌ **Poor Configuration** (Current State Indicators):
-- **ESLint**: Extensive customization, manual handling of test globals, script parsing, TypeScript configuration
-- **TypeScript**: Complex include/exclude arrays, manual compilation options, custom path mappings  
-- **Prettier**: Customized rules overriding the base configuration
-- **Vitest**: Manual configuration of coverage, environment, timeouts, and setup files
-- Consumers would need to replicate these workarounds
+**Automatic Test File Overrides:**
+- **Console statements allowed**: `no-console` rule is disabled for debugging in tests
+- **Vitest globals**: `describe`, `it`, `test`, `expect`, `beforeEach`, etc. are predefined
+- **DOM globals**: `document`, `window` for browser-like testing scenarios
+- **Node globals**: `process`, `console` for Node.js testing environments
 
-**Improvement Targets:**
-- **ESLint exports** should internally handle: test file globals, script file parsing, Node.js runtime globals, TypeScript-aware parsing
-- **TypeScript exports** should provide complete presets requiring minimal consumer overrides
-- **Prettier exports** should provide complete formatting standards without consumer customization
-- **Vitest exports** should provide complete testing configuration with coverage, timeouts, and environment setup
+**No Manual Configuration Required:**
+Consumers do not need to add test file overrides, disable console rules, or configure test globals - the complete configuration handles all test scenarios automatically.
 
-This allows both our root configs and consumer configs to remain simple.
+**🚨 CRITICAL: Configuration Quality Validation**
+
+**🎯 FUNCTIONALITY ASSESSMENT CANNOT EXCEED 50% IF ANY OF THESE ROOT CONFIG FILES REQUIRE OVERRIDES:**
+
+The following specific configuration files in the project root MUST be simple imports with NO manual overrides, customizations, or workarounds:
+
+1. **`eslint.config.ts`** - MUST be: `export { complete as default } from '@voder/dev-config/eslint';`
+2. **`prettier.config.ts`** - MUST be: `import prettierConfig from '@voder/dev-config/prettier'; export default prettierConfig;`
+3. **`tsconfig.json`** - MUST extend `@voder/dev-config/typescript/library.json` with ONLY `outDir` override
+4. **`tsconfig.build.json`** - MUST extend `@voder/dev-config/typescript/build.json` with required path overrides (`outDir`, `rootDir`, `include`, `exclude`) due to TypeScript extends resolution constraints
+5. **`vitest.config.ts`** - MUST be: `import { createVitestNodeConfig } from '@voder/dev-config/testing'; export default createVitestNodeConfig();`
+
+**🚨 CRITICAL: NO WORKAROUND FILES ALLOWED**
+
+The existence of ANY of these workaround files proves the exported configurations are broken and automatically caps FUNCTIONALITY at 50%:
+
+- **`.eslintignore`** - Proves exported ESLint config doesn't handle ignores properly
+- **`.prettierignore`** - Proves exported Prettier config doesn't handle ignores properly  
+- **Any additional ESLint config files** - Proves the `complete` export is incomplete
+- **Any TypeScript config helpers** beyond the exported presets - Proves presets are incomplete
+
+**If workaround files are needed, the exports are fundamentally broken.**
+
+**ANY deviation from these exact patterns = FUNCTIONALITY ASSESSMENT capped at 50% maximum.**
+
+✅ **Required Target States (EXACT patterns required for >50% Functionality Score):**
+
+**1. eslint.config.ts:**
+```typescript
+export { complete as default } from '@voder/dev-config/eslint';
+```
+
+**2. prettier.config.ts:**
+```typescript
+import prettierConfig from '@voder/dev-config/prettier';
+export default prettierConfig;
+```
+
+**3. tsconfig.json:**
+```jsonc
+{
+  "extends": "@voder/dev-config/typescript/library.json",
+  "compilerOptions": {
+    "outDir": "dist"  // ONLY acceptable override
+  }
+}
+```
+
+**4. tsconfig.build.json:**
+```jsonc
+**4. tsconfig.build.json:**
+```jsonc
+{
+  "extends": "@voder/dev-config/typescript/build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["src", "scripts"],
+  "exclude": ["**/*.test.ts", "**/*.test.js", "node_modules", "dist"]
+}
+```
+```
+
+**5. vitest.config.ts:**
+```typescript
+import { createVitestNodeConfig } from '@voder/dev-config/testing';
+export default createVitestNodeConfig();
+```
+
+❌ **BROKEN Configuration Indicators (Each automatically caps Functionality at 50%):**
+
+**eslint.config.ts FAILURES:**
+- ❌ ANY manual `ignores` array
+- ❌ ANY spread operators (`...complete`) with additional config
+- ❌ ANY file-specific overrides for test globals
+- ❌ ANY manual parser configuration
+- ❌ ANY custom language options
+- ❌ ANY additional rules or plugins
+- ❌ **EXISTENCE of `.eslintignore` file** = PROVES BROKEN EXPORTS
+
+**prettier.config.ts FAILURES:**
+- ❌ ANY manual configuration object instead of import
+- ❌ ANY rule overrides (printWidth, semi, etc.)
+- ❌ ANY custom options or overrides array
+- ❌ NOT using the exported `@voder/dev-config/prettier` configuration
+- ❌ **EXISTENCE of `.prettierignore` file** = PROVES BROKEN EXPORTS
+
+**tsconfig.json FAILURES:**
+- ❌ ANY `compilerOptions` beyond `outDir`
+- ❌ ANY manual `include` arrays
+- ❌ ANY manual `exclude` arrays
+- ❌ ANY additional compiler options (resolveJsonModule, declaration, etc.)
+- ❌ Complex path mapping or references
+
+**tsconfig.build.json FAILURES:**
+- ❌ ANY `compilerOptions` beyond required path settings (`outDir`, `rootDir`)
+- ❌ ANY `include` arrays beyond standard package directories (`src`, `scripts`, plus package-specific dirs)  
+- ❌ ANY `exclude` arrays beyond standard test patterns
+- ❌ ANY additional compiler options (declaration, declarationMap, sourceMap, etc.)
+- ❌ NOT extending the exported `@voder/dev-config/typescript/build.json` preset
+
+**Note:** Due to TypeScript's extends resolution (shared configs resolve relative to their location), `tsconfig.build.json` must specify paths (`outDir`, `rootDir`, `include`, `exclude`) that cannot be shared. The shared config provides only compiler options.
+
+**vitest.config.ts FAILURES:**
+- ❌ ANY manual test configuration object
+- ❌ ANY coverage, environment, or timeout overrides
+- ❌ ANY custom setup files configuration
+- ❌ NOT using the exported `createVitestNodeConfig()` factory
+
+**🚨 CURRENT PROOF OF BROKEN EXPORTS:**
+
+The existence of the `.eslintignore` file in this project is DEFINITIVE PROOF that our exported ESLint configurations are broken:
+
+```plaintext
+// .eslintignore - THIS FILE SHOULD NOT EXIST
+dist/
+build/
+coverage/
+node_modules/
+typescript/
+```
+
+**Why this proves failure:**
+- The exported `complete` ESLint config should internally handle ALL ignore patterns
+- Consumers should NEVER need `.eslintignore` files if our exports are complete
+- The existence of `.eslintignore` proves the `complete` export is incomplete
+- If we need workaround files, consumers will need them too
+
+**REQUIRED TARGET STATE:**
+- **NO `.eslintignore` file** - The `complete` export handles all ignores internally
+- **NO `.prettierignore` file** - The exported config handles all ignores internally
+- **NO additional TypeScript config files** - The exported presets are complete
+- **NO workaround files of any kind**
+
+**Implementation Assessment Impact:** 
+- **Root configs requiring ANY overrides** = FUNCTIONALITY ASSESSMENT capped at 50% maximum
+- **Root configs matching exact target patterns** = FUNCTIONALITY ASSESSMENT can exceed 50%
+- **Every manual override** = proof that exported configurations are incomplete and broken
 
 **ESLint Policy Requirements:**
 - Must use ESLint 9 flat config (`eslint.config.js` or `eslint.config.ts`)
@@ -223,19 +400,38 @@ export default [
 ];
 ```
 
-**Quality Indicator**: If our root ESLint config contains:
-- ❌ Complex file-specific overrides for test globals
-- ❌ Manual parser configuration for scripts
-- ❌ Custom language options for different file types
-- ❌ Workarounds for TypeScript-eslint project configuration
+**🚨 CRITICAL FAILURE INDICATORS**
 
-Then our exported configurations are **incomplete** and need improvement. The configurations should handle these common cases internally so consumers don't need to.
+If our root ESLint config contains ANY of the following, the exported configurations are BROKEN and FUNCTIONALITY ASSESSMENT is capped at 50%:
+
+- ❌ **ANY manual ignores** (like `{ ignores: ['dist/'] }`) = BROKEN EXPORTS
+- ❌ **ANY file-specific overrides** for test globals = BROKEN EXPORTS  
+- ❌ **ANY manual parser configuration** for scripts = BROKEN EXPORTS
+- ❌ **ANY custom language options** for different file types = BROKEN EXPORTS
+- ❌ **ANY workarounds** for TypeScript-eslint project configuration = BROKEN EXPORTS
+- ❌ **ANY spread operator usage** (like `...complete`) requiring additional config = BROKEN EXPORTS
+
+**REQUIRED FOR >50% FUNCTIONALITY:**
+```typescript
+// ONLY ACCEPTABLE ROOT CONFIG
+import complete from '@voder/dev-config/eslint';
+export default complete;  // NO SPREAD, NO OVERRIDES, NO NOTHING
+```
+
+The exported `complete` configuration MUST internally handle ALL common cases including:
+- Standard ignore patterns (`dist/`, `coverage/`, `node_modules/`, etc.)
+- Test file globals and environment setup
+- Script file parsing requirements  
+- TypeScript-aware parsing for all file types
+- All common development scenarios
+
+**If consumers need ANY manual configuration, our exports are incomplete and broken.**
 
 > Note: This configuration package is built with TypeScript and must be compiled to JavaScript for distribution. The package exports point to compiled JavaScript files with TypeScript declarations for full type safety. The TypeScript source files in `src/`, `eslint/`, `typescript/`, and `linters/` directories are compiled to the `dist/` directory during the build process. Consumers can use either `.js` or `.ts` for their own config files as ESLint 9 supports both. For TypeScript config files, install jiti as a dev dependency to enable TypeScript config loading.
 
 > ESLint 9 walks up to the nearest `eslint.config.js` or `eslint.config.ts`. Commit a package-local config file to prevent inheriting parent configs inadvertently.
 
-## **3. Testing Configuration**
+## **4. Prettier Configuration**
 
 ### **Core Purpose**
 Comprehensive testing setup providing:
@@ -274,7 +470,7 @@ export function createVitestNodeConfig() {
 }
 ```
 
-## **4. Prettier Configuration**
+## **5. Prettier Configuration**
 
 ### **Core Purpose**
 TypeScript and JavaScript formatting with centralized configuration standards.
@@ -437,8 +633,24 @@ The most important validation of our exported configurations is using them in ou
    - All file types (tests, scripts, configs) should work without consumer configuration
    - All common development scenarios should be covered by the exported presets
 
-**Implementation Assessment Impact**: Root configuration complexity directly impacts the **FUNCTIONALITY ASSESSMENT** score:
-- **Simple root configs** (matching target patterns) = higher functionality score (indicates complete, consumer-ready exports)
-- **Complex root configs** (requiring workarounds) = lower functionality score (indicates incomplete exports requiring consumer customization)
-- Root config complexity serves as the primary indicator of export completeness and consumer experience quality
+**Implementation Assessment Impact:** 
+**🚨 CRITICAL: SPECIFIC ROOT CONFIG FILE COMPLEXITY = FUNCTIONALITY FAILURE**
+
+Root configuration complexity in these EXACT files directly impacts the **FUNCTIONALITY ASSESSMENT** score with HARD LIMITS:
+
+**Mandatory File-Specific Assessment Criteria:**
+- **`eslint.config.ts` requiring ANY overrides** = Automatic 50% functionality cap
+- **`.eslintignore` file existing** = Automatic 50% functionality cap
+- **`prettier.config.ts` not being a simple import** = Automatic 50% functionality cap
+- **`.prettierignore` file existing** = Automatic 50% functionality cap
+- **`tsconfig.json` having ANY options beyond `outDir`** = Automatic 50% functionality cap
+- **`tsconfig.build.json` having path settings beyond required TypeScript constraints** = Automatic 50% functionality cap
+- **`vitest.config.ts` not being a simple factory call** = Automatic 50% functionality cap
+
+**Assessment Rules:**
+- **ALL config files must match exact target patterns AND no workaround files exist** = FUNCTIONALITY ASSESSMENT can reach 85-100%
+- **ANY ONE file deviating OR any workaround file existing** = FUNCTIONALITY ASSESSMENT capped at 50%
+- **Each workaround file** = proof that exported configurations are fundamentally broken
+
+The five specific root configuration files PLUS the absence of workaround files are the PRIMARY and DEFINITIVE indicators of export completeness and consumer experience quality. **There are no exceptions to this rule.**
 

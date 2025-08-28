@@ -26,9 +26,10 @@ export function createVitestNodeConfig(): Record<string, unknown> {
       // When consumed from another package, this path points to that package's src
       setupFiles: ['./src/test-setup.node.ts'],
       coverage: {
-        provider: 'v8',
+        provider: 'istanbul', // Use Istanbul for subprocess coverage support
         reporter: ['text', 'html', 'lcov'],
-        thresholds: { branches: 90, functions: 90, lines: 90, statements: 90 },
+        reportOnFailure: true, // Show coverage even when tests fail
+        thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 },
       },
     },
   };

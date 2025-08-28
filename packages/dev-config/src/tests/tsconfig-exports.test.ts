@@ -1,7 +1,5 @@
-// External imports first
-import { describe, expect, it } from 'vitest';
 import { tsconfigConfig, tsconfigEslint } from '@voder/dev-config/typescript';
-
+import { describe, expect, it } from 'vitest';
 
 describe('TypeScript JSON config exports', () => {
   it('tsconfig.eslint.json has correct "extends", types, and isolatedModules', () => {

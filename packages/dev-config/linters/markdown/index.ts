@@ -26,7 +26,7 @@ export function getConfig(overrides: MdLintOverrides = {}): Record<string, unkno
     // Disable line-length rule because formatting tools handle wrapping
     MD013: false,
 
-        // Forbid relative links in public READMEs
+    // Forbid relative links in public READMEs
     MD034: { no_reference_like: true },
   };
 

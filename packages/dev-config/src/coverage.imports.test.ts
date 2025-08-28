@@ -43,7 +43,7 @@ describe('coverage - import surface', () => {
 
     const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
-    const prettierConfigPath = path.resolve(currentDir, '../dist/prettier.config.js');
+    const prettierConfigPath = path.resolve(currentDir, '../dist/src/prettier.config.js');
 
     expect(fs.existsSync(prettierConfigPath)).toBe(true);
 
@@ -51,7 +51,7 @@ describe('coverage - import surface', () => {
     const configContent = fs.readFileSync(prettierConfigPath, 'utf-8');
 
     expect(configContent.length).toBeGreaterThan(0);
-    expect(configContent).toContain('printWidth');
+    expect(configContent).toContain('printWidth: 100');
     expect(configContent).toContain('export default');
 
     // verify test setup mapping from testing entry

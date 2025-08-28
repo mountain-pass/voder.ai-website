@@ -13,7 +13,7 @@
  * This file uses TypeScript and tsx for execution.
  */
 
-import { chmod, copyFile, lstat,mkdir, readdir, stat } from 'fs/promises';
+import { chmod, copyFile, lstat, readdir } from 'fs/promises';
 import { join, resolve, sep } from 'path';
 import { exit, stderr } from 'process';
 

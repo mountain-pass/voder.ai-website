@@ -70,7 +70,7 @@ export async function safeSpawn(
       reject(err);
     });
 
-    child.on('close', (code, signal) => {
+    child.on('close', (code, _signal) => {
       const stdout = Buffer.concat(stdoutBuffers).toString('utf8');
 
       const stderr = Buffer.concat(stderrBuffers).toString('utf8');

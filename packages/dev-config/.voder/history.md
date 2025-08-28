@@ -30,7 +30,7 @@ Summary of work completed so far
   - Ran multiple duplicate-detection pipelines (Node and POSIX shell variants), producing artifacts (all-shas.txt, duplicate-report.txt, duplicate-summary.txt, per-SHA artifacts, tracking status outputs).
   - Reported exact-file duplicates for some untracked/generated paths and many candidate paths untracked by git; appended candidate ADR entries.
   - Performed a non-interactive ADR-0013 remediation run for SHA 0005f29 (preserving in-flight doc edits), appended a NO-ACTION classification, and saved remediation commits/artifacts under /tmp.
-  - Created and committed scripts and docs from detection output (including scripts/duplicate-detect.sh and docs/decisions/0013-consolidation-todo-*.md).
+  - Created and committed scripts and docs from detection output (including scripts/duplicate-detect.sh and docs/decisions/0013-consolidation-todo-\*.md).
   - Multiple detection runs reported "No tracked duplicate hashes detected" for tracked files.
 
 - Housekeeping, lockfile & verification
@@ -80,7 +80,7 @@ Summary of work completed so far
   - Git status at that time showed several modified (unstaged) .voder files and three modified source files (copy-assets.ts, generate-markdownlint-config.ts, safe-spawn.ts).
 
 - Most recent executed actions (history captured)
-  - Ran ESLint --fix on three target files (scripts/copy-assets.ts, scripts/generate-markdownlint-config.ts, src/utils/safe-spawn.ts). ESLint autofix completed with 4 remaining warnings (unused variables/signal not renamed to _-prefixed) and the three files were modified; outputs saved to /tmp/eslint-fix-targeted.log and /tmp/git-diff-names.log.
+  - Ran ESLint --fix on three target files (scripts/copy-assets.ts, scripts/generate-markdownlint-config.ts, src/utils/safe-spawn.ts). ESLint autofix completed with 4 remaining warnings (unused variables/signal not renamed to \_-prefixed) and the three files were modified; outputs saved to /tmp/eslint-fix-targeted.log and /tmp/git-diff-names.log.
   - Committed the autofix changes (commit 0c0f2a7) on branch cleanup/security-hardening-20250828T183725Z: 10 files changed, 364 insertions, 318 deletions; commit log saved to /tmp/git-commit-autofix.log.
   - Executed a strict ESLint check and saved output to /tmp/lint-check-after-autofix.log. That run reported 54 problems (28 errors, 26 warnings). Source-file warnings included unused variables in scripts/copy-assets.ts, scripts/generate-markdownlint-config.ts, and src/utils/safe-spawn.ts. The majority of errors originated from generated tmp files (tmp/generate-0005f29-tracking.cjs and .js) reporting no-undef/no-console. The lint-check command run was: npm run lint:check 2>&1 | tee /tmp/lint-check-after-autofix.log || true.
   - Ran a shell extraction step intended to parse the lint output into /tmp/lint-remaining-files.txt; the generated file existed but contained 0 lines (no file paths were extracted).
@@ -90,7 +90,7 @@ Summary of work completed so far
   - ESLint output saved to /tmp/lint-check-current.log.
   - Problems found: 54 total (28 errors, 26 warnings).
   - Notable findings:
-    - Warnings: unused variables in scripts/copy-assets.ts ('mkdir', 'stat'), scripts/generate-markdownlint-config.ts ('unlinkErr'), and src/utils/safe-spawn.ts ('signal' unused per rule requiring _-prefix).
+    - Warnings: unused variables in scripts/copy-assets.ts ('mkdir', 'stat'), scripts/generate-markdownlint-config.ts ('unlinkErr'), and src/utils/safe-spawn.ts ('signal' unused per rule requiring \_-prefix).
     - Errors: majority from generated/tmp artifacts tmp/generate-0005f29-tracking.cjs and tmp/generate-0005f29-tracking.js (no-undef for require/console, and no-console warnings).
 
 - Overall status highlights
@@ -114,28 +114,32 @@ Summary of work completed so far
 **Most recently we've executed the following action:**
 
 ---
+
 Used tool: read_file with input: {"filePath":".eslintignore"}
 Used tool: generate_file with input: {"filePath":".eslintignore","content":"# Ignore generated transient artifacts created during scripts/tests\n# These files are not source and should not be linted.\n\ntmp/\n"}
 Used tool: run_command with input: {"command":"git","parameters":["add",".eslintignore"]}
 Used tool: run_command with input: {"command":"git","parameters":["commit","-m","chore(eslint): ignore generated tmp/ artifacts to avoid linting transient files — refs ADR-0013"]}
+
 ---
 
-**This was the result:**
----
+## **This was the result:**
+
 Done — I implemented the first action from the plan.
 
 What I changed
+
 - Created a new .eslintignore at the repository root containing:
   - A brief comment and an entry to ignore the tmp/ directory.
 - Staged and committed the change with the required commit message:
   "chore(eslint): ignore generated tmp/ artifacts to avoid linting transient files — refs ADR-0013"
 
 Git commit
+
 - Commit hash: aafc6b0
 - Branch: cleanup/security-hardening-20250828T183725Z
 
 Next suggested step (per plan)
+
 - Run lint to confirm the transient-generated files are no longer being reported (e.g., npm run lint:check) and then proceed with the per-file ESLint fixes if necessary.
 
-Would you like me to run the lint check now and continue with the next steps?
----
+## Would you like me to run the lint check now and continue with the next steps?

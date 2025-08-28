@@ -5,7 +5,7 @@
  * Generates .markdownlint.json in the project root by invoking getConfig()
  * from the markdown linter abstraction.
  */
-import { existsSync,renameSync, unlinkSync, writeFileSync } from 'fs';
+import { existsSync, renameSync, unlinkSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 
 import { getConfig } from '../linters/markdown/index.js';
@@ -49,7 +49,8 @@ export function generateMarkdownlintConfig(outputDir?: string): string {
     if (existsSync(outputPath)) {
       try {
         unlinkSync(outputPath);
-      } catch (unlinkErr) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_unlinkErr) {
         // If we cannot remove the old file, rethrow the original error
         /* istanbul ignore next */
         throw err;

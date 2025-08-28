@@ -13,8 +13,8 @@
  * This file uses TypeScript and tsx for execution.
  */
 
-import { chmod, copyFile, mkdir, readdir, stat } from 'fs/promises';
-import { join, resolve } from 'path';
+import { chmod, copyFile, mkdir, readdir, stat, lstat } from 'fs/promises';
+import { join, resolve, sep } from 'path';
 import { exit, stderr } from 'process';
 import { ensureDir } from '../src/utils/fs.js';
 
@@ -31,31 +31,64 @@ export async function copyMatchingFiles(
   try {
     const entries = await readdir(srcDir, { withFileTypes: true });
 
+    // Ensure we have an absolute, normalized source directory for validation
+    const absSrcDir = resolve(srcDir);
+    const absSrcDirWithSep = absSrcDir.endsWith(sep) ? absSrcDir : `${absSrcDir}${sep}`;
+
     for (const ent of entries) {
-      if (ent.isFile() && predicate(ent.name)) {
-        const name = ent.name;
-
-        const srcPath = resolve(srcDir, name);
-
-        const destPath = resolve(destDir, name);
-
-        // Copy file (overwrite if exists)
-        await copyFile(srcPath, destPath);
-
-        // Preserve mode bits where possible
-        try {
-          const st = await stat(srcPath);
-
-          await chmod(destPath, st.mode);
-        } catch (modeErr) {
-          /* istanbul ignore next */
-          throw new Error(
-            `Failed to preserve mode for ${srcPath} -> ${destPath}: ${String(modeErr)}`,
-          );
-        }
-
-        copiedFiles.push(name);
+      // Only consider names that match the predicate
+      if (!predicate(ent.name)) {
+        continue;
       }
+
+      const name = ent.name;
+
+      const srcPath = resolve(absSrcDir, name);
+
+      // Basic path traversal check: ensure resolved path is inside the intended srcDir
+      if (!srcPath.startsWith(absSrcDirWithSep)) {
+        stderr.write(`⚠️ Skipping ${name} - path traversal detected: ${srcPath}\n`);
+        continue;
+      }
+
+      // Lstat to detect symbolic links and non-regular files. Skip symlinks.
+      let lst;
+      try {
+        lst = await lstat(srcPath);
+      } catch (lstatErr) {
+        // If we can't stat the file, skip it with a warning instead of failing the whole copy
+        stderr.write(`⚠️ Skipping ${name} - unable to stat source: ${String(lstatErr)}\n`);
+        continue;
+      }
+
+      if (lst.isSymbolicLink()) {
+        stderr.write(`⚠️ Skipping ${name} - symbolic link detected and not allowed\n`);
+        continue;
+      }
+
+      // Only copy regular files
+      if (!lst.isFile()) {
+        // skip directories, device files, etc.
+        continue;
+      }
+
+      const destPath = resolve(destDir, name);
+
+      // Copy file (overwrite if exists)
+      await copyFile(srcPath, destPath);
+
+      // Preserve mode bits where possible
+      try {
+        // Use the lstat result (mode) which is appropriate for regular files
+        await chmod(destPath, lst.mode);
+      } catch (modeErr) {
+        /* istanbul ignore next */
+        throw new Error(
+          `Failed to preserve mode for ${srcPath} -> ${destPath}: ${String(modeErr)}`,
+        );
+      }
+
+      copiedFiles.push(name);
     }
   } catch (err) {
     // If directory doesn't exist or other error happens, throw

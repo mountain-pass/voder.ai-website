@@ -12,7 +12,7 @@ Prerequisites
 Run the following in your project root:
 
 ```bash
-npm install -D @voder/dev-config jiti typescript prettier eslint husky vitest @vitest/coverage-istanbul markdownlint-cli2 eslint-plugin-import eslint-plugin-unicorn eslint-plugin-simple-import-sort eslint-config-prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin
+npm install -D @voder/dev-config jiti typescript prettier eslint vitest @vitest/coverage-istanbul markdownlint-cli2 eslint-plugin-import eslint-plugin-unicorn eslint-plugin-simple-import-sort eslint-config-prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin
 ```
 
 2. tsconfig files

@@ -57,6 +57,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=verbose --testTimeout=120000",
+    "validate:runtime": "tsx scripts/validate-runtime.ts",
     "format": "NODE_OPTIONS=\"--experimental-strip-types\" prettier \"**/*.{ts,tsx,js,jsx,json,md}\" --write",
     "format:check": "NODE_OPTIONS=\"--experimental-strip-types\" prettier \"**/*.{ts,tsx,js,jsx,json,md}\" --check",
     "lint": "eslint .",

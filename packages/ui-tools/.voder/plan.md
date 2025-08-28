@@ -1,17 +1,11 @@
 ## NOW  
-Run a single commit to clear the uncommitted changes:  
-```bash
-git add . && git commit -m "chore: commit all pending configuration and source updates to restore repository hygiene"
-```
+Refine the Canvas-2D shim in `src/testing/setup.ts` so that whenever `HTMLCanvasElement.prototype.getContext('2d')` is called—in any case—it returns a minimal, non-null 2D context object.
 
 ## NEXT  
-- Run `npm run verify` to ensure type-checking, linting, build, markdownlint, format, and tests all pass.  
-- If any verification step fails, address the errors immediately (fix type errors, adjust configs, correct test imports).  
-- Break this large commit into smaller logical commits on a feature branch if further granular history is needed (e.g., separate config updates vs. source changes vs. test additions).  
-- Remove any accidentally committed build artifacts (e.g., `src/index.js`) with `git rm`, then re-commit to keep the working tree clean.
+- Fix the PostCSS merge logic in `src/build/vite-library.ts` to ensure user-supplied `postcssConfig.plugins` are appended after the default Autoprefixer plugin.  
+- Run `npm run build && npm test` and iteratively resolve any remaining test failures until the full suite passes.
 
 ## LATER  
-- Consolidate duplicate JS/TS test files into single TypeScript suites and refactor shared test utilities.  
-- Expand test coverage to hit the ≥ 90% threshold by writing missing unit and integration tests for untested branches and error paths.  
-- Review and sync peer/dev dependencies (e.g., align Vite versions, add missing markdownlint-cli2 devDependency).  
-- Prune any stale or obsolete files and ensure `.gitignore`/`.voderignore` remain accurate.
+- Add a Vitest test to enforce exact version alignment between `vitest` and `@vitest/coverage-v8`.  
+- Create a consumer-installation integration test in `tests/package-installation.test.ts` using `npm pack`.  
+- Revisit and adjust the resolver settings in `createVitestJsdomConfig` or `vitest.config.ts` to address any leftover import-resolution issues.

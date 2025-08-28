@@ -1,2 +1,6 @@
 import { createVitestJsdomConfig } from './src/testing/vitest-jsdom.js';
-export default createVitestJsdomConfig();
+export default createVitestJsdomConfig({
+    vitestConfig: {
+        resolve: { extensions: ['.ts', '.js', '.json'] }
+    }
+});

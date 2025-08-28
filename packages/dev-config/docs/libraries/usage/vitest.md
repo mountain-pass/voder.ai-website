@@ -60,4 +60,4 @@ export default defineConfig(
 ## Additional Notes
 
 - The factory uses a Node environment (`environment: 'node'`) and Vitest globals.
-- It automatically sets `globals: true`, configures `provider: 'v8'`, and includes `text`, `html`, and `lcov` reporters.
+- It automatically sets `globals: true`, configures `provider: 'istanbul'`, and includes `text`, `html`, and `lcov` reporters.

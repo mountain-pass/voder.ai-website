@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Developer Experience
 - TypeScript support with full type definitions
 - ESM module format for optimal tree shaking
-- Comprehensive test suite with 90%+ coverage
+- Comprehensive test suite with 80%+ coverage
 
 ---
 

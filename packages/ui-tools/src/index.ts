@@ -1,42 +1,16 @@
 // Public export barrel for @voder/ui-tools
 // Re-exports core build factories plus testing & accessibility helpers so
 // consumers can import a single package entry for UI testing utilities.
-
-export { createPostCSSConfig, type PostCSSConfigOptions } from './build/postcss.ts';
-export { createViteLibraryConfig, type ViteLibraryOptions } from './build/vite-library.ts';
-export { createVitestJsdomConfig, type VitestJsdomOptions } from './testing/vitest-jsdom.ts';
-
+export { createPostCSSConfig } from './build/postcss.js';
+export { createViteLibraryConfig } from './build/vite-library.js';
+export { createVitestJsdomConfig } from './testing/vitest-jsdom.js';
 // Testing helpers (DOM helpers)
-export {
-  type ComponentTestResult,
-  renderComponent,
-  type RenderComponentOptions,
-  simulateClick,
-  simulateKeypress,
-  waitForAnimation,
-  waitForNextFrame} from './testing/helpers.ts';
-
+export { renderComponent, simulateClick, simulateKeypress, waitForAnimation, waitForNextFrame } from './testing/helpers.js';
 // Accessibility testing helpers
-export {
-  type AccessibilityTestOptions,
-  accessibilityTests,
-  expectAccessible,
-  expectAriaAttributes,
-  expectFocusable,
-  getAccessibilityViolations} from './testing/accessibility.ts';
-
+export { accessibilityTests, expectAccessible, expectAriaAttributes, expectFocusable, getAccessibilityViolations } from './testing/accessibility.js';
 // Test environment setup (authoritative API)
-export { setupJsdomTestEnvironment } from './testing/setup.ts';
-
+export { setupJsdomTestEnvironment } from './testing/setup.js';
 // Linting configuration exports
-export {
-  type AccessibilityLintOptions,
-  createAccessibilityLintConfig} from './linting/accessibility.ts';
-export {
-  createCSSLintConfig,
-  type CSSLintOptions
-} from './linting/css.ts';
-export {
-  createHTMLLintConfig,
-  type HTMLLintOptions
-} from './linting/html.ts';
+export { createAccessibilityLintConfig } from './linting/accessibility.js';
+export { createCSSLintConfig } from './linting/css.js';
+export { createHTMLLintConfig } from './linting/html.js';

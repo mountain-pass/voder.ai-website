@@ -4,13 +4,12 @@
  * Provides a sensible default PostCSS config with Autoprefixer and
  * allows consumers to supply additional plugins or override browser targets.
  */
-
 import autoprefixer from 'autoprefixer';
 
 export interface PostCSSConfigOptions {
-  /** Autoprefixer browser targets (override the default list) */
+  /** Browser targets for autoprefixer */
   browsers?: string[];
-  /** Additional PostCSS plugins to append */
+  /** Additional PostCSS plugins */
   plugins?: any[];
 }
 
@@ -27,15 +26,12 @@ export interface PostCSSConfigOptions {
  * @returns PostCSS configuration object with a `plugins` array
  */
 export function createPostCSSConfig(options: PostCSSConfigOptions = {}) {
-  const {
-    browsers = ['last 2 versions', '> 1%', 'not dead'],
-    plugins = []
-  } = options;
+    const { browsers = ['last 2 versions', '> 1%', 'not dead'], plugins = [] } = options;
 
-  return {
-    plugins: [
-      autoprefixer({ overrideBrowserslist: browsers }),
-      ...plugins
-    ]
-  };
+    return {
+        plugins: [
+            autoprefixer({ overrideBrowserslist: browsers }),
+            ...plugins
+        ]
+    };
 }

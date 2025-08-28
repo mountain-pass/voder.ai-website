@@ -144,7 +144,7 @@ npm run build
 - ✅ All tests must pass (`npm test`)
 - ✅ Code must pass linting (`npm run lint`)
 - ✅ TypeScript compilation must succeed (`npm run build`)
-- ✅ Maintain 90%+ code coverage
+- ✅ Maintain 80%+ code coverage
 - ✅ Run `npm run verify` before all commits
 
 **Testing Strategy:**

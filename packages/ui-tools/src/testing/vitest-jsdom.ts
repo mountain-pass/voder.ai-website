@@ -1,38 +1,34 @@
-import { defineConfig, type UserConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config';
+export function createVitestJsdomConfig(options = {}) {
+    const { setupFiles = ['./src/test-setup.jsdom.ts'], coverage = {}, vitestConfig = {} } = options;
 
-export interface VitestJsdomOptions {
-  /** Additional setup files */
-  setupFiles?: string[];
-  /** Coverage configuration overrides */
-  coverage?: Record<string, any>;
-  /** Additional Vitest configuration overrides */
-  vitestConfig?: UserConfig;
-}
+    // Extract any user resolve settings and merge with our default extensions
+    const { resolve: userResolve = {}, ...otherVitestConfig } = vitestConfig;
 
-export function createVitestJsdomConfig(options: VitestJsdomOptions = {}) {
-  const {
-    setupFiles = ['./src/test-setup.jsdom.ts'],
-    coverage = {},
-    vitestConfig = {}
-  } = options;
+    const mergedResolve = {
+        extensions: ['.ts', '.js', '.json'],
+        ...userResolve
+    };
 
-  return defineConfig({
-    test: {
-      environment: 'jsdom',
-      globals: true,
-      setupFiles,
-      coverage: {
-        provider: 'v8',
-        reporter: ['text', 'html', 'lcov'],
-        thresholds: {
-          branches: 90,
-          functions: 90,
-          lines: 90,
-          statements: 90
+    return defineConfig({
+        test: {
+            environment: 'jsdom',
+            globals: true,
+            setupFiles,
+            coverage: {
+                provider: 'v8',
+                reporter: ['text', 'html', 'lcov'],
+                thresholds: {
+                    branches: 90,
+                    functions: 90,
+                    lines: 90,
+                    statements: 90
+                },
+                ...coverage
+            }
         },
-        ...coverage
-      }
-    },
-    ...vitestConfig
-  });
+        // Merge default & user-resolved extensions, then other overrides
+        resolve: mergedResolve,
+        ...otherVitestConfig
+    });
 }

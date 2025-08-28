@@ -1,107 +1,123 @@
 ## NOW
 
-Move the first file reported by tsc into src/ (one git mv), then re-run the TypeScript compiler:
+Commit the outstanding documentation change to keep the working tree clean:
+- Run: git commit -am "docs: commit vitest usage update (align wording with ADR-0009)"  
 
-- git mv packages/dev-config/scripts/copy-assets.ts packages/dev-config/src/scripts/copy-assets.ts
-- npx tsc -p tsconfig.build.json
+(One non-interactive command that records the local docs change so subsequent work proceeds from a clean working tree.)
 
-(The last tsc run reported TS6059 for scripts/copy-assets.ts first, so move that single file and re-run. Use one file-move per iteration and stop on the first new error.)
+---
 
 ## NEXT
 
-After the NOW single-file move and re-check, follow this ordered, non-interactive sequence and stop on the first failure:
+Perform the small, focused ADR-0013 consolidation workflow (non-interactive, idempotent steps). Run these sequentially and stop on the first failure; capture logs under /tmp (each command redirects output to /tmp/<step>.log):
 
-1. Inspect the first tsc error:
-   - If tsc reports no errors, skip to step 3.
-   - If the first error is TS6059 or TS2209 referencing a top-level file (file listed in tsconfig.build.json include but outside src), move exactly that single file into src/ (preserve directory structure) with git mv and re-run tsc.
-     - Use one file move per iteration. Examples (pick the single file the compiler references):
-       - git mv scripts/generate-markdownlint-config.ts src/scripts/generate-markdownlint-config.ts
-       - git mv scripts/copy-assets.ts src/scripts/copy-assets.ts
-       - git mv prettier.config.ts src/prettier.config.ts
-       - git mv vitest.config.ts src/vitest.config.ts
-   - Re-run: npx tsc -p tsconfig.build.json
-   - Repeat this step (one move → re-run tsc) until tsc reports zero errors or until the first non-TS6059/TS2209 error appears.
-   - If you encounter a non-TS6059/TS2209 error, stop and fix that error before making any further file-move changes.
+1. Create a dedicated working branch for the consolidation work
+   - git checkout -b cleanup/adr-0013-consolidation 2>&1 | tee /tmp/git-branch-create.log
 
-2. When tsc compiles cleanly (zero errors), run the package build and confirm asset copy completed:
-   - npm run build
-   - Inspect stderr output for the copy-assets completion message (scripts/copy-assets writes progress to stderr; look for "🎉 copy-assets completed successfully" or similar).
+2. Produce an up-to-date duplicate report (report-only)
+   - scripts/duplicate-detect.sh 2>&1 | tee /tmp/duplicate-detect.log
 
-3. Quick artifact verification (if any file missing treat as packaging failure):
-   - Verify these runtime artifacts exist under dist/:
-     - dist/prettier.config.js
-     - dist/src/index.js (matches package.json "main")
-     - dist/eslint/index.js
-     - dist/typescript/\*.json
-   - If an artifact is missing:
-     - If tsc omitted a source file, move that single source into src/ (one move) or adjust include for a single file only after careful review, then rebuild.
-     - If copy-assets failed to copy, fix the copy step or asset path and rebuild.
+3. Review and classify duplicates (automated-first, then manual review)
+   - Save the duplicate report to ADR staging notes:
+     - cp /tmp/duplicate-detect.log /tmp/adr-0013-duplicate-report.log
+   - Open the existing ADR file for append (non-interactive step: prepare an appended note file)
+     - echo "$(date -u) — Duplicate detection run. See /tmp/duplicate-detect.log" >> /tmp/adr-0013-note.txt
+   - Append the note into docs/decisions/0013-cleanup-duplicate-docs.md (programmatic, non-destructive)
+     - cat /tmp/adr-0013-note.txt >> docs/decisions/0013-cleanup-duplicate-docs.md
+     - git add docs/decisions/0013-cleanup-duplicate-docs.md
+     - git commit -m "docs(ADR-0013): record duplicate-detection run and classification note" 2>&1 | tee /tmp/git-commit-adr.log
 
-4. Run focused packaging tests that depend on dist:
-   - npx vitest run src/tests/package-exports.test.ts src/tests/dist-files.test.ts src/tests/package-structure.test.ts
-   - If tests fail:
-     - For missing compiled files → move the single missing source into src (one file), rebuild, and re-run tests.
-     - For runtime import/export path issues → correct the single export or path and re-run packaging build and tests.
+   Notes:
+   - Do NOT modify files under prompts/, prompt-assets/, or .voder/.
+   - Only user-facing docs (README.md, docs/**/*.md, root-level md) and code files under src/, eslint/, scripts/, linters/ are in-scope for consolidation.
 
-5. Run dependency-alignment verification:
-   - npx vitest run src/dependency-alignment.test.ts
-   - If it fails due to node_modules vs lockfile mismatch:
-     - Run npm ci to align node_modules and re-run the test.
-     - If lockfile must be intentionally updated, prepare an ADR and bundle the package.json + package-lock.json + ADR as a single commit (see LATER).
+4. For each user-facing duplicate group identified in /tmp/duplicate-detect.log, perform the conservative consolidation pattern (one group per commit):
+   - Identify canonical file (prefer docs/ or README.md). Example guideline:
+     - If duplicates are under docs/ choose the docs/ path as canonical.
+     - If duplicates are root README vs docs copy, prefer README.md as canonical and merge content into docs/ or vice versa per ADR guidance.
+   - Merge and deduplicate content into the canonical file (manual merges are safest; if automating, script a safe append and de-duplicate routine).
+   - After merging, remove the now-redundant tracked file(s) only if they are tracked by git and are truly duplicates:
+     - git rm --cached <redundant-file> && rm <redundant-file> (only for tracked duplicates and after verification)
+   - Run the project's doc quality fixes and checks:
+     - npm run lint:md:fix 2>&1 | tee /tmp/lint-md-fix-<n>.log
+     - npm run lint:md 2>&1 | tee /tmp/lint-md-check-<n>.log || (echo "markdownlint failed for group <n>; inspect /tmp/lint-md-check-<n>.log" >&2; exit 3)
+     - npm run format 2>&1 | tee /tmp/format-<n>.log || (echo "prettier format failed; inspect /tmp/format-<n>.log" >&2; exit 4)
+   - Run targeted tests (or full verify if quick enough):
+     - npm run build 2>&1 | tee /tmp/build-<n>.log || (echo "build failed; inspect /tmp/build-<n>.log" >&2; exit 5)
+     - npm run test:ci 2>&1 | tee /tmp/test-ci-<n>.log || (echo "tests failed; inspect /tmp/test-ci-<n>.log" >&2; exit 6)
+   - Commit the consolidation as a single focused change with ADR reference:
+     - git add <canonical-file> && git rm <redundant-file> (only if removed)
+     - git commit -m "docs(ADR-0013): consolidate duplicate docs for <short-desc>; verify logs: /tmp/lint-md-check-<n>.log /tmp/test-ci-<n>.log" 2>&1 | tee /tmp/git-commit-consolidate-<n>.log
 
-6. When all focused tests pass, run full verification:
-   - npm run verify
-   - Address any failures in priority order: type/build → tests → lint/format.
+   Repeat the above step for each user-facing duplicate group. Stop and fix immediately on any failure; do not proceed to the next group until the current group passes verification.
 
-7. Commit minimal, focused changes only after npm run verify is fully green:
-   - Stage only the moved file(s) (one or several small moves that were required) and any tiny, well-justified tsconfig.build.json edits (if absolutely necessary).
-     - Example:
-       - git add src/prettier.config.ts src/scripts/generate-markdownlint-config.ts src/scripts/copy-assets.ts
-       - git commit -m "chore(build): move top-level build-time config/scripts into src to satisfy tsc rootDir"
-       - git push origin main
-   - Do NOT commit any compiled artifacts (.js/.d.ts/.map) or generated files.
+5. For small duplicated code fragments discovered during classification (code in src/, eslint/, scripts/, linters/), extract minimal tested utilities:
+   - For each candidate code duplication:
+     - Create a small utility under src/utils/<name>.ts that encapsulates the common logic.
+     - Update callers to import from the new utility.
+     - Add or update unit tests exercising the extracted logic (follow dual-testing pattern for scripts: unit + integration where applicable).
+     - Run unit tests for the changed files:
+       - npm run test -- <path-to-updated-tests> 2>&1 | tee /tmp/test-unit-<id>.log || (echo "unit tests failed; inspect /tmp/test-unit-<id>.log" >&2; exit 7)
+     - Commit the refactor in a focused commit referencing ADR-0013:
+       - git add <files> && git commit -m "refactor(utils): extract <name> to consolidate duplicated logic (ADR-0013)" 2>&1 | tee /tmp/git-commit-refactor-<id>.log
 
-Guardrails during NEXT:
+   - Run verify steps (lint/format/build/test) after each refactor commit:
+     - npm run lint:fix && npm run lint:check (log to /tmp)
+     - npm run build
+     - npm run test:ci
 
-- Make exactly one file-move (one git mv) between tsc runs. Re-run tsc after each single-file change and stop on the first new error.
-- Never widen rootDir broadly or add blanket includes. Do not add wide globs to tsconfig.build.json.
-- Do not modify prompts/, prompt-assets/, or .voder/.
-- Do not commit build outputs or generated artifacts. Commit only source moves and minimal config edits required to pass tsc.
-- All commands are non-interactive.
+6. After all consolidations and refactors are complete and each change has passed the verify pipeline, update ADR-0013 with a summary of actions and results:
+   - Append a timestamped summary and list of commits to docs/decisions/0013-cleanup-duplicate-docs.md
+   - git add docs/decisions/0013-cleanup-duplicate-docs.md
+   - git commit -m "docs(ADR-0013): consolidation summary and verification results" 2>&1 | tee /tmp/git-commit-adr-summary.log
+
+7. Push the working branch for retention and remote CI runs:
+   - git push --set-upstream origin cleanup/adr-0013-consolidation 2>&1 | tee /tmp/git-push-cleanup.log || true
+
+8. Preserve artifacts for triage:
+   - Ensure /tmp contains: duplicate-detect.log, all lint/format/build/test logs, and git commit/push logs for review.
+
+Important notes for NEXT:
+- Always run the project's verify sequence after each user-facing doc consolidation or code refactor; do not batch multiple groups into a single commit unless they are trivial and verified.
+- Never modify or remove prompts/, prompt-assets/, or .voder/ files.
+- Use conservative manual merges for documentation to avoid losing headings or context; prefer additive merges then prune duplicates.
+- If any consolidation causes unexpected build/test failures, revert that single commit and iterate (small commits make reversion simple).
+
+---
 
 ## LATER
 
-Once build/test pipeline is stable and commits are prepared, perform follow-ups in separate, small commits:
+After the consolidation branch is green and merged, institutionalize resilience and automation to prevent future duplicates and to harden the workflow:
 
-1. Cleanup & repository hygiene
-   - Remove untracked/stale compiled duplicates from the working tree (audit then git clean -fd).
-   - Ensure .gitignore covers build outputs and temporary files (dist/, _.d.ts, _.map, .eslintcache, coverage/).
-   - If any moved config files should remain at project root for UX, plan a follow-up refactor and document via an ADR before changing layout again.
+1. CI & Automation
+   - Add a scheduled CI job that runs scripts/duplicate-detect.sh and uploads its output as a build artifact; optionally fail on tracked duplicates per a repository policy.
+   - Add a CI job that runs a fast subset of the verify pipeline (lint:md, format:check, lint:check) on PRs, with a full verify job on merges to main.
 
-2. Documentation & ADRs
-   - If a top-level config/script was moved, add a short note in CONTRIBUTING.md or README explaining the build-time placement (one-file-move policy) and why files live under src.
-   - If package-lock.json or package.json were intentionally updated to align dependencies, author an ADR documenting the dependency change and include it with the package.json + package-lock.json commit.
+2. Pre-commit and developer ergonomics
+   - Add lightweight pre-commit hooks (e.g., using simple npm scripts or husky) to run the minimal checks (prettier --check and markdownlint quick check) to avoid trivial doc regressions before commits.
+   - Document the consolidation pattern in CONTRIBUTING.md and ADR-0013: include the one-group-per-commit rule and verify requirement.
 
-3. CI & automation
-   - Add/verify CI job that enforces: tsc → npm run build → focused packaging tests → full verify to prevent regressions.
-   - Add a CI/pre-push safeguard that rejects commits containing compiled artifacts.
+3. Duplicate prevention and monitoring
+   - Enable Dependabot/Renovate for dependency updates (non-breaking first), and require the project's verify pipeline to pass before merging PRs.
+   - Add a periodic housekeeping task (weekly/nightly) that runs duplicate detection and a short verify to catch regressions early.
 
-4. Post-merge hygiene
-   - After pushing, run a fresh clone + npm ci + npm run verify in a clean environment to confirm reproducible build/test results.
-   - Re-run dependency SCA (npm audit) and address any newly surfaced issues.
+4. Policy & process improvements
+   - Update ADR-0013 to include the canonical selection rules and a short checklist for doc consolidation (where to prefer canonical copies).
+   - Define an explicit release/process for when tracked duplicates are intentionally kept (document rationale in ADR and file header).
 
-5. Future refactor work
-   - Evaluate consolidating build-time scripts into src/scripts permanently and simplifying package.json "files"/"exports" if necessary.
-   - If consumer-friendly config should remain at repo root, design a documented approach (e.g., tiny root-layer re-exports excluded from tsc or a documented packaging step) and capture the decision in an ADR.
+5. Hardening tests & subprocess usage
+   - Replace npx invocations in tests with direct local binary paths or programmatic APIs to avoid network fetches and reduce flakiness.
+   - Sanitize environment variables passed to child processes in tests and scripts (whitelist keys).
+   - Convert brittle tests to deterministic mocks or mark them as manual where they add limited value.
 
-IMPORTANT: Distinguish between these two scenarios:
+6. Security & dependency hygiene
+   - Replace ad-hoc `npm audit fix --force` in developer guidance with the controlled remediation workflow: run audit, generate report, create dependency-update PRs, and run verify on the PRs.
+   - Schedule a quarterly SCA review and upgrade window; document in a small maintenance ADR.
 
-1. ACTION EXECUTED SUCCESSFULLY (even if outcome wasn't desired):
-   - The action was attempted and completed, but the result might not be what we wanted
-   - Examples: Tests ran but failed, file was updated but with wrong content, command executed but returned error
-   - UPDATE THE PLAN: Remove completed items from NOW, potentially add new items based on the results
+---
 
-2. ACTION FAILED TO EXECUTE:
-   - The action couldn't even be attempted due to missing prerequisites, invalid parameters, etc.
-   - Examples: File doesn't exist so can't update it, command not found, invalid syntax prevented execution
-   - DON'T UPDATE THE PLAN: Return the original plan unchanged
+If you want, I can now:
+- produce the exact shell commands to run for the NEXT steps (each non-interactive and redirecting output to /tmp), or
+- generate the small commit message templates and ADR snippet text to append to docs/decisions/0013-cleanup-duplicate-docs.md.
+
+Which of those would you prefer I prepare next?

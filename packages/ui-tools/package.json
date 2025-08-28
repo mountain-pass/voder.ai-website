@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/src/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./testing": {
-      "import": "./dist/src/testing/index.js",
-      "types": "./dist/src/testing/index.d.ts"
+      "import": "./dist/testing/index.js",
+      "types": "./dist/testing/index.d.ts"
     }
   },
   "license": "UNLICENSED",
@@ -21,13 +22,14 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ci": "vitest run --coverage --reporter=verbose",
+    "test:ci": "npm run build && vitest run --coverage --reporter=verbose",
     "clean": "rm -rf dist/ coverage/ .cache/ .vite/ .eslintcache",
     "prepare": "tsx scripts/generate-markdownlint-config.ts",
     "voder": "node ../../../voder/apps/voder-cli/index.js",
     "pretest": "npm run build",
-    "lint": "eslint . --ext .ts,.js",
-    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md",
@@ -35,31 +37,43 @@
     "verify": "npm run type-check && npm run lint:fix && npm run lint:md:fix && npm run format && npm run build && npm run test:ci"
   },
   "peerDependencies": {
-    "markdownlint-cli2": "^0.18.1",
     "autoprefixer": "^10.0.0",
     "jest-axe": "^9.0.0",
     "jsdom": "^26.0.0",
+    "markdownlint-cli2": "^0.18.1",
     "postcss": "^8.0.0",
     "vite": "^6.0.0",
-    "vitest": "^3.2.0"
+    "vitest": "^3.2.0",
+    "htmlhint": "^0.15.0",
+    "stylelint": "^15.0.0",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-config-css-modules": "^4.0.0",
+    "stylelint-order": "^6.0.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@voder/dev-config": "file:../dev-config",
     "autoprefixer": "^10.4.21",
     "axe-core": "^4.10.3",
     "eslint": "^9.33.0",
     "jest-axe": "^9.0.0",
+    "jiti": "^2.5.1",
     "jsdom": "^26.1.0",
-        "postcss": "^8.5.6",
+    "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
     "vite": "^7.1.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.0",
+    "htmlhint": "^0.15.0",
+    "stylelint": "^15.0.0",
+    "stylelint-config-standard": "^34.0.0",
+    "stylelint-config-css-modules": "^4.0.0",
+    "stylelint-order": "^6.0.0"
   }
 }

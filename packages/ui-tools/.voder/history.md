@@ -1,102 +1,148 @@
-Here’s a concise, chronological summary of what’s been done so far:
+Here’s a concise recap of what’s been done so far:
 
-• Repository & Initial Scaffolding  
-  – Initialized Git repo with README, ADRs, changelogs and .gitignore  
-  – Set up root and ESM packages (@voder/ui-tools@1.0.0), enabled secrets scanning, ensured clean builds  
-  – Added npm scripts for linting, formatting, markdownlint and export checks  
+1. Repository & Packaging  
+   • Initialized Git repo with README, ADRs, CHANGELOG  
+   • Bootstrapped root & ESM packages (@voder/ui-tools@1.0.0)  
+   • Added CI pipelines for build, lint, secrets scanning, clean builds  
 
-• Build Tooling  
-  – Created PostCSS Autoprefixer helper and async Vite‐config loaders  
-  – Implemented a generic build factory for standardized builds  
+2. Build Toolchain  
+   • Integrated PostCSS Autoprefixer  
+   • Created async Vite config loaders and a generic build factory  
 
-• Testing Infrastructure  
-  – Introduced a testing-API barrel (jest-axe, JSDOM mocks)  
-  – Wrote ~20 Vitest tests covering pipelines, PostCSS, package structure and smoke checks  
+3. Testing Infrastructure  
+   • Built a test-API barrel (jest-axe, JSDOM mocks)  
+   • Expanded Vitest suite from ~20 to 48 tests (pipelines, PostCSS, package structure, smoke checks)  
 
-• TypeScript & Module Setup  
-  – Migrated to NodeNext/ES2022 modules with declaration exports  
-  – Refined ts-build and Vitest configs, documented decisions in ADRs  
+4. TypeScript & Module Setup  
+   • Switched to NodeNext/ES2022 resolution with explicit exports  
+   • Documented tsconfig, build, and test setups in ADRs  
 
-• Dependency & Version Management  
-  – Upgraded/installed TS, Vitest, PostCSS, Testing Library, jsdom, jest-axe, ESLint, Prettier, markdownlint  
-  – Locked Node/npm versions and cleared vulnerabilities via npm audit  
+5. Dependency & Version Management  
+   • Upgraded TS, Vitest, PostCSS, Testing Library, jsdom, jest-axe, ESLint, Prettier, markdownlint  
+   • Locked Node/npm versions and applied security patches  
 
-• Public API & Export Verification  
-  – Added smoke tests for src/index.js exports  
-  – Created a script to sync package.json “exports” field  
+6. Public API & Exports  
+   • Added smoke tests for src/index exports  
+   • Built an export-sync script to keep package.json “exports” in sync with dist output  
 
-• Linting, Formatting & Documentation  
-  – Configured ESLint v9, Prettier v3, markdownlint (zero errors)  
-  – Generated an initial API reference stub  
+7. Linting, Formatting & Documentation  
+   • Adopted ESLint v9, Prettier v3, markdownlint (zero errors)  
+   • Published initial API reference stub  
 
-• CI Configuration & Fixes  
-  – Renamed/patched config files and plugin stubs  
-  – Moved Vite to devDependencies, refined lint ignores  
-  – Set up CI to run build, lint, tests and coverage; fixed parse errors, JSDOM canvas issues and coverage gaps  
+8. CI & Bug Fixes  
+   • Configured CI to run build, lint, tests, coverage  
+   • Fixed parse errors, JSDOM canvas quirks, coverage gaps  
 
-• .gitignore Consolidation  
-  – Centralized patterns into .voderignore and removed stale entries  
+9. Repository Hygiene & Refactoring  
+   • Centralized .voderignore and pruned stale entries  
+   • Added CSS/HTML exclude tests, PostCSS-override tests; removed duplicate configs  
 
-• Test Suite Growth  
-  – Expanded Vitest suite to 48 tests across 34 files (all passing)  
-  – Added css-config-exclude, html-config-exclude, vite-library-postcss-overrides tests; cleaned duplicates  
+10. Bulk Cleanup & Test Refactoring  
+    • Removed ~1,900 lines of legacy JS/config  
+    • Introduced shared test helpers; refactored export/structure-validation tests; applied Canvas-2D mock  
 
-• Latest Generated Tests  
-  – tests/testing/render-component-error.test.ts (error handling)  
-  – tests/dist-import.test.ts (verifies built dist output and core API exposure)  
+11. Script Removal & Minor Patches  
+    • Deleted redundant markdownlint-generator script  
+    • Scoped Canvas-2D shim to Vitest; added disableRules utility; updated peerDependencies  
+    • Patched Vitest-jsdom setupFiles; removed temporary “*.ts-e” files; swapped “.ts” imports for “.js” in tests  
 
-• Recent Git Actions  
-  – Staged five new test files under tests/build, tests/dist-import, tests/linting and tests/testing  
-  – Removed duplicate JS barrel src/index.js  
-  – Bulk-removed eleven duplicate JS source files from packages/ui-tools/src via git rm  
+12. CI-Style Test Suite Errors  
+    • Discovered import-resolution errors in CI  
+    • Patched package.json to prepend “npm run build” to “test:ci”  
 
-• Bulk Find-and-Replace  
-  – Ran a project-wide script to switch all TS imports ending in “.js” to “.ts”  
+13. Verification Run  
+    • Ran `npm run verify` (type-check, lint, format, build, test:ci)  
+    • Encountered TS2307 errors due to missing dist imports in tests  
 
-That captures all key milestones and changes made so far.
+14. tsconfig.json Patch  
+    • Enabled declaration output (`declaration: true`, `declarationDir: ./dist`)  
+
+15. tsconfig.build.json Creation  
+    • Added dedicated build tsconfig with outDir and declaration settings  
+
+16. Build Script Update  
+    • Pointed the “build” script to tsconfig.build.json  
+
+17. Latest Fixes  
+    • Adjusted `tests/smoke.test.ts` to import the TS source (`index.ts`) so smoke tests load the TS module  
+    • Updated `createVitestJsdomConfig` to merge user-provided `resolve` settings with default extensions  
+
+18. Latest Verification & Patch Attempt  
+    • Ran full test suite (`npm test`), exposing a failing PostCSS-overrides test and JSDOM canvas-mock errors  
+    • Attempted to patch `src/testing/setup.ts` to install a minimal Canvas-2D shim for `getContext('2d')`, but the patch did not apply (no changes were made)
 
 **Most recently we've executed the following action:**
 
 ---
-To update the test import in `tests/smoke-exports.test.js` from the old `.js` entrypoint to the new `.ts` source, apply this patch:
+Edit the Canvas‐2D shim in src/testing/setup.ts. In the block that installs  
+```ts
+proto.getContext = function (contextType: string) { … }
+```
+replace it with a shim that always returns a non-null minimal 2D context for `"2d"`. For example:
 
-```patch
-*** Begin Patch
-*** Update File: tests/smoke-exports.test.js
-@@ describe('Package root exports', () => {
--    test('exports core API functions', async () => {
--        const mod = await import('../src/index.js');
-+    test('exports core API functions', async () => {
-+        const mod = await import('../src/index.ts');
-*** End Patch
+```diff
+--- a/src/testing/setup.ts
++++ b/src/testing/setup.ts
+@@ (around canvas shim installation)
+-      if (!hasGetContextFunction || !has2D) {
+-        // Install minimal 2D context shim on the prototype
+-        proto.getContext = function (contextType: string) {
+-          if (contextType === '2d') {
+-            return {
+-              createImageData: (width: number, height: number) => ({
+-                data: new Uint8ClampedArray(width * height * 4),
+-                width,
+-                height,
+-              }),
+-              getImageData: (_x: number, _y: number, width: number, height: number) => ({
+-                data: new Uint8ClampedArray(width * height * 4),
+-                width,
+-                height,
+-              }),
+-              putImageData: () => {/* no-op */},
+-              drawImage: () => {/* no-op */},
+-              fillRect: () => {/* no-op */},
+-              clearRect: () => {/* no-op */},
+-            };
+-          }
+-
+-          return null;
+-        };
++      if (!hasGetContextFunction || !has2D) {
++        // Always return a minimal 2D context for tests, never null
++        const originalGetContext = proto.getContext;
++        proto.getContext = function (contextType: string) {
++          if (contextType === '2d') {
++            return {
++              createImageData: (width: number, height: number) => ({
++                data: new Uint8ClampedArray(width * height * 4),
++                width,
++                height,
++              }),
++              getImageData: (_x: number, _y: number, width: number, height: number) => ({
++                data: new Uint8ClampedArray(width * height * 4),
++                width,
++                height,
++              }),
++              putImageData: () => {},
++              drawImage: () => {},
++              fillRect: () => {},
++              clearRect: () => {},
++            };
++          }
++          try {
++            return originalGetContext?.call(this, contextType) || null;
++          } catch {
++            return null;
++          }
++        };
+      }
 ```
 
-Save that change, then run:
-
-```bash
-git add tests/smoke-exports.test.js
-```
+Save that change.
 ---
 
 **This was the result:**
 ---
-Successfully applied 1 patch to file: tests/smoke-exports.test.js
-Content:
-import { describe, expect, test } from 'vitest';
-describe('Package root exports', () => {
-    test('exports core API functions', async () => {
-        const mod = await import('../src/index.ts');
-        expect(mod).toBeDefined();
-        expect(typeof mod.createPostCSSConfig).toBe('function');
-        expect(typeof mod.createViteLibraryConfig).toBe('function');
-        expect(typeof mod.createVitestJsdomConfig).toBe('function');
-        expect(typeof mod.renderComponent).toBe('function');
-        expect(typeof mod.expectAccessible).toBe('function');
-        expect(typeof mod.setupJsdomTestEnvironment).toBe('function');
-        expect(typeof mod.createHTMLLintConfig).toBe('function');
-        expect(typeof mod.createCSSLintConfig).toBe('function');
-        expect(typeof mod.createAccessibilityLintConfig).toBe('function');
-    });
-});
-
+Patch 1 failed: search pattern not found (searching for: "proto\\.getContext = function \(contextType: string\)[\s\S]*?};") in file: src/testing/setup.ts
 ---

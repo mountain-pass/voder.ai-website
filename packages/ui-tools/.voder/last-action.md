@@ -1,28 +1,76 @@
 # Last Action Executed
 
-**Timestamp:** 2025-08-23T16:08:31.893Z
+**Timestamp:** 2025-08-23T18:43:37.597Z
 
 ## Plan
 
 ```
-To update the test import in `tests/smoke-exports.test.js` from the old `.js` entrypoint to the new `.ts` source, apply this patch:
+Edit the Canvas‐2D shim in src/testing/setup.ts. In the block that installs  
+```ts
+proto.getContext = function (contextType: string) { … }
+```
+replace it with a shim that always returns a non-null minimal 2D context for `"2d"`. For example:
 
-```patch
-*** Begin Patch
-*** Update File: tests/smoke-exports.test.js
-@@ describe('Package root exports', () => {
--    test('exports core API functions', async () => {
--        const mod = await import('../src/index.js');
-+    test('exports core API functions', async () => {
-+        const mod = await import('../src/index.ts');
-*** End Patch
+```diff
+--- a/src/testing/setup.ts
++++ b/src/testing/setup.ts
+@@ (around canvas shim installation)
+-      if (!hasGetContextFunction || !has2D) {
+-        // Install minimal 2D context shim on the prototype
+-        proto.getContext = function (contextType: string) {
+-          if (contextType === '2d') {
+-            return {
+-              createImageData: (width: number, height: number) => ({
+-                data: new Uint8ClampedArray(width * height * 4),
+-                width,
+-                height,
+-              }),
+-              getImageData: (_x: number, _y: number, width: number, height: number) => ({
+-                data: new Uint8ClampedArray(width * height * 4),
+-                width,
+-                height,
+-              }),
+-              putImageData: () => {/* no-op */},
+-              drawImage: () => {/* no-op */},
+-              fillRect: () => {/* no-op */},
+-              clearRect: () => {/* no-op */},
+-            };
+-          }
+-
+-          return null;
+-        };
++      if (!hasGetContextFunction || !has2D) {
++        // Always return a minimal 2D context for tests, never null
++        const originalGetContext = proto.getContext;
++        proto.getContext = function (contextType: string) {
++          if (contextType === '2d') {
++            return {
++              createImageData: (width: number, height: number) => ({
++                data: new Uint8ClampedArray(width * height * 4),
++                width,
++                height,
++              }),
++              getImageData: (_x: number, _y: number, width: number, height: number) => ({
++                data: new Uint8ClampedArray(width * height * 4),
++                width,
++                height,
++              }),
++              putImageData: () => {},
++              drawImage: () => {},
++              fillRect: () => {},
++              clearRect: () => {},
++            };
++          }
++          try {
++            return originalGetContext?.call(this, contextType) || null;
++          } catch {
++            return null;
++          }
++        };
+      }
 ```
 
-Save that change, then run:
-
-```bash
-git add tests/smoke-exports.test.js
-```
+Save that change.
 ```
 
 ## Action
@@ -32,10 +80,10 @@ git add tests/smoke-exports.test.js
 **Parameters:**
 ```json
 {
-  "outputPath": "tests/smoke-exports.test.js",
+  "outputPath": "src/testing/setup.ts",
   "patch": {
-    "search": "const mod = await import('../src/index.js');",
-    "replace": "const mod = await import('../src/index.ts');",
+    "searchRegex": "proto\\\\.getContext = function \\(contextType: string\\)[\\s\\S]*?};",
+    "replace": "const originalGetContext = proto.getContext;\nproto.getContext = function (contextType: string) {\n  if (contextType === '2d') {\n    return {\n      createImageData: (width: number, height: number) => ({ data: new Uint8ClampedArray(width * height * 4), width, height }),\n      getImageData: (_x: number, _y: number, width: number, height: number) => ({ data: new Uint8ClampedArray(width * height * 4), width, height }),\n      putImageData: () => {},\n      drawImage: () => {},\n      fillRect: () => {},\n      clearRect: () => {},\n    };\n  }\n  try {\n    return originalGetContext?.call(this, contextType) || null;\n  } catch {\n    return null;\n  }\n};",
     "continueOnNotFound": false
   }
 }
@@ -44,23 +92,5 @@ git add tests/smoke-exports.test.js
 ## Handler Response
 
 ```
-Successfully applied 1 patch to file: tests/smoke-exports.test.js
-Content:
-import { describe, expect, test } from 'vitest';
-describe('Package root exports', () => {
-    test('exports core API functions', async () => {
-        const mod = await import('../src/index.ts');
-        expect(mod).toBeDefined();
-        expect(typeof mod.createPostCSSConfig).toBe('function');
-        expect(typeof mod.createViteLibraryConfig).toBe('function');
-        expect(typeof mod.createVitestJsdomConfig).toBe('function');
-        expect(typeof mod.renderComponent).toBe('function');
-        expect(typeof mod.expectAccessible).toBe('function');
-        expect(typeof mod.setupJsdomTestEnvironment).toBe('function');
-        expect(typeof mod.createHTMLLintConfig).toBe('function');
-        expect(typeof mod.createCSSLintConfig).toBe('function');
-        expect(typeof mod.createAccessibilityLintConfig).toBe('function');
-    });
-});
-
+Patch 1 failed: search pattern not found (searching for: "proto\\.getContext = function \(contextType: string\)[\s\S]*?};") in file: src/testing/setup.ts
 ```

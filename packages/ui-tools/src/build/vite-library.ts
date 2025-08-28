@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { defineConfig, type UserConfig } from 'vite';
 
-import { createPostCSSConfig, type PostCSSConfigOptions } from './postcss.ts';
+import { createPostCSSConfig, type PostCSSConfigOptions } from './postcss.js';
 
 export interface ViteLibraryOptions {
   /** Library name (metadata only; ESM-only build) */
@@ -26,48 +26,39 @@ export interface ViteLibraryOptions {
  * - Merges a sensible PostCSS config (including autoprefixer) with any overrides
  */
 export function createViteLibraryConfig(options: ViteLibraryOptions) {
-  const {
-    name,
-    entry,
-    external = ['react', 'react-dom', '@voder/shared'],
-    viteConfig = {},
-    extractCSS = true,
-    postcssConfig = {}
-  } = options;
+    const { name, entry, external = ['react', 'react-dom', '@voder/shared'], viteConfig = {}, extractCSS = true, postcssConfig = {} } = options;
 
-  // Base PostCSS config from our helper
-  const basePostcss = createPostCSSConfig();
+    // Base PostCSS config from our helper
+    const basePostcss = createPostCSSConfig();
 
-  // Merge plugins arrays (if present) then shallow-merge the rest of the config.
-  const mergedPostcss: Record<string, unknown> = {
-    ...basePostcss,
-    ...postcssConfig
-  };
+    // Merge default and user-supplied PostCSS plugins in one step
+    const mergedPostcss: Record<string, unknown> = {
+        ...basePostcss,
+        ...postcssConfig,
+        plugins: [
+            ...(basePostcss.plugins ?? []),
+            ...((postcssConfig.plugins) ?? [])
+        ]
+    };
 
-  const basePlugins = (basePostcss as any).plugins ?? [];
-
-  const overridePlugins = (postcssConfig as any).plugins ?? [];
-
-  mergedPostcss.plugins = [...basePlugins, ...overridePlugins];
-
-  return defineConfig({
-    build: {
-      lib: {
-        entry: resolve(entry),
-        name,
-        formats: ['es'],
-        fileName: (format) => `index.${format}.js`
-      },
-      rollupOptions: {
-        external
-      },
-      sourcemap: true,
-      minify: false,
-      cssCodeSplit: Boolean(extractCSS)
-    },
-    css: {
-      postcss: mergedPostcss
-    },
-    ...viteConfig
-  });
+    return defineConfig({
+        build: {
+            lib: {
+                entry: resolve(entry),
+                name,
+                formats: ['es'],
+                fileName: (format) => `index.${format}.js`
+            },
+            rollupOptions: {
+                external
+            },
+            sourcemap: true,
+            minify: false,
+            cssCodeSplit: Boolean(extractCSS)
+        },
+        css: {
+            postcss: mergedPostcss
+        },
+        ...viteConfig
+    });
 }

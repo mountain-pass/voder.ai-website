@@ -1,6 +1,6 @@
 {
   "extends": "@voder/dev-config/typescript/base.json",
-  "include": ["src", "tests", "src/types"],
+  "include": ["src", "tests", "src/types", "*.config.ts", "scripts/**/*.ts"],
   "compilerOptions": {
     "esModuleInterop": true,
     "moduleResolution": "node16",

@@ -72,3 +72,30 @@ const lintCmd = createCLICommand({
 });
 console.log(lintCmd);
 ```
+
+## scripts
+
+- `copyAssets(repoRoot?: string): Promise<{ tsFiles: string[]; jsFiles: string[] }>`  
+  Copies TS and JS asset files from the project root (`repoRoot`, defaults to `process.cwd()`) into the `dist` directory and returns the copied file paths.
+- `generateMarkdownlintConfig(outputDir?: string): string`  
+  Generates a `.markdownlint.json` file in the specified `outputDir` (defaults to `process.cwd()`) and returns the path to the generated config file.
+
+### scripts
+
+```ts
+import {
+  copyAssets,
+  generateMarkdownlintConfig,
+} from '@voder/dev-config/scripts';
+
+(async () => {
+  // Copy assets to dist
+  const { tsFiles, jsFiles } = await copyAssets();
+  console.log('Copied TS files:', tsFiles);
+  console.log('Copied JS files:', jsFiles);
+
+  // Generate markdownlint config
+  const configPath = generateMarkdownlintConfig();
+  console.log('Generated markdownlint config at:', configPath);
+})();
+```

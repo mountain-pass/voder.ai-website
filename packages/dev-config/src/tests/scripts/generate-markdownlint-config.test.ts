@@ -1,8 +1,9 @@
 import { execSync } from 'child_process';
-import { mkdir, readFile, rmdir, writeFile } from 'fs/promises';
-import { tmpdir } from 'os';
+import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { cleanupTempDir, createTempDir } from '../helpers/fs-utils';
 
 // Helper to run script with coverage collection
 function runScriptWithCoverage(
@@ -45,15 +46,14 @@ describe('generate-markdownlint-config script', () => {
 
   beforeEach(async () => {
     originalCwd = process.cwd();
-    testDir = join(tmpdir(), `markdownlint-test-${Date.now()}`);
-    await mkdir(testDir, { recursive: true });
+    testDir = await createTempDir('markdownlint-test');
     process.chdir(testDir);
   });
 
   afterEach(async () => {
     process.chdir(originalCwd);
     try {
-      await rmdir(testDir, { recursive: true });
+      await cleanupTempDir(testDir);
     } catch {
       // Ignore cleanup errors
     }

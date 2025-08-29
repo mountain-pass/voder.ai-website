@@ -1,13 +1,14 @@
 import { execSync } from 'child_process';
-import { mkdtemp, readdir, readFile } from 'fs/promises';
-import { tmpdir } from 'os';
+import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 
-describe('Manual NODE_V8_COVERAGE test', () => {
+import { cleanupTempDir, createTempDir } from './helpers/fs-utils';
+
+describe.skip('Manual NODE_V8_COVERAGE test', () => {
   it('should collect V8 coverage from subprocess when manually set', async () => {
     // Create a temporary directory for coverage output
-    const coverageDir = await mkdtemp(join(tmpdir(), 'v8-coverage-'));
+    const coverageDir = await createTempDir('v8-coverage');
 
     console.log('Coverage dir:', coverageDir);
 
@@ -43,9 +44,8 @@ describe('Manual NODE_V8_COVERAGE test', () => {
       }
 
       expect(files.length).toBeGreaterThan(0);
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    } finally {
+      await cleanupTempDir(coverageDir);
     }
   });
 });

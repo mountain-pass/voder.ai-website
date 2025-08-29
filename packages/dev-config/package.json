@@ -66,7 +66,7 @@
     "lint:md": "markdownlint-cli2 *.md docs/**/*.md",
     "lint:md:fix": "markdownlint-cli2 --fix *.md docs/**/*.md",
     "format:fix": "npm run format",
-    "verify": "npm audit fix --force && sh scripts/duplicate-detect.sh && npm run lint:fix && npm run lint:check && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
+    "verify": "npm audit fix --force && sh scripts/duplicate-detect.sh && npm run lint:fix && npm run lint:check && npm run lint:md:fix && npm run lint:md && npm run format && npm run build && npm run test:ci",
     "audit:ci": "npm audit --audit-level=high"
   },
   "peerDependencies": {

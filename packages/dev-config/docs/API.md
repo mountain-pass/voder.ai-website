@@ -1,5 +1,7 @@
 # API Reference
 
+> **Note:** For detailed setup instructions and configuration examples for ESLint, Prettier, and Vitest, please see [Consumer Quickstart guide](CONSUMER-QUICKSTART.md).
+
 ## testing
 
 - `createVitestNodeConfig(): Record<string, unknown>`  

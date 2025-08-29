@@ -4,15 +4,7 @@
 
 ## ⚡ Quick Start
 
-```bash
-npm install --save-dev @voder/dev-config
-```
-
-```typescript
-// Example: Vitest config
-import { createVitestNodeConfig } from '@voder/dev-config/testing';
-export default createVitestNodeConfig();
-```
+See [Consumer Quickstart](docs/CONSUMER-QUICKSTART.md) for full integration instructions.
 
 ## 🎯 Purpose
 
@@ -39,7 +31,7 @@ npm install --save-dev jiti
 ```
 
 - **TypeScript:** ≥ 5.0 (peer dependency)
-- **ESM-only**: `"type": "module"` in consumer projects
+- **ESM-only**: "type": "module" in consumer projects
 - **Peer dependencies:**
   - `typescript` `^5.0.0`
   - `eslint` `^9.0.0`
@@ -64,12 +56,16 @@ npm install --save-dev @voder/dev-config
 pnpm add -D @voder-dev-config
 
 # yarn
-yarn add -D @voder/dev-config
+yarn add -D @voder-dev-config
 ```
 
 ## 📦 Consumer Quickstart
 
 See [Consumer Quickstart](docs/CONSUMER-QUICKSTART.md) for detailed integration instructions.
+
+## 🛠️ Build & Validation Scripts
+
+For details on the internal build and validation scripts—including purpose, CLI invocation, options, default behavior, and exit codes—see [Build & Validation Scripts Guide](docs/scripts-usage.md).
 
 ## 📖 API Reference
 
@@ -81,13 +77,13 @@ Returns a Vitest config object tuned for Node:
 
 - **Returns:** `Record<string, unknown>`
 - **Properties:**
-  - `.test.environment` = `"node"`
-  - `.test.setupFiles` = `["./src/test-setup.node.ts"]`
-  - `.test.coverage.thresholds` = `{ branches: 80, functions: 80, lines: 80, statements: 80 }`
+  - `.test.environment` = "node"
+  - `.test.setupFiles` = ["./src/test-setup.node.ts"]
+  - `.test.coverage.thresholds` = { branches: 80, functions: 80, lines: 80, statements: 80 }
 
 ### `testing.testSetup.node`
 
-Path to the test-setup file: `"./src/test-setup.node.ts"`
+Path to the test-setup file: "./src/test-setup.node.ts"
 
 ### ESLint layers
 

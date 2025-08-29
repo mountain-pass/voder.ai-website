@@ -69,33 +69,41 @@ When run without the `--outputDir` option, the script:
 
 ### Purpose
 
-TBD: Describe the purpose of the **duplicate-detect.sh** script.
+The `duplicate-detect.sh` script scans all git-tracked files in the repository to detect any files with identical contents by computing SHA-1 checksums. It helps identify unintentional duplicate files within the project.
 
 ### CLI Invocation
 
 ```bash
-./scripts/duplicate-detect.sh [directory]
+./scripts/duplicate-detect.sh
 ```
 
 ### Options
 
-- `<directory>`: Directory to scan for duplicates.
+This script does not accept any CLI options or arguments; it always scans all git-tracked files in the repository root.
 
 ### Default Behavior
 
-TBD: Describe default directory to scan (e.g., `src/`).
+When run, the script:
+
+- Uses the current working directory as the repository root.
+- Scans all git-tracked files (ignoring the `.git` directory and untracked files).
+- Computes SHA-1 checksums for each tracked file and sorts them.
+- Identifies groups of files sharing identical checksums (duplicates).
+- Writes all checksums to `./tmp/all-shas.txt`.
+- Writes duplicate hashes to `./tmp/duplicate-hashes.txt`.
+- Prints details of duplicate files (if any) to standard error.
 
 ### Exit Codes
 
-- `0`: No duplicates found.
-- `1`: Duplicates detected.
-- `2`: Error during scanning.
+- `0`: No duplicates detected, or duplicates detected but `FAIL_ON_TRACKED` is not set (default behavior).
+- `2`: Duplicate files detected and `FAIL_ON_TRACKED=1`, causing the script to fail.
+- Any other non-zero code: An unexpected error occurred (e.g., missing dependencies or write permission issues).
 
 ## validate-runtime
 
 ### Purpose
 
-TBD: Describe the purpose of the **validate-runtime** script.
+The `validate-runtime` script verifies that the runtime environment prerequisites are met before using this package. It ensures that required peer dependencies (such as `jiti`) are installed and that the necessary TypeScript configuration files (`tsconfig.eslint.json` and `tsconfig.config.json`) exist in the project root. This helps catch missing dependencies or misconfigurations early in the workflow.
 
 ### CLI Invocation
 
@@ -103,16 +111,34 @@ TBD: Describe the purpose of the **validate-runtime** script.
 node scripts/validate-runtime.ts
 ```
 
+Or via npm script:
+
+```bash
+npm run validate:runtime
+```
+
+When running via npm and passing options, use:
+
+```bash
+npm run validate:runtime -- --env <environment>
+```
+
 ### Options
 
-- `--env <environment>`: Target environment to validate.
+- `--env <environment>`: (Reserved for future use) Specify the target environment to validate. Currently ignored.
 
 ### Default Behavior
 
-TBD: Describe default runtime validation behavior.
+When run without options, the script:
+
+- Uses the current working directory as the project root.
+- Resolves and loads `jiti` to verify it is installed.
+- Checks for `typescript/tsconfig.eslint.json`.
+- Checks for `typescript/tsconfig.config.json`.
+- Exits with code `0` if all checks pass.
 
 ### Exit Codes
 
-- `0`: Environment is valid.
-- `1`: Missing dependencies.
-- `2`: Invalid configuration.
+- `0`: Runtime environment is valid.
+- `1`: A required peer dependency is missing (e.g., `jiti`).
+- `2`: A required configuration file is missing (e.g., `tsconfig.eslint.json` or `tsconfig.config.json`).

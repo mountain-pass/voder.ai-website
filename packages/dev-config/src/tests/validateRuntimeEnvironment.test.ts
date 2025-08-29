@@ -1,5 +1,6 @@
 import { join } from 'path';
 import { describe, expect, it, vi } from 'vitest';
+
 import { cleanupTempDir, createTempDir } from './helpers/fs-utils';
 
 // Tests for validateRuntimeEnvironment using dynamic imports and module mocking
@@ -10,11 +11,14 @@ describe('validateRuntimeEnvironment()', () => {
     vi.resetModules();
     vi.mock('module', async () => {
       const actual = await vi.importActual<typeof import('module')>('module');
+
       const origCreateRequire = actual.createRequire;
+
       return {
         ...actual,
         createRequire: (url: string) => {
           const req = origCreateRequire(url);
+
           return {
             resolve: (id: string) => {
               if (id === 'jiti') {
@@ -27,6 +31,7 @@ describe('validateRuntimeEnvironment()', () => {
                 // Return a dummy existing path for config files
                 return __filename;
               }
+
               return req.resolve(id);
             },
           };
@@ -35,7 +40,10 @@ describe('validateRuntimeEnvironment()', () => {
     });
 
     const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
-    expect(() => validateRuntimeEnvironment()).toThrow(/Missing required peer dependency "jiti"/);
+
+    expect(() => validateRuntimeEnvironment()).toThrow(
+      /Missing required peer dependency "jiti"\.\nPlease install it in your project: npm install --save-dev jiti/
+    );
   });
 
   it('completes successfully when all dependencies are available', async () => {
@@ -44,11 +52,14 @@ describe('validateRuntimeEnvironment()', () => {
     // Mock createRequire to simulate resolution of jiti and config files
     vi.mock('module', async () => {
       const actual = await vi.importActual<typeof import('module')>('module');
+
       const origCreateRequire = actual.createRequire;
+
       return {
         ...actual,
         createRequire: (url: string) => {
           const req = origCreateRequire(url);
+
           return {
             resolve: (id: string) => {
               if (id === 'jiti') {
@@ -61,6 +72,7 @@ describe('validateRuntimeEnvironment()', () => {
               ) {
                 return __filename;
               }
+
               return req.resolve(id);
             },
           };
@@ -69,24 +81,30 @@ describe('validateRuntimeEnvironment()', () => {
     });
 
     const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
+
     expect(() => validateRuntimeEnvironment()).not.toThrow();
   });
 
   it('throws if tsconfig JSON files are missing', async () => {
     // Prepare isolated environment with no tsconfig files
     const cwd = process.cwd();
+
     const temp = await createTempDir('voder-validate');
+
     process.chdir(temp);
 
     // Stub createRequire to simulate resolution of jiti and config files
     vi.resetModules();
     vi.mock('module', async () => {
       const actual = await vi.importActual<typeof import('module')>('module');
+
       const origCreateRequire = actual.createRequire;
+
       return {
         ...actual,
         createRequire: (url: string) => {
           const req = origCreateRequire(url);
+
           return {
             resolve: (id: string) => {
               if (id === 'jiti') {
@@ -98,6 +116,7 @@ describe('validateRuntimeEnvironment()', () => {
               ) {
                 return __filename;
               }
+
               return req.resolve(id);
             },
           };
@@ -107,7 +126,11 @@ describe('validateRuntimeEnvironment()', () => {
 
     try {
       const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
-      expect(() => validateRuntimeEnvironment()).toThrow(/Missing TypeScript ESLint config/);
+
+      const eslintConfigPath = join(temp, 'typescript', 'tsconfig.eslint.json');
+      expect(() => validateRuntimeEnvironment()).toThrow(
+        new RegExp(`Missing TypeScript ESLint config at "${eslintConfigPath}"`)
+      );
     } finally {
       process.chdir(cwd);
       await cleanupTempDir(temp);
@@ -117,7 +140,9 @@ describe('validateRuntimeEnvironment()', () => {
   it('throws if tsconfig.config.json is missing but tsconfig.eslint.json exists', async () => {
     // Prepare isolated environment with only eslint tsconfig
     const cwd = process.cwd();
+
     const temp = await createTempDir('voder-validate-config');
+
     const { mkdirSync, writeFileSync } = await import('fs');
 
     mkdirSync(join(temp, 'typescript'), { recursive: true });
@@ -129,11 +154,14 @@ describe('validateRuntimeEnvironment()', () => {
     vi.resetModules();
     vi.mock('module', async () => {
       const actual = await vi.importActual<typeof import('module')>('module');
+
       const origCreateRequire = actual.createRequire;
+
       return {
         ...actual,
         createRequire: (url: string) => {
           const req = origCreateRequire(url);
+
           return {
             resolve: (id: string) => {
               if (id === 'jiti') {
@@ -145,6 +173,7 @@ describe('validateRuntimeEnvironment()', () => {
               ) {
                 return __filename;
               }
+
               return req.resolve(id);
             },
           };
@@ -154,7 +183,11 @@ describe('validateRuntimeEnvironment()', () => {
 
     try {
       const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
-      expect(() => validateRuntimeEnvironment()).toThrow(/Missing TypeScript config file/);
+
+      const configConfigPath = join(temp, 'typescript', 'tsconfig.config.json');
+      expect(() => validateRuntimeEnvironment()).toThrow(
+        new RegExp(`Missing TypeScript config file at "${configConfigPath}"`)
+      );
     } finally {
       process.chdir(cwd);
       await cleanupTempDir(temp);

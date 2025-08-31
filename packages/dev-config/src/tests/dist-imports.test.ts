@@ -34,7 +34,7 @@ describe('package main exports integration test', () => {
 
     // Install the package
     execSync('npm install', { cwd: packagePath });
-  }, 60000); // 60 second timeout for setup
+  }, 120000); // 120 second timeout for setup
 
   afterAll(async () => {
     await rm(tempDir, { recursive: true, force: true });

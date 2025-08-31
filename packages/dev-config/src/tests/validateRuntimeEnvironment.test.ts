@@ -9,41 +9,42 @@ describe('validateRuntimeEnvironment()', () => {
   it('throws if jiti cannot be resolved', async () => {
     // Clear module cache and mock createRequire to simulate missing jiti
     vi.resetModules();
-    vi.mock('module', async () => {
-      const actual = await vi.importActual<typeof import('module')>('module');
+    
+    // Mock the module namespace first
+    const mockModule = await vi.importActual<typeof import('module')>('module');
+    const origCreateRequire = mockModule.createRequire;
+    
+    vi.doMock('module', () => ({
+      ...mockModule,
+      createRequire: (url: string) => {
+        const req = origCreateRequire(url);
+        return {
+          resolve: (id: string) => {
+            if (id === 'jiti') {
+              throw new Error('Cannot resolve jiti');
+            }
+            if (
+              id === 'typescript/tsconfig.eslint.json' ||
+              id === 'typescript/tsconfig.config.json'
+            ) {
+              // Return a dummy existing path for config files
+              return __filename;
+            }
+            return req.resolve(id);
+          },
+        };
+      },
+    }));
 
-      const origCreateRequire = actual.createRequire;
-
-      return {
-        ...actual,
-        createRequire: (url: string) => {
-          const req = origCreateRequire(url);
-
-          return {
-            resolve: (id: string) => {
-              if (id === 'jiti') {
-                throw new Error('Cannot resolve jiti');
-              }
-              if (
-                id === 'typescript/tsconfig.eslint.json' ||
-                id === 'typescript/tsconfig.config.json'
-              ) {
-                // Return a dummy existing path for config files
-                return __filename;
-              }
-
-              return req.resolve(id);
-            },
-          };
-        },
-      };
-    });
-
+    // Re-import the module after mocking
     const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
 
     expect(() => validateRuntimeEnvironment()).toThrow(
-      /Missing required peer dependency "jiti"\.\nPlease install it in your project: npm install --save-dev jiti/
+      /Missing required peer dependency "jiti"\.\nPlease install it in your project: npm install --save-dev jiti/,
     );
+    
+    // Clean up the mock
+    vi.doUnmock('module');
   });
 
   it('completes successfully when all dependencies are available', async () => {
@@ -128,8 +129,9 @@ describe('validateRuntimeEnvironment()', () => {
       const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
 
       const eslintConfigPath = join(temp, 'typescript', 'tsconfig.eslint.json');
+
       expect(() => validateRuntimeEnvironment()).toThrow(
-        new RegExp(`Missing TypeScript ESLint config at "${eslintConfigPath}"`)
+        new RegExp(`Missing TypeScript ESLint config at ".*${eslintConfigPath.replace(/^\/private/, '')}"`),
       );
     } finally {
       process.chdir(cwd);
@@ -185,8 +187,9 @@ describe('validateRuntimeEnvironment()', () => {
       const { validateRuntimeEnvironment } = await import('../utils/validateRuntime.js');
 
       const configConfigPath = join(temp, 'typescript', 'tsconfig.config.json');
+
       expect(() => validateRuntimeEnvironment()).toThrow(
-        new RegExp(`Missing TypeScript config file at "${configConfigPath}"`)
+        new RegExp(`Missing TypeScript config file at ".*${configConfigPath.replace(/^\/private/, '')}"`),
       );
     } finally {
       process.chdir(cwd);

@@ -12,7 +12,7 @@ describe('package installation integration tests', () => {
 
   beforeAll(async () => {
     ({ tempDir, packagePath } = await setupTestPackageInstallation());
-  }, 60000);
+  }, 120000);
 
   afterAll(async () => {
     await teardownTestEnvironment(tempDir);

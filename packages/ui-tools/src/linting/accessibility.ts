@@ -1,23 +1,28 @@
-export function createAccessibilityLintConfig(options = {}) {
-    const { excludeRules = [], rules = {} } = options;
+export interface AccessibilityLintOptions {
+  excludeRules?: string[];
+  rules?: Record<string, any>;
+}
 
-    return {
-        plugins: ['stylelint-a11y'],
-        rules: {
-            // Core accessibility rules
-            'a11y/content-property-no-static-value': true,
-            'a11y/font-size-is-readable': true,
-            'a11y/line-height-is-vertical-rhythmed': true,
-            'a11y/no-outline-none': true,
-            'a11y/selector-pseudo-class-focus': true,
-            // Disable any excluded rules
-            ...excludeRules.reduce((acc, rule) => {
-                acc[rule] = null;
+export function createAccessibilityLintConfig(options: AccessibilityLintOptions = {}) {
+  const { excludeRules = [], rules = {} } = options;
 
-                return acc;
-            }, {}),
-            // Apply any overrides
-            ...rules
-        }
-    };
+  return {
+    plugins: ['stylelint-a11y'],
+    rules: {
+      // Core accessibility rules
+      'a11y/content-property-no-static-value': true,
+      'a11y/font-size-is-readable': true,
+      'a11y/line-height-is-vertical-rhythmed': true,
+      'a11y/no-outline-none': true,
+      'a11y/selector-pseudo-class-focus': true,
+      // Disable any excluded rules
+      ...excludeRules.reduce((acc: Record<string, any>, rule: string) => {
+        acc[rule] = null;
+
+        return acc;
+      }, {}),
+      // Apply any overrides
+      ...rules,
+    },
+  };
 }

@@ -1,11 +1,5 @@
 {
   "extends": "@voder/dev-config/typescript/tsconfig.config.json",
-  "include": [
-    "*.config.ts",
-    "scripts/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["*.config.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

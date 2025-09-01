@@ -43,7 +43,7 @@ import { createViteLibraryConfig } from '@voder/ui-tools';
 export default createViteLibraryConfig({
   name: 'MyUILibrary',
   entry: './src/index.ts',
-  external: ['react', 'react-dom', '@voder/shared']
+  external: ['react', 'react-dom', '@voder/shared'],
 });
 ```
 
@@ -54,7 +54,7 @@ Vitest (jsdom) config — component/unit testing
 import { createVitestJsdomConfig } from '@voder/ui-tools';
 
 export default createVitestJsdomConfig({
-  setupFiles: ['./src/test-setup.jsdom.ts'] // your test setup file
+  setupFiles: ['./src/test-setup.jsdom.ts'], // your test setup file
 });
 ```
 
@@ -65,14 +65,18 @@ import { createPostCSSConfig } from '@voder/ui-tools';
 
 const postcss = createPostCSSConfig({
   browsers: ['last 2 versions', '> 1%'],
-  plugins: []
+  plugins: [],
 });
 ```
 
 Test helpers (example)
 
 ```ts
-import { renderComponent, simulateClick, expectAccessible } from '@voder/ui-tools';
+import {
+  renderComponent,
+  simulateClick,
+  expectAccessible,
+} from '@voder/ui-tools';
 
 // Use renderComponent to mount a component (jsdom) and simulate interactions
 ```
@@ -86,7 +90,7 @@ import { createHTMLLintConfig } from '@voder/ui-tools';
 
 const htmlLintConfig = createHTMLLintConfig({
   // disable specific rules or leave blank for defaults
-  excludeRules: ['title-require']
+  excludeRules: ['title-require'],
 });
 
 console.log(htmlLintConfig);

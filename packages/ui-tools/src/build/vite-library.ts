@@ -26,39 +26,43 @@ export interface ViteLibraryOptions {
  * - Merges a sensible PostCSS config (including autoprefixer) with any overrides
  */
 export function createViteLibraryConfig(options: ViteLibraryOptions) {
-    const { name, entry, external = ['react', 'react-dom', '@voder/shared'], viteConfig = {}, extractCSS = true, postcssConfig = {} } = options;
+  const {
+    name,
+    entry,
+    external = ['react', 'react-dom', '@voder/shared'],
+    viteConfig = {},
+    extractCSS = true,
+    postcssConfig = {},
+  } = options;
 
-    // Base PostCSS config from our helper
-    const basePostcss = createPostCSSConfig();
+  // Base PostCSS config from our helper
+  const basePostcss = createPostCSSConfig();
 
-    // Merge default and user-supplied PostCSS plugins in one step
-    const mergedPostcss: Record<string, unknown> = {
-        ...basePostcss,
-        ...postcssConfig,
-        plugins: [
-            ...(basePostcss.plugins ?? []),
-            ...((postcssConfig.plugins) ?? [])
-        ]
-    };
+  // Merge default and user-supplied PostCSS plugins in one step
+  const mergedPostcss: Record<string, unknown> = {
+    ...basePostcss,
+    ...postcssConfig,
+    plugins: [...(basePostcss.plugins ?? []), ...(postcssConfig.plugins ?? [])],
+  };
 
-    return defineConfig({
-        build: {
-            lib: {
-                entry: resolve(entry),
-                name,
-                formats: ['es'],
-                fileName: (format) => `index.${format}.js`
-            },
-            rollupOptions: {
-                external
-            },
-            sourcemap: true,
-            minify: false,
-            cssCodeSplit: Boolean(extractCSS)
-        },
-        css: {
-            postcss: mergedPostcss
-        },
-        ...viteConfig
-    });
+  return defineConfig({
+    build: {
+      lib: {
+        entry: resolve(entry),
+        name,
+        formats: ['es'],
+        fileName: (format) => `index.${format}.js`,
+      },
+      rollupOptions: {
+        external,
+      },
+      sourcemap: true,
+      minify: false,
+      cssCodeSplit: Boolean(extractCSS),
+    },
+    css: {
+      postcss: mergedPostcss,
+    },
+    ...viteConfig,
+  });
 }

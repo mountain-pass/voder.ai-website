@@ -3,7 +3,7 @@
  */
 export function disableRules(
   config: Record<string, any>,
-  rulesToDisable: string[]
+  rulesToDisable: string[],
 ): Record<string, any> {
   const result = { ...config };
 

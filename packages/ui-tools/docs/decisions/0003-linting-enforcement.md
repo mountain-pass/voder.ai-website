@@ -15,7 +15,7 @@ ESLint parser errors are being raised when the linter attempts to process compil
 
 Accept a narrowly scoped glob exclusion for the ui-tools package build outputs in the ESLint TypeScript project exclude list:
 
-- Exclude pattern to adopt: "packages/ui-tools/dist/**"
+- Exclude pattern to adopt: "packages/ui-tools/dist/\*\*"
 
 This is intentionally narrow (targets only the ui-tools package compiled outputs) to minimize exclusion surface while restoring linting operability.
 
@@ -35,7 +35,7 @@ This is intentionally narrow (targets only the ui-tools package compiled outputs
 ## Confirmation
 
 - Commit this ADR at docs/decisions/0003-linting-enforcement.md.
-- Update tsconfig.eslint.json to include "packages/ui-tools/dist/**" in the "exclude" array.
+- Update tsconfig.eslint.json to include "packages/ui-tools/dist/\*\*" in the "exclude" array.
 - Verify: run `npm run lint` locally and confirm the previous ESLint parser/project errors for ui-tools dist files are cleared.
 
 ---

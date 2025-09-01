@@ -26,12 +26,9 @@ export interface PostCSSConfigOptions {
  * @returns PostCSS configuration object with a `plugins` array
  */
 export function createPostCSSConfig(options: PostCSSConfigOptions = {}) {
-    const { browsers = ['last 2 versions', '> 1%', 'not dead'], plugins = [] } = options;
+  const { browsers = ['last 2 versions', '> 1%', 'not dead'], plugins = [] } = options;
 
-    return {
-        plugins: [
-            autoprefixer({ overrideBrowserslist: browsers }),
-            ...plugins
-        ]
-    };
+  return {
+    plugins: [autoprefixer({ overrideBrowserslist: browsers }), ...plugins],
+  };
 }

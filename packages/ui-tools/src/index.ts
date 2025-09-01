@@ -5,9 +5,21 @@ export { createPostCSSConfig } from './build/postcss.js';
 export { createViteLibraryConfig } from './build/vite-library.js';
 export { createVitestJsdomConfig } from './testing/vitest-jsdom.js';
 // Testing helpers (DOM helpers)
-export { renderComponent, simulateClick, simulateKeypress, waitForAnimation, waitForNextFrame } from './testing/helpers.js';
+export {
+  renderComponent,
+  simulateClick,
+  simulateKeypress,
+  waitForAnimation,
+  waitForNextFrame,
+} from './testing/helpers.js';
 // Accessibility testing helpers
-export { accessibilityTests, expectAccessible, expectAriaAttributes, expectFocusable, getAccessibilityViolations } from './testing/accessibility.js';
+export {
+  accessibilityTests,
+  expectAccessible,
+  expectAriaAttributes,
+  expectFocusable,
+  getAccessibilityViolations,
+} from './testing/accessibility.js';
 // Test environment setup (authoritative API)
 export { setupJsdomTestEnvironment } from './testing/setup.js';
 // Linting configuration exports

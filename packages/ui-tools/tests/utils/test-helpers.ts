@@ -4,20 +4,19 @@
 /**
  * Walk through package.json exports field and validate paths
  */
-export function walkExports(exports) {
-    const paths = [];
+export function walkExports(exports: any): string[] {
+  const paths: string[] = [];
 
-    function walk(obj, key = '') {
-        if (typeof obj === 'string') {
-            paths.push(obj);
-        }
-        else if (typeof obj === 'object' && obj !== null) {
-            for (const [k, v] of Object.entries(obj)) {
-                walk(v, key ? `${key}.${k}` : k);
-            }
-        }
+  function walk(obj: any, key = ''): void {
+    if (typeof obj === 'string') {
+      paths.push(obj);
+    } else if (typeof obj === 'object' && obj !== null) {
+      for (const [k, v] of Object.entries(obj)) {
+        walk(v, key ? `${key}.${k}` : k);
+      }
     }
-    walk(exports);
+  }
+  walk(exports);
 
-    return paths;
+  return paths;
 }

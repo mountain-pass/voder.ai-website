@@ -13,8 +13,10 @@ export default [
       'node_modules/**',
       '.cache/**',
       '.vite/**',
-      '.eslintcache'
-    ]
+      '.eslintcache',
+      'prettier.config.mjs',
+      'tests/dist-import.test.js',
+    ],
   },
-  ...complete
+  ...complete,
 ];

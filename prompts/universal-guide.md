@@ -167,6 +167,62 @@ All packages MUST include markdown linting for user-facing documentation:
 - `docs/**/*.md`: Catches all markdown files in documentation directories
 - **Excludes**: `prompts/`, `prompt-assets/`, `.voder/`, and other internal directories
 
+**🚫 Pre-commit Hook Limitations in Monorepo Subdirectories:**
+
+**CRITICAL: Husky and lint-staged CANNOT be used in subdirectory packages within larger repositories.**
+
+**Why Pre-commit Hooks Are Not Supported:**
+- **Git Hook Scope**: Git hooks operate at the repository root level, not within subdirectories
+- **Monorepo Structure**: This project exists as a subdirectory (`packages/dev-config/`) within a larger repository structure
+- **Hook Conflicts**: Installing Husky in a subdirectory would attempt to modify the parent repository's git hooks
+- **Permission Issues**: Subdirectory packages cannot and should not control parent repository git configuration
+- **Tooling Assumptions**: Husky and lint-staged assume they are running at the git repository root
+
+**Alternative Quality Enforcement Strategy:**
+Instead of pre-commit hooks, quality enforcement MUST rely on:
+
+**1. Comprehensive Verify Script:**
+```json
+{
+  "scripts": {
+    "verify": "npm audit fix --force && npm run lint:fix && npm run lint:check && npm run lint:md:fix && npm run format && npm run build && npm run test:ci"
+  }
+}
+```
+
+**2. Developer Workflow Discipline:**
+- **Before Commit**: Always run `npm run verify` before committing changes
+- **CI/CD Integration**: Verify script runs automatically in continuous integration
+- **Code Review**: Ensure all commits pass the verify script requirements
+
+**3. IDE Integration:**
+- **ESLint Extension**: Configure IDE to show linting errors in real-time
+- **Prettier Extension**: Configure IDE to format on save
+- **TypeScript Integration**: Enable TypeScript checking in IDE
+
+**4. Manual Quality Checks:**
+- **Regular Audits**: Run `npm audit` to check for security vulnerabilities
+- **Dependency Updates**: Periodically run `npm outdated` and update dependencies
+- **Format Validation**: Ensure `npm run format` produces no changes before committing
+
+**Repository Structure Context:**
+```
+parent-repository/
+├── .git/                    # Git hooks controlled here (not accessible to subdirs)
+├── packages/
+│   ├── dev-config/          # This package (cannot install Husky here)
+│   │   ├── package.json     # Must use verify script instead of hooks
+│   │   └── ...
+│   └── other-packages/
+└── ...
+```
+
+**Development Best Practices:**
+- **Never Install Husky**: Do not add `husky` to devDependencies in subdirectory packages
+- **Never Configure lint-staged**: Do not add `lint-staged` configuration to subdirectory package.json
+- **Rely on Verify Script**: Use the comprehensive verify script as the quality gate
+- **Document Expectations**: Clearly document that developers must run verify before committing
+
 **Why POSIX-Only:**
 - **Development Focus**: Streamlined development without Windows-specific complexity
 - **Shell Simplicity**: Direct use of standard Unix tools without abstraction layers

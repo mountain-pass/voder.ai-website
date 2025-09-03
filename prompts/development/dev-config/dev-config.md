@@ -594,11 +594,6 @@ const fixCommand = createCLICommand({ fix: true });
 
 ## **Execution Checklist (LLM Coding Agent — Limited Access Mode)**
 
-**Editor Setup**
-- Enable: Format on Save (VS Code) → uses workspace Prettier
-- Ensure no conflicting formatters enabled simultaneously
-- Add a root `.editorconfig` to enforce indentation + newline style at editor layer
-
 ## **Configuration Usage Patterns Examples**
 ```typescript
 // In a package's vitest.config.ts for Node.js testing

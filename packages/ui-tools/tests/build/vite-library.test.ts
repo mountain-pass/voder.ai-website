@@ -14,6 +14,7 @@ describe('Vite Library Configuration', () => {
     expect(config.build?.lib).toBeDefined();
 
     const lib = config.build!.lib as any;
+
     expect(lib.formats).toEqual(['es']);
     expect(lib.name).toBe('TestLibrary');
   });
@@ -44,10 +45,10 @@ describe('Vite Library Configuration', () => {
       entry: './src/index.ts',
       viteConfig: {
         define: {
-          __VERSION__: '"1.0.0"'
+          __VERSION__: '"1.0.0"',
         },
-        plugins: []
-      }
+        plugins: [],
+      },
     });
 
     expect(config.define).toEqual({ __VERSION__: '"1.0.0"' });
@@ -58,7 +59,7 @@ describe('Vite Library Configuration', () => {
     const config = createViteLibraryConfig({
       name: 'TestLibrary',
       entry: './src/index.ts',
-      extractCSS: false
+      extractCSS: false,
     });
 
     // When extractCSS is false, should still have PostCSS config
@@ -67,15 +68,17 @@ describe('Vite Library Configuration', () => {
 
   test('should merge custom PostCSS config plugins', () => {
     const customPlugin = { name: 'custom-plugin' };
+
     const config = createViteLibraryConfig({
       name: 'TestLibrary',
       entry: './src/index.ts',
       postcssConfig: {
-        plugins: [customPlugin]
-      }
+        plugins: [customPlugin],
+      },
     });
 
     const postcss = config.css?.postcss as any;
+
     expect(postcss.plugins).toContain(customPlugin);
     // Should also include the default autoprefixer plugin
     expect(postcss.plugins.length).toBeGreaterThan(1);
@@ -83,6 +86,7 @@ describe('Vite Library Configuration', () => {
 
   test('should handle external dependencies with different configurations', () => {
     const external = ['react', 'vue'];
+
     const config = createViteLibraryConfig({
       name: 'TestLibrary',
       entry: './src/index.ts',
@@ -94,12 +98,13 @@ describe('Vite Library Configuration', () => {
 
   test('should call createPostCSSConfig correctly', () => {
     const config = createViteLibraryConfig({
-      name: 'TestLibrary', 
+      name: 'TestLibrary',
       entry: './src/index.ts',
     });
 
     // Verify that PostCSS config is created and contains expected plugins
     const postcss = config.css?.postcss as any;
+
     expect(postcss?.plugins).toBeDefined();
     expect(postcss?.plugins).toBeInstanceOf(Array);
     expect(postcss?.plugins.length).toBeGreaterThan(0);
@@ -114,6 +119,7 @@ describe('Vite Library Configuration', () => {
     });
 
     const postcss = config.css?.postcss as any;
+
     expect(postcss?.plugins).toBeDefined();
     expect(postcss?.plugins).toBeInstanceOf(Array);
   });
@@ -129,8 +135,35 @@ describe('Vite Library Configuration', () => {
     });
 
     const postcss = config.css?.postcss as any;
+
     expect(postcss?.plugins).toBeDefined();
     expect(postcss?.plugins).toBeInstanceOf(Array);
     expect(postcss?.plugins.length).toBeGreaterThan(0);
+  });
+
+  test('should handle postcss config when basePostcss plugins is undefined', () => {
+    // Test the edge case where basePostcss.plugins might be null/undefined
+    const config = createViteLibraryConfig({
+      name: 'TestLibrary',
+      entry: './src/index.ts',
+      postcssConfig: {
+        // This should trigger the fallback: [...(basePostcss.plugins ?? []), ...]
+        plugins: [{ name: 'only-user-plugin' }],
+      },
+    });
+
+    const postcss = config.css?.postcss as any;
+
+    expect(postcss?.plugins).toBeDefined();
+    expect(postcss?.plugins).toBeInstanceOf(Array);
+    // Should have at least the user plugin plus autoprefixer
+    expect(postcss?.plugins.length).toBeGreaterThanOrEqual(2);
+
+    // Should include the user plugin
+    const hasUserPlugin = postcss?.plugins.some(
+      (plugin: any) => plugin.name === 'only-user-plugin',
+    );
+
+    expect(hasUserPlugin).toBe(true);
   });
 });

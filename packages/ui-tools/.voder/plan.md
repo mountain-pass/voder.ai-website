@@ -1,31 +1,34 @@
 ## NOW
 
-**Increase Test Coverage to Meet 90% Threshold**: The project is 98% complete but test coverage is at 71.62% (needs 90%). Add targeted unit tests to cover the primary coverage gaps:
+**Achieve 90% Branch Coverage Threshold**: The project is 97% complete but branch coverage is at 89.24% (needs 90%). Add targeted unit tests to cover the specific uncovered branches that are preventing CI compliance:
 
-1. **`src/testing/setup.ts`** (43% coverage): Add tests for Canvas-2D mock initialization, DOM environment setup error scenarios, and alternative DOM API polyfills
-2. **`src/testing/accessibility.ts`** (64.38% coverage): Add tests for error handling paths in `getAccessibilityViolations`, `expectAccessible` with malformed DOM, and edge cases in ARIA attribute validation
-3. **`src/testing/helpers.ts`** (72.28% coverage): Add tests for error scenarios in `renderComponent` (invalid elements, mount failures), edge cases in event simulation, and timeout handling in animation helpers
-4. **`scripts/generate-markdownlint-config.ts`** (0% coverage): Add unit tests to validate the markdownlint configuration generation and file output
+1. **`scripts/generate-markdownlint-config.ts`** (0% coverage): Add basic unit tests to validate the markdownlint configuration generation and file output. This single file is completely untested and represents the largest coverage gap.
 
-This focused testing effort (estimated 2-4 hours) will push coverage above the 90% threshold and achieve full CI compliance.
+2. **`src/build/vite-library.ts`** (66.66% branch coverage): Add test for line 45 uncovered branch - likely an edge case in configuration merging or plugin handling.
+
+3. **`src/testing/helpers.ts`** (87.17% branch coverage): Add tests for uncovered branches on lines 63-64, 84-89 - these appear to be error handling paths in component rendering or animation utilities.
+
+4. **`src/testing/setup.ts`** (88.46% branch coverage): Add tests for uncovered branches on lines 48-49, 135 - likely edge cases in DOM environment setup or Canvas mock initialization.
+
+This focused effort (estimated 1-2 hours) will push branch coverage from 89.24% to 90%+ and achieve full CI compliance with `npm run verify` passing completely.
 
 ## NEXT
 
-- **Commit and Document Coverage Achievement**: Once coverage threshold is met, commit the test improvements and update documentation to reflect 100% CI compliance status.
+- **Final Quality Gate Validation**: Run complete `npm run verify` suite multiple times to ensure consistent passing of all quality gates (type-check, lint, format, build, test with coverage threshold met).
 
-- **Performance Optimization Review**: Review build times and test execution performance, potentially optimizing slow-running integration tests or build steps.
+- **Address Minor Linting Warnings**: Fix the 2 remaining ESLint warnings for deprecated MediaQueryList methods (`addListener`/`removeListener`) in test code by updating to modern APIs.
 
-- **Final Quality Gate Validation**: Run complete `npm run verify` suite multiple times to ensure consistent passing of all quality gates (type-check, lint, format, build, test with coverage).
+- **Commit and Document Completion**: Once coverage threshold is met, commit the test improvements and update documentation to reflect 100% CI compliance status and project completion.
 
-- **Prepare for Production Release**: Review package.json metadata, ensure proper version tagging strategy, and validate package publishing configuration.
+- **Prepare for Production Release**: Review package.json metadata, ensure proper version tagging strategy, and validate package publishing configuration for production deployment.
 
 ## LATER
 
-- **Advanced Integration Testing**: Develop integration tests that verify the package works correctly when consumed by real UI component libraries, including testing the generated Vite and Vitest configurations against actual component builds and test scenarios.
+- **Enhanced Integration Testing**: Develop integration tests that verify the package works correctly when consumed by real UI component libraries, including testing the generated Vite and Vitest configurations against actual component builds and test scenarios.
 
-- **Enhanced Accessibility Testing Framework**: Expand accessibility testing utilities with comprehensive examples, additional jest-axe configuration presets for different testing scenarios (keyboard navigation, screen reader compatibility, color contrast validation), and integration with automated accessibility scanning tools.
+- **Performance Optimization**: Review build times and test execution performance, potentially optimizing slow-running integration tests (currently ~4-5 second test runs) or build steps.
 
-- **Performance Testing Utilities**: Add performance testing helpers for UI components including rendering time measurement, interaction performance validation, memory usage tracking, and bundle size impact analysis for component libraries.
+- **Advanced Accessibility Testing Framework**: Expand accessibility testing utilities with comprehensive examples, additional jest-axe configuration presets for different testing scenarios (keyboard navigation, screen reader compatibility, color contrast validation), and integration with automated accessibility scanning tools.
 
 - **Advanced Configuration Merging**: Implement sophisticated configuration merging capabilities for PostCSS plugins and Vite configurations to handle complex edge cases in consumer projects, including conditional plugin loading and environment-specific optimizations.
 

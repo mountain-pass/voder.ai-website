@@ -103,6 +103,7 @@ describe('testing helpers', () => {
     const throwingMount = vi.fn(() => {
       throw new Error('Mount failed');
     });
+
     const component = { mount: throwingMount };
 
     const { container, unmount } = renderComponent(component);
@@ -113,8 +114,8 @@ describe('testing helpers', () => {
       expect.objectContaining({
         component: expect.any(String),
         error: 'Mount failed',
-        stack: expect.any(String)
-      })
+        stack: expect.any(String),
+      }),
     );
 
     // Container should still be created and available
@@ -128,9 +129,11 @@ describe('testing helpers', () => {
 
   test('renderComponent handles unmount function throwing error', async () => {
     const mount = vi.fn();
+
     const throwingUnmount = vi.fn(() => {
       throw new Error('Unmount failed');
     });
+
     const component = { mount, unmount: throwingUnmount };
 
     const { container, unmount } = renderComponent(component);
@@ -144,8 +147,8 @@ describe('testing helpers', () => {
       expect.stringContaining('Error during component.unmount'),
       expect.objectContaining({
         component: expect.any(String),
-        error: 'Unmount failed'
-      })
+        error: 'Unmount failed',
+      }),
     );
 
     // Container should still be removed despite unmount error
@@ -166,6 +169,7 @@ describe('testing helpers', () => {
 
   test('renderComponent handles component without unmount method', async () => {
     const mount = vi.fn();
+
     const component = { mount }; // No unmount method
 
     const { container, unmount } = renderComponent(component);
@@ -179,12 +183,14 @@ describe('testing helpers', () => {
 
   test('renderComponent handles provided container not in document', async () => {
     const mount = vi.fn();
+
     const component = { mount };
+
     const providedContainer = document.createElement('div');
     // Don't add to document initially
 
-    const { container, unmount } = renderComponent(component, { 
-      container: providedContainer 
+    const { container, unmount } = renderComponent(component, {
+      container: providedContainer,
     });
 
     expect(container).toBe(providedContainer);
@@ -196,7 +202,9 @@ describe('testing helpers', () => {
 
   test('update calls updateConfig when available', async () => {
     const mount = vi.fn();
+
     const updateConfig = vi.fn();
+
     const component = { mount, updateConfig };
 
     const { update } = renderComponent(component);
@@ -208,7 +216,9 @@ describe('testing helpers', () => {
 
   test('update calls update method when updateConfig not available', async () => {
     const mount = vi.fn();
+
     const updateMethod = vi.fn();
+
     const component = { mount, update: updateMethod };
 
     const { update } = renderComponent(component);
@@ -220,6 +230,7 @@ describe('testing helpers', () => {
 
   test('update does nothing when neither updateConfig nor update available', async () => {
     const mount = vi.fn();
+
     const component = { mount };
 
     const { update } = renderComponent(component);
@@ -230,10 +241,13 @@ describe('testing helpers', () => {
 
   test('waitForNextFrame uses requestAnimationFrame when available', async () => {
     const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
+
     const mockRequestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
       setTimeout(callback, 16); // Simulate 60fps
+
       return 1; // Return request ID
     });
+
     globalThis.requestAnimationFrame = mockRequestAnimationFrame;
 
     await waitForNextFrame();
@@ -245,9 +259,11 @@ describe('testing helpers', () => {
 
   test('waitForNextFrame falls back to setTimeout when requestAnimationFrame unavailable', async () => {
     const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
+
     delete (globalThis as any).requestAnimationFrame;
 
     const start = Date.now();
+
     await waitForNextFrame();
     const end = Date.now();
 
@@ -259,8 +275,10 @@ describe('testing helpers', () => {
 
   test('renderComponent handles mount logging error gracefully', () => {
     // Mock console.error to throw during the error handling
-    const originalConsoleError = console.error;
+    const originalConsoleErrorInTest = console.error;
+
     let errorCallCount = 0;
+
     console.error = vi.fn().mockImplementation(() => {
       errorCallCount++;
       if (errorCallCount === 1) {
@@ -276,15 +294,16 @@ describe('testing helpers', () => {
     };
 
     const { unmount } = renderComponent(badComponent);
-    
+
     expect(console.error).toHaveBeenCalledTimes(2); // First call fails, second call is fallback
     unmount();
-    
-    console.error = originalConsoleError;
+
+    console.error = originalConsoleErrorInTest;
   });
 
   test('renderComponent handles component without constructor name', () => {
     const componentWithoutName = Object.create(null);
+
     componentWithoutName.mount = vi.fn(() => {
       throw new Error('Mount failed');
     });
@@ -293,45 +312,113 @@ describe('testing helpers', () => {
     const mockConsole = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const { unmount } = renderComponent(componentWithoutName);
-    
+
     expect(mockConsole).toHaveBeenCalledWith(
       '[voder/ui-tools] Error during component.mount',
       expect.objectContaining({
         component: expect.any(String),
         error: 'Mount failed',
-      })
+      }),
     );
-    
+
     unmount();
     mockConsole.mockRestore();
   });
 
   test('renderComponent handles unmount logging error gracefully', async () => {
     const mount = vi.fn();
+
     const throwingUnmount = vi.fn(() => {
       throw new Error('Unmount failed');
     });
-    
+
     const component = {
       mount,
       unmount: throwingUnmount,
       get constructor() {
         throw new Error('Constructor access failed');
-      }
+      },
     };
 
     const { container, unmount } = renderComponent(component);
 
     // Track if fallback error message was called
     const mockConsoleError = vi.fn();
+
     console.error = mockConsoleError;
 
     await unmount();
 
     expect(mockConsoleError).toHaveBeenCalledWith(
-      expect.stringContaining('Error during component.unmount (logging failed)')
+      expect.stringContaining('Error during component.unmount (logging failed)'),
     );
 
     expect(document.body.contains(container)).toBe(false);
+  });
+
+  test('renderComponent handles console.error failure during mount error logging', () => {
+    // Create a component that will fail to mount
+    const component = {
+      mount: vi.fn(() => {
+        throw new Error('Mount failed');
+      }),
+      unmount: vi.fn(),
+    };
+
+    // Mock console.error to throw when trying to log
+    let callCount = 0;
+
+    const originalConsoleErrorMount = console.error;
+
+    console.error = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        throw new Error('Console.error failed');
+      }
+    });
+
+    const { unmount } = renderComponent(component);
+
+    // Should have called console.error twice: first failed, second is fallback
+    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenLastCalledWith(
+      '[voder/ui-tools] Error during component.mount (logging failed)',
+    );
+
+    unmount();
+    console.error = originalConsoleErrorMount;
+  });
+
+  test('renderComponent handles console.error failure during unmount error logging', () => {
+    const component = {
+      mount: vi.fn(),
+      unmount: vi.fn(() => {
+        throw new Error('Unmount failed');
+      }),
+    };
+
+    const { unmount } = renderComponent(component);
+
+    // Mock console.error to throw when trying to log unmount error
+    let callCount = 0;
+
+    const originalConsoleErrorUnmount = console.error;
+
+    console.error = vi.fn(() => {
+      callCount++;
+      if (callCount === 1) {
+        throw new Error('Console.error failed during unmount');
+      }
+    });
+
+    unmount();
+
+    // Should have called console.error twice: first failed, second is fallback
+    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenLastCalledWith(
+      '[voder/ui-tools] Error during component.unmount (logging failed)',
+    );
+
+    console.error = originalConsoleErrorUnmount;
   });
 });

@@ -19,11 +19,12 @@ describe('Accessibility Linting Configuration', () => {
     const config = createAccessibilityLintConfig({
       rules: {
         'a11y/line-height-is-vertical-rhythmed': false,
-        'custom-rule': 'warn'
-      }
+        'custom-rule': 'warn',
+      },
     });
 
     const rules = config.rules as any;
+
     expect(rules['a11y/line-height-is-vertical-rhythmed']).toBe(false);
     expect(rules['custom-rule']).toBe('warn');
     // Other default rules should still be present
@@ -32,10 +33,11 @@ describe('Accessibility Linting Configuration', () => {
 
   test('excludes specified rules', () => {
     const config = createAccessibilityLintConfig({
-      excludeRules: ['a11y/line-height-is-vertical-rhythmed', 'a11y/no-outline-none']
+      excludeRules: ['a11y/line-height-is-vertical-rhythmed', 'a11y/no-outline-none'],
     });
 
     const rules = config.rules as any;
+
     expect(rules['a11y/line-height-is-vertical-rhythmed']).toBe(null);
     expect(rules['a11y/no-outline-none']).toBe(null);
     // Non-excluded rules should still be enabled
@@ -46,6 +48,7 @@ describe('Accessibility Linting Configuration', () => {
     const config = createAccessibilityLintConfig({});
 
     const rules = config.rules ?? {};
+
     expect(config).toBeDefined();
     expect(config.plugins).toContain('stylelint-a11y');
     expect(rules['a11y/line-height-is-vertical-rhythmed']).toBe(true);

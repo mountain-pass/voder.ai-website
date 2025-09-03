@@ -13,7 +13,7 @@ The @voder/ui-tools package is now complete with comprehensive testing, full CI 
 **Final Test Coverage (98 tests passing):**
 
 - Statements: 99.29% ✅ (exceeds 90% threshold)
-- Lines: 99.29% ✅ (exceeds 90% threshold)  
+- Lines: 99.29% ✅ (exceeds 90% threshold)
 - Functions: 96.77% ✅ (exceeds 90% threshold)
 - Branches: **90.21%** ✅ (exceeds 90% threshold)
 

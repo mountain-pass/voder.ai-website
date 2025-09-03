@@ -54,8 +54,8 @@ describe('jsdom test environment setup', () => {
 
     expect(mediaQuery).toBeDefined();
     expect(mediaQuery.matches).toBe(false);
-    expect(typeof mediaQuery.addListener).toBe('function');
-    expect(typeof mediaQuery.removeListener).toBe('function');
+    expect(typeof mediaQuery.addEventListener).toBe('function');
+    expect(typeof mediaQuery.removeEventListener).toBe('function');
   });
 
   test('sets up IntersectionObserver mock', () => {
@@ -399,7 +399,7 @@ describe('jsdom test environment setup', () => {
 
     // Mock TextEncoder.encode to return something that's not a Uint8Array
     globalThis.TextEncoder = class {
-      encode(input: string) {
+      encode(_input: string) {
         return [1, 2, 3] as any; // Return array instead of Uint8Array
       }
     } as any;

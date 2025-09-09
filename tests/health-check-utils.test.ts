@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as utils from '../scripts/health-check-utils';
 
@@ -48,6 +48,7 @@ describe('health-check-utils', () => {
       existsSpy.mockImplementation((p: string) => {
         if (p.endsWith('package-lock.json')) return true;
         if (p.endsWith('node_modules')) return true;
+
         return false;
       });
 
@@ -58,6 +59,7 @@ describe('health-check-utils', () => {
       existsSpy.mockImplementation((p: string) => {
         if (p.endsWith('package-lock.json')) return false;
         if (p.endsWith('node_modules')) return true;
+
         return false;
       });
 

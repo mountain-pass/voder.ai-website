@@ -6,6 +6,7 @@ export type Semver = { major: number; minor: number; patch: number } | null;
 export function parseVersion(v?: string | null): Semver {
   if (!v) return null;
   let str = v;
+
   if (str[0] === 'v') str = str.slice(1);
   // drop pre-release/build metadata by matching the core semver
   const m = str.match(/^(\d+)\.(\d+)\.(\d+)/);
@@ -17,6 +18,7 @@ export function parseVersion(v?: string | null): Semver {
 
 export function compareSemver(a?: string | null, b?: string | null): 1 | 0 | -1 | null {
   const A = parseVersion(a || undefined);
+
   const B = parseVersion(b || undefined);
 
   if (!A || !B) return null;
@@ -36,6 +38,7 @@ export function checkLockfileAndNodeModules(root?: string): boolean {
   const projectRoot = root ? path.resolve(root) : process.cwd();
 
   const lockPath = path.join(projectRoot, 'package-lock.json');
+
   const nodeModulesPath = path.join(projectRoot, 'node_modules');
 
   let ok = true;

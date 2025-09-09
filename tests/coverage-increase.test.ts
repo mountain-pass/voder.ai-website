@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Tests to increase coverage for src/app.ts and src/main.ts
 
@@ -69,6 +69,7 @@ describe('src/main', () => {
     Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true });
 
     const initMock = vi.fn();
+
     vi.doMock('../src/app', () => ({ init: initMock }));
 
     await import('../src/main');

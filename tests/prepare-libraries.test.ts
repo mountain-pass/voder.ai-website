@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
 
 // We will import the prepare-libraries script by requiring it as a module and
 // invoking the internal behavior through a small wrapper. To make this testable
@@ -23,7 +23,7 @@ function simulatePrepareLibraries(nodeModulesDir: string, destDir: string) {
     'README.markdown',
   ];
 
-  const results: { created: Array<{ name: string; type: string }>; skipped: Array<any>; errors: Array<any> } = {
+  const results: { created: Array<{ name: string; type: string }>; skipped: any[]; errors: any[] } = {
     created: [],
     skipped: [],
     errors: [],
@@ -43,6 +43,7 @@ function simulatePrepareLibraries(nodeModulesDir: string, destDir: string) {
 
     for (const rn of allowedReadmes) {
       const candidate = path.join(pkgDir, rn);
+
       if (fs.existsSync(candidate)) {
         readmePath = candidate;
         break;
@@ -55,7 +56,9 @@ function simulatePrepareLibraries(nodeModulesDir: string, destDir: string) {
     }
 
     const safeName = name.replace(/\//g, '--');
+
     const ext = path.extname(readmePath) || '.md';
+
     const destFile = path.join(destDir, `${safeName}${ext}`);
 
     try {
@@ -84,8 +87,11 @@ import os from 'os';
 
 describe('prepare libraries simulation', () => {
   const tmp = os.tmpdir();
+
   let testDir: string;
+
   let nodeModules: string;
+
   let destDir: string;
 
   beforeEach(() => {
@@ -102,6 +108,7 @@ describe('prepare libraries simulation', () => {
     function rimraf(p: string) {
       if (!fs.existsSync(p)) return;
       const stats = fs.lstatSync(p);
+
       if (stats.isDirectory()) {
         for (const file of fs.readdirSync(p)) rimraf(path.join(p, file));
         fs.rmdirSync(p);
@@ -115,8 +122,10 @@ describe('prepare libraries simulation', () => {
 
   it('creates symlink when possible', () => {
     const pkgA = path.join(nodeModules, 'pkg-a');
+
     fs.mkdirSync(pkgA);
     const readme = path.join(pkgA, 'README.md');
+
     fs.writeFileSync(readme, '# Package A');
 
     const res = simulatePrepareLibraries(nodeModules, destDir);
@@ -127,6 +136,7 @@ describe('prepare libraries simulation', () => {
 
   it('skips packages without README', () => {
     const pkgB = path.join(nodeModules, 'pkg-b');
+
     fs.mkdirSync(pkgB);
 
     const res = simulatePrepareLibraries(nodeModules, destDir);
@@ -137,12 +147,15 @@ describe('prepare libraries simulation', () => {
 
   it('falls back to copy when symlink fails', () => {
     const pkgC = path.join(nodeModules, 'pkg-c');
+
     fs.mkdirSync(pkgC);
     const readme = path.join(pkgC, 'README.md');
+
     fs.writeFileSync(readme, '# Package C');
 
     // mock fs.symlinkSync to throw
     const realSymlink = fs.symlinkSync;
+
     vi.spyOn(fs, 'symlinkSync').mockImplementation(() => {
       throw new Error('symlink not allowed');
     });

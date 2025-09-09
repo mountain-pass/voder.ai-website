@@ -1,62 +1,56 @@
 ## NOW
-
-Create and commit a concise developer setup & verification guide so contributors can run the exact install & verify steps immediately:
-- Action (run once, non-interactive):  
-  git add docs/DEVELOPER-SETUP.md && git commit -m "docs: add Developer Setup & Verification guide (install, verify, prepare script usage, CI notes)"
+git commit -am "chore(verify): commit focused fixes for CI verification"
 
 ## NEXT
-
-After committing the developer guide, run the repository verification sequence and iterate until local verification passes:
-
-1. Install dependencies (non-interactive):
-   - npm ci --no-audit --no-fund
-
-2. Run verification steps in order (stop and fix on first failing step):
-   - npm run type-check
-   - npm run lint:fix
-   - npm run lint:check
-   - npm run format
-   - npm run format:check
-   - npm run test:coverage
-
-3. If npm run test:coverage fails because src-only coverage is below thresholds:
-   - Add focused, co-located unit tests (use os.tmpdir()/fs.mkdtempSync for filesystem fixtures and vi.mock for mocks) that exercise uncovered code in src/, commit them, then re-run npm run test:coverage.
-   - If delivering verification is blocked and you cannot add tests quickly, as a conservative temporary fallback only, relax the src coverage thresholds (e.g., 90 → 80) in config/testing/vitest-jsdom.ts, commit with an explanatory message:
-     - git add config/testing/vitest-jsdom.ts && git commit -m "ci: temporarily relax src coverage thresholds to 80% (WIP, tracked)"
-     - Re-run npm run test:coverage.
-
-4. When local verification sequence completes successfully, push changes:
+1. Push the committed change to trigger CI:
    - git push origin main
 
-5. Inspect CI runs triggered by the push and fix any failures surfaced there (type errors, lint/format issues, coverage shortfalls, source-map noise). Iterate (add tests, adjust small config exclusions, or fix code) until CI verify job is green.
+2. Monitor CI and fetch logs/artifacts
+   - Watch the GitHub Actions verify job for the pushed commit.
+   - Download failure artifacts and logs produced by the verify job (eslint, prettier, tsc, vite build, vitest coverage, audit.json).
+
+3. Identify the first failing gate (console-first)
+   - From CI logs, locate the earliest failing gate in this order: format check → lint check → type-check → build → tests/coverage → audit.
+
+4. Reproduce the failing gate locally and fix only that gate
+   - Format: npm run format:check → if failing npm run format && npm run format:check
+   - ESLint: npm run lint:check → if failing npm run lint:fix && npm run lint:check
+   - CSS/HTML/MD linters: npm run lint:css (or lint:css:fix), npm run lint:html, npm run lint:md (or lint:md:fix)
+   - TypeScript: npm run type-check → fix diagnostics and re-run
+   - Build: npm run build → fix tsc/vite errors and re-run
+   - Tests/Coverage: npm run test:ci → inspect coverage summary/coverage/coverage-final.json and add focused co-located tests to raise coverage; re-run until gate satisfied
+
+5. Commit and push minimal, focused fixes for the gate
+   - git add -A
+   - git commit -m "chore(verify): fix <format|lint|type|build|test> — <short reason>"
+   - git push origin main
+
+6. Repeat Steps 2–5
+   - Iterate until the CI verify job completes successfully. Always fix the earliest failing gate first using console-first diagnostics.
+
+7. When CI verify passes: enable/confirm pre-commit check-only hook
+   - Ensure .husky/pre-commit contains only check-only commands (format:check, lint:check), is executable (chmod +x .husky/pre-commit), then:
+     - git add .husky/pre-commit
+     - git commit -m "chore(hooks): enable check-only pre-commit quality checks"
+     - git push origin main
 
 ## LATER
+1. CI reliability & diagnostics
+   - Ensure CI uploads failure artifacts automatically (coverage JSON/html, ESLint report, audit.json).
+   - Add a scheduled nightly job to run `npm ci --no-audit --no-fund` + `npm run verify`.
 
-Once the verification loop is stable and passing in CI, implement the longer-term improvements:
+2. Coverage & tests
+   - Add targeted co-located unit tests for under-covered files identified in coverage reports.
+   - If coverage thresholds need short-term relaxation, document the change in an ADR and restore incremental increases plan.
 
-1. Harden CI verification ordering & diagnostics:
-   - Add/extend .github/workflows/verify.yml to run (in order): audit fix → lint fix → lint check → format check → build → test:ci, and upload diagnostics/artifacts (coverage HTML/JSON, audit artifacts).
+3. Dependency & install hygiene
+   - Confirm package-lock.json remains committed and CI uses `npm ci --no-audit --no-fund`.
+   - Enable Dependabot/Renovate and wire PR checks to run the verify pipeline.
 
-2. Gradually raise coverage and add tests:
-   - Create docs/COVERAGE.md with a coverage roadmap and owner.
-   - Incrementally add tests (small PRs) to move thresholds back to final targets (e.g., 90%).
+4. Developer ergonomics
+   - Add lint-staged (auto-format staged files) while keeping pre-commit hooks check-only.
+   - Document canonical non-interactive setup in README/DEVELOPER-SETUP.md.
 
-3. Expand script testing:
-   - Add deeper unit tests for prepare-libraries behavior (symlink fallback, stale cleanup) using temp dirs and cleanup.
-   - Add tests for health-check runner behavior by mocking child_process spawn to assert runCommand handling and remediation messages.
-
-4. Developer ergonomics & pre-commit checks:
-   - Introduce lightweight pre-commit hooks (husky + lint-staged) that run a fast lint smoke and minimal fast test; document full verify workflow in CONTRIBUTING.md.
-
-5. Dependency & security automation:
-   - Enable Dependabot/Renovate for automated dependency PRs.
-   - Add scheduled security-audit workflow that runs npm audit and .github/scripts/parse-audit.js and uploads audit artifacts.
-
-6. Revert temporary relaxations & document:
-   - When tests cover src sufficiently, revert any temporary threshold relaxations and record the decision in an ADR (docs/decisions/).
-
-Notes / Constraints observed
-- NOW action directly implements the NEXT PRIORITY from the assessment (create clear developer install & verify docs).
-- This plan avoids repeating the prepare-libraries and vitest refactors that were already performed per the history; it focuses on verification, tests, and CI stabilization.
-- All commands are non-interactive and scoped to the repo; tests must use os.tmpdir()/fs.mkdtempSync or vi.mock and clean up after themselves.
-- No changes to prompts/, prompt-assets/, or .voder/ are proposed.
+5. Documentation & ADRs
+   - Record any config changes required to stabilize CI (tsconfig/vitest/eslint) as short ADRs in docs/decisions/.
+   - Add CI troubleshooting notes showing where artifacts are stored and how to reproduce failing gates locally.

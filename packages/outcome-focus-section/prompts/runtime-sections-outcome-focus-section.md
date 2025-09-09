@@ -1,1 +1,0 @@
-../../../prompts/runtime/sections/outcome-focus-section/outcome-focus-section.md

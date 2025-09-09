@@ -1,1 +1,0 @@
-../../../dev-config/docs/decisions/0004-use-typescript-for-prettier-config.md

@@ -1,5 +1,0 @@
-{
-  "extends": "@voder/dev-config/typescript/tsconfig.eslint.json",
-  "include": ["src", "tests", "*.config.ts", "scripts/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
-}

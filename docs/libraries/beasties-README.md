@@ -1,1 +1,0 @@
-../../node_modules/beasties/README.md

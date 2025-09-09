@@ -1,1 +1,0 @@
-../../../apps/voder-website/docs/libraries/needs/outcome-focus-section-needs.md

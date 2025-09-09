@@ -1,1 +1,0 @@
-../../../prompt-assets/README-template.md

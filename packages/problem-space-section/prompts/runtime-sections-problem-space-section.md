@@ -1,1 +1,0 @@
-../../../prompts/runtime/sections/problem-space-section/problem-space-section.md

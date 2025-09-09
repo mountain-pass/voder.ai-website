@@ -1,7 +1,0 @@
-{
-  "extends": "@voder/dev-config/typescript/library.json",
-  "compilerOptions": {
-    "outDir": "dist"
-  },
-  "include": ["src/**/*"]
-}

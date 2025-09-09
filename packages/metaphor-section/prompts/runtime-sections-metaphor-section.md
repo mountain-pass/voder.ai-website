@@ -1,1 +1,0 @@
-../../../prompts/runtime/sections/metaphor-section/metaphor-section.md

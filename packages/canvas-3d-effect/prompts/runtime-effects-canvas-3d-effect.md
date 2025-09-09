@@ -1,1 +1,0 @@
-../../../prompts/runtime/effects/canvas-3d-effect/canvas-3d-effect.md

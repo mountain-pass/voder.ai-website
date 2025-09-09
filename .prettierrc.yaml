@@ -1,6 +1,0 @@
-# Root Prettier Configuration for Voder Monorepo  
-# Extends the shared configuration from packages/tsconfig/prettier.config.yaml
-
-extends: './packages/tsconfig/prettier.config.yaml'
-
-# Root-specific overrides can be added here if needed

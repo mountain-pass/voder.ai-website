@@ -1,1 +1,0 @@
-../../../prompts/runtime/effects/typing-animation-effect/typing-animation-effect.md

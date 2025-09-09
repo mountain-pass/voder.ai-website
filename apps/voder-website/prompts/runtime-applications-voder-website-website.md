@@ -1,1 +1,0 @@
-../../../prompts/runtime/applications/voder-website/website.md

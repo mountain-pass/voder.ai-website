@@ -1,1 +1,0 @@
-/Users/tomhoward/Projects/voder.ai-website/prompts/guidelines.md

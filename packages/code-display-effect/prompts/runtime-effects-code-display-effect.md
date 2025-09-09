@@ -1,1 +1,0 @@
-../../../prompts/runtime/effects/code-display-effect/code-display-effect.md

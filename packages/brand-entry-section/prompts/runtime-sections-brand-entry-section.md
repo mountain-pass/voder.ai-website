@@ -1,1 +1,0 @@
-../../../prompts/runtime/sections/brand-entry-section/brand-entry-section.md

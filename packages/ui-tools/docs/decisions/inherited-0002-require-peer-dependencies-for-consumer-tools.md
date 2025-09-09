@@ -1,1 +1,0 @@
-../../../dev-config/docs/decisions/0002-require-peer-dependencies-for-consumer-tools.md

@@ -18,6 +18,7 @@ You’ll perform a single edit to `src/style.css`: append these new rules at the
 **Type:** modify_file
 
 **Parameters:**
+
 ```json
 {
   "outputPath": "src/style.css",

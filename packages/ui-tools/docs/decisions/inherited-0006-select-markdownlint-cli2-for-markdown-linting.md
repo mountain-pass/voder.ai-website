@@ -1,1 +1,0 @@
-../../../dev-config/docs/decisions/0006-select-markdownlint-cli2-for-markdown-linting.md

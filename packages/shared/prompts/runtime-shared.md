@@ -1,1 +1,0 @@
-../../../prompts/runtime/shared/shared.md

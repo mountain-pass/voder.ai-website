@@ -1,1 +1,0 @@
-../../../prompts/runtime/sections/the-why-section/the-why-section.md

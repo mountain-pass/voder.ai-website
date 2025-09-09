@@ -1,1 +1,0 @@
-../../../prompts/runtime/effects/effect-hints.md

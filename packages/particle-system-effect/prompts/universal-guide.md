@@ -1,1 +1,0 @@
-../../../prompts/universal-guide.md

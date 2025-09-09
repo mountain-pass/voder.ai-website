@@ -28,7 +28,9 @@ jobs:
             ${{ runner.os }}-playwright-browsers-
 
       - name: Install dependencies
-        run: npm ci      - name: Run E2E tests
+        run: npm ci
+
+      - name: Run E2E tests
         run: npm run test:ci
 
       - name: Assert Lighthouse budgets

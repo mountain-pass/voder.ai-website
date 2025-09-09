@@ -1,1 +1,0 @@
-../../../../../node_modules/@voder/dev-config/README.md

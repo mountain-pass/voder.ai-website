@@ -1,1 +1,0 @@
-../../../prompts/runtime/sections/sections.md

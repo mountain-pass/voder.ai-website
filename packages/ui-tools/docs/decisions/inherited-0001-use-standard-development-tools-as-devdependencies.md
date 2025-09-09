@@ -1,1 +1,0 @@
-../../../dev-config/docs/decisions/0001-use-standard-development-tools-as-devdependencies.md

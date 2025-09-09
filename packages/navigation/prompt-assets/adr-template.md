@@ -1,1 +1,0 @@
-../../../prompt-assets/adr-template.md

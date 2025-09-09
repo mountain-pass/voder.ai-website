@@ -1,1 +1,0 @@
-../../../prompts/runtime/navigation/navigation.md

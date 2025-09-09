@@ -1,1 +1,0 @@
-../../../prompts/runtime/security-and-privacy.md

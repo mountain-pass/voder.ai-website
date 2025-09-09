@@ -1,1 +1,20 @@
 
+prompts-old
+**/backlog
+**/user-story-map.md
+prompts/*-user-story-map.md
+prompts/startup-engine-analysis.md
+
+# Ignore voder system prompts and instructions
+.github/prompts/
+.github/instructions/
+
+# Ignore IDE configuration
+.vscode/
+
+# Ignore deprecated and superseded architecture decision records
+docs/decisions/*.deprecated.md
+docs/decisions/*.superseded.md
+
+# Ignore proposed decisions that are not yet accepted (uncomment if needed)
+# docs/decisions/*.proposed.md

@@ -1,1 +1,0 @@
-../../../prompts/development/dev-config/dev-config.md

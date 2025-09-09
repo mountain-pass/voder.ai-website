@@ -1,63 +1,17 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <style>
-      :root {
-        --color-voder-black: #0a0a0a;
-        --color-paper-white: #ffffff;
-        --color-deep-navy: #0f1a2e;
-      }
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        background: var(--color-voder-black);
-        color: var(--color-paper-white);
-      }
-      section[role='banner'] {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: var(--color-voder-black);
-      }
-      section[role='banner'] h1 {
-        color: var(--color-paper-white);
-        font-family: Satoshi, sans-serif;
-        font-size: 2.5rem;
-        font-weight: 900;
-      }
-      #main-content {
-        background: var(--color-deep-navy);
-      }
-      #main-content h1 {
-        color: var(--color-paper-white);
-        font-family: Inter, sans-serif;
-      }
-    </style>
-    
-    
-    <link
-      rel="stylesheet"
-      href="/src/noncritical.css"
-      media="print"
-      onload="this.media='all'"
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/voder-favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voder - The Compiler for Prompts</title>
+    <meta
+      name="description"
+      content="Voder transforms prompts into sustainable, maintainable code. Experience the future of AI-assisted development."
     />
-    <meta name="description" content="Voder – The Compiler for Prompts. High-concept cinematic pre-launch experience.">
-    <meta property="og:title" content="Voder – The Compiler for Prompts">
-    <meta property="og:description" content="What if your prompts were the source?">
-    <meta property="og:image" content="/assets/og-image.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" href="/voder-favicon.png">
-    <noscript><link rel="stylesheet" href="/src/noncritical.css" /></noscript>
-    
   </head>
   <body>
-    <script>
-  window.THREE = {};
-  window.gsap = {};
-</script>
-<script type="module" defer src="/src/main.ts"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

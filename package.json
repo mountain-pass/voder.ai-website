@@ -26,7 +26,8 @@
     "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md specs/**/*.md",
     "verify": "npm run type-check && npm run lint:fix && npm run lint:css:fix && npm run lint:html && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
     "docs:setup": "node setup-package-docs.js --all",
-    "docs:report": "npm run docs:setup && node setup-package-docs.js --report"
+    "docs:report": "npm run docs:setup && node setup-package-docs.js --report",
+    "prepare": "node scripts/prepare-libraries.js"
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.0",

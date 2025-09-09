@@ -4,6 +4,7 @@ export function init(): void {
 
   if (!app) {
     console.error('App element not found');
+
     return;
   }
 

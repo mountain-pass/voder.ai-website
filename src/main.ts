@@ -1,5 +1,6 @@
 // Main entry point for Voder website
 import './style.css';
+
 import { init } from './app';
 
 console.log('Voder website starting...');

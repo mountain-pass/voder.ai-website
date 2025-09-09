@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
 import { init } from '../src/app';
 
 describe('app initialization', () => {
@@ -15,6 +16,7 @@ describe('app initialization', () => {
     init();
 
     const app = document.querySelector('#app');
+
     expect(app).toBeTruthy();
     expect(app?.textContent).toContain('Voder');
   });

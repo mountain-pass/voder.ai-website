@@ -6,9 +6,15 @@ const root = process.cwd();
 
 const pkgPath = path.join(root, 'package.json');
 
-function log(...args) { console.log('[prepare-libraries]', ...args); }
-function warn(...args) { console.warn('[prepare-libraries][WARN]', ...args); }
-function fail(...args) { console.error('[prepare-libraries][ERROR]', ...args); }
+function log(...args) {
+  console.log('[prepare-libraries]', ...args);
+}
+function warn(...args) {
+  console.warn('[prepare-libraries][WARN]', ...args);
+}
+function fail(...args) {
+  console.error('[prepare-libraries][ERROR]', ...args);
+}
 
 if (!fs.existsSync(pkgPath)) {
   fail('package.json not found. Run this script from the repository root.');
@@ -35,7 +41,15 @@ if (!fs.existsSync(destDir)) {
   log('Created', path.relative(root, destDir));
 }
 
-const allowedReadmes = ['README.md', 'README.MD', 'readme.md', 'Readme.md', 'README', 'readme', 'README.markdown'];
+const allowedReadmes = [
+  'README.md',
+  'README.MD',
+  'readme.md',
+  'Readme.md',
+  'README',
+  'readme',
+  'README.markdown',
+];
 
 const created = [];
 

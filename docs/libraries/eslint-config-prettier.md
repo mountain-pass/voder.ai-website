@@ -1,0 +1,1 @@
+/Users/tomhoward/Projects/voder.ai-website/node_modules/eslint-config-prettier/README.md

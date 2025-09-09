@@ -1,9 +1,9 @@
 // Main entry point for Voder website
 import './style.css';
 
-import { init } from './app';
+import { init } from './app.js';
 
-console.log('Voder website starting...');
+console.warn('Voder website starting...');
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {

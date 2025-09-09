@@ -8,7 +8,9 @@ function exitWithError(msg, code = 2) {
 }
 
 const filePath = process.argv[2] || './audit.json';
+
 let raw;
+
 try {
   raw = fs.readFileSync(filePath, 'utf8');
 } catch (err) {
@@ -16,6 +18,7 @@ try {
 }
 
 let audit;
+
 try {
   audit = JSON.parse(raw);
 } catch (err) {
@@ -24,14 +27,18 @@ try {
 
 // Initialize counts
 const severities = ['critical', 'high', 'moderate', 'low', 'info'];
+
 const counts = { critical: 0, high: 0, moderate: 0, low: 0, info: 0 };
+
 const highItems = [];
 
 // Helper to normalize severity string
 function normSeverity(s) {
   if (!s) return 'info';
   const sLower = String(s).toLowerCase();
+
   if (sLower === 'high' || sLower === 'critical' || sLower === 'moderate' || sLower === 'low' || sLower === 'info') return sLower;
+
   return 'info';
 }
 
@@ -39,9 +46,11 @@ function normSeverity(s) {
 if (audit.vulnerabilities && typeof audit.vulnerabilities === 'object' && Object.keys(audit.vulnerabilities).length) {
   for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
     let severity = info.severity || null;
+
     if (!severity && info.via && Array.isArray(info.via) && info.via.length) {
       // via can be array of objects or strings
       const first = info.via[0];
+
       if (typeof first === 'string') {
         severity = 'unknown';
       } else if (first && first.severity) {
@@ -60,6 +69,7 @@ if (audit.vulnerabilities && typeof audit.vulnerabilities === 'object' && Object
 if (audit.advisories && typeof audit.advisories === 'object' && Object.keys(audit.advisories).length) {
   for (const adv of Object.values(audit.advisories)) {
     const sev = normSeverity(adv.severity || adv.effect || adv.title);
+
     counts[sev] = (counts[sev] || 0) + 1;
     if (sev === 'high' || sev === 'critical') {
       highItems.push({ module: adv.module_name || adv.module || adv.name, severity: sev, id: adv.id, title: adv.title || null, vulnerable_versions: adv.vulnerable_versions || null, url: adv.url || null });
@@ -72,6 +82,7 @@ if (audit.metadata && audit.metadata.vulnerabilities && typeof audit.metadata.vu
   // merge counts without overwriting detected counts
   for (const [k, v] of Object.entries(audit.metadata.vulnerabilities)) {
     const key = normSeverity(k);
+
     // prefer counts computed above; only set if we don't have data
     if (!counts[key]) counts[key] = Number(v) || 0;
   }

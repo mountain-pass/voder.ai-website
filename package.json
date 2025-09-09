@@ -24,10 +24,13 @@
     "lint:html": "htmlhint \"**/*.html\" --ignore \"**/coverage/**,**/dist/**,**/build/**,**/node_modules/**,**/packages/**,**/apps/**\"",
     "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/**/*.md specs/**/*.md",
     "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/**/*.md specs/**/*.md",
-    "verify": "npm run type-check && npm run lint:fix && npm run lint:css:fix && npm run lint:html && npm run lint:md:fix && npm run format && npm run build && npm run test:ci",
+    "verify": "npm run audit:fix && npm run lint:fix && npm run lint:check && npm run format:check && npm run build && npm run test:ci",
     "docs:setup": "node setup-package-docs.js --all",
     "docs:report": "npm run docs:setup && node setup-package-docs.js --report",
-    "prepare": "node scripts/prepare-libraries.js"
+    "prepare": "node scripts/prepare-libraries.js",
+    "health-check": "node scripts/health-check.js",
+    "audit:fix": "npm audit fix --package-lock-only",
+    "security:local": "npm audit --json > audit.json && node .github/scripts/parse-audit.js audit.json"
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.0",

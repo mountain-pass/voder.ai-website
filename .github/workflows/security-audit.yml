@@ -1,0 +1,36 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  npm-audit:
+    name: Run npm audit and parse results
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit and save JSON
+        run: npm audit --json > audit.json
+
+      - name: Upload audit.json artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-json
+          path: audit.json
+
+      - name: Run audit parser
+        run: node .github/scripts/parse-audit.js audit.json

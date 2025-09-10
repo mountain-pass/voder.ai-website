@@ -70,6 +70,11 @@ jobs:
         run: |
           node .github/scripts/generate-e2e-stability-summary.js
 
+      - name: Verify E2E stability artifacts
+        if: always()
+        run: |
+          bash scripts/verify-e2e.sh
+
       - name: Upload stability report
         if: always()
         uses: actions/upload-artifact@v4

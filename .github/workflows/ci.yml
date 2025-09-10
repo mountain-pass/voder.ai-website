@@ -85,24 +85,12 @@ jobs:
         if: always()
         run: npx playwright install --with-deps
 
-      - name: Start preview server
-        if: always()
-        run: |
-          nohup npm run preview --silent &
-          # Wait for server to start (tries for up to 30s)
-          for i in {1..30}; do
-            if curl -fsS http://127.0.0.1:5173/ > /dev/null; then
-              echo "preview started"
-              break
-            fi
-            sleep 1
-          done
-
-      - name: Run E2E tests (Playwright)
+      - name: Run E2E tests (preview + Playwright)
         if: always()
         run: |
           set -euo pipefail
-          npm run e2e:ci || true
+          chmod +x scripts/run-e2e.sh
+          ./scripts/run-e2e.sh || true
 
       - name: Upload Playwright artifacts
         if: always()

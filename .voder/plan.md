@@ -1,35 +1,105 @@
 ## NOW
-Run this command to verify the lockfile is present and tracked: git ls-files -- package-lock.json
+Update the GitHub security-audit workflow to run on a schedule: add a daily cron trigger to .github/workflows/security-audit.yml so the existing audit job runs non-interactively every day (e.g., 02:00 UTC) and uploads audit artifacts.
 
 ## NEXT
-1. If the lockfile is missing or untracked, generate and commit it (non-interactive):
-   - npm ci --no-audit --no-fund 2>&1 | tee npm-ci.log
-   - git add package-lock.json
-   - git commit -m "chore(deps): add package-lock.json for reproducible installs"
-   - git push origin HEAD
-2. Reproduce the CI audit non-interactively and capture artifacts for parity checking:
-   - npm ci --no-audit --no-fund 2>&1 | tee npm-ci.log
-   - npm audit --json > audit.json 2>&1
-   - node .github/scripts/parse-audit.js audit.json 2>&1 | tee audit-parse.log
-   - Compare audit-parse.log with committed and CI artifacts (audit-summary.md, ci-audit-summary.md, ci-audit.json). If identical and showing no high/critical advisories, stop.
-3. If the parser shows high/critical advisories, attempt lockfile-only remediation:
-   - npm audit fix --package-lock-only 2>&1 | tee audit-fix.log
-   - Re-run the parser (node .github/scripts/parse-audit.js audit.json | tee audit-parse.log); if advisories are resolved and changes are limited to package-lock.json, commit and push only package-lock.json:
-     - git add package-lock.json
-     - git commit -m "chore(security): apply npm audit fix --package-lock-only"
-     - git push origin HEAD
-   - Wait for CI to re-run and confirm CI artifacts are updated and clear.
-4. If advisories persist after lockfile-only fixes, prepare minimal focused dependency upgrade PRs:
-   - For each required upgrade identified by audit-parse:
-     - Bump the single package version in package.json to the minimal secure version.
-     - Run npm install --no-audit --no-fund to update package-lock.json.
-     - Produce verify logs (npm run verify 2>&1 | tee verify.log) or collect tsc.log, eslint.log, format.log, build.log, test-ci.log and exits.env.
-     - Commit only package.json and package-lock.json (and minimal code fixes required), push to a short-lived branch, and open a PR with verify.log, audit.json, and audit-parse.log attached.
-   - Iterate until CI verify and the security audit report no high/critical advisories.
+After scheduling the audit job, implement the rest of the automated security pipeline and enforcement in CI (non-interactive steps):
+
+1. Add a secret-scanning job (Gitleaks) as a new workflow:
+   - File: .github/workflows/secret-scan.yml
+   - Behavior (non-interactive):
+     - Runs on push to main and on a nightly schedule (e.g., 03:00 UTC) and on pull_request.
+     - Installs gitleaks or uses the official action (zricethezav/gitleaks-action).
+     - Runs gitleaks detect --source=. --redact --format=json --report-path=repo-secrets-scan.json.
+     - Uploads repo-secrets-scan.json and repo-secrets-scan.redacted.txt as workflow artifacts.
+     - Fails the job only if secrets are detected and a remediation policy file (SECURITY.md) is not present — otherwise leaves a blocking artifact and a warning (start with non-blocking, then tighten to blocking after triage rules are in place).
+
+   Example non-interactive snippet (to be placed in workflow file):
+   - uses: zricethezav/gitleaks-action@v1
+     with:
+       args: detect --source=. --report-format=json --report-path=repo-secrets-scan.json --redact
+
+2. Add CodeQL (or Semgrep) scanning to CI:
+   - File: .github/workflows/code-scanning.yml (CodeQL) or .github/workflows/semgrep-scan.yml (Semgrep).
+   - Behavior:
+     - Run on push to main, pull_request, and nightly schedule (e.g., 04:00 UTC).
+     - Use GitHub's codeql-action for CodeQL analysis (or return Semgrep action if preferred).
+     - Uploads CodeQL/semgrep results as SARIF and fails PRs when high-confidence findings are introduced.
+   - Non-interactive example steps:
+     - uses: github/codeql-action/init@v2
+       with: languages: javascript, typescript
+     - uses: github/codeql-action/analyze@v2
+
+3. Generate and publish an SBOM during scheduled security-audit workflow:
+   - Add an SBOM generation step to .github/workflows/security-audit.yml (after npm ci and audit):
+     - Use a Node-friendly SBOM tool non-interactively, e.g. npx @cyclonedx/bom -o sbom.json or npx @ossf/scorecard? Prefer cyclonedx:
+       - npm ci --no-audit --no-fund
+       - npx @cyclonedx/bom@latest -o sbom.json
+     - Upload sbom.json as an artifact.
+   - Commit (if desired) only to an artifacts branch; do not commit SBOM to main.
+
+4. Add Dependabot configuration to automate dependency updates:
+   - File: .github/dependabot.yml
+   - Non-interactive content: enable weekly updates for npm and schedule security-only updates for immediate alerts; group minor/patch updates sensibly and open PRs.
+   - Example rules:
+     - package-ecosystem: "npm"
+       directory: "/"
+       schedule: "weekly"
+       open-pull-requests-limit: 10
+       allow:
+         - dependency-type: "direct"
+       security-updates-only: false
+     - Add an additional config for security-only updates if desired.
+
+5. Wire the new security checks into branch protection and PR requirements (manual step or scripted via GH CLI):
+   - Require the following status checks before merge to main: verify (existing), security-audit (the scheduled/PR-run audit job), code-scanning (CodeQL/Semgrep), and secret-scan (optional once stable).
+   - If you prefer scripted, use non-interactive gh CLI commands to set branch protection after workflows are merged:
+     - gh api repos/:owner/:repo/branches/main/protection -f required_status_checks='{"strict":true,"contexts":["verify","security-audit","code-scanning"]}' (use exact contexts returned by actions)
+   - If not allowed, add a short PR checklist documenting the required passing checks and have maintainers enable protections via the GitHub UI.
+
+6. Update SECURITY.md with the new automated flows:
+   - Document how scheduled audit, secret-scan, SBOM generation, and code scanning run, where artifacts are stored, and the remediations policy (who triages and the time-to-fix targets for critical/high vulnerabilities).
+   - Add the non-interactive reproduction commands to docs/CI-AUDIT.md (already exists) and cross-reference the schedule and artifact locations.
+
+7. Make minimal commits and open PR(s):
+   - Add the new workflow files and dependabot config to a branch (e.g., ci/security-automation).
+   - Non-interactive commands to create and push a branch and open a PR:
+     - git checkout -b ci/security-automation
+     - git add .github/workflows/security-audit.yml .github/workflows/secret-scan.yml .github/workflows/code-scanning.yml .github/dependabot.yml
+     - git commit -m "ci(security): add scheduled audit, secret scanning, and code scanning workflows; add dependabot config"
+     - git push --set-upstream origin ci/security-automation
+     - gh pr create --title "chore(ci): add scheduled audits, secret scanning, CodeQL" --body "Adds scheduled audit and code-scanning workflows, secret scanning (gitleaks), SBOM generation and Dependabot config. Artifacts: audit.json, audit-summary.md, repo-secrets-scan.json, sbom.json."
+
+   (If gh CLI is not available, open the PR via GitHub UI after pushing the branch.)
+
+8. Validate non-interactively:
+   - Once PR merges, confirm scheduled runs produce artifacts in Actions UI and that audit parser still reports zero high/critical vulnerabilities. Use the existing parser step in security-audit.yml to create audit-summary.md and upload artifacts.
 
 ## LATER
-1. Add Dependabot or Renovate (.github/dependabot.yml or renovate.json) configured for weekly/npm security updates and sensible grouping.
-2. Add a scheduled audit job (cron) to .github/workflows/security-audit.yml to run periodic audits and upload artifacts (audit.json, audit-summary.md, SBOM).
-3. Require security-audit and verify as protected-branch status checks and add a dependency-upgrade PR template that mandates attached verify logs and audit outputs.
-4. Integrate SBOM generation, scheduled secret scanning (gitleaks), and SAST (CodeQL or Semgrep) into CI; document triage responsibilities in SECURITY.md.
-5. Keep docs/CI-AUDIT.md and docs/DEPENDENCY-POLICY.md updated with exact non-interactive reproduction commands and the accepted remediation flow; schedule monthly maintenance to review Dependabot PRs and audit results.
+After scheduled scans and automated triage are in place and stable, harden enforcement, process and monitoring:
+
+1. Tighten enforcement:
+   - Make secret-scan a blocking check for PRs (once false positives are tuned and owners are trained).
+   - Fail PRs on new high/critical CodeQL/Semgrep findings and on any new high/critical npm audit results.
+   - Require SBOM artifact upload and attach it to release PRs.
+
+2. Integrate continuous monitoring tools and alerts:
+   - Add Snyk or GitHub Advanced Security subscription for vulnerability monitoring and alerting across dependency graph; wire alerts to a Slack/MS Teams channel and to an on-call rotation.
+   - Add automatic triage playbook and incident runbook in SECURITY.md (who to notify, rotate keys, timelines).
+
+3. Add remediation automation and PR templates:
+   - Configure Dependabot/ Renovate grouping rules, add an automated upgrade PR template that includes verify logs and audit outputs.
+   - Add a dependency-upgrade template that requires exits.env and verify logs uploaded to the PR.
+
+4. Periodic policy & audit reviews:
+   - Schedule monthly audits and a quarterly security review of the dependency policy, SBOM, and code-scan trends; assign an owner and periodic review cadence.
+   - Add a maintenance task to the repo (docs/DEPENDENCY-POLICY.md) describing the risk-acceptance policy, remediation SLAs (e.g., critical within 24h, high within 7 days).
+
+5. Expand SBOM and provenance:
+   - Improve SBOM generation (include devDeps and transitive dependencies), publish SBOM to a secure artifact store, and integrate with incident response tooling.
+   - Start generating license reports and automated license policy checks.
+
+6. Continuous improvement:
+   - Iterate on scanning rules and reduce false positives (tune gitleaks patterns, CodeQL query packs, and Semgrep rules).
+   - Train maintainers on triage, assign security champions, and run tabletop exercises for dependency incidents.
+
+— End of plan —

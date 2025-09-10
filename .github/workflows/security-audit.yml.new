@@ -6,10 +6,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch: {}
+  schedule:
+    - cron: '0 2 * * *' # daily at 02:00 UTC
 
 jobs:
   npm-audit:
-    name: Run npm audit and parse results
+    name: Run npm audit, parse results, and generate SBOM
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,11 +34,18 @@ jobs:
           node .github/scripts/parse-audit.js audit.json 2>&1 | tee audit-summary.md
           exit ${PIPESTATUS[0]}
 
-      - name: Upload audit artifacts
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          set -euo pipefail
+          # Attempt to generate an SBOM using CycloneDX CLI. Don't fail the job if SBOM tool isn't available.
+          npx @cyclonedx/cyclonedx-bom@latest -o sbom.json || true
+
+      - name: Upload audit and SBOM artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: npm-audit
+          name: security-artifacts
           path: |
             audit.json
             audit-summary.md
+            sbom.json

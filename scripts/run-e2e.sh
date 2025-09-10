@@ -64,6 +64,11 @@ if [ -f "${PREVIEW_PID_FILE}" ]; then
     if curl -fsS --max-time 5 "${PREVIEW_URL}" >/dev/null 2>&1; then
       echo "Existing preview is responding at ${PREVIEW_URL}. Will reuse it and will not stop it on exit."
       PREVIEW_STARTED=false
+      # Ensure preview.out exists for diagnostics even when reusing external preview
+      if [ ! -f "${PREVIEW_OUT}" ]; then
+        echo "No ${PREVIEW_OUT} found for existing preview PID ${EXISTING_PID}. Creating a placeholder." >"${PREVIEW_OUT}" || true
+        echo "Existing preview PID: ${EXISTING_PID} (reused)" >>"${PREVIEW_OUT}" || true
+      fi
     else
       echo "Existing preview PID ${EXISTING_PID} is alive but server did not respond at ${PREVIEW_URL}. Will start a new preview."
       rm -f "${PREVIEW_PID_FILE}" || true

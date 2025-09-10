@@ -132,14 +132,18 @@ function writeEmpty(exitCode) {
 }
 
 if (!reportPath) {
-  console.error('No Playwright JSON report found. Writing empty stability artifacts and exiting non-zero.');
+  console.error(
+    'No Playwright JSON report found. Writing empty stability artifacts and exiting non-zero.',
+  );
   writeEmpty(1);
 }
 
 const report = safeParse(reportPath);
 
 if (!report) {
-  console.error(`Failed to parse report JSON at ${reportPath}. Writing empty stability artifacts and exiting non-zero.`);
+  console.error(
+    `Failed to parse report JSON at ${reportPath}. Writing empty stability artifacts and exiting non-zero.`,
+  );
   writeEmpty(2);
 }
 

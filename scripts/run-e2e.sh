@@ -161,5 +161,35 @@ else
   write_empty_stability
 fi
 
-# Exit with the Playwright test exit code so CI can fail appropriately
-exit ${TEST_EXIT_CODE}
+# Run verifier to ensure e2e-stability.json indicates tests ran or artifacts exist
+VERIFIER_EXIT=0
+if [ -f "scripts/verify-e2e.sh" ]; then
+  if [ -x "scripts/verify-e2e.sh" ]; then
+    echo "Running e2e verifier..."
+    bash -c "./scripts/verify-e2e.sh" || VERIFIER_EXIT=$?
+  else
+    echo "Running e2e verifier via bash (script not executable)..."
+    bash scripts/verify-e2e.sh || VERIFIER_EXIT=$?
+  fi
+else
+  echo "Verifier script not found at scripts/verify-e2e.sh; skipping verifier"
+fi
+
+# Prefer Playwright exit code if non-zero (tests failed). If Playwright exit code is zero but verifier failed, return verifier's code.
+if [ "${TEST_EXIT_CODE}" -ne 0 ]; then
+  echo "Playwright reported failures (exit ${TEST_EXIT_CODE}), exiting with that code."
+  exit ${TEST_EXIT_CODE}
+fi
+
+# At this point Playwright passed. If verifier failed, surface its exit code; otherwise exit 0.
+if [ "${VERIFIER_EXIT}" -ne 0 ]; then
+  echo "Verifier reported failure (exit ${VERIFIER_EXIT}), exiting with that code."
+  # Dump preview logs for diagnostics if present
+  if [ -f "${PREVIEW_OUT}" ]; then
+    echo "--- last 200 lines of ${PREVIEW_OUT} ---"
+    tail -n 200 "${PREVIEW_OUT}" || true
+  fi
+  exit ${VERIFIER_EXIT}
+fi
+
+exit 0

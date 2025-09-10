@@ -1,18 +1,10 @@
 [
   {
-    "pid": 37108,
-    "pgid": 37108,
+    "pid": 47073,
+    "pgid": 47073,
     "command": "npm ",
     "cwd": "/Users/tomhoward/Projects/voder.ai-website",
-    "startedAt": "2025-09-10T15:33:18.363Z",
-    "outputPath": null
-  },
-  {
-    "pid": 37261,
-    "pgid": 37261,
-    "command": "npm ",
-    "cwd": "/Users/tomhoward/Projects/voder.ai-website",
-    "startedAt": "2025-09-10T15:33:43.126Z",
+    "startedAt": "2025-09-10T15:57:04.661Z",
     "outputPath": null
   }
 ]

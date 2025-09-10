@@ -1,42 +1,64 @@
 ## NOW
 
-Create a focused branch for adding minimal unit tests to raise coverage:
-
-- git switch -c fix/add-unit-tests-coverage
+Create a focused branch named fix/ci-capture-logs-and-coverage and commit CI workflow updates that capture and upload verification logs and coverage artifacts: add (in the new branch) non-interactive steps to the existing GitHub workflows so tsc, eslint, prettier, test:ci outputs and the coverage HTML/JSON are written to log files and uploaded as artifacts (use tee/redirecting in each command and actions/upload-artifact with if: always()).
 
 ## NEXT
 
-1. Add minimal, co‑located unit tests targeting the entry modules to raise baseline coverage:
-   - Create tests/ or co-locate tests next to modules: tests/app.test.ts (covers src/app.ts) and tests/main.test.ts (covers src/main.ts behavior, DOMContentLoaded handling).
-   - Implement tests using Vitest and jsdom (use existing tests/setup.ts).
-   - Run coverage locally and capture output: npm run test:coverage 2>&1 | tee test-coverage.log
-2. If coverage threshold or other verify gates fail, iterate with focused fixes:
-   - Inspect test-coverage.log and/or verify.log to find the earliest failing gate (type-check, lint, format, build, or test:ci).
-   - Reproduce the failing gate in isolation and capture logs:
+1. Implement the CI changes on the branch
+   - Edit .github/workflows/ci.yml (and .github/workflows/security-audit.yml if needed) so the verification steps write logs and are uploaded:
+     - Replace plain runs with non-interactive captures, e.g.
+       - npm run type-check 2>&1 | tee tsc.log
+       - npm run lint:check 2>&1 | tee eslint-check.log
+       - npm run format:check 2>&1 | tee format-check.log
+       - npm run test:ci 2>&1 | tee test-ci.log
+     - Ensure coverage output is generated to coverage/ (npm run test:coverage / test:ci should already produce coverage) and upload coverage/\*\* as artifact.
+     - Add actions/upload-artifact steps with if: always() so artifacts are uploaded on success or failure.
+     - Keep jobs non-interactive and do not change existing long-running server behavior.
+   - Commit the workflow changes on fix/ci-capture-logs-and-coverage and push the branch; open a PR for CI to run and produce logs.
+2. Gather CI artifacts and triage failures
+   - Once the PR triggers CI, download the uploaded artifacts (tsc.log, eslint-check.log, format-check.log, test-ci.log, coverage/\*.zip/html).
+   - Inspect logs to identify failing gates: type-check, lint, format, build, or Playwright E2E failures.
+   - For each failing gate, reproduce locally with non-interactive commands and capture logs:
      - npm run type-check 2>&1 | tee tsc.log
      - npm run lint:check 2>&1 | tee eslint-check.log
      - npm run format:check 2>&1 | tee format-check.log
      - npm run build 2>&1 | tee build.log
      - npm run test:ci 2>&1 | tee test-ci.log
-   - Make the minimal code/config change required to pass that gate (small test, small code fix, or narrow config tweak that does not touch prompts/ .voder/).
-   - Re-run only the failing gate until it passes locally.
-   - Commit changes to the branch: git add <files>; git commit -m "test: add minimal unit tests for app/main + fix <gate> — <reason>"
-   - Push and open a PR: git push -u origin fix/add-unit-tests-coverage
-3. When tests and local gates pass, run the full verify locally and capture output for CI traceability:
-   - npm run verify 2>&1 | tee verify.log
-   - Attach logs to the PR and ensure CI runs the same verify sequence.
+   - Create focused fixes that do not touch prompts/ prompt-assets/ or .voder/:
+     - For lint/format: run npm run lint:fix / npm run format and commit minimal deterministic formatting/lint fixes.
+     - For type-check: make the smallest code or config fix to resolve the TypeScript error (or narrow tsconfig include/exclude only if justified).
+     - For build: fix missing asset paths or adjust Vite config only as required to make the build non-interactive and reproducible.
+3. Stabilize Playwright/E2E (if logs show E2E failures)
+   - Use the uploaded test logs to identify flaky assertions, missing Playwright config, or missing browser binaries.
+   - If Playwright tests are intended to run in CI:
+     - Add or update playwright.config.\* in the repo if missing (minimal config with projects and webServer overrides).
+     - Ensure the CI job installs Playwright browsers (or use start_server patterns that CI already supports); add cache steps if needed and keep the audit/workflow non-interactive.
+   - If Playwright tests are not ready for mandatory CI enforcement, temporarily gate them behind a separate workflow or mark them optional in the primary verify job until fixed (document the change in the PR).
+4. Iterate locally and in CI until the failing gate(s) pass
+   - Re-run only the failing gate locally after each focused change; capture logs and commit small fixes.
+   - Push incremental commits to the branch and let CI run; use the uploaded artifacts to validate progress.
+   - When all verify gates pass on CI and artifacts show coverage and logs, update the PR with a summary of fixes and attach key logs for reviewers.
 
 ## LATER
 
-1. Merge the branch once CI verification is green and artifacts (coverage HTML/JSON, verify.log, lint/tsc logs) are uploaded by CI.
-2. Stabilize coverage progressively:
-   - Create a small coverage roadmap (modules ordered by impact) and add co‑located tests in small increments to reach thresholds.
-   - If a threshold temporarily blocks progress, document an ADR or a short-term threshold adjustment with a clear restoration timeline.
-3. Improve developer ergonomics:
-   - Add lint-staged to auto-format staged files while keeping pre-commit hooks check-only.
-   - Update docs/DEVELOPER-SETUP.md with explicit reproduction steps and CI artifact locations (paths and how to download).
-4. Automate dependency and verify hygiene:
-   - Enable Dependabot/Renovate and require the full verify pipeline for dependency PRs.
-   - Ensure CI fails when package-lock.json changes are not included with dependency updates.
-5. Add CI artifact policies:
-   - Configure CI to always upload tsc.log, eslint-check.log, format-check.log, test-ci.log, and coverage HTML when verify runs (success or failure).
+1. Merge branch and codify CI artifact policy
+   - Merge fix/ci-capture-logs-and-coverage once CI passes.
+   - Add a short docs/CI-ARTIFACTS.md describing artifacts produced by CI, where to find them, and how to interpret tsc.log / eslint-check.log / format-check.log / test-ci.log and coverage reports.
+2. Harden testing pipeline and coverage
+   - Add targeted flake mitigation for Playwright tests (retry logic, deterministic selectors, stabilized animations) and re-run cross-browser E2E until stable.
+   - Add a lightweight preview-smoke test job that starts the preview server non-interactively and performs an HTTP 200 check on / (use a background server or dedicated job with a small HTTP probe).
+   - If coverage thresholds still fail, add a short coverage roadmap and a temporary, documented threshold policy (ADR) with a restoration timeline.
+3. Improve developer ergonomics and traceability
+   - Add a CONTRIBUTING or docs/DEVELOPER-SETUP.md section detailing how to reproduce verify steps locally and how to collect logs (exact commands above).
+   - Add a CI step to upload verify.log on full verify runs, and ensure CI stores coverage HTML artifacts for quick inspection.
+   - Add tests that co-locate coverage increases for uncovered, higher-impact modules as part of a staged plan to reach the target coverage.
+4. Automate monitoring and dependency hygiene
+   - Enable Dependabot or Renovate (if not enabled) and require the full verify pipeline on dependency PRs.
+   - Add a periodic CI audit job that runs npm audit and uploads audit.json plus parse output artifacts for security traceability.
+
+Notes / constraints respected:
+
+- No prompts/, prompt-assets/, or .voder/ changes are proposed.
+- All steps are non-interactive (use tee, CI artifact upload with if: always()).
+- No servers are started interactively; CI server preview/smoke tests must be non-interactive and used as separate CI job(s).
+- Git operations are scoped to a single branch (fix/ci-capture-logs-and-coverage) and do not modify tracked protected directories.

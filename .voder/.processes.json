@@ -14,5 +14,13 @@
     "cwd": "/Users/tomhoward/Projects/voder.ai-website",
     "startedAt": "2025-09-10T18:21:42.506Z",
     "outputPath": "/Users/tomhoward/Projects/voder.ai-website/.voder-server-1757528502505.log"
+  },
+  {
+    "pid": 95328,
+    "pgid": 95328,
+    "command": "npm ",
+    "cwd": "/Users/tomhoward/Projects/voder.ai-website",
+    "startedAt": "2025-09-10T19:12:09.569Z",
+    "outputPath": null
   }
 ]

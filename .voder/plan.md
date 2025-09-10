@@ -1,48 +1,46 @@
-## NOW
+The previous plan repeated work already completed in CI. I corrected it.
 
-Update scripts/run-e2e.sh to detect an existing healthy preview server and skip starting a new one: if preview.pid exists and the PID is alive and http://127.0.0.1:5173/ returns HTTP 200, proceed directly to Playwright; otherwise continue with the existing non-interactive start/wait/teardown flow. On failure to reach the preview within the timeout, print the last 200 lines of preview.out, write a clear failure message, write e2e-stability.json/text with zero tests, and exit non-zero.
+## NOW
+Add a non-interactive CI verification step in .github/workflows/ci.yml immediately after the run-e2e.sh step that validates e2e-stability.json exists and that it either (a) contains stats.total > 0 OR (b) has a non-empty artifacts array; on failure the step must (1) print a concise failure summary, (2) dump the last 200 lines of preview.out (if present), and (3) exit non-zero so CI marks the run as a server/startup failure separate from test failures.
 
 ## NEXT
+1. Ensure Playwright artifacts are always uploaded
+   - Confirm the existing upload-artifact steps are unconditional (if: always()) and include:
+     - test-results/** (all traces, videos, screenshots, html)
+     - playwright-results.json
+     - e2e-stability.json
+     - e2e-stability.txt
+     - preview.out
+   - If any path is missing in .github/workflows/ci.yml, update it to include the paths above.
 
-1. Harden CI job (.github/workflows/ci.yml):
-   - Replace the current inline preview/start step with a single step that runs scripts/run-e2e.sh (it will now be safe if a preview is already running).
-   - Ensure Playwright browsers are installed before running the script (npx playwright install --with-deps).
-   - Ensure artifacts uploaded include: test-results/**, playwright-results.json, e2e-stability.json, e2e-stability.txt, and Playwright traces/videos/html (configure artifacts path test-results/**).
+2. Improve e2e summary content and generator
+   - Extend .github/scripts/generate-e2e-stability-summary.js (if not already) to append any Playwright trace/video/screenshot paths found under test-results/ into e2e-stability.json.artifacts and to return non-zero when it cannot produce a valid JSON artifact (so CI can detect generator failure).
+   - Ensure the generator writes deterministic e2e-stability.txt alongside the JSON.
 
-2. Improve Playwright diagnostics & artifact capture:
-   - Verify playwright.config.ts already enables trace-on-retry/screenshot/video and that those artifacts are written under test-results/; if needed, set environment variables in CI to force traces (PLAYWRIGHT_JUNIT_OUTPUT_NAME or PLAYWRIGHT_TRACE_DIR) and ensure test-results/ is uploaded.
-   - Update .github/scripts/generate-e2e-stability-summary.js to also include presence/paths of trace/video files in the JSON output (when present) for quick triage.
+3. Harden run-e2e.sh health checks and exit codes
+   - Confirm run-e2e.sh performs a quick curl --fail --max-time 5 after reusing/starting preview and exits with a distinct non-zero code on preview-health failure (so CI can distinguish startup vs test failures).
+   - Ensure run-e2e.sh writes preview.out to artifacts even when the preview was reused (so logs are always available).
 
-3. Add a small, explicit CI quick health-check step (immediately after run-e2e.sh readiness check or as the first command in run-e2e.sh if starting preview): perform curl --fail --max-time 5 http://127.0.0.1:5173/ and on non-200 log a concise failure summary (exit code, last 200 preview.out lines), so CI separates server-start problems from test failures.
+4. Stabilize Playwright test robustness
+   - Audit tests/e2e/** and replace sleeps with explicit waits (page.waitForSelector, expect(locator).toBeVisible, page.waitForURL). Increase per-test timeouts only where necessary; add retries selectively and capture traces/screenshots on retry.
 
-4. Audit and harden e2e tests:
-   - Scan tests/e2e/**/*.ts and replace any sleeps or brittle checks with explicit Playwright waits (page.waitForSelector, expect(locator).toBeVisible(), waitForURL).
-   - Increase per-test timeouts where network/animation waits are expected; add retries only for flaky tests and ensure traces are captured on retry.
-   - Confirm baseURL in playwright.config.ts is http://127.0.0.1:5173 and document the required port in docs/DEVELOPER-SETUP.md.
-
-5. Document reproduce and debug steps (docs/DEVELOPER-SETUP.md):
-   - Add concise non-interactive reproduction steps for CI-like e2e runs (npm ci, npx playwright install --with-deps, ensure preview running or let run-e2e.sh start it, ./scripts/run-e2e.sh).
-   - Document where artifacts appear (test-results/, playwright-results.json, e2e-stability.json/txt, traces/videos) and how to inspect traces/videos locally.
+5. Document run & debug workflow
+   - Update docs/E2E-REPRO.md and docs/DEVELOPER-SETUP.md with:
+     - The CI reproduction sequence: npm ci --no-audit --no-fund; npx playwright install --with-deps; ./scripts/run-e2e.sh
+     - Where to find artifacts (test-results/, playwright-results.json, e2e-stability.json/txt, preview.out, traces/videos).
+     - How the new CI verification step signals preview-start failures vs test failures.
 
 ## LATER
+1. Add automated triage/retention and dashboards
+   - Configure longer retention for failing-run traces/videos and publish a JSON build annotation linking failed tests to trace paths. Add a nightly job to collect e2e-stability.json history and alert if flakiness rises above thresholds.
 
-1. CI artifact retention & triage UX:
-   - Upload Playwright traces/videos/html reports to a longer-retention artifact storage for failed runs and publish a small JSON summary to build annotations (linking failed test → trace/video path).
-   - Add a nightly e2e-stability workflow (or tune .github/workflows/e2e-stability.yml) to collect historical pass/fail/flaky metrics from e2e-stability.json and alert (or create an issue) when flakiness increases beyond thresholds.
+2. Flakiness management automation
+   - Implement quarantining/reporting: auto-label flaky tests after N transient failures, open triage issues with attached traces, and provide a small dashboard artifact summarizing quarantined tests.
 
-2. Flakiness management & automation:
-   - Implement a quarantining report/process: auto-label persistently flaky tests, generate a triage issue template, and add a dashboard summary artifact for humans to review.
-   - Add an automated rerun-with-tracing step: on failure rerun the failing tests once with trace forced and attach that trace to artifacts for immediate triage.
+3. Deterministic CI server option (optional)
+   - Provide a lightweight deterministic static server (scripts/static-preview.js or small Express wrapper) and a CI flag (USE_STATIC_PREVIEW=1) to run the deterministic server for stability-critical runs; keep Vite preview for local/dev runs.
 
-3. Optional deterministic CI server mode:
-   - Add an alternative deterministic static server (node script or small Express/serve wrapper that serves dist/ on a fixed port without Vite preview variability) and a CI flag (USE_STATIC_PREVIEW=1) so CI can choose the deterministic server for stability-critical runs.
-
-4. Expand integration & coverage:
-   - Broaden e2e coverage for critical user flows (3D/animation entry points, Vision Flow, Live Prompt Interaction) and add accessibility checks (axe) inside Playwright tests where feasible.
-   - Add a small set of visual-regression baseline checks that run in CI and save screenshots for trend analysis (store baselines separately and fail only on large regressions after human review).
-
-Notes / Constraints honored:
-- The NOW action modifies only scripts/run-e2e.sh behavior (no server start attempted if already running).
-- The plan does not remove or modify prompts/, prompt-assets/, or .voder/ directories and avoids interacting with .voder/.processes.json.
-- All CI changes are non-interactive and use deterministic curl/playwright commands suitable for automated runs.
-- The plan assumes run-e2e.sh is executable and CI will call it; it documents artifact expectations and focuses troubleshooting on preview readiness and artifact capture.
+Notes / Constraints honored
+- This plan does not repeat already-completed CI Playwright install or run-e2e.sh rewrites.
+- NOW is a single concrete change (CI verification step) addressing the NEXT PRIORITY of stabilizing CI e2e runs by making startup failures immediately visible and distinct from test failures.
+- The plan does not modify prompts/, prompt-assets/, or .voder/ and uses only non-interactive CI-safe steps.

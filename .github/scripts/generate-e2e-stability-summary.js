@@ -13,6 +13,7 @@ const candidates = [
 function findFirstExisting(pathsList) {
   for (const p of pathsList) {
     if (!p) continue;
+
     try {
       if (fs.existsSync(p)) return p;
     } catch {
@@ -55,75 +56,114 @@ function scanArtifacts() {
   const root = 'test-results';
 
   try {
-    if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) return artifacts;
+    if (fs.existsSync(root) && fs.statSync(root).isDirectory()) {
+      const walk = (dir) => {
+        const entries = fs.readdirSync(dir);
 
-    const walk = (dir) => {
-      const entries = fs.readdirSync(dir);
-      for (const entry of entries) {
-        const full = path.join(dir, entry);
-        const stat = fs.statSync(full);
-        if (stat.isDirectory()) {
-          walk(full);
-        } else if (stat.isFile()) {
-          const rel = path.relative(process.cwd(), full);
-          // include common Playwright artifacts
-          if (rel.endsWith('.zip') || rel.endsWith('.html') || rel.endsWith('.json') || rel.endsWith('.png') || rel.endsWith('.webm') || rel.endsWith('.trace') || rel.endsWith('.txt')) {
-            artifacts.push(rel);
+        for (const entry of entries) {
+          const full = path.join(dir, entry);
+
+          try {
+            const stat = fs.statSync(full);
+
+            if (stat.isDirectory()) {
+              walk(full);
+            } else if (stat.isFile()) {
+              const rel = path.relative(process.cwd(), full);
+
+              // include common Playwright artifacts
+              if (
+                rel.endsWith('.zip') ||
+                rel.endsWith('.html') ||
+                rel.endsWith('.json') ||
+                rel.endsWith('.png') ||
+                rel.endsWith('.webm') ||
+                rel.endsWith('.trace') ||
+                rel.endsWith('.txt') ||
+                rel.endsWith('.mp4')
+              ) {
+                artifacts.push(rel);
+              }
+            }
+          } catch {
+            // ignore file stat errors
           }
         }
-      }
-    };
+      };
 
-    walk(root);
+      walk(root);
+    }
   } catch {
     // ignore scanning errors
   }
 
-  return artifacts.sort();
+  // Also include a few common root-level artifacts if present
+  ['playwright-results.json', 'preview.out', 'preview.log', 'preview.pid'].forEach((p) => {
+    try {
+      if (fs.existsSync(p) && fs.statSync(p).isFile()) artifacts.push(p);
+    } catch {
+      // ignore
+    }
+  });
+
+  // Deduplicate & sort
+  return Array.from(new Set(artifacts)).sort();
 }
 
-function writeEmpty() {
+function writeEmpty(exitCode) {
   const out = {
     generatedAt: new Date().toISOString(),
     stats: { total: 0, passed: 0, failed: 0, flaky: 0 },
     artifacts: [],
   };
 
-  fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
-  fs.writeFileSync(
-    'e2e-stability.txt',
-    `generatedAt: ${out.generatedAt}\ntotal: 0\npassed: 0\nfailed: 0\nflaky: 0\n`,
-  );
+  try {
+    fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
+    fs.writeFileSync(
+      'e2e-stability.txt',
+      `generatedAt: ${out.generatedAt}\ntotal: 0\npassed: 0\nfailed: 0\nflaky: 0\n`,
+    );
+  } catch {
+    console.error('Failed to write empty stability artifacts');
+    process.exit(exitCode || 2);
+  }
+
+  process.exit(exitCode || 1);
 }
 
 if (!reportPath) {
-  console.error('No Playwright JSON report found. Writing empty stability artifacts.');
-  writeEmpty();
-  process.exit(0);
+  console.error('No Playwright JSON report found. Writing empty stability artifacts and exiting non-zero.');
+  writeEmpty(1);
 }
 
 const report = safeParse(reportPath);
 
 if (!report) {
-  console.error(`Failed to parse report JSON at ${reportPath}. Writing empty stability artifacts.`);
-  writeEmpty();
-  process.exit(0);
+  console.error(`Failed to parse report JSON at ${reportPath}. Writing empty stability artifacts and exiting non-zero.`);
+  writeEmpty(2);
 }
 
 const stats = { total: 0, passed: 0, failed: 0, flaky: 0 };
 
 function walk(node) {
   if (!node || typeof node !== 'object') return;
+
   if (Array.isArray(node.tests)) {
     for (const t of node.tests) {
       stats.total += 1;
-      const s = (t.status || '').toLowerCase();
+      const s = (t.status || '').toString().toLowerCase();
 
       if (s === 'passed') stats.passed += 1;
       else if (s === 'failed') stats.failed += 1;
       else if (s === 'flaky') stats.flaky += 1;
     }
   }
+
+  // Some Playwright reporters emit 'suites' or arrays; try to handle arrays of test results
+  if (Array.isArray(node)) {
+    for (const item of node) walk(item);
+  }
+
   for (const key of Object.keys(node)) {
     const val = node[key];
 
@@ -137,11 +177,17 @@ const artifacts = scanArtifacts();
 
 const out = { generatedAt: new Date().toISOString(), stats, artifacts };
 
-fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
-fs.writeFileSync(
-  'e2e-stability.txt',
-  `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`,
-);
+try {
+  fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
+  fs.writeFileSync(
+    'e2e-stability.txt',
+    `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`,
+  );
+} catch {
+  console.error('Failed to write stability artifacts');
+  process.exit(3);
+}
 
 console.log('E2E stability summary written to e2e-stability.json and e2e-stability.txt');
 console.log(JSON.stringify(out, null, 2));
+process.exit(0);

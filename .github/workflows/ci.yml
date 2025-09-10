@@ -101,6 +101,7 @@ jobs:
             test-results/**
             playwright-results.json
             e2e-stability.json
+            e2e-stability.txt
 
       - name: Assert Lighthouse budgets
         if: always()

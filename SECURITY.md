@@ -22,3 +22,21 @@ Generated: 2025-09-09T15:47:55Z
 - npm audit --json > audit.json
 - node <audit-summary one-liner> to generate audit-summary.md
 - perl redaction command to produce repo-secrets-scan.redacted.txt
+
+## Scheduled automated scans (added)
+
+The repository runs several automated scans on a daily schedule. Artifacts are uploaded to the corresponding GitHub Actions run as job artifacts.
+
+- Security Audit (daily @ 02:00 UTC)
+  - Workflow: .github/workflows/security-audit.yml
+  - Artifacts: audit.json, audit-summary.md, sbom.json (CycloneDX SBOM)
+
+- Secret Scan (gitleaks) (daily @ 03:00 UTC)
+  - Workflow: .github/workflows/secret-scan.yml
+  - Artifacts: repo-secrets-scan.json, repo-secrets-scan.redacted.txt
+
+- Code Scanning (CodeQL) (daily @ 04:00 UTC)
+  - Workflow: .github/workflows/code-scanning.yml
+  - Artifacts: codeql-results.sarif
+
+Review the Actions run artifacts for triage details. If high/critical findings are reported, follow the immediate guidance above and open issues/PRs to remediate.

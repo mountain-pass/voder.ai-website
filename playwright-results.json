@@ -10,9 +10,7 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 3
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "reporter": [
       [
@@ -36,9 +34,7 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 3
-        },
+        "metadata": {},
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -52,9 +48,7 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 3
-        },
+        "metadata": {},
         "id": "firefox",
         "name": "firefox",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -68,9 +62,7 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 3
-        },
+        "metadata": {},
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -97,7 +89,7 @@
       "specs": [
         {
           "title": "home page renders and title is correct",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -106,117 +98,11 @@
               "expectedStatus": "passed",
               "projectId": "chromium",
               "projectName": "chromium",
-              "results": [
-                {
-                  "workerIndex": 0,
-                  "parallelIndex": 0,
-                  "status": "failed",
-                  "duration": 1,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/chromium_headless_shell-1187/chrome-mac/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/chromium_headless_shell-1187/chrome-mac/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/chromium_headless_shell-1187/chrome-mac/headless_shell\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-09-10T17:33:21.822Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "unexpected"
+              "results": [],
+              "status": "skipped"
             }
           ],
           "id": "c31ff144dc4fee3acd0a-5108ab85dc97d427f233",
-          "file": "app.spec.ts",
-          "line": 3,
-          "column": 1
-        },
-        {
-          "title": "home page renders and title is correct",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "firefox",
-              "projectName": "firefox",
-              "results": [
-                {
-                  "workerIndex": 1,
-                  "parallelIndex": 1,
-                  "status": "failed",
-                  "duration": 1,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/firefox-1490/firefox/Nightly.app/Contents/MacOS/firefox\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-09-10T17:33:21.815Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "c31ff144dc4fee3acd0a-19312438b5bde6aaeae4",
-          "file": "app.spec.ts",
-          "line": 3,
-          "column": 1
-        },
-        {
-          "title": "home page renders and title is correct",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "webkit",
-              "projectName": "webkit",
-              "results": [
-                {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
-                  "status": "failed",
-                  "duration": 1,
-                  "error": {
-                    "message": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/webkit-2203/pw_run.sh\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝",
-                    "stack": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/webkit-2203/pw_run.sh\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝"
-                  },
-                  "errors": [
-                    {
-                      "message": "Error: browserType.launch: Executable doesn't exist at /Users/tomhoward/Library/Caches/ms-playwright/webkit-2203/pw_run.sh\n╔═════════════════════════════════════════════════════════════════════════╗\n║ Looks like Playwright Test or Playwright was just installed or updated. ║\n║ Please run the following command to download new browsers:              ║\n║                                                                         ║\n║     npx playwright install                                              ║\n║                                                                         ║\n║ <3 Playwright Team                                                      ║\n╚═════════════════════════════════════════════════════════════════════════╝"
-                    }
-                  ],
-                  "stdout": [],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2025-09-10T17:33:21.818Z",
-                  "annotations": [],
-                  "attachments": []
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "c31ff144dc4fee3acd0a-e5e088bbdfd2488f7d78",
           "file": "app.spec.ts",
           "line": 3,
           "column": 1
@@ -226,11 +112,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-09-10T17:33:21.438Z",
-    "duration": 414.895,
+    "startTime": "2025-09-10T17:55:36.307Z",
+    "duration": 10.137,
     "expected": 0,
-    "skipped": 0,
-    "unexpected": 3,
+    "skipped": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

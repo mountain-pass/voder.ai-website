@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-09-10T20:43:31.916Z",
+  "generatedAt": "2025-09-10T20:47:34.241Z",
   "stats": {
     "total": 12,
     "passed": 0,
@@ -12,6 +12,10 @@
     "preview.pid",
     "test-results/.last-run.json",
     "test-results/app-home-page-renders-and-title-is-correct-chromium/test-failed-1.png",
-    "test-results/app-home-page-renders-and-title-is-correct-chromium/video.webm"
+    "test-results/app-home-page-renders-and-title-is-correct-chromium/video.webm",
+    "test-results/app-home-page-renders-and-title-is-correct-firefox/test-failed-1.png",
+    "test-results/app-home-page-renders-and-title-is-correct-firefox/video.webm",
+    "test-results/app-home-page-renders-and-title-is-correct-webkit/test-failed-1.png",
+    "test-results/app-home-page-renders-and-title-is-correct-webkit/video.webm"
   ]
 }

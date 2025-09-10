@@ -1,46 +1,27 @@
-The previous plan repeated work already completed in CI. I corrected it.
-
 ## NOW
-Add a non-interactive CI verification step in .github/workflows/ci.yml immediately after the run-e2e.sh step that validates e2e-stability.json exists and that it either (a) contains stats.total > 0 OR (b) has a non-empty artifacts array; on failure the step must (1) print a concise failure summary, (2) dump the last 200 lines of preview.out (if present), and (3) exit non-zero so CI marks the run as a server/startup failure separate from test failures.
+In tests/e2e/**, replace any implicit sleeps/timeouts (e.g., page.waitForTimeout, sleep, setTimeout-based waits) with explicit, deterministic waits and guard assertions — for example, add before assertions: await page.waitForSelector('#app', { state: 'visible', timeout: 10000 }); and replace sleeps with await expect(locator).toBeVisible()/page.waitForURL()/page.waitForResponse() as appropriate.
 
 ## NEXT
-1. Ensure Playwright artifacts are always uploaded
-   - Confirm the existing upload-artifact steps are unconditional (if: always()) and include:
-     - test-results/** (all traces, videos, screenshots, html)
-     - playwright-results.json
-     - e2e-stability.json
-     - e2e-stability.txt
-     - preview.out
-   - If any path is missing in .github/workflows/ci.yml, update it to include the paths above.
+1. Run the Playwright e2e suite locally against a healthy preview and iterate on failures:
+   - Start the preview (locally) and run npx playwright test --project=chromium (or the full matrix) to surface flakiness and failing tests.
+   - For each failing test, update assertions to use stronger, explicit checks (expect(locator).toHaveText, toHaveCount, toHaveAttribute, page.waitForResponse, etc.) rather than increasing timeouts.
 
-2. Improve e2e summary content and generator
-   - Extend .github/scripts/generate-e2e-stability-summary.js (if not already) to append any Playwright trace/video/screenshot paths found under test-results/ into e2e-stability.json.artifacts and to return non-zero when it cannot produce a valid JSON artifact (so CI can detect generator failure).
-   - Ensure the generator writes deterministic e2e-stability.txt alongside the JSON.
+2. Add selective, documented retries and diagnostic retention:
+   - Where flakiness remains after fixes, add per-test or per-folder retries in playwright.config.ts (only for known flaky cases) and ensure trace/screenshot/video is captured on first retry for diagnostics (trace: 'on-first-retry', screenshot: 'only-on-failure', video: 'retain-on-failure').
 
-3. Harden run-e2e.sh health checks and exit codes
-   - Confirm run-e2e.sh performs a quick curl --fail --max-time 5 after reusing/starting preview and exits with a distinct non-zero code on preview-health failure (so CI can distinguish startup vs test failures).
-   - Ensure run-e2e.sh writes preview.out to artifacts even when the preview was reused (so logs are always available).
+3. Create a short local verification checklist and runbook for debugging e2e failures:
+   - Document the reproduce sequence in docs/E2E-REPRO.md (how to start preview, install playwright browsers, run tests, locate artifacts).
+   - Include examples of replacing a sleep with explicit waits and how to interpret traces/screenshots.
 
-4. Stabilize Playwright test robustness
-   - Audit tests/e2e/** and replace sleeps with explicit waits (page.waitForSelector, expect(locator).toBeVisible, page.waitForURL). Increase per-test timeouts only where necessary; add retries selectively and capture traces/screenshots on retry.
-
-5. Document run & debug workflow
-   - Update docs/E2E-REPRO.md and docs/DEVELOPER-SETUP.md with:
-     - The CI reproduction sequence: npm ci --no-audit --no-fund; npx playwright install --with-deps; ./scripts/run-e2e.sh
-     - Where to find artifacts (test-results/, playwright-results.json, e2e-stability.json/txt, preview.out, traces/videos).
-     - How the new CI verification step signals preview-start failures vs test failures.
+4. Add a small assertion test (CI-local) that validates e2e-stability.json was produced and lists artifacts:
+   - Create tests/e2e/ci-smoke.spec.ts (Playwright or Node script) that reads playwright-results.json and e2e-stability.json and fails early with a clear message if stats.total === 0 && artifacts.length === 0. This is an additional guard for local reproduction before pushing fixes.
 
 ## LATER
-1. Add automated triage/retention and dashboards
-   - Configure longer retention for failing-run traces/videos and publish a JSON build annotation linking failed tests to trace paths. Add a nightly job to collect e2e-stability.json history and alert if flakiness rises above thresholds.
+1. Implement automated flakiness tracking and quarantining:
+   - Add tooling to track test failure history, auto-label tests that exceed transient-failure thresholds, and open triage issues attaching traces/screenshots.
 
-2. Flakiness management automation
-   - Implement quarantining/reporting: auto-label flaky tests after N transient failures, open triage issues with attached traces, and provide a small dashboard artifact summarizing quarantined tests.
+2. Configure artifact retention & dashboards:
+   - Extend CI artifact retention for failing runs, emit build annotations linking failed tests to artifact paths, and produce a nightly stability-summary dashboard aggregating e2e-stability.json history.
 
-3. Deterministic CI server option (optional)
-   - Provide a lightweight deterministic static server (scripts/static-preview.js or small Express wrapper) and a CI flag (USE_STATIC_PREVIEW=1) to run the deterministic server for stability-critical runs; keep Vite preview for local/dev runs.
-
-Notes / Constraints honored
-- This plan does not repeat already-completed CI Playwright install or run-e2e.sh rewrites.
-- NOW is a single concrete change (CI verification step) addressing the NEXT PRIORITY of stabilizing CI e2e runs by making startup failures immediately visible and distinct from test failures.
-- The plan does not modify prompts/, prompt-assets/, or .voder/ and uses only non-interactive CI-safe steps.
+3. Optional deterministic CI server:
+   - Provide a deterministic static preview server (scripts/static-preview.js) and a CI flag (USE_STATIC_PREVIEW=1) to run deterministic server for stability-critical runs while keeping Vite preview for local/dev workflows.

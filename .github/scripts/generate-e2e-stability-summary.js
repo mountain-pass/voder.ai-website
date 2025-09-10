@@ -53,6 +53,7 @@ function safeParse(pathToFile) {
 
 function scanArtifacts() {
   const artifacts = [];
+
   const root = 'test-results';
 
   try {

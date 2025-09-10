@@ -8,7 +8,8 @@ function safeParse(path) {
     const raw = fs.readFileSync(path, 'utf8');
 
     return JSON.parse(raw);
-  } catch (err) {
+  } catch (e) {
+    // intentionally return null if parsing fails
     return null;
   }
 }

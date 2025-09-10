@@ -40,7 +40,18 @@ jobs:
           # Attempt to generate an SBOM using CycloneDX CLI. Don't fail the job if SBOM tool isn't available.
           npx @cyclonedx/cyclonedx-bom@latest -o sbom.json || true
 
-      - name: Upload audit and SBOM artifacts
+      - name: Generate E2E stability summary (best-effort)
+        # Run the in-repo generator if present. This is non-fatal: we don't want the security audit to fail
+        # if e2e artifacts are missing (the generator will exit non-zero in that case). Run it, but ignore failures.
+        run: |
+          set -euo pipefail
+          if [ -f .github/scripts/generate-e2e-stability-summary.js ]; then
+            node .github/scripts/generate-e2e-stability-summary.js || true
+          else
+            echo "No generate-e2e-stability-summary.js script found; skipping"
+          fi
+
+      - name: Upload audit and SBOM artifacts (including E2E artifacts)
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -49,3 +60,8 @@ jobs:
             audit.json
             audit-summary.md
             sbom.json
+            e2e-stability.json
+            e2e-stability.txt
+            playwright-results.json
+            preview.out
+            test-results/**

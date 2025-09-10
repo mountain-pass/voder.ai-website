@@ -25,6 +25,20 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Install Playwright browsers
+        # Ensure browsers are available for E2E orchestration in this job
+        run: npx playwright install --with-deps
+
+      - name: Build and run E2E tests (preview + Playwright)
+        # Run the project build and then the repository run-e2e.sh orchestrator. We
+        # ignore failures here so we can still collect artifacts; verification will
+        # run in a separate step that does not ignore failures.
+        run: |
+          set -euo pipefail
+          npm run build
+          chmod +x scripts/run-e2e.sh || true
+          ./scripts/run-e2e.sh || true
+
       - name: Run npm audit and save JSON
         run: npm audit --json > audit.json || true
 

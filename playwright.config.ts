@@ -8,8 +8,8 @@ export default defineConfig({
   retries: isCI ? 2 : 0,
   reporter: [['list'], ['json', { outputFile: 'playwright-results.json' }]],
   use: {
-    // Base URL for `page.goto('/')`
-    baseURL: 'http://localhost:5173',
+    // Base URL for `page.goto('/')` - use explicit 127.0.0.1 to match CI preview checks
+    baseURL: 'http://127.0.0.1:5173',
 
     // Artifacts and diagnostic helpers for flaky tests
     trace: 'on-first-retry',

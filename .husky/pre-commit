@@ -1,2 +1,5 @@
-#npm run lint
-#npm run format:check
+
+# Check-only quality gates (must not modify code)
+npm run format:check
+npm run lint:check
+npm run type-check

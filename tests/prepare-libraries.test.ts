@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // We will import the prepare-libraries script by requiring it as a module and
 // invoking the internal behavior through a small wrapper. To make this testable
@@ -23,13 +23,17 @@ function simulatePrepareLibraries(nodeModulesDir: string, destDir: string) {
     'README.markdown',
   ];
 
-  const results: { created: Array<{ name: string; type: string }>; skipped: any[]; errors: any[] } = {
-    created: [],
-    skipped: [],
-    errors: [],
-  };
+  const results: { created: Array<{ name: string; type: string }>; skipped: any[]; errors: any[] } =
+    {
+      created: [],
+      skipped: [],
+      errors: [],
+    };
 
-  const pkgNames = fs.readdirSync(nodeModulesDir, { withFileTypes: true }).map((d) => d.name).filter(Boolean);
+  const pkgNames = fs
+    .readdirSync(nodeModulesDir, { withFileTypes: true })
+    .map((d) => d.name)
+    .filter(Boolean);
 
   for (const name of pkgNames) {
     const pkgDir = path.join(nodeModulesDir, name);
@@ -164,7 +168,9 @@ describe('prepare libraries simulation', () => {
 
     // restore
     (fs.symlinkSync as any).mockRestore?.();
-    try { fs.symlinkSync = realSymlink; } catch {}
+    try {
+      fs.symlinkSync = realSymlink;
+    } catch {}
 
     expect(res.created.length).toBe(1);
     expect(res.created[0].type).toBe('copy');

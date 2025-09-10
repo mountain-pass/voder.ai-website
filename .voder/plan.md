@@ -1,56 +1,42 @@
 ## NOW
-git commit -am "chore(verify): commit focused fixes for CI verification"
+
+Create a focused branch for adding minimal unit tests to raise coverage:
+
+- git switch -c fix/add-unit-tests-coverage
 
 ## NEXT
-1. Push the committed change to trigger CI:
-   - git push origin main
 
-2. Monitor CI and fetch logs/artifacts
-   - Watch the GitHub Actions verify job for the pushed commit.
-   - Download failure artifacts and logs produced by the verify job (eslint, prettier, tsc, vite build, vitest coverage, audit.json).
-
-3. Identify the first failing gate (console-first)
-   - From CI logs, locate the earliest failing gate in this order: format check → lint check → type-check → build → tests/coverage → audit.
-
-4. Reproduce the failing gate locally and fix only that gate
-   - Format: npm run format:check → if failing npm run format && npm run format:check
-   - ESLint: npm run lint:check → if failing npm run lint:fix && npm run lint:check
-   - CSS/HTML/MD linters: npm run lint:css (or lint:css:fix), npm run lint:html, npm run lint:md (or lint:md:fix)
-   - TypeScript: npm run type-check → fix diagnostics and re-run
-   - Build: npm run build → fix tsc/vite errors and re-run
-   - Tests/Coverage: npm run test:ci → inspect coverage summary/coverage/coverage-final.json and add focused co-located tests to raise coverage; re-run until gate satisfied
-
-5. Commit and push minimal, focused fixes for the gate
-   - git add -A
-   - git commit -m "chore(verify): fix <format|lint|type|build|test> — <short reason>"
-   - git push origin main
-
-6. Repeat Steps 2–5
-   - Iterate until the CI verify job completes successfully. Always fix the earliest failing gate first using console-first diagnostics.
-
-7. When CI verify passes: enable/confirm pre-commit check-only hook
-   - Ensure .husky/pre-commit contains only check-only commands (format:check, lint:check), is executable (chmod +x .husky/pre-commit), then:
-     - git add .husky/pre-commit
-     - git commit -m "chore(hooks): enable check-only pre-commit quality checks"
-     - git push origin main
+1. Add minimal, co‑located unit tests targeting the entry modules to raise baseline coverage:
+   - Create tests/ or co-locate tests next to modules: tests/app.test.ts (covers src/app.ts) and tests/main.test.ts (covers src/main.ts behavior, DOMContentLoaded handling).
+   - Implement tests using Vitest and jsdom (use existing tests/setup.ts).
+   - Run coverage locally and capture output: npm run test:coverage 2>&1 | tee test-coverage.log
+2. If coverage threshold or other verify gates fail, iterate with focused fixes:
+   - Inspect test-coverage.log and/or verify.log to find the earliest failing gate (type-check, lint, format, build, or test:ci).
+   - Reproduce the failing gate in isolation and capture logs:
+     - npm run type-check 2>&1 | tee tsc.log
+     - npm run lint:check 2>&1 | tee eslint-check.log
+     - npm run format:check 2>&1 | tee format-check.log
+     - npm run build 2>&1 | tee build.log
+     - npm run test:ci 2>&1 | tee test-ci.log
+   - Make the minimal code/config change required to pass that gate (small test, small code fix, or narrow config tweak that does not touch prompts/ .voder/).
+   - Re-run only the failing gate until it passes locally.
+   - Commit changes to the branch: git add <files>; git commit -m "test: add minimal unit tests for app/main + fix <gate> — <reason>"
+   - Push and open a PR: git push -u origin fix/add-unit-tests-coverage
+3. When tests and local gates pass, run the full verify locally and capture output for CI traceability:
+   - npm run verify 2>&1 | tee verify.log
+   - Attach logs to the PR and ensure CI runs the same verify sequence.
 
 ## LATER
-1. CI reliability & diagnostics
-   - Ensure CI uploads failure artifacts automatically (coverage JSON/html, ESLint report, audit.json).
-   - Add a scheduled nightly job to run `npm ci --no-audit --no-fund` + `npm run verify`.
 
-2. Coverage & tests
-   - Add targeted co-located unit tests for under-covered files identified in coverage reports.
-   - If coverage thresholds need short-term relaxation, document the change in an ADR and restore incremental increases plan.
-
-3. Dependency & install hygiene
-   - Confirm package-lock.json remains committed and CI uses `npm ci --no-audit --no-fund`.
-   - Enable Dependabot/Renovate and wire PR checks to run the verify pipeline.
-
-4. Developer ergonomics
-   - Add lint-staged (auto-format staged files) while keeping pre-commit hooks check-only.
-   - Document canonical non-interactive setup in README/DEVELOPER-SETUP.md.
-
-5. Documentation & ADRs
-   - Record any config changes required to stabilize CI (tsconfig/vitest/eslint) as short ADRs in docs/decisions/.
-   - Add CI troubleshooting notes showing where artifacts are stored and how to reproduce failing gates locally.
+1. Merge the branch once CI verification is green and artifacts (coverage HTML/JSON, verify.log, lint/tsc logs) are uploaded by CI.
+2. Stabilize coverage progressively:
+   - Create a small coverage roadmap (modules ordered by impact) and add co‑located tests in small increments to reach thresholds.
+   - If a threshold temporarily blocks progress, document an ADR or a short-term threshold adjustment with a clear restoration timeline.
+3. Improve developer ergonomics:
+   - Add lint-staged to auto-format staged files while keeping pre-commit hooks check-only.
+   - Update docs/DEVELOPER-SETUP.md with explicit reproduction steps and CI artifact locations (paths and how to download).
+4. Automate dependency and verify hygiene:
+   - Enable Dependabot/Renovate and require the full verify pipeline for dependency PRs.
+   - Ensure CI fails when package-lock.json changes are not included with dependency updates.
+5. Add CI artifact policies:
+   - Configure CI to always upload tsc.log, eslint-check.log, format-check.log, test-ci.log, and coverage HTML when verify runs (success or failure).

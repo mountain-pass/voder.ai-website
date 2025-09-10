@@ -37,13 +37,24 @@ function normSeverity(s) {
   if (!s) return 'info';
   const sLower = String(s).toLowerCase();
 
-  if (sLower === 'high' || sLower === 'critical' || sLower === 'moderate' || sLower === 'low' || sLower === 'info') return sLower;
+  if (
+    sLower === 'high' ||
+    sLower === 'critical' ||
+    sLower === 'moderate' ||
+    sLower === 'low' ||
+    sLower === 'info'
+  )
+    return sLower;
 
   return 'info';
 }
 
 // 1) New npm format: audit.vulnerabilities (object keyed by package)
-if (audit.vulnerabilities && typeof audit.vulnerabilities === 'object' && Object.keys(audit.vulnerabilities).length) {
+if (
+  audit.vulnerabilities &&
+  typeof audit.vulnerabilities === 'object' &&
+  Object.keys(audit.vulnerabilities).length
+) {
   for (const [pkg, info] of Object.entries(audit.vulnerabilities)) {
     let severity = info.severity || null;
 
@@ -60,25 +71,46 @@ if (audit.vulnerabilities && typeof audit.vulnerabilities === 'object' && Object
     severity = normSeverity(severity);
     counts[severity] = (counts[severity] || 0) + 1;
     if (severity === 'high' || severity === 'critical') {
-      highItems.push({ package: pkg, severity, title: info.title || null, range: info.range || null, via: info.via || null });
+      highItems.push({
+        package: pkg,
+        severity,
+        title: info.title || null,
+        range: info.range || null,
+        via: info.via || null,
+      });
     }
   }
 }
 
 // 2) Older format: audit.advisories
-if (audit.advisories && typeof audit.advisories === 'object' && Object.keys(audit.advisories).length) {
+if (
+  audit.advisories &&
+  typeof audit.advisories === 'object' &&
+  Object.keys(audit.advisories).length
+) {
   for (const adv of Object.values(audit.advisories)) {
     const sev = normSeverity(adv.severity || adv.effect || adv.title);
 
     counts[sev] = (counts[sev] || 0) + 1;
     if (sev === 'high' || sev === 'critical') {
-      highItems.push({ module: adv.module_name || adv.module || adv.name, severity: sev, id: adv.id, title: adv.title || null, vulnerable_versions: adv.vulnerable_versions || null, url: adv.url || null });
+      highItems.push({
+        module: adv.module_name || adv.module || adv.name,
+        severity: sev,
+        id: adv.id,
+        title: adv.title || null,
+        vulnerable_versions: adv.vulnerable_versions || null,
+        url: adv.url || null,
+      });
     }
   }
 }
 
 // 3) Metadata summary if present (useful for audit output shape differences)
-if (audit.metadata && audit.metadata.vulnerabilities && typeof audit.metadata.vulnerabilities === 'object') {
+if (
+  audit.metadata &&
+  audit.metadata.vulnerabilities &&
+  typeof audit.metadata.vulnerabilities === 'object'
+) {
   // merge counts without overwriting detected counts
   for (const [k, v] of Object.entries(audit.metadata.vulnerabilities)) {
     const key = normSeverity(k);

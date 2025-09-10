@@ -1,56 +1,56 @@
 Developer Setup & Verification Guide
 
-Purpose
--------
+## Purpose
+
 This document describes the minimal, non-interactive steps a contributor or CI job should run to install dependencies, verify the repository health, and produce a reproducible verification result locally.
 
-Prerequisites
--------------
+## Prerequisites
+
 - Node.js >= 22.17.0 (the project enforces this via package.json `engines`). Using a version manager (nvm, asdf, Volta) is recommended.
 - npm (comes with Node.js)
 
-Install dependencies (non-interactive)
--------------------------------------
+## Install dependencies (non-interactive)
+
 Use the lockfile via npm ci to get reproducible installs.
 
     npm ci --no-audit --no-fund
 
 If you intentionally do not commit a lockfile in this repository, ensure CI uses a pinned set of dependencies and document the rationale.
 
-Quick verification sequence (local)
------------------------------------
+## Quick verification sequence (local)
+
 Run the following sequence. Each step is designed to be non-interactive. Stop and fix the first failing step before proceeding to the next.
 
-1) Type-check
+1. Type-check
 
-    npm run type-check
+   npm run type-check
 
-2) Lint autofix
+2. Lint autofix
 
-    npm run lint:fix
+   npm run lint:fix
 
-3) Lint strict check
+3. Lint strict check
 
-    npm run lint:check
+   npm run lint:check
 
-4) Format files (Prettier)
+4. Format files (Prettier)
 
-    npm run format
+   npm run format
 
-5) Format verify
+5. Format verify
 
-    npm run format:check
+   npm run format:check
 
-6) Build for production
+6. Build for production
 
-    npm run build
+   npm run build
 
-7) Tests + coverage (CI style)
+7. Tests + coverage (CI style)
 
-    npm run test:coverage
+   npm run test:coverage
 
-Notes on failures
------------------
+## Notes on failures
+
 - If `npm run type-check` fails
   - Read the TypeScript diagnostics, fix reported type errors in src/.
   - If tsc cannot be found when running via a script, ensure npm ci completed successfully and that node_modules/.bin is available to npm scripts. Running `npx tsc -p tsconfig.build.json` can help isolate PATH issues.
@@ -67,34 +67,34 @@ Notes on failures
   - Add focused unit tests for uncovered code. Tests should use os.tmpdir(), fs.mkdtempSync for filesystem fixtures and vi.mock for mocking native modules, and must clean up after themselves.
   - If you cannot add tests immediately, relax thresholds temporarily in config/testing/vitest-jsdom.ts (document the change and add a TODO to restore thresholds). Prefer raising coverage in small PRs rather than long-term threshold relaxations.
 
-Developer utilities
--------------------
+## Developer utilities
+
 - Health check
 
-    npm run health-check
+  npm run health-check
 
   Runs a sequence of local checks (node engine, environment assumptions, tooling availability). Useful when preparing a release or debugging CI failures.
 
 - Prepare libraries
 
-    npm run prepare
+  npm run prepare
 
   Creates any local symlinks or preparation steps required for the monorepo-like development environment.
 
-CI recommendations
-------------------
+## CI recommendations
+
 - CI should run the same verification steps above in order, failing on the first error. The repository includes a `verify` script that runs an opinionated sequence. Example (CI job):
 
-    npm ci --no-audit --no-fund
-    npm run verify
+  npm ci --no-audit --no-fund
+  npm run verify
 
 - Keep package-lock.json committed for reproducible installs. If the project intentionally omits the lockfile, document why and pin versions in package.json.
 
-Commit hygiene
---------------
+## Commit hygiene
+
 - Keep commits small and descriptive. Example: `docs: add Developer Setup & Verification guide`.
 - Use `npm run lint:fix` and `npm run format` before committing changes to avoid style churn in PRs.
 
-Contact
--------
+## Contact
+
 For repository-level questions, open an issue or PR on GitHub.

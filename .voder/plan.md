@@ -1,40 +1,45 @@
-The previous plan repeated adding E2E CI and tests that—per the provided history—have already been implemented. That would be incorrect.
-
-Corrected plan follows.
-
 ## NOW
-
-Create a GitHub Actions workflow file at .github/workflows/e2e-stability.yml that runs the existing Playwright E2E suite nightly, collects pass/fail counts across browsers, and uploads a concise stability report artifact (JSON + plain-text summary) and Playwright artifacts (traces/screenshots) for triage.
+Update vitest configuration to stop Vitest from discovering Playwright E2E specs: modify vitest.config.ts to exclude the e2e directory (add an exclude pattern such as "tests/e2e/**") so Vitest only runs unit tests.
 
 ## NEXT
-
-1. Stabilize Playwright runs
-   - Add Playwright retries and traces-on-failure in playwright.config.ts (retries: 2 for CI, trace: 'on-first-retry').
-   - Update E2E tests to use robust selectors (data-test attributes) where needed; mark flaky selectors and add retries/waits where non-deterministic behaviour occurs.
-2. Raise unit test coverage to ≥90%
-   - Add focused Vitest unit tests under tests/coverage-boost/ targeting uncovered utilities (health-check-utils, prepare-libraries logic, config factories).
-   - Re-run coverage and iterate until global thresholds are met; prefer unit tests for coverage rather than forcing E2E coverage merges.
-3. CI integration and artifact retention
-   - Ensure the main CI workflow uploads Playwright artifacts on failure (traces/screenshots/videos) and that the nightly e2e-stability job always uploads the stability report.
-   - Add a short summary step that prints the last 7-day pass rate (consuming artifacts or job history) to the nightly job logs for maintainers.
-4. Document run & triage process
-   - Update README.md and docs/DEVELOPER-SETUP.md with:
-     - how to run E2E locally (build + preview + playwright test),
-     - location of CI E2E artifacts,
-     - how to interpret nightly stability reports and whom to notify for flaky investigations.
+1. Add separate test scripts and keep test responsibilities explicit
+   - package.json: add "test:unit": "vitest run --run", "test:e2e": "playwright test", and change "test" to run only unit tests (or keep existing "test" and document the new commands).
+   - Ensure "test:ci" remains a unit-test coverage run (vitest) and add a new "e2e:ci" script that runs Playwright with JSON reporting (npx playwright test --reporter=json --output=test-results/).
+2. Harden CI to run unit and E2E separately and upload artifacts
+   - CI (.github/workflows/ci.yml): split the test step into two jobs/steps:
+     - job A: install deps -> run npm run test:unit -> upload unit coverage artifact.
+     - job B (conditional or always after A): install Playwright browsers (npx playwright install --with-deps), build, start preview server in background (use the workflow’s start_server facility or backgrounded preview with a health check loop), run npm run e2e:ci, upload test-results/** and playwright artifacts, and always upload the produced e2e-stability JSON+TXT.
+   - Ensure the Playwright job uses the same node version and cache for Playwright browser binaries.
+3. Stabilize Playwright runs & improve unit coverage
+   - Playwright stability:
+     - Confirm playwright.config.ts already has CI retries and trace-on-failure (retries: isCI ? 2 : 0; trace: 'on-first-retry'); if not, add those options (but do not change server start behavior here).
+     - Audit flaky selectors used by tests/e2e/*.spec.ts and convert fragile selectors to stable attributes (prefer data-test or data-testid attributes). Mark any known-flaky tests with test.skip or test.fixme temporarily while stabilizing.
+   - Coverage boost:
+     - Add focused unit tests under tests/coverage-boost/ that target uncovered utility logic:
+       - tests/coverage-boost/health-check-utils.boost.test.ts — exercise parseVersion(), compareSemver(), and checkLockfileAndNodeModules with mocks.
+       - tests/coverage-boost/prepare-libraries.boost.test.ts — simulate prepare-libraries logic (symlink vs copy) using tmpfs mocks and assert outcomes.
+       - tests/coverage-boost/postcss-config.test.ts — load postcss.config.ts and assert plugin list includes autoprefixer (quick coverage).
+     - Re-run vitest coverage (npm run test:coverage). Iterate by adding minimal, focused tests until global coverage meets >= 90%.
+     - After coverage meets threshold, update vitest.config.ts coverage thresholds to enforce branches/functions/lines/statements = 90.
+4. Local/dev docs & runbook
+   - Update README.md (and docs/DEVELOPER-SETUP.md) with:
+     - how to run unit tests: npm run test:unit
+     - how to run e2e locally: npm run build && npm run preview (background) then npm run test:e2e
+     - where CI stores Playwright artifacts and nightly stability reports (.github artifact name & test-results/)
+     - triage steps for flaky failures (how to retrieve traces and rerun failing tests)
+   - Add a small checklist for stabilizing flaky tests and assigning owners for persistent flakiness.
 
 ## LATER
+1. Gate merges on reliability
+   - When nightly stability reports show a stable pass-rate (e.g., ≥95% over 7 days), add the E2E job status context to branch protection so merges require the unit job to pass and (optionally) pass the E2E stability gate.
+2. Flake detection & automated remediation
+   - Implement a simple flakiness tracker persisted as an artifact (or lightweight DB) that records per-test pass rates across nightly runs and triggers owner notifications when flakiness exceeds thresholds.
+   - Optionally implement an automatic re-run policy for transient failures in CI (e.g., re-run failing job up to N times before alerting).
+3. Visual/regression & selective cross-browser policy
+   - Add visual snapshot tests for critical hero/vision screens and run them nightly or on release branches.
+   - For PRs, run a lightweight E2E (Chromium only) and run the full cross‑browser matrix nightly.
+4. Monitoring & reporting
+   - Surface the nightly 7‑day pass rate in a dashboard (Slack, email, or GitHub comment) and add a short stability summary to the nightly job logs for maintainers.
+   - Consider a periodic report that summarizes flaky tests, recent changes correlated with regressions, and owners assigned for remediation.
 
-1. Gate merges after stability threshold
-   - When nightly stability shows low flakiness (e.g., ≥95% pass rate over 7 days) add the E2E job status context to main branch protection (via GitHub UI or scripted gh api call) to require E2E for merges.
-2. Flake detection & auto-retry policy
-   - Implement a lightweight flakiness tracker (persisted as workflow artifact or small internal DB) and add automated re-run policy for transient failures, alerting owners when flakiness exceeds thresholds.
-3. Visual regression and selective cross-browser runs
-   - Add visual snapshot tests for critical hero/vision screens and run them on nightly or release branches. Use selective cross-browser E2E for PRs (e.g., only Chromium on PR; full matrix nightly).
-4. Continuous monitoring & reporting
-   - Add Slack/email notifications for nightly stability regressions, and include E2E stability metrics in regular release and QA dashboards.
-
-Rationale:
-- The history indicates Playwright E2E and CI integration were already implemented; repeating that would be duplicative.
-- The immediate next priority is to stabilize E2E runs and raise unit coverage to satisfy the assessment's requirement (global coverage ≥90%) and to enable safe CI gating.
-- The NOW action implements a non-blocking nightly stability job that collects data for informed gating decisions without immediately changing branch protection.
+Rationale: the single NOW action immediately eliminates the test-runner collision (Vitest importing Playwright specs), which is blocking reliable unit test execution and coverage work. The NEXT steps sequence separates unit and e2e runners, stabilizes Playwright runs, raises unit test coverage to the required threshold, and updates CI so artifacts and nightly stability reports are consistently produced and available for triage. The LATER items cover gating, flake management, and long-term reliability and observability.

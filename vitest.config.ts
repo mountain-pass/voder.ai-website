@@ -30,6 +30,9 @@ export default createVitestJsdomConfig({
     ],
   },
   vitestConfig: {
+    test: {
+      exclude: ['tests/e2e/**'],
+    },
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),

@@ -6,6 +6,7 @@ const reportPath = process.argv[2] || 'test-results/playwright-report.json';
 function safeParse(path) {
   try {
     const raw = fs.readFileSync(path, 'utf8');
+
     return JSON.parse(raw);
   } catch (err) {
     return null;
@@ -13,6 +14,7 @@ function safeParse(path) {
 }
 
 const report = safeParse(reportPath);
+
 if (!report) {
   console.error(`No report found at ${reportPath}. Exiting with success for workflow.`);
   process.exit(0);
@@ -26,6 +28,7 @@ function walk(node) {
     for (const t of node.tests) {
       stats.total += 1;
       const s = (t.status || '').toLowerCase();
+
       if (s === 'passed') stats.passed += 1;
       else if (s === 'failed') stats.failed += 1;
       else if (s === 'flaky') stats.flaky += 1;
@@ -33,6 +36,7 @@ function walk(node) {
   }
   for (const key of Object.keys(node)) {
     const val = node[key];
+
     if (val && typeof val === 'object') walk(val);
   }
 }

@@ -81,10 +81,9 @@ We provide a small parser script used by CI to summarize npm audit findings. To 
 
 The repository also exposes a convenience npm script that chains both steps:
 
-   npm run security:local
+npm run security:local
 
 If the parser detects high or critical vulnerabilities it will exit with a non-zero status and print a concise summary. Commit the resulting audit.json and a short audit summary (audit-summary.md) if you intend to open a remediation PR so reviewers can triage the findings quickly.
-
 
 ## Developer utilities
 

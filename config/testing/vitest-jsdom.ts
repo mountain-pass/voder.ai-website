@@ -16,7 +16,11 @@ export function createVitestJsdomConfig(options: VitestJsdomOptions = {}): ViteU
   const { setupFiles = ['./src/test-setup.jsdom.ts'], coverage = {}, vitestConfig = {} } = options;
 
   // Extract any user resolve and test settings and merge with our defaults
-  const { resolve: userResolve = {}, test: userTest = {}, ...otherVitestConfig } = vitestConfig as any;
+  const {
+    resolve: userResolve = {},
+    test: userTest = {},
+    ...otherVitestConfig
+  } = vitestConfig as any;
 
   const mergedResolve = {
     extensions: ['.ts', '.js', '.json'],

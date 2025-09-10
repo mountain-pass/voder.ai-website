@@ -48,7 +48,7 @@ const out = { generatedAt: new Date().toISOString(), stats };
 fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
 fs.writeFileSync(
   'e2e-stability.txt',
-  `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`
+  `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`,
 );
 
 console.log('E2E stability summary written to e2e-stability.json and e2e-stability.txt');

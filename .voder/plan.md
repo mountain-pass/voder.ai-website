@@ -1,22 +1,35 @@
 ## NOW
-Edit the existing workflow file .github/workflows/security-audit.yml to invoke .github/scripts/generate-e2e-stability-summary.js (after the SBOM and parse-audit steps) and include the e2e artifacts in the job's artifacts upload: ensure the job uploads e2e-stability.json, e2e-stability.txt, playwright-results.json, and preview.out along with audit.json, audit-summary.md, and sbom.json.
+
+Trigger the updated security-audit GitHub Actions workflow (use workflow_dispatch on the fix/ci-capture-logs-and-coverage branch) and download the workflow run artifacts to validate that e2e-stability.json, e2e-stability.txt, playwright-results.json, and preview.out are present and contain expected content.
 
 ## NEXT
-1. Trigger the updated security-audit workflow (push or workflow_dispatch) and confirm artifacts:
-   - Download the uploaded artifact bundle and verify that e2e-stability.json and e2e-stability.txt exist and contain either real stats or a clear "reason" explaining why tests did not run.
-   - Verify preview.out and playwright-results.json were uploaded (or that the job produced a canonical empty e2e-stability with reason when Playwright results were absent).
-2. If e2e artifacts are missing or show stats.total === 0 and no artifacts:
-   - Inspect the CI job that runs run-e2e.sh (ci.yml): ensure that run-e2e.sh runs in the same job that uploads artifacts (so preview.out and playwright-results.json are present), and that PREVIEW_PORT/PREVIEW_URL are exported consistently into that job.
-   - Add a fast post-run CI step in .github/workflows/ci.yml (or the same run-e2e job) that runs node scripts/check-e2e-artifacts.js and fails the job early if e2e-stability.json indicates no tests ran and no artifacts produced.
-3. Triage security and secrets findings:
-   - If audit-summary.md reports high/critical vulnerabilities, open focused remediation PRs (upgrade/replace/patch) and re-run the workflow.
-   - If repo-secrets-scan.json (from the separate secret scan workflow) reports secrets, rotate credentials immediately and follow the repository incident/remediation process; do not change prompts/ prompt-assets/ or .voder/ files.
-4. Roll the change into a small PR with:
-   - The modified .github/workflows/security-audit.yml (with a brief PR description referencing artifact guarantees),
-   - A short test: workflow_dispatch run confirming the artifacts are produced and attached.
+
+1. If the artifacts are present and valid:
+   - Record the run ID and archive the artifacts for reference (attach to the PR or add a note in the issue/PR thread).
+   - Mark the verification step as passed and proceed to merge any outstanding workflow changes if they are on a feature branch.
+
+2. If e2e-stability.json shows stats.total === 0 and contains no "reason", or required artifacts (playwright-results.json / preview.out / test-results/**) are missing:
+   - Inspect the security-audit workflow run logs to confirm which job executed the e2e orchestration (scripts/run-e2e.sh) and which job performed the artifact upload.
+   - If run-e2e.sh runs in a different job than the artifact upload, update the workflow so upload occurs in the same job that executes run-e2e.sh (or persist artifacts to the job workspace and upload from that job). Files to adjust: .github/workflows/security-audit.yml (and, if necessary, .github/workflows/ci.yml) — ensure the sequence is:
+     - npm ci (reproducible install)
+     - run-e2e orchestration (scripts/run-e2e.sh)
+     - run .github/scripts/generate-e2e-stability-summary.js (best-effort)
+     - run node scripts/check-e2e-artifacts.js (fail early if no tests/artifacts)
+     - upload artifacts (playwright-results.json, e2e-stability.json, e2e-stability.txt, preview.out, test-results/**)
+   - Add a non-fatal generator invocation but make the artifact upload unconditional so the canonical fallback e2e-stability.json (with a "reason") is always uploaded.
+   - Ensure PREVIEW_URL / PREVIEW_PORT / PREVIEW_HOST are exported into the job environment that runs scripts/run-e2e.sh so the script’s health checks target the correct preview address.
+
+3. Add a fast verifier step to the same job:
+   - Insert a step that runs: node scripts/check-e2e-artifacts.js immediately after generate-e2e-stability-summary.js. Make sure this step runs with if: always() for artifact capture but exits non-zero when e2e artifacts are empty so the job fails fast and surfaces preview.out in the logs for debugging.
+
+4. Re-run the workflow (workflow_dispatch) and confirm:
+   - e2e-stability.json contains either real stats (stats.total > 0) or a top-level "reason" explaining why tests did not run.
+   - preview.out and playwright-results.json are uploaded.
+   - The check-e2e-artifacts.js step either passes or fails with clear diagnostics and preview.log tail captured in the job artifacts.
 
 ## LATER
-1. Add a nightly aggregator that collects the latest security-audit and e2e artifacts and persists them (artifact store or S3) and generates a compact HTML summary for trend analysis.
-2. Add an annotated CI check that surfaces the "reason" field from e2e-stability.json in the workflow run summary if tests did not run, to speed triage.
-3. Consider consolidating secrets-scan and security-audit artifacts into a single periodic "consolidated" workflow (only after verifying no duplication of effort), and implement automated PR creation for low-risk dependency bumps for critical runtime packages.
-4. Implement historical dashboards for e2e stability and security trends and automatic alerting for threshold breaches (e.g., new critical vulnerability or consecutive days of zero e2e runs).
+
+1. Add an annotation/summary step that reads the e2e-stability.json and, when stats.total === 0, posts a short annotation (job summary) with the "reason" to the workflow run and (optionally) as a PR check annotation for faster triage.
+2. Implement a scheduled nightly aggregator workflow that downloads the latest security-audit + e2e artifacts, persists them to a durable store (S3 or artifact archive), and generates a compact HTML summary for trend analysis.
+3. Add a small dashboard or GitHub Pages page that visualizes e2e stability trends and security-audit trends and configure alerts for threshold breaches (e.g., repeated days with zero e2e runs or new critical vulnerabilities).
+4. Harden CI: confirm all CI jobs use npm ci and the committed package-lock.json, add lockfile consistency checks in CI, and add a lightweight pre-merge verification job that runs the artifact verifier on the branch before merge.

@@ -51,6 +51,16 @@ jobs:
             echo "No generate-e2e-stability-summary.js script found; skipping"
           fi
 
+      - name: Verify E2E artifacts (fast verifier)
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f scripts/check-e2e-artifacts.js ]; then
+            node scripts/check-e2e-artifacts.js
+          else
+            echo "No scripts/check-e2e-artifacts.js found; skipping"
+          fi
+
       - name: Upload audit and SBOM artifacts (including E2E artifacts)
         if: always()
         uses: actions/upload-artifact@v4

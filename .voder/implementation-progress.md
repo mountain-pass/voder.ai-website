@@ -1,174 +1,184 @@
 # Implementation Progress Assessment
 
-**Generated:** 2025-09-10T20:35:35.344Z
+**Generated:** 2025-09-10T20:55:02.829Z
 
 ![Progress Chart](./progress-chart.png)
 
-Projected completion (from current rate): cycle 67.0
+Projected completion (from current rate): cycle 59.2
 
-## IMPLEMENTATION STATUS: INCOMPLETE (76.38% ± 10% COMPLETE)
+## IMPLEMENTATION STATUS: INCOMPLETE (84% ± 12% COMPLETE)
 
 ## OVERALL ASSESSMENT
-Overall the repository demonstrates strong execution, solid test infrastructure, and well-structured code with comprehensive documentation and ADRs. Unit testing and build workflows pass locally and the project is well-instrumented for CI artifacts. The primary blocker is the SECURITY assessment which did not complete (score 0) and prevents meeting the required thresholds; E2E verification and CI preview stability also need attention to guarantee reproducible Playwright runs in CI.
+Overall the project is in a strong state: unit tests, linting, ADRs, and CI automation are present and functioning. Key gaps remain in reproducible dependency management, CI e2e artifact orchestration, and a few execution/version-control housekeeping items that must be resolved before declaring COMPLETE.
 
 ## NEXT PRIORITY
-Perform a complete security assessment run (npm audit, SBOM verification, secret-scan triage) and resolve the failure that prevented the SECURITY evaluation; ensure e2e-stability artifacts are produced by CI to allow verification.
+Make dependency installs reproducible by committing a package-lock.json (or chosen lockfile), ensure CI uses `npm ci`, and verify run-e2e.sh produces and uploads e2e artifacts (preview.out, playwright-results.json, e2e-stability.json) in the same job.
 
 
 
 ## FUNCTIONALITY ASSESSMENT (90% ± 16% COMPLETE)
-- This is a small static pre-launch website whose core functionality (rendering the page, application entry points, build, and automated tests) is implemented and working. The project has a clear main entry (src/main.ts), an app initializer (src/app.ts) that injects content into #app, a working build (vite) producing dist/, and a full test suite which passes locally. There are no server/API or CLI components to evaluate; those are not present in the repository.
-- Main entry point: src/main.ts exists and imports ./app.js; it initializes the app on DOMContentLoaded or immediately depending on document.readyState.
-- App logic: src/app.ts contains init() which finds #app and injects HTML content (heading, description, subtitle).
-- HTML: index.html references /src/main.ts and includes <div id="app"></div> as the target element.
-- Automated tests: vitest run completed successfully: 4 test files, 14 tests, 14 passed (output captured from npm test).
-- Specific passing tests include: tests/main.test.ts, tests/coverage-increase.test.ts, tests/health-check-utils.test.ts, tests/prepare-libraries.test.ts — verifying DOM init behavior, health-check utilities, and library-prepare logic.
-- Build: npm run build (tsc + vite build) completes successfully and outputs dist/index.html and assets (build output captured).
-- Health-check utilities: scripts/health-check-utils.js implements parseVersion, compareSemver, and checkLockfileAndNodeModules; tests validate their behavior.
-- NPM scripts: dev/build/preview/test/type-check and verify workflows are provided in package.json; dev uses vite (static site), preview serves dist.
-- No API endpoints or server-side code present to validate; repository is a static frontend site.
-- No CLI binary or command-line tool implemented beyond npm scripts.
-- E2E: there are e2e-related config and scripts (Playwright dev deps and scripts) but no executed Playwright tests in this assessment; some e2e test files are ignored by .gitignore/.voderignore.
+- The repository implements a small static pre-launch website with clear entry points, a testable init function, a working build, and a green test suite. There is no backend or API to evaluate; preview/start of a local server timed out in this environment but the production build was produced successfully and unit tests passed.
+- Main entry points exist and were inspected: src/main.ts (bootstraps the app) and src/app.ts (exported init() renders the #app content).
+- index.html loads /src/main.ts and contains the <div id="app"></div> where init() injects content.
+- Unit tests executed: npm test -> Vitest ran 4 test files, 14 tests passed (no failures). Output shows all tests passed.
+- Build executed successfully: npm run build produced a dist/ containing index.html and built assets (Vite build succeeded).
+- The app's core runtime behavior (rendering the Voder heading into #app) is covered by tests (tests/main.test.ts) and verified by running the test suite.
+- No server-side code, CLI tool, or API endpoints found in the repository; the project is a static site (dependencies and files reflect this).
+- E2E tooling (Playwright) and scripts are present (playwright config and e2e scripts), but full E2E tests were not executed here.
+- Attempt to run npm run preview (start a local preview server) failed in this environment with spawnSync /bin/sh ETIMEDOUT — likely an environment/timeout issue rather than a build error.
 
 **Next Steps:**
-- Run the dev server (npm run dev) and perform a manual smoke test in a browser to validate runtime rendering and third-party library behavior (three, gsap) in a real browser environment.
-- Add/enable end-to-end Playwright tests (or ensure they run in CI) to validate the rendered UI and interactive behavior in a browser; add them to the verify pipeline.
-- Add automated accessibility and visual regression checks (axe, Playwright snapshots) to guard UI regressions for the cinematic/animation features.
-- If interactive animations are planned (three.js/gsap), add integration tests that exercise those flows and instrument performance checks.
-- Document and/or add a simple deployment preview step (e.g., a script or CI job that runs npm run preview) so production-like bundles can be validated automatically.
+- Run the dev server locally (npm run dev) and manually verify the site in a browser (http://localhost:5173) to confirm runtime behavior in a browser environment.
+- Run E2E Playwright tests (npm run e2e:ci or npx playwright test) in a CI or local environment that supports launching browsers to validate real browser behavior and catch regressions in animations/3D assets.
+- If preview failures persist in automated environments, investigate the spawnSync timeout (increase timeout or use start_server wrapper) and ensure CI runners allow preview processes.
+- Add or run accessibility and visual regression checks (axe, Playwright snapshots) if higher confidence in UX/visual correctness is required.
+- If this project should expose an API or CLI, add explicit entry points and tests for those; otherwise document in README that this is a static site with no backend.
 
-## CODE_QUALITY ASSESSMENT (86% ± 16% COMPLETE)
-- Source code is small, well-structured and well-tested with a comprehensive linting/formatting configuration in place. Running the toolchain shows the TypeScript source and tests are clean (ESLint/Stylelint produced no runtime errors, Vitest all green with 100% coverage). The main quality issues are in repository documentation and some script files (Prettier/markdownlint errors).
-- ESLint is configured via eslint.config.ts and a layered config in config/eslint (base, dx, performance). This is a modern TypeScript-aware flat ESLint setup using @typescript-eslint/parser + plugins (evidence: config/eslint/index.ts and config/eslint/base.ts).
-- Prettier configuration exists (prettier.config.ts) and formatting scripts are present in package.json (format, format:check).
-- stylelint configuration exists (stylelint.config.ts) and a lint:css script is defined.
-- Running ESLint (npm run lint / npm run lint:check) produced no visible errors in the project files (no error output), implying the source files comply with the configured ruleset.
-- Running tests (npm test) executed Vitest: 4 test files, 14 tests — all passed. Running coverage (npm run test:coverage) shows 100% coverage for the project source files (app.ts, main.ts).
-- Prettier format check (npm run format:check) reported a code style issue: scripts/check-e2e-artifacts.js — Prettier recommends reformatting that file. (Evidence: format:check output showing '[warn] scripts/check-e2e-artifacts.js').
-- Markdown lint (npm run lint:md) fails with many issues across docs/*.md (MD041, MD010, MD009, MD012, MD031, etc.). The failure is widespread across docs/libraries/* and README.md — indicates documentation files contain trailing spaces, hard tabs, wrong heading structure and other markdown style problems.
-- stylelint (npm run lint:css) ran with no error output (no issues reported for src/style.css).
-- Code organization: small, focused src/ directory (src/app.ts, src/main.ts, src/style.css) and tests/ directory with tests covering initialization and utilities. Naming and structure are consistent and idiomatic.
-- Error handling in source is minimal but present: init() logs an error and returns if #app is missing (src/app.ts). For a small site this is acceptable, but more complex logic would warrant richer error handling and test cases.
-- No obvious code duplication in the small codebase; functions are short and single-responsibility.
-
-**Next Steps:**
-- Run Prettier --write (npm run format) and commit changes to fix the reported formatting issue in scripts/check-e2e-artifacts.js.
-- Fix markdownlint issues across docs (address hard tabs, trailing spaces, heading structure, fenced code block spacing). Consider running markdownlint-cli2 --fix where applicable and add the fix step to CI or a pre-commit hook.
-- Ensure CI enforces format:check and lint:md (if not already) so documentation style regressions fail the build. The package.json already has a verify script referencing these steps — ensure CI calls the verify or the specific lint/format checks.
-- Expand lint coverage if desired: run ESLint with type-aware rules where applicable and confirm no rule exemptions are hiding issues. Consider running eslint with --max-warnings=0 in CI (package.json already provides lint:check).
-- Consider improving error handling for future complexity (throwing/propagating errors, using a logger abstraction) and add tests covering error paths (e.g., missing DOM container).
-- If htmlhint config references built artifacts (htmlhint.config.js imports from ./dist), ensure the distribution build step or generated configs are present for any consumers of htmlhint to avoid runtime import errors in tooling.
-
-## TESTING ASSESSMENT (85% ± 15% COMPLETE)
-- Testing is well set up and the unit test suite (Vitest/jsdom) runs and passes locally with 100% coverage for the application entry/source files. E2E tests (Playwright) and CI workflows are present and wired into GitHub Actions, but Playwright tests require a running preview server and in-repo Playwright results show tests were skipped — E2E execution was not verified locally here. Overall the project demonstrates a good testing setup with minor gaps around validating E2E execution locally and expanding test coverage beyond the small set of runtime files.
-- Test frameworks and tools present: vitest (unit tests, jsdom), @playwright/test (E2E), testing-library/jest-dom, happy-dom/jsdom and coverage provider @vitest/coverage-v8 (declared in package.json).
-- Test files found: tests/*.test.ts (coverage-increase.test.ts, health-check-utils.test.ts, main.test.ts, prepare-libraries.test.ts) and tests/e2e/app.spec.ts (Playwright).
-- Running npm test (vitest run) completed successfully: 4 test files, 14 tests — all passed locally (output captured).
-- Coverage run (npm run test:coverage) produced v8 coverage report with 100% for app.ts and main.ts and overall coverage shown by vitest run output.
-- Vitest configuration (vitest.config.ts and config/testing/vitest-jsdom.ts) sets up jsdom environment, setupFiles, coverage reporter (text/json/html) and default coverage thresholds (90%) — thresholds exist in the config factory.
-- Playwright config (playwright.config.ts) and CI workflows (.github/workflows/ci.yml and e2e-stability.yml) are present and attempt to run E2E tests in CI (including preview server steps and browser installation).
-- Playwright run artifact (playwright-results.json) shows the e2e test was present but marked as 'skipped' in the recorded results (no successful browser test run in this environment), indicating E2E needs the preview server/browser environment to be executed.
-- CI is configured to run type-check, format, lint, build, unit tests with coverage, and E2E; the workflow collects logs and coverage artifacts.
-- Unit tests include good test patterns (DOM setup/teardown, mocking fs and console where needed) and avoid writing repo files (use tmpdir).
+## CODE_QUALITY ASSESSMENT (85% ± 15% COMPLETE)
+- The project demonstrates high code quality for the application code: TypeScript is used with strict settings, ESLint/Stylelint/Prettier configs are present, type-checking and unit tests pass, and lint/test scripts are provided. The main outstanding issues are formatting/lint problems in the documentation (many markdownlint errors) and a few Prettier warnings for non-source files. Addressing docs formatting and running automatic fixes will bring this to near-production quality.
+- Linting configuration present and structured: eslint.config.ts and a layered config in config/eslint (base, dx, performance). stylelint.config.ts and prettier.config.ts exist and are applied via package.json scripts.
+- Package.json includes explicit scripts for lint, lint:fix, lint:check, lint:css, lint:md, format, format:check, type-check, test and verify (combined pipeline).
+- TypeScript config: tsconfig.json extends a central base and compilerOptions include strict=true; running `tsc --noEmit` completed without errors.
+- Unit tests (Vitest) exist for app initialization and utilities and all tests passed when run. Output: 4 test files, 14 tests, all passed.
+- ESLint run produced no visible errors when executed (npm run lint / npm run lint:check returned without errors).
+- Stylelint for CSS and the project's CSS file exist; running lint:css completed without reported errors for the source CSS.
+- Prettier format check reported style issues for at least one non-source file (e2e-stability.json) — see `npm run format:check` output which warns about that file.
+- Markdown linting (markdownlint-cli2 via `npm run lint:md`) produced many failures across docs (MD041, MD010 hard tabs, MD009 trailing spaces, MD012 multiple blank lines, MD033 inline HTML, etc.). This is a significant source of lint failures in the repository.
+- Code organization is clean and minimal for the app: src contains app.ts and main.ts with clear separation of initialization logic (app.init extracted for testability). Naming is consistent and function-level error handling exists (app.init checks for missing #app and logs error).
+- No obvious code duplication in the app-level code (small codebase).
+- CI/automation: repository contains .github workflows and scripts, and a 'verify' script that chains linting, formatting checks, build and tests — good developer workflow integration.
 
 **Next Steps:**
-- Verify and run Playwright E2E tests locally by starting the preview server (npm run preview or build+preview) and running npx playwright test --local to confirm E2E stability outside CI. Add a documented local recipe for running E2E tests in the README.
-- Ensure Playwright E2E tests are deterministic in CI: add a webServer configuration in playwright.config (or ensure scripts consistently start and wait for preview) so E2E tests are less likely to be skipped/flaky.
-- Expand unit/integration test coverage to exercise more runtime scripts and library code beyond app.ts/main.ts (many source files are excluded from current coverage by configuration).
-- Add CI assertions or badges for test coverage if required by project policy, and ensure coverage thresholds are enforced in CI (the configuration provides thresholds, but confirm the CI run fails when thresholds are not met).
-- Add periodic health checks for flaky tests (e.g., retry policies, capture trace/video on failure) and consider running Playwright in a single browser project in dev to speed local iteration.
+- Run Prettier across the repo (e.g. `npm run format`) and/or add/prefer Prettier configuration for JSON and other file types causing warnings (e.g. e2e-stability.json) so format:check passes.
+- Fix the markdownlint issues reported by `npm run lint:md` (start by running `npm run lint:md` locally and apply fixes or `markdownlint-cli2 --fix` where possible). This is the largest outstanding lint noise and affects documentation quality.
+- Run ESLint/Stylelint with autofix flags (`npm run lint:fix`, `npm run lint:css:fix`) and review any remaining warnings to enforce a zero-warnings policy in CI (lint:check already uses --max-warnings 0).
+- Add Prettier/Markdownlint to pre-commit hooks (husky is present) so docs and generated files are formatted before commits.
+- Consider adding a CI gating rule to fail the pipeline on markdownlint/Prettier issues (the verify script exists but ensure GitHub Actions actually runs that in PR checks).
+- Expand tests/coverage if the project grows: add small integration/e2e checks for the site entry or add coverage thresholds to the CI test runs to prevent regressions.
 
-## EXECUTION ASSESSMENT (90% ± 17% COMPLETE)
-- The project shows strong execution: dependencies install, type-check, lint/format, unit tests, and a production build all succeed. The app initializes correctly in tests and the build outputs assets. One issue occurred running the preview server in this environment (spawn ETIMEDOUT), likely environmental rather than a code defect.
-- npm ci completed successfully and project dependencies were prepared via scripts/prepare-libraries.js.
-- Node engine requirement satisfied (package.json: >=22.17.0; runtime: v22.17.1).
-- Unit tests passed: Vitest reported 4 test files and 14 tests all passing.
-- TypeScript type-check (tsc --noEmit) completed with no errors.
-- ESLint initially reported 8 warnings; running npm run lint:fix then npm run lint:check resulted in zero warnings (health-check passes).
-- Prettier format was run and subsequent format check passed.
-- Health-check script (node scripts/health-check.js) completed successfully, validating type-check, lint and format steps.
-- Production build (npm run build using Vite) completed successfully and produced dist/ assets.
-- Runtime initialization logic includes guard/error logging for missing #app element and is covered by tests (init() populates DOM).
-- Attempting to run npm run preview (vite preview) failed with a spawn ETIMEDOUT in this environment; build itself had already succeeded.
+## TESTING ASSESSMENT (90% ± 16% COMPLETE)
+- Good unit testing setup: Vitest-based tests run successfully with full coverage for the exercised files. Playwright e2e tests and broader integration coverage exist but are not executed by the unit test run and require separate CI orchestration.
+- Vitest is configured and used (package.json scripts: test, test:ci, test:coverage; vitest.config.ts present).
+- Found 4 unit test files in tests/ (coverage-increase.test.ts, health-check-utils.test.ts, main.test.ts, prepare-libraries.test.ts) and a Playwright e2e test at tests/e2e/app.spec.ts.
+- Running 'npm run test:ci' executed Vitest: 14 tests passed, 0 failed in the local run.
+- V8 coverage reported in the run shows 100% statements/branches/functions/lines for app.ts and main.ts (coverage reporters configured: text, json, html).
+- tests/setup.ts configures @testing-library/jest-dom and clears DOM between tests, demonstrating test hygiene.
+- Playwright configuration and an 'e2e:ci' script exist, but e2e tests were not run as part of the Vitest suite (tests/e2e/** excluded in vitest config).
+- DevDependencies include vitest, @playwright/test, testing-library packages, and coverage tooling (@vitest/coverage-v8).
 
 **Next Steps:**
-- Retry 'npm run preview' in another environment or increase command spawn timeout to confirm that Vite preview serves the built site correctly (likely an environment/process issue).
-- Run end-to-end tests with Playwright (e2e) against the preview or a deployed build to validate runtime behavior and catch regressions in a browser context.
-- Add a smoke/integration test that starts the preview server and requests index.html to ensure end-to-end serving works in CI.
-- Consider providing a Dockerfile or a simple wrapper script for consistent preview/serve behavior in CI to avoid environment-specific spawn/timeouts.
-- Document the use of experimental Node flags (NODE_OPTIONS="--experimental-strip-types") and any CI implications; remove or update when the feature stabilizes.
+- Integrate Playwright e2e tests into CI (or document the separate e2e pipeline). Ensure CI starts a server (vite build/preview or dev server) before running e2e tests and captures Playwright reports.
+- Increase unit/integration test coverage beyond app.ts/main.ts to cover more of the codebase (scripts/, other src modules) so coverage metrics reflect overall project quality.
+- Add CI job badges (tests and coverage) to README to surface test status.
+- Implement flaky-test mitigation for e2e (retries, stable timeouts, server readiness checks) and store Playwright artifacts in CI for debugging failures.
+- Consider adding integration tests that exercise module interactions (not just DOM unit tests) and expand test matrix in CI if multi-environment compatibility is required.
 
-## DOCUMENTATION ASSESSMENT (88% ± 16% COMPLETE)
-- Documentation is high-quality and developer-focused: there is a clear README with setup/build/test instructions, a developer setup guide, an extensive set of architectural decision records (ADRs) and per-library docs. Missing or weak areas are a formal changelog/release notes, explicit API documentation (none found), and limited inline code docstrings/comments. A few docs files are empty/minimal and I could not run the test suite here to validate generated docs/coverage artifacts.
-- README.md exists at repository root and contains clear Quick start, build, test, lint, and verification instructions (references to npm scripts, Node engine requirement).
-- package.json exposes comprehensive scripts (dev, build, test, test:coverage, lint, format, verify, health-check, prepare, security:local) that match instructions in README and docs/DEVELOPER-SETUP.md.
-- docs/DEVELOPER-SETUP.md provides a reproducible developer verification sequence (type-check, lint autofix, lint check, format, build, tests + coverage) with troubleshooting notes — good operational documentation for contributors.
-- docs/decisions/ contains many Architectural Decision Records (ADRs) (0000..0024 etc.) documenting architecture/process choices; good evidence of recorded design rationale.
-- docs/libraries/ contains many markdown pages documenting libraries and dependencies (e.g., vite.md, typescript.md, vitest.md, eslint.md), which helps onboard maintainers and reviewers.
-- SECURITY.md exists and documents automated scans, artifacts, and triage guidance; audit-summary.md and ci-audit-summary.md present concise audit results.
-- There is test code (tests/*.ts) and an app entry (src/app.ts) with minimal inline comment; tests are referenced in docs and README, but I did not run them here because dependency installation (npm ci) is required to execute the suite in this environment.
-- No explicit CHANGELOG or RELEASE_NOTES file was found (no files matching CHANGELOG* or changelog*).
-- No API documentation (e.g., OpenAPI spec, API.md, or detailed endpoint/interface docs) was found. This may be acceptable for a static pre-launch website, but if the project exposes an API this is a gap.
-- Code-level documentation is sparse: source files are small and lack JSDoc/TSDoc docstrings or richer inline documentation (src/app.ts has a single-line comment).
-- Some docs files appear empty or minimal (docs/CI-AUDIT.md and docs/E2E-REPRO.md are empty), indicating areas intended for content that haven't been populated.
-- CI workflows are present under .github/workflows (ci.yml, security-audit.yml, e2e-stability.yml, secret-scan.yml, code-scanning.yml), but there are no documentation badges (e.g., build/test coverage) in the README describing current CI status.
+## EXECUTION ASSESSMENT (85% ± 16% COMPLETE)
+- The project executes correctly for the main developer workflows: the test suite (Vitest) passes and a production build (Vite) is produced. Runtime initialization code is defensive and tests exercise key behaviors. Minor execution issues were observed: the preview command timed out in this environment and the repository fails the health-check due to a Prettier formatting issue (non-blocking for build/test). Playwright e2e tests are configured but were not executed here.
+- Unit/integration tests: npm run test (Vitest) completed successfully — 4 test files, 14 tests, all passed.
+- Build: npm run build succeeded. Vite produced a dist/ with index.html and assets (built in ~222ms).
+- Distribution artifacts: dist/index.html and assets exist and reference built JS/CSS bundles.
+- Dev server: npm run dev was started in the background (process started). I could not fully verify service responsiveness from this environment (network/process checks were inconclusive).
+- Preview: npm run preview failed in this environment with a spawn/timeout error (ETIMEDOUT) when attempting to run the preview command.
+- Health-check: npm run health-check ran but failed the Prettier format check. The log shows a code style issue for e2e-stability.json (Prettier reported formatting issues).
+- Runtime checks / error handling: src/app.ts checks for the #app element and logs an error + returns if missing (tests verify this behavior). health-check.js includes clear messages and good exit codes for failures.
+- E2E configuration: Playwright is present and configured (playwright.config.ts), but no Playwright e2e tests were executed during this assessment.
+- Node engine: package.json requires Node >=22.17.0 and the environment used Node v22.17.1 so engine checks pass here.
+- Lockfile & deps: package-lock.json is present. Tests and build succeeded using the current installed node_modules.
 
 **Next Steps:**
-- Add a CHANGELOG.md (or follow 'Keep a changelog' format) to document releases and notable changes; link/update it during releases.
-- If the project exposes any runtime API, add explicit API documentation (API.md or OpenAPI) describing endpoints, request/response formats, and examples. If not applicable, add a short note in README stating there is no API.
-- Populate the currently-empty docs files (docs/CI-AUDIT.md, docs/E2E-REPRO.md) or remove placeholders if not needed.
-- Add inline code documentation where helpful (JSDoc/TSDoc) for modules and exported functions to aid maintainability (e.g., annotate exported functions in src/ and any non-trivial logic).
-- Add a CONTRIBUTING.md with contribution guidelines, branch/PR workflow, commit message conventions, and how to run the verify sequence locally to help new contributors.
-- Consider adding release/repo badges (build status, test coverage, security scan) to README so readers can quickly assess repository health.
-- Add a brief architectural overview diagram or one-page ARCHITECTURE.md that references the ADRs and shows component boundaries for quicker onboarding.
-- Automate generation or verification of documentation artifacts in CI (e.g., ensure docs are built/validated, or add a docs:check step) and document that in README/DEVELOPER-SETUP.md.
-- When possible, run the verify sequence locally (npm ci && npm run verify) and update docs with any artifacts that result (coverage/index.html location, audit artifacts) so documentation and repository state remain in sync.
+- Address Prettier formatting issues (e.g., run npm run format or fix e2e-stability.json) so the health-check script passes as part of verify/CI.
+- From a local environment, re-run npm run preview (or increase the timeout) and verify the preview server responds (curl http://localhost:<preview-port>) and serves the built files.
+- Run the Playwright e2e suite against a running preview to validate end-to-end runtime behavior (set PREVIEW_URL or run preview + playwright test).
+- Add/confirm automated checks in CI to run build -> preview -> e2e (or use a headless server start + Playwright) so preview availability is validated in CI.
+- Improve runtime observability if needed: ensure dev/preview server logs are captured during start/preview steps and surface any startup errors in CI logs.
+- Optional: document exact Node/npm versions and any required environment variables for preview/e2e in README to reduce environment-specific timeouts.
 
-## DEPENDENCIES ASSESSMENT (90% ± 16% COMPLETE)
-- Dependencies are well-managed: package.json and a package-lock.json are present, Dependabot is enabled, npm audit (local and CI artifacts) reports zero vulnerabilities, and installed deps are visible. The main gaps are an inability to run an outdated check in this environment and a large number of devDependencies which increase surface area to monitor.
-- package.json is present and declares runtime dependencies (@microsoft/clarity, gsap, three) and a comprehensive set of devDependencies (eslint, vitest, typescript, vite, etc.).
-- A package-lock.json exists in the repository (git ls-files shows package-lock.json), which enables reproducible installs. The file could not be read here due to ignore/filtering but its presence is confirmed.
-- npm audit (run here) returned an empty vulnerabilities object; audit.json and ci-audit.json in the repo also show 0 critical/high/moderate/low/info findings (audit-summary.md and ci-audit-summary.md confirm).
-- npm ls --depth=0 succeeded and shows the top-level installed packages matching package.json (evidence of dependencies being installed in the environment where commands were run).
-- Dependabot is configured (.github/dependabot.yml) to run weekly for npm and open dependency PRs, providing automatic update coverage.
-- There are many devDependencies (audit metadata: ~739-743 dev deps), increasing the surface area that needs maintenance and monitoring.
-- npm outdated failed to run in this execution environment (command returned an error), so an up-to-date list of outdated packages could not be produced here.
-- The repo includes scripts and CI tooling to run audits and parse results (.github/scripts/parse-audit.js and npm scripts: "security:local", "audit:fix").
-- The project uses caret ranges (^) in package.json, which is standard but allows minor/patch updates that may introduce regressions; the lockfile provides exact resolution for installs.
-
-**Next Steps:**
-- Run npm outdated (locally or in CI) to get a current list of packages with available updates and prioritize updating critical runtime deps (here runtime deps are few).
-- Add a CI job that fails the build if dependencies have known high/critical vulnerabilities and regularly runs npm audit (there is existing support; ensure it's enabled in CI pipeline).
-- Consider trimming devDependencies if possible to reduce maintenance surface (audit metadata shows a very large dev dependency tree).
-- Verify package-lock.json is committed and maintained (git shows it is present) and ensure CI uses npm ci to install exactly the locked versions.
-- If you want stricter dependency versioning for critical runtime libs, consider pinning exact versions or using shrinkwrap + automated dependency updates and review PRs from Dependabot weekly.
-- Investigate why npm outdated failed in this environment (network, registry auth, or environment policy) and ensure tooling to surface outdated packages is available in CI/developer workflows.
-
-## SECURITY ASSESSMENT (0% ± 20% COMPLETE)
-- Assessment failed due to error: 400 Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 291448 tokens. Please reduce the length of the messages.
-- Error occurred during SECURITY assessment: 400 Input tokens exceed the configured limit of 272000 tokens. Your messages resulted in 291448 tokens. Please reduce the length of the messages.
+## DOCUMENTATION ASSESSMENT (80% ± 17% COMPLETE)
+- Documentation is generally strong for developer onboarding and architectural rationale (good README, developer setup, ADRs and library notes, security/audit docs). Missing items and small gaps (no changelog/release notes, no API docs or formal public API reference, some empty placeholder docs and sparse inline code comments) prevent a higher score.
+- README.md present and thorough: contains quick start, scripts, build/test/lint instructions and troubleshooting guidance. Matches package.json scripts and node engine requirement.
+- Developer-focused docs exist: docs/DEVELOPER-SETUP.md provides step-by-step verification, reproduce instructions for audit tooling and CI recommendations.
+- Architectural documentation: docs/decisions/ contains many accepted Markdown ADRs (0000..0024) documenting architectural decisions.
+- Library / dependency guidance: docs/libraries/ contains many per-library markdown notes (e.g., vite.md, typescript.md, vitest.md), useful for maintainers.
+- Security and audit docs: SECURITY.md, audit-summary.md and scripts are present and describe triage and CI scan artifacts.
+- Repository-level scripts and docs tooling: package.json exposes docs-related scripts (docs:setup, docs:report) and a verify workflow; README references verification and CI-local commands.
+- Source code inline documentation is minimal: src/main.ts and src/app.ts include only brief comments. There are no JSDoc-style docstrings describing public interfaces.
+- No API reference found: no API.md, no generated API docs or formal public API documentation (repo appears to be a small static site, but an explicit note would help).
+- No changelog or release notes discovered (no CHANGELOG.md or releases/ notes).
+- Some docs are empty/placeholders: docs/E2E-REPRO.md and docs/CI-AUDIT.md are empty (no content), indicating unfinished documentation in places.
+- Tests and developer docs are consistent: tests exist and README/docs instructions align with package.json scripts (evidence of upkeep).
 
 **Next Steps:**
-- Check assessment system configuration
-- Verify project accessibility
+- Add a changelog or release notes (CHANGELOG.md) and document release/versioning process (how releases are recorded and where to find them).
+- Either populate or remove empty placeholder docs (e.g., docs/E2E-REPRO.md, docs/CI-AUDIT.md) and ensure each docs/ file has a purpose and content.
+- Add a brief API/reference document (API.md) or a short section in README explaining there is no public API if appropriate. If there are public modules, add JSDoc or generated API docs.
+- Improve inline code documentation: add JSDoc comments for exported functions and module-level descriptions to help maintainers and enable automatic doc generation.
+- Add CONTRIBUTING.md and a short release / changelog maintenance guideline so contributors know how to update docs and record changes.
+- Consider a documentation index or docs/README that maps the available documents (developer setup, ADRs, libraries, security) to make discovery easier.
+
+## DEPENDENCIES ASSESSMENT (75% ± 15% COMPLETE)
+- Dependencies are declared and installed; an automated audit (audit.json / npm audit) reports zero vulnerabilities and npm ls shows top-level packages installed. However the repository is missing a lockfile (package-lock.json), which undermines reproducible installs and some repository scripts/CI expectations. I could not produce an automated outdated report in this environment, so the exact freshness of packages is unknown.
+- package.json present and lists 3 production dependencies (@microsoft/clarity, gsap, three) and many devDependencies (eslint, vitest, playwright, typescript, vite, etc.). (file: package.json)
+- npm audit returned a report with zero vulnerabilities (audit.json and audit-summary.md exist and match). Command run: `npm audit --json` returned no vulnerabilities. (files: audit.json, audit-summary.md, ci-audit.json, ci-audit-summary.md)
+- Installed modules are present in node_modules and top-level installed package versions are visible via `npm ls --depth=0 --json` (output shows the packages listed in package.json are installed). (command: npm ls --depth=0 --json)
+- No lockfile in repository root: package-lock.json / yarn.lock / pnpm-lock.yaml are missing. The health-check script explicitly checks for package-lock.json and will fail when it is absent. (file: scripts/health-check.js — checkLockfileAndNodeModules; missing package-lock.json observed)
+- CI workflows and some scripts expect or reference a lockfile (e.g. .github/workflows/ci.yml uses package-lock.json in cache keys and runs `npm ci`). Without a committed lockfile CI reproducibility is reduced. (file: .github/workflows/ci.yml)
+- Many dependency versions in package.json use caret ranges (^) which is fine when a lockfile is used, but without a lockfile the installed versions can vary over time. (file: package.json)
+- I attempted to run `npm outdated --json` but the command failed in this environment, so I could not determine which dependencies are out-of-date here. Recommend running `npm outdated` in a networked environment or CI. (command: npm outdated failed)
+- Repository contains automation and artifacts for dependency/security scanning (SECURITY.md, audit artifacts, CI audit artifacts), indicating an existing maintenance process but relying on ephemeral local or CI-generated lockfiles rather than a committed lockfile.
+
+**Next Steps:**
+- Generate and commit a lockfile: run `npm ci` (or `npm install`) locally to create package-lock.json, verify install, then commit package-lock.json to the repository. This ensures reproducible installs and aligns with CI which runs `npm ci`.
+- Re-run vulnerability and freshness checks after the lockfile is present: `npm audit --json > audit.json` and `npm outdated --json` and review results. If `npm audit` reports issues run `npm audit fix` (or open PRs to update/replace vulnerable packages).
+- Add automated dependency freshness checks to CI (e.g., run `npm outdated` or use tooling like Renovate/Dependabot) and fail the release pipeline on known-critical advisories.
+- If you want strict pinned versions, consider using exact versions in package.json or rely on the lockfile for reproducible builds; avoid relying solely on caret ranges without committing the lockfile.
+- Update scripts/documentation to make the lockfile requirement explicit (README and health-check already hint at this) and ensure CI caching keys/reference the committed lockfile (e.g., hashFiles('package-lock.json')).
+- Periodically run `npm audit` and schedule regular dependency updates in a maintenance cadence; consider enabling automated PRs from Renovate/Dependabot and a small maintenance window to test dependency updates.
+
+## SECURITY ASSESSMENT (85% ± 16% COMPLETE)
+- Strong security automation and good hygiene for a static site: daily npm-audit, secret scanning (gitleaks), CodeQL, SBOM generation, Dependabot and pre-commit checks are present and configured. Local/CI npm audit shows zero vulnerabilities and repository secret scan artifacts are empty. Remaining gaps are around runtime hardening (CSP/security headers, HTTPS enforcement in hosting config), explicit SRI/CSP for external resources, and no server-side auth/validation (the project is a static pre-launch site so runtime surface is small).
+- GitHub Actions security workflows present: .github/workflows/security-audit.yml (daily npm audit + SBOM), .github/workflows/secret-scan.yml (gitleaks), .github/workflows/code-scanning.yml (CodeQL).
+- Audit artifacts exist and show no current vulnerabilities: audit.json and audit-summary.md contain zero critical/high/moderate/low findings.
+- Local execution of `npm audit --json` returned an empty vulnerabilities set (auditReportVersion 2, all counts 0) confirming the packaged lockfile currently has no known npm advisories.
+- .github/scripts/parse-audit.js exists and enforces failing the workflow if high/critical advisories are detected (exits non-zero on high/critical).
+- Secret scanning configured to redact results and fail the job if secrets are detected; repo-secrets-scan.redacted.txt and repo-secrets-scan.txt are present but empty (no plaintext secrets found in these artifacts).
+- Pre-commit hooks (.husky/pre-commit) enforce non-mutating checks (format:check, lint:check, type-check) to keep code quality and reduce risk from accidental commits.
+- Dependabot is configured (.github/dependabot.yml) for weekly npm dependency update PRs, supporting timely dependency maintenance.
+- package.json includes security-related scripts (audit:fix, security:local) and a verify script used by CI to run audits/lints/build/tests.
+- Greps across the repository for common secret patterns (password, token, AKIA, PRIVATE_KEY, etc.) returned no matches, providing additional evidence of no obvious hardcoded secrets.
+- Project is a static site (no server-side code in repository). That reduces runtime attack surface but also means there is no server-level configuration for security headers, HTTPS enforcement, or server-side input validation/authentication in this repo.
+- No explicit Content Security Policy (CSP) meta tag, security headers configuration, or Subresource Integrity (SRI) usage was found in the repository files inspected (index.html has no CSP meta tag and no SRI attributes).
+
+**Next Steps:**
+- Add host-level/runtime security hardening guidance to the repo (in docs/ or SECURITY.md): recommend CSP headers/meta, HSTS/HTTPS enforcement, X-Frame-Options, X-Content-Type-Options, and Referrer-Policy for the chosen hosting environment.
+- Add Subresource Integrity (SRI) or pin external resources where applicable and document any required external scripts; include checks in CI for SRI where external scripts are used.
+- Ensure SBOM (sbom.json) is produced and archived from the security-audit workflow and add a periodic review step for SBOM diffs to detect unexpected transitive dependencies.
+- Continue to monitor and triage any future npm audit/CodeQL/gitleaks artifacts; create an issue/PR workflow to prioritize remediation for any future high/critical findings (parse-audit.js already fails on high/critical—ensure triage process is documented).
+- Consider adding a lightweight local secret-scan pre-commit hook (e.g., a pre-commit task that runs a fast secrets scanner) to catch secrets before they reach CI, complementing gitleaks in CI.
+- Document hosting-specific security settings in README or deploy docs (how to enable HTTPS/HSTS and set CSP headers on your host like GitHub Pages, Netlify, Vercel, or S3/CloudFront).
+- If the project will later include server-side components or user input, add explicit input validation, authentication/authorization flows, and tests covering security-sensitive functionality; extend CodeQL rules/config if needed.
 
 ## VERSION_CONTROL ASSESSMENT (82% ± 16% COMPLETE)
-- Version control is well-established and healthy: a substantive commit history (~288 commits) with consistent, descriptive commit messages (conventional style), active branches and remotes, a comprehensive .gitignore, and pre-commit hooks. Minor issues: the working tree is not clean (two tracked .voder files are modified), there are many ignored/untracked transient files present in the working copy, and a few repo-internal automation artifacts (.voder/*) are tracked which may be unintended.
-- git status --porcelain -b shows the current branch is fix/ci-capture-logs-and-coverage and tracked modifications: .voder/history.md and .voder/last-action.md (both marked M).
-- git rev-list --count HEAD reports 288 commits in the repository (substantial history).
-- git log --oneline (recent entries) shows well-formed, scoped commit messages (examples: 'ci(e2e): e2e orchestration - improved run-e2e.sh...', 'test(e2e): add explicit wait for #app...', 'docs: add E2E reproduction guide'); commit messages follow a consistent conventional-style format.
-- git shortlog -s -n --all shows main committers: Tom Howard (190 commits) and voder-bot (99 commits), indicating both human and automated contributions.
-- Branch layout includes local branches and remote tracking branches (e.g., remotes/origin/main, remotes/origin/fix/ci-capture-logs-and-coverage); current branch tracks origin/fix/ci-capture-logs-and-coverage.
-- .gitignore is present and comprehensive (ignores node_modules/, build outputs, logs, coverage, .env files, temporary folders, etc.).
-- .husky is present and a tracked pre-commit hook exists (.husky/pre-commit). The hook runs format:check, lint:check, and type-check — good gate for commit quality.
-- Many transient files are present but correctly ignored/untracked (git ls-files --others --exclude-standard -i returned .env, node_modules/, various logs and tmp artifacts).
-- Some internal automation / metadata under .voder/ are tracked (git ls-files .voder shows .voder/.processes.json, .voder/history.md, .voder/last-action.md, etc.) — these files are currently tracked and two are modified in the working tree.
-- Local git config for user.name and user.email returns voder-bot / voder-bot@example.com (this may be the environment default); however commit history shows many commits authored by Tom Howard, so author identity varies across commits.
+- Version control is well-established with a long history, clear conventional commit messages, CI workflows, pre-commit hooks and tags. Minor issues remain: a non-clean working tree with tracked transient .voder artifacts, no lockfile (npm/yarn/pnpm) present in the repository, and a few repository housekeeping items (no .gitattributes, tracked transient files) that should be addressed.
+- Git repository is present and healthy: 293 commits (git rev-list --count HEAD = 293).
+- Current branch: fix/ci-capture-logs-and-coverage (git rev-parse --abbrev-ref HEAD).
+- Recent commits show consistent conventional-style messages (e.g. ci(...):, chore(...):, test(...):) and are authored by 'voder-bot' and 'Tom Howard' (git log / git shortlog).
+- Working directory is not clean: git status shows modified tracked files: .voder/history.md and .voder/last-action.md (and .voder/.processes.json per `git status --ignored`).
+- .voder/ files appear to be tracked (they are modified and show as 'M'), and .voder is not listed in .gitignore (contents of .gitignore do not include .voder).
+- .gitignore exists and includes sensible patterns (node_modules, dist, coverage, logs, env files, etc.).
+- .husky pre-commit hook is configured to run format:check, lint:check and type-check (pre-commit at .husky/pre-commit) and a helper skip-pre-commit.sh exists.
+- Remote origin configured: https://github.com/mountain-pass/voder.ai-website.git (git config). Branches show both local and remote tracking for the active feature branch and main.
+- CI and security workflows present (.github/workflows contains ci.yml, e2e-stability.yml, code-scanning.yml, secret-scan.yml, security-audit.yml).
+- Tags exist: v1.0.0-complete and v1.0.1 (git tag -l).
+- No lockfile was found in the repository (no package-lock.json, yarn.lock or pnpm-lock.yaml discovered), reducing install reproducibility.
+- No .gitattributes file detected (no explicit attributes for e.g. LF normalization or Git LFS configuration in repo).
+- Some hook files under .husky/_ are filtered by ignore settings but hookspath is set to .husky/_ (git config), and a skip helper exists for constrained environments.
+- Repository-level git config shows repo user.name/email set to voder-bot@example.com (file:.git/config), which explains many bot commits; human commits exist but many automated commits are present.
 
 **Next Steps:**
-- Clean the working tree: commit or stash the modifications to .voder/history.md and .voder/last-action.md (or revert them if they shouldn't be tracked) to return to a clean working directory before creating releases or switching branches.
-- Review whether .voder/ files should be tracked. If .voder contains ephemeral or sensitive automation state, add .voder/ to .gitignore and remove the tracked files from the repository (git rm --cached ...) and, if necessary, remove from history with a vetted procedure (git filter-repo or BFG) after confirming no secrets were committed.
-- Consider adding a commit-msg hook (or CI check) to enforce the existing conventional commit style automatically (tools: commitlint + Husky or similar) to maintain message quality.
-- Verify git user configuration for CI/bots vs human authors. Ensure CI/bot commits have a clear author identity and that personal developer commits are made with correct user.name/user.email to avoid attribution confusion.
-- Enable/verify branch protection rules on the remote (main) to require passing CI and enforce PR reviews. Ensure the CI workflows referenced in commits are active on the remote and enforce status checks.
-- Run a quick secrets scan (e.g., truffleHog/gitleaks) on the repository to ensure no sensitive values were committed, especially because .voder and other automation files are tracked.
+- Decide how to handle the .voder directory: if it contains transient or local-only state, add .voder/ to .gitignore and remove tracked .voder files (git rm --cached .voder/* and commit). If some files must remain tracked, move transient files out of the tracked tree.
+- Add and commit a lockfile for reproducible installs (run npm ci / npm install to generate package-lock.json, or choose yarn/pnpm and commit the corresponding lockfile).
+- Consider adding a .gitattributes file to lock EOL normalization and register any large-file handling (Git LFS) if needed.
+- Clean the working directory before release or CI-critical operations: commit or stash local changes, then ensure CI runs from a clean state.
+- If desired, make author identity explicit for human commits (ensure commit authorship and bot commits are clearly attributable) and document commit/PR workflows in CONTRIBUTING.md.
+- Optionally: enforce branch protection rules and signing policies on the remote (GitHub) to improve release/merge hygiene; consider ensuring lockfile/CI check for clean working tree in PR verification.

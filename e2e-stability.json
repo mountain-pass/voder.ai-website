@@ -1,9 +1,17 @@
 {
-  "generatedAt": "2025-09-10T17:28:55.273Z",
+  "generatedAt": "2025-09-10T20:43:31.916Z",
   "stats": {
-    "total": 0,
+    "total": 12,
     "passed": 0,
     "failed": 0,
     "flaky": 0
-  }
+  },
+  "artifacts": [
+    "playwright-results.json",
+    "preview.out",
+    "preview.pid",
+    "test-results/.last-run.json",
+    "test-results/app-home-page-renders-and-title-is-correct-chromium/test-failed-1.png",
+    "test-results/app-home-page-renders-and-title-is-correct-chromium/video.webm"
+  ]
 }

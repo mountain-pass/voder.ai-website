@@ -92,6 +92,13 @@ jobs:
           chmod +x scripts/run-e2e.sh
           ./scripts/run-e2e.sh || true
 
+      - name: Quick E2E artifacts check
+        if: always()
+        # Fast, Node-based verifier to fail early when e2e artifacts indicate no tests ran.
+        run: |
+          set -euo pipefail
+          node scripts/check-e2e-artifacts.js
+
       - name: Verify E2E stability artifact
         if: always()
         run: |

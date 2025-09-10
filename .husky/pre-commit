@@ -1,5 +1,12 @@
+#!/usr/bin/env sh
 
-# Check-only quality gates (must not modify code)
+# Pre-commit hooks: run checks unless SKIP_HOOKS environment variable is set
+if [ -n "$SKIP_HOOKS" ]; then
+  echo "SKIP_HOOKS is set; skipping pre-commit checks."
+  exit 0
+fi
+
+# Run non-mutating checks
 npm run format:check
 npm run lint:check
 npm run type-check

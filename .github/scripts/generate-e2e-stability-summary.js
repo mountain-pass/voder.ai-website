@@ -23,8 +23,10 @@ function findFirstExisting(pathsList) {
   // last resort: search for any JSON in test-results/
   try {
     const dir = 'test-results';
+
     if (fs.existsSync(dir) && fs.statSync(dir).isDirectory()) {
       const files = fs.readdirSync(dir);
+
       for (const file of files) {
         if (file.endsWith('.json')) return path.join(dir, file);
       }
@@ -41,26 +43,70 @@ const reportPath = findFirstExisting(candidates) || null;
 function safeParse(pathToFile) {
   try {
     const raw = fs.readFileSync(pathToFile, 'utf8');
+
     return JSON.parse(raw);
   } catch {
     return null;
   }
 }
 
+function scanArtifacts() {
+  const artifacts = [];
+  const root = 'test-results';
+
+  try {
+    if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) return artifacts;
+
+    const walk = (dir) => {
+      const entries = fs.readdirSync(dir);
+      for (const entry of entries) {
+        const full = path.join(dir, entry);
+        const stat = fs.statSync(full);
+        if (stat.isDirectory()) {
+          walk(full);
+        } else if (stat.isFile()) {
+          const rel = path.relative(process.cwd(), full);
+          // include common Playwright artifacts
+          if (rel.endsWith('.zip') || rel.endsWith('.html') || rel.endsWith('.json') || rel.endsWith('.png') || rel.endsWith('.webm') || rel.endsWith('.trace') || rel.endsWith('.txt')) {
+            artifacts.push(rel);
+          }
+        }
+      }
+    };
+
+    walk(root);
+  } catch {
+    // ignore scanning errors
+  }
+
+  return artifacts.sort();
+}
+
+function writeEmpty() {
+  const out = {
+    generatedAt: new Date().toISOString(),
+    stats: { total: 0, passed: 0, failed: 0, flaky: 0 },
+    artifacts: [],
+  };
+
+  fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
+  fs.writeFileSync(
+    'e2e-stability.txt',
+    `generatedAt: ${out.generatedAt}\ntotal: 0\npassed: 0\nfailed: 0\nflaky: 0\n`,
+  );
+}
+
 if (!reportPath) {
-  console.error('No Playwright JSON report found. Exiting with success for workflow.');
-  // still write empty stability artifacts so CI artifact upload steps have something
-  fs.writeFileSync('e2e-stability.json', JSON.stringify({ generatedAt: new Date().toISOString(), stats: { total: 0, passed: 0, failed: 0, flaky: 0 } }, null, 2));
-  fs.writeFileSync('e2e-stability.txt', `generatedAt: ${new Date().toISOString()}\ntotal: 0\npassed: 0\nfailed: 0\nflaky: 0\n`);
+  console.error('No Playwright JSON report found. Writing empty stability artifacts.');
+  writeEmpty();
   process.exit(0);
 }
 
 const report = safeParse(reportPath);
 
 if (!report) {
-  console.error(`Failed to parse report JSON at ${reportPath}. Exiting with success for workflow.`);
-  fs.writeFileSync('e2e-stability.json', JSON.stringify({ generatedAt: new Date().toISOString(), stats: { total: 0, passed: 0, failed: 0, flaky: 0 } }, null, 2));
-  fs.writeFileSync('e2e-stability.txt', `generatedAt: ${new Date().toISOString()}\ntotal: 0\npassed: 0\nfailed: 0\nflaky: 0\n`);
+  console.error(`Failed to parse report JSON at ${reportPath}. Writing empty stability artifacts.`);
+  writeEmpty();
   process.exit(0);
 }
 
@@ -72,6 +118,7 @@ function walk(node) {
     for (const t of node.tests) {
       stats.total += 1;
       const s = (t.status || '').toLowerCase();
+
       if (s === 'passed') stats.passed += 1;
       else if (s === 'failed') stats.failed += 1;
       else if (s === 'flaky') stats.flaky += 1;
@@ -79,15 +126,22 @@ function walk(node) {
   }
   for (const key of Object.keys(node)) {
     const val = node[key];
+
     if (val && typeof val === 'object') walk(val);
   }
 }
 
 walk(report);
 
-const out = { generatedAt: new Date().toISOString(), stats };
+const artifacts = scanArtifacts();
+
+const out = { generatedAt: new Date().toISOString(), stats, artifacts };
+
 fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
-fs.writeFileSync('e2e-stability.txt', `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`);
+fs.writeFileSync(
+  'e2e-stability.txt',
+  `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`,
+);
 
 console.log('E2E stability summary written to e2e-stability.json and e2e-stability.txt');
 console.log(JSON.stringify(out, null, 2));

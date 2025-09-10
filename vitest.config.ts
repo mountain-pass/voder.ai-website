@@ -31,7 +31,7 @@ export default createVitestJsdomConfig({
   },
   vitestConfig: {
     test: {
-      exclude: ['tests/e2e/**'],
+      exclude: ['**/node_modules/**', 'tests/e2e/**', '**/dist/**', '**/coverage/**'],
     },
     resolve: {
       alias: {

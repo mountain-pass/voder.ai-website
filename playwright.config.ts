@@ -2,14 +2,19 @@ import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
 
+// Resolve base URL from environment: PREVIEW_URL, otherwise build from PREVIEW_HOST/PREVIEW_PORT with defaults
+const PREVIEW_HOST = process.env.PREVIEW_HOST || '127.0.0.1';
+const PREVIEW_PORT = process.env.PREVIEW_PORT || process.env.VITE_PORT || '5173';
+const BASE_URL = process.env.PREVIEW_URL || `http://${PREVIEW_HOST}:${PREVIEW_PORT}`;
+
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 30_000,
   retries: isCI ? 2 : 0,
   reporter: [['list'], ['json', { outputFile: 'playwright-results.json' }]],
   use: {
-    // Base URL for `page.goto('/')` - use explicit 127.0.0.1 to match CI preview checks
-    baseURL: 'http://127.0.0.1:5173',
+    // Base URL for `page.goto('/')` - resolved from env so CI and scripts can coordinate
+    baseURL: BASE_URL,
 
     // Artifacts and diagnostic helpers for flaky tests
     trace: 'on-first-retry',

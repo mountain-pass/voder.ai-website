@@ -1,0 +1,19 @@
+*** Begin Patch
+*** Update File: .github/workflows/ci.yml
+@@
+-      - name: Run E2E tests (preview + Playwright)
+-        if: always()
+-        run: |
+-          set -euo pipefail
+-          chmod +x scripts/run-e2e.sh
+-          ./scripts/run-e2e.sh || true
++      - name: Run E2E tests (preview + Playwright)
++        if: always()
++        run: |
++          set -euo pipefail
++          chmod +x scripts/run-e2e.sh
++          # Default preview port to Vite preview port (4173) unless overridden
++          export PREVIEW_PORT="${{ env.PREVIEW_PORT || '4173' }}"
++          export PREVIEW_URL="http://127.0.0.1:${{ env.PREVIEW_PORT || '4173' }}"
++          ./scripts/run-e2e.sh || true
+*** End Patch

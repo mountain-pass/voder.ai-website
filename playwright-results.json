@@ -97,16 +97,56 @@
           "file": "app.spec.ts",
           "line": 3,
           "column": 1
+        },
+        {
+          "title": "home page renders and title is correct",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-19312438b5bde6aaeae4",
+          "file": "app.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "home page renders and title is correct",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-e5e088bbdfd2488f7d78",
+          "file": "app.spec.ts",
+          "line": 3,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-09-10T17:55:36.307Z",
-    "duration": 10.137,
+    "startTime": "2025-09-10T20:00:32.943Z",
+    "duration": 10.637,
     "expected": 0,
-    "skipped": 1,
+    "skipped": 3,
     "unexpected": 0,
     "flaky": 0
   }

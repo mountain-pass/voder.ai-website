@@ -1,0 +1,126 @@
+name: CI & Playwright multi-browser tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: Cache Playwright browser binaries
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-browsers-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Capture verify and build logs
+        run: |
+          set -euo pipefail
+
+          # Capture exit codes for each command to separate files and tee outputs
+          npm run type-check 2>&1 | tee tsc.log || echo $?>tsc.exit || true
+          npm run format:check 2>&1 | tee format.log || echo $?>format.exit || true
+          npm run lint:check 2>&1 | tee eslint.log || echo $?>eslint.exit || true
+          npm run build 2>&1 | tee build.log || echo $?>build.exit || true
+          npm run test:ci 2>&1 | tee test-ci.log || echo $?>testci.exit || true
+
+          # Collect exit codes (0 if file not present)
+          echo "tsc_exit=$(cat tsc.exit 2>/dev/null || echo 0)" > exits.env
+          echo "format_exit=$(cat format.exit 2>/dev/null || echo 0)" >> exits.env
+          echo "eslint_exit=$(cat eslint.exit 2>/dev/null || echo 0)" >> exits.env
+          echo "build_exit=$(cat build.exit 2>/dev/null || echo 0)" >> exits.env
+          echo "testci_exit=$(cat testci.exit 2>/dev/null || echo 0)" >> exits.env
+
+          # Print summary
+          cat exits.env
+
+      - name: Upload logs artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-logs
+          path: |
+            tsc.log
+            format.log
+            eslint.log
+            build.log
+            test-ci.log
+            exits.env
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/**
+
+      - name: Fail job if any verify step failed
+        if: always()
+        run: |
+          set -euo pipefail
+          source exits.env || true
+          if [ "${tsc_exit:-0}" -ne 0 ] || [ "${format_exit:-0}" -ne 0 ] || [ "${eslint_exit:-0}" -ne 0 ] || [ "${build_exit:-0}" -ne 0 ] || [ "${testci_exit:-0}" -ne 0 ]; then
+            echo "One or more verification steps failed. See uploaded artifacts for details."
+            exit 1
+          fi
+
+      - name: Install Playwright browsers
+        if: always()
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests (preview + Playwright)
+        if: always()
+        run: |
+          set -euo pipefail
+          chmod +x scripts/run-e2e.sh
+          # Default preview port to Vite preview port (4173) unless overridden
+          export PREVIEW_PORT="${{ env.PREVIEW_PORT || '4173' }}"
+          export PREVIEW_URL="http://127.0.0.1:${{ env.PREVIEW_PORT || '4173' }}"
+          ./scripts/run-e2e.sh || true
+
+      - name: Verify E2E stability artifact
+        if: always()
+        run: |
+          set -euo pipefail
+          chmod +x .github/scripts/verify-e2e-stability.sh
+          .github/scripts/verify-e2e-stability.sh
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            test-results/**
+            playwright-results.json
+            e2e-stability.json
+            e2e-stability.txt
+            preview.out
+
+      - name: Assert Lighthouse budgets
+        if: always()
+        run: npm run assert:lhci || true
+
+      - name: Run Lighthouse CI
+        if: always()
+        run: |
+          npm run lhci -- \
+            --settings.settings.throttlingMethod=provided \
+            --maxWaitForLoad=120000 || true

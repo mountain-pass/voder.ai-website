@@ -5,7 +5,6 @@
 // Using ESM import syntax to be compatible with package.json "type": "module"
 import child_process from 'child_process';
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 

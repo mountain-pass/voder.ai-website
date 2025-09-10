@@ -70,7 +70,7 @@ function simulatePrepareLibraries(nodeModulesDir: string, destDir: string) {
       try {
         fs.symlinkSync(readmePath, destFile);
         results.created.push({ name, type: 'symlink' });
-      } catch (err) {
+      } catch {
         // fallback to copy
         try {
           fs.copyFileSync(readmePath, destFile);
@@ -90,8 +90,6 @@ function simulatePrepareLibraries(nodeModulesDir: string, destDir: string) {
 import os from 'os';
 
 describe('prepare libraries simulation', () => {
-  const tmp = os.tmpdir();
-
   let testDir: string;
 
   let nodeModules: string;
@@ -170,7 +168,9 @@ describe('prepare libraries simulation', () => {
     (fs.symlinkSync as any).mockRestore?.();
     try {
       fs.symlinkSync = realSymlink;
-    } catch {}
+    } catch {
+      // Ignore cleanup errors
+    }
 
     expect(res.created.length).toBe(1);
     expect(res.created[0].type).toBe('copy');

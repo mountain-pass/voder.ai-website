@@ -23,7 +23,7 @@ describe('src/app', () => {
   it('renders the Voder heading when #app exists', async () => {
     document.body.innerHTML = '<div id="app"></div>';
 
-    const { init } = await import('../src/app');
+    const { init } = await import('../src/app.js');
 
     expect(() => init()).not.toThrow();
 
@@ -40,7 +40,7 @@ describe('src/app', () => {
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { init } = await import('../src/app');
+    const { init } = await import('../src/app.js');
 
     expect(() => init()).not.toThrow();
     expect(consoleSpy).toHaveBeenCalled();
@@ -59,7 +59,7 @@ describe('src/main', () => {
     // Mock the app module BEFORE importing main so the import uses the mocked init
     vi.doMock('../src/app', () => ({ init: initMock }));
 
-    await import('../src/main');
+    await import('../src/main.js');
 
     expect(initMock).toHaveBeenCalled();
   });
@@ -72,7 +72,7 @@ describe('src/main', () => {
 
     vi.doMock('../src/app', () => ({ init: initMock }));
 
-    await import('../src/main');
+    await import('../src/main.js');
 
     // init should NOT be called immediately when loading
     expect(initMock).not.toHaveBeenCalled();

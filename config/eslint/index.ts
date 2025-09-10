@@ -126,12 +126,15 @@ export const complete: Linter.Config[] = [
   },
   // Script files: Node globals
   {
-    files: ['scripts/**/*.{js,ts}'],
+    files: ['scripts/**/*.{js,ts}', '.github/scripts/**/*.{js,ts}'],
     languageOptions: {
       globals: {
         console: 'readonly',
         process: 'readonly',
       },
+    },
+    rules: {
+      'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
     },
   },
 ];

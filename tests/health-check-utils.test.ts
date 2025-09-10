@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import * as utils from '../scripts/health-check-utils';
+import * as utils from '../scripts/health-check-utils.js';
 
 describe('health-check-utils', () => {
   describe('parseVersion', () => {
@@ -45,7 +45,7 @@ describe('health-check-utils', () => {
     });
 
     it('returns true when both lockfile and node_modules exist', () => {
-      existsSpy.mockImplementation((p: string) => {
+      (existsSpy as any).mockImplementation((p: string) => {
         if (p.endsWith('package-lock.json')) return true;
         if (p.endsWith('node_modules')) return true;
 
@@ -56,7 +56,7 @@ describe('health-check-utils', () => {
     });
 
     it('returns false when missing either', () => {
-      existsSpy.mockImplementation((p: string) => {
+      (existsSpy as any).mockImplementation((p: string) => {
         if (p.endsWith('package-lock.json')) return false;
         if (p.endsWith('node_modules')) return true;
 
@@ -65,7 +65,7 @@ describe('health-check-utils', () => {
 
       expect(utils.checkLockfileAndNodeModules('/some/project')).toBe(false);
 
-      existsSpy.mockImplementation((p: string) => false);
+      (existsSpy as any).mockImplementation((_p: string) => false);
 
       expect(utils.checkLockfileAndNodeModules('/some/project')).toBe(false);
     });

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { init } from '../src/app';
+import { init } from '../src/app.js';
 
 describe('app initialization', () => {
   beforeEach(() => {

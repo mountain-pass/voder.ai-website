@@ -1,0 +1,87 @@
+name: Nightly E2E Stability Report
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # daily at 03:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  actions: write
+  artifacts: write
+
+jobs:
+  e2e-stability:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Cache Playwright browser binaries
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-browsers-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-browsers-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and preview
+        run: |
+          npm run build
+          # Start preview server in background and wait for it to be ready
+          npm run preview &
+          PREVIEW_PID=$!
+          echo "preview_pid=$PREVIEW_PID" > preview.pid
+          # wait for server to accept connections on 5173
+          for i in $(seq 1 30); do
+            if nc -z localhost 5173; then
+              echo "preview listening"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run Playwright tests (all browsers)
+        env:
+          CI: true
+        run: |
+          npx playwright install --with-deps
+          npx playwright test --reporter=json --output=test-results/
+        continue-on-error: true
+
+      - name: Collect Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: test-results/**
+
+      - name: Generate stability summary
+        if: always()
+        run: |
+          node .github/scripts/generate-e2e-stability-summary.js
+
+      - name: Upload stability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-stability-report
+          path: |
+            e2e-stability.json
+            e2e-stability.txt
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if [ -f preview.pid ]; then
+            kill $(cat preview.pid) || true
+          fi

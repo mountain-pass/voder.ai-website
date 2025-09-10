@@ -67,6 +67,25 @@ Run the following sequence. Each step is designed to be non-interactive. Stop an
   - Add focused unit tests for uncovered code. Tests should use os.tmpdir(), fs.mkdtempSync for filesystem fixtures and vi.mock for mocking native modules, and must clean up after themselves.
   - If you cannot add tests immediately, relax thresholds temporarily in config/testing/vitest-jsdom.ts (document the change and add a TODO to restore thresholds). Prefer raising coverage in small PRs rather than long-term threshold relaxations.
 
+## Reproducing the npm audit parser locally
+
+We provide a small parser script used by CI to summarize npm audit findings. To reproduce the CI behavior locally:
+
+1. Generate an npm audit JSON file (non-interactive):
+
+   npm audit --json > audit.json
+
+2. Run the parser against the generated file:
+
+   node .github/scripts/parse-audit.js audit.json
+
+The repository also exposes a convenience npm script that chains both steps:
+
+   npm run security:local
+
+If the parser detects high or critical vulnerabilities it will exit with a non-zero status and print a concise summary. Commit the resulting audit.json and a short audit summary (audit-summary.md) if you intend to open a remediation PR so reviewers can triage the findings quickly.
+
+
 ## Developer utilities
 
 - Health check

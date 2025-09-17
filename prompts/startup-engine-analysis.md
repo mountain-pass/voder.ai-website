@@ -4,15 +4,15 @@
 
 ### 🎯 Customer Hypothesis
 
-**"Founders and Product Leaders who've experienced vibe rot will pay for a solution that prevents codebase degradation while maintaining development speed"**
+**"Founders and Product Leaders who've experienced AI slop will pay for a solution that prevents codebase degradation while maintaining development speed"**
 
 ### 😣 Problem Hypothesis
 
-**"Vibe rot (degrading codebases from AI coding tools) is a widespread, painful, and expensive problem that both Founders and VCs recognize"**
+**"AI slop (degrading codebases from AI coding tools) is a widespread, painful, and expensive problem that both Founders and VCs recognize"**
 
 ### ✨ Solution Hypothesis
 
-**"Voder's 'prompts as source code' approach prevents vibe rot and creates sustainable competitive advantages"**
+**"Voder's 'prompts as source code' approach prevents AI slop and creates sustainable competitive advantages"**
 
 ---
 
@@ -20,16 +20,16 @@
 
 ### 🔥 HIGHEST RISK - Could Kill the Pitch
 
-1. **Message resonance** - We can articulate vibe rot in a way founders immediately recognize as their problem
+1. **Message resonance** - We can articulate AI slop in a way founders immediately recognize as their problem
 2. **Emotional connection** - Our description triggers strong "YES, that's exactly it!" responses
-3. **Problem framing** - We present vibe rot as urgent/expensive rather than just annoying
+3. **Problem framing** - We present AI slop as urgent/expensive rather than just annoying
 4. **Timing perception** - Founders see this as a current pain, not a future concern
 
 _Note: Problem existence is already validated by market evidence - LinkedIn specialists, dev services demand, Upwork jobs_
 
 ### ⚠️ MEDIUM RISK - Could Reduce Effectiveness
 
-5. **Solution credibility** - Audience believes "prompts as source code" actually prevents vibe rot
+5. **Solution credibility** - Audience believes "prompts as source code" actually prevents AI slop
 6. **Metaphor clarity** - GPS vs directions metaphor effectively communicates the paradigm shift
 7. **Demonstration impact** - Showing intelligent code adaptation convinces rather than confuses
 8. **Dual audience works** - Website can effectively communicate to both VCs and Founders simultaneously
@@ -46,23 +46,23 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 
 ### Phase 1: Validate Message Resonance (EXPLORE)
 
-**Focus: Testing different ways to articulate vibe rot**
+**Focus: Testing different ways to articulate AI slop**
 
 **Test Method**: Create 5 different LinkedIn posts testing problem framings:
 
-**Post 1 - Metaphor Focus (LIVE):**
-"'Vibe rot' is when your codebase still parties like it's 2 AM, but you're stuck cleaning up the empty .md files and broken scripts the next morning."
+**Post 1 - Metaphor Focus (LIVE):** https://www.linkedin.com/posts/tomhoward_vibe-rot-is-when-your-codebase-still-parties-activity-7369684417260244994-1ZXa?utm_source=share&utm_medium=member_desktop&rcm=ACoAAABfQaIBq3eLLUjR1tafGkJhkGTQEALcVUM
+"'AI slop' is when your codebase still parties like it's 2 AM, but you're stuck cleaning up the empty .md files and broken scripts the next morning."
 
 **Post 2 - Business Focus (NEXT):**
 "Interesting pattern I'm seeing: Teams go from shipping features in days to taking weeks for simple changes. AI coding tools give speed upfront, but steal agility later. Development velocity isn't just about the first sprint - it's about sprint 50."
 
 **Post 3 - Technical Focus:**
-"Talking to founders lately - anyone else hearing about AI-generated codebases becoming unmaintainable? 'Started fast, now every change breaks something else.' Thinking we need a term for this... 'vibe rot' - when quick wins turn into technical debt nightmares."
+"Talking to founders lately - anyone else hearing about AI-generated codebases becoming unmaintainable? 'Started fast, now every change breaks something else.' Thinking we need a term for this... 'AI slop' - when quick wins turn into technical debt nightmares."
 
 **Post 4 - Cost Focus:**
 "Wild stat from a founder friend: 'Spent more on code cleanup specialists this quarter than our original development budget. The cheap AI code wasn't so cheap after all.' Seems like a pattern emerging..."
 
-**Post 5 - Emotional Focus:**
+**Post 5 - Emotional Focus:** https://www.linkedin.com/posts/tomhoward_an-old-colleague-told-me-remember-that-activity-7374194639559520256-j6n5?utm_source=share&utm_medium=member_desktop&rcm=ACoAAABfQaIBq3eLLUjR1tafGkJhkGTQEALcVUM
 "A founder told me: 'Remember that excitement when AI coding first worked? Now I dread opening those projects. The code that felt like magic 6 months ago feels like quicksand today.' Anyone else hearing this?"
 
 **Post 6 - Competitive Focus:**
@@ -82,7 +82,7 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 **Focus: "Love Alternative" phase stories**
 
 **Test**: Add solution explanation and demonstration
-**Success Criteria**: Audience believes Voder prevents vibe rot
+**Success Criteria**: Audience believes Voder prevents AI slop
 **Pivot Trigger**: Solution seems irrelevant or unbelievable → Change solution hypothesis
 
 ### Phase 3: Validate Full Journey
@@ -101,7 +101,7 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 
 - Brand Entry (minimal)
 - The Why (foundational)
-- Problem Space (vibe rot focus)
+- Problem Space (AI slop focus)
 - Basic closing
 
 **Goal**: Validate assumptions 1-4
@@ -128,7 +128,7 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 
 | Assumption             | Metric                            | Target    |
 | ---------------------- | --------------------------------- | --------- |
-| VCs recognize vibe rot | "I've seen this before" responses | >80%      |
+| VCs recognize AI slop  | "I've seen this before" responses | >80%      |
 | Founders admit pain    | "This is my problem" responses    | >70%      |
 | Dual audience works    | Both personas engage meaningfully | >75% each |
 | Solution credibility   | "This could work" responses       | >80%      |

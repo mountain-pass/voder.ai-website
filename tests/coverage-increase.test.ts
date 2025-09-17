@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 describe('src/app', () => {
-  it('renders the Voder heading when #app exists', async () => {
+  it('renders the brand identity when #app exists', async () => {
     document.body.innerHTML = '<div id="app"></div>';
 
     const { init } = await import('../src/app.js');
@@ -30,8 +30,8 @@ describe('src/app', () => {
     const app = document.querySelector('#app');
 
     expect(app).toBeTruthy();
-    expect(app?.textContent).toContain('Voder');
-    expect(app?.textContent).toContain('Coming soon');
+    expect(app?.textContent).toContain('The Compiler for Prompts');
+    expect(app?.textContent).toContain('Coming Soon');
   });
 
   it('does not throw and logs an error when #app is missing', async () => {

@@ -53,6 +53,14 @@ Health and maintenance scripts
 - npm run health-check
   Runs `scripts/health-check.js` to validate local environment assumptions.
 
+Git hooks
+
+- The repository uses `simple-git-hooks` to enforce quality standards on every commit
+- Pre-commit hooks automatically run: lint:check, format:check, type-check, test:ci
+- Hooks are installed automatically during `npm install` via the postinstall script
+- All quality checks must pass before commits are allowed
+- To bypass hooks temporarily (not recommended): `git commit --no-verify`
+
 Verification (CI-local)
 
 - The repository provides a `verify` script which runs an opinionated sequence of checks intended for CI and developer verification:

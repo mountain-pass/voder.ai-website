@@ -9,10 +9,25 @@ export function init(): void {
   }
 
   app.innerHTML = `
-    <div class="container">
-      <h1>Voder</h1>
-      <p>The future of AI-assisted development</p>
-      <p class="subtitle">Coming soon...</p>
-    </div>
+    <header class="brand-header" role="banner">
+      <div class="logo-container">
+        <img src="/voder-logo-final.svg" alt="Voder" class="logo" width="120" height="40" />
+      </div>
+    </header>
+    
+    <main class="main-content" role="main">
+      <div class="container">
+        <section class="hero-section">
+          <h1 class="hero-title">The Compiler for Prompts</h1>
+          <p class="hero-description">
+            Transform prompts into sustainable, maintainable code.
+            Experience the future of AI-assisted development.
+          </p>
+          <div class="status-indicator">
+            <span class="status-text">Coming Soon</span>
+          </div>
+        </section>
+      </div>
+    </main>
   `;
 }

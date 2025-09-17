@@ -8,36 +8,6 @@
 
 ## NOW
 
-**Track and commit the untracked story file to restore clean git state**
-
-The project has achieved outstanding scores (96.6/100) with all 15 development infrastructure stories complete and functional. However, there is an untracked story file that prevents starting new development work.
-
-**Immediate Action**:
-```bash
-# Track the untracked story file
-git add prompts/release-0.5/in-scope/013.0-BIZ-BRAND-ENTRY.md
-
-# Commit with clear message about story addition
-git commit -m "Add 013.0-BIZ-BRAND-ENTRY story to project scope
-
-- Adds business content story for minimal brand identity landing
-- Completes story portfolio expansion (16 total stories)
-- Enables clean git state for continued development
-- Development infrastructure remains complete (15/15)"
-
-# Push to remote
-git push origin main
-```
-
-**Verification**:
-- Confirm `git status` shows clean working directory with no untracked files
-- Verify all quality gates still pass: `npm run verify`
-- Validate story file is properly tracked and committed
-
-**Priority**: Critical - Required to enable new story development  
-**Effort**: 2-3 minutes  
-**Impact**: Removes blocking issue, enables progression to business content implementation
-
 ---
 
 ## NEXT

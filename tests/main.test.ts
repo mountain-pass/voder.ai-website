@@ -12,12 +12,13 @@ describe('app initialization', () => {
     document.body.innerHTML = '';
   });
 
-  it('renders the Voder heading', () => {
+  it('renders the brand identity', () => {
     init();
 
     const app = document.querySelector('#app');
 
     expect(app).toBeTruthy();
-    expect(app?.textContent).toContain('Voder');
+    expect(app?.textContent).toContain('The Compiler for Prompts');
+    expect(app?.textContent).toContain('Coming Soon');
   });
 });

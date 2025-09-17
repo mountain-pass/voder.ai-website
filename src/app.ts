@@ -11,17 +11,17 @@ export function init(): void {
   app.innerHTML = `
     <header class="brand-header" role="banner">
       <div class="logo-container">
-        <img src="/voder-logo-final.svg" alt="Voder" class="logo" width="120" height="40" />
+        <div class="logo-text" aria-label="Voder">VODER</div>
       </div>
     </header>
     
     <main class="main-content" role="main">
       <div class="container">
         <section class="hero-section">
-          <h1 class="hero-title">The Compiler for Prompts</h1>
+          <h1 class="hero-title">Keep Shipping Fast</h1>
           <p class="hero-description">
-            Transform prompts into sustainable, maintainable code.
-            Experience the future of AI-assisted development.
+            Prevent codebase degradation while maintaining development speed.
+            AI development that stays clean and scales with your team.
           </p>
           <div class="status-indicator">
             <span class="status-text">Coming Soon</span>

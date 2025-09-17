@@ -18,7 +18,7 @@ describe('app initialization', () => {
     const app = document.querySelector('#app');
 
     expect(app).toBeTruthy();
-    expect(app?.textContent).toContain('The Compiler for Prompts');
+    expect(app?.textContent).toContain('Keep Shipping Fast');
     expect(app?.textContent).toContain('Coming Soon');
   });
 });

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="180" height="50" viewBox="0 0 180 50">
-  <!-- Transparent background -->
-  <rect width="180" height="50" fill="none"/>
-  <!-- Voder wordmark -->
-  <text x="0" y="40" fill="#FFFFFF" font-family="Inter, Satoshi, sans-serif" font-size="40" font-weight="700">Voder</text>
-</svg>

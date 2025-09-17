@@ -1,0 +1,1382 @@
+{
+  "config": {
+    "configFile": "/Users/tomhoward/Projects/voder.ai-website/playwright.config.ts",
+    "rootDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 3
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "playwright-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "screenshots.spec.ts",
+      "file": "screenshots.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Brand Identity Screenshot Validation",
+          "file": "screenshots.spec.ts",
+          "line": 38,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Brand identity renders correctly on desktop (1920x1080)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 405,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:26.766Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--chromium/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-a24e49ee81bf0eac45a8",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Brand identity renders correctly on tablet (768x1024)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 220,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:28.136Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--chromium/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-7475e7f9dbd9216bc7b3",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Brand identity renders correctly on mobile (375x667)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 212,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:28.969Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--chromium/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-e559d77f9af4b3cf7404",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Visual comparison across all viewports",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 214,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:98:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 98
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  96 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m { name\u001b[33m,\u001b[39m width\u001b[33m,\u001b[39m height } \u001b[36mof\u001b[39m viewports) {\n \u001b[90m  97 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m,\u001b[39m height })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m1000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 98
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m  96 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m { name\u001b[33m,\u001b[39m width\u001b[33m,\u001b[39m height } \u001b[36mof\u001b[39m viewports) {\n \u001b[90m  97 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m,\u001b[39m height })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m1000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:98:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:30.044Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-chromium/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 98
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-61e1d30d42224e37daa4",
+              "file": "screenshots.spec.ts",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "Accessibility and semantic structure validation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 178,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:119:16",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 16,
+                          "line": 119
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 117 |\u001b[39m     \u001b[90m// Test at desktop viewport for accessibility validation\u001b[39m\n \u001b[90m 118 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m:\u001b[39m \u001b[35m1920\u001b[39m\u001b[33m,\u001b[39m height\u001b[33m:\u001b[39m \u001b[35m1080\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 119 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 120 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m     \n \u001b[90m 122 |\u001b[39m     \u001b[90m// Verify semantic HTML structure\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 16,
+                            "line": 119
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 117 |\u001b[39m     \u001b[90m// Test at desktop viewport for accessibility validation\u001b[39m\n \u001b[90m 118 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m:\u001b[39m \u001b[35m1920\u001b[39m\u001b[33m,\u001b[39m height\u001b[33m:\u001b[39m \u001b[35m1080\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 119 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 120 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m     \n \u001b[90m 122 |\u001b[39m     \u001b[90m// Verify semantic HTML structure\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:119:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:30.813Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-chromium/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 16,
+                        "line": 119
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-00bb8c8869b3fda406e2",
+              "file": "screenshots.spec.ts",
+              "line": 116,
+              "column": 3
+            },
+            {
+              "title": "Performance and loading validation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 158,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:144:16",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 16,
+                          "line": 144
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 142 |\u001b[39m     \u001b[90m// Measure loading performance\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m startTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m loadTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow() \u001b[33m-\u001b[39m startTime\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 16,
+                            "line": 144
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4173/\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 142 |\u001b[39m     \u001b[90m// Measure loading performance\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m startTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m loadTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow() \u001b[33m-\u001b[39m startTime\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:144:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:31.686Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-chromium/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 16,
+                        "line": 144
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-09f720293e4388f69a96",
+              "file": "screenshots.spec.ts",
+              "line": 138,
+              "column": 3
+            },
+            {
+              "title": "Brand identity renders correctly on desktop (1920x1080)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 1411,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:26.771Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-121b398f907e42ef4717",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Brand identity renders correctly on tablet (768x1024)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 1105,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:30.195Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-2433018a441cf2d9bd2c",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Brand identity renders correctly on mobile (375x667)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 943,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:32.731Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-8c711899d2fb6252922c",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Visual comparison across all viewports",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 906,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:98:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 98
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  96 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m { name\u001b[33m,\u001b[39m width\u001b[33m,\u001b[39m height } \u001b[36mof\u001b[39m viewports) {\n \u001b[90m  97 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m,\u001b[39m height })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m1000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 98
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m  96 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m { name\u001b[33m,\u001b[39m width\u001b[33m,\u001b[39m height } \u001b[36mof\u001b[39m viewports) {\n \u001b[90m  97 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m,\u001b[39m height })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m1000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:98:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:35.014Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 98
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-4a9e6dd23f9dc66f5cc7",
+              "file": "screenshots.spec.ts",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "Accessibility and semantic structure validation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 849,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:119:16",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 16,
+                          "line": 119
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 117 |\u001b[39m     \u001b[90m// Test at desktop viewport for accessibility validation\u001b[39m\n \u001b[90m 118 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m:\u001b[39m \u001b[35m1920\u001b[39m\u001b[33m,\u001b[39m height\u001b[33m:\u001b[39m \u001b[35m1080\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 119 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 120 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m     \n \u001b[90m 122 |\u001b[39m     \u001b[90m// Verify semantic HTML structure\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 16,
+                            "line": 119
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 117 |\u001b[39m     \u001b[90m// Test at desktop viewport for accessibility validation\u001b[39m\n \u001b[90m 118 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m:\u001b[39m \u001b[35m1920\u001b[39m\u001b[33m,\u001b[39m height\u001b[33m:\u001b[39m \u001b[35m1080\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 119 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 120 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m     \n \u001b[90m 122 |\u001b[39m     \u001b[90m// Verify semantic HTML structure\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:119:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:37.154Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 16,
+                        "line": 119
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-d6480bda94983cbf74a1",
+              "file": "screenshots.spec.ts",
+              "line": 116,
+              "column": 3
+            },
+            {
+              "title": "Performance and loading validation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 17,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 864,
+                      "error": {
+                        "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:144:16",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 16,
+                          "line": 144
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 142 |\u001b[39m     \u001b[90m// Measure loading performance\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m startTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m loadTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow() \u001b[33m-\u001b[39m startTime\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 16,
+                            "line": 144
+                          },
+                          "message": "Error: page.goto: NS_ERROR_CONNECTION_REFUSED\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 142 |\u001b[39m     \u001b[90m// Measure loading performance\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m startTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m loadTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow() \u001b[33m-\u001b[39m startTime\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:144:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:39.218Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 16,
+                        "line": 144
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-8e4fa9ae3f157bfab981",
+              "file": "screenshots.spec.ts",
+              "line": 138,
+              "column": 3
+            },
+            {
+              "title": "Brand identity renders correctly on desktop (1920x1080)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 810,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:26.774Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-3c6f8-ectly-on-desktop-1920x1080--webkit/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-70eaf81812ddd743a99e",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Brand identity renders correctly on tablet (768x1024)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 462,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:28.617Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-95b7e-rrectly-on-tablet-768x1024--webkit/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-e88d10c2daaec0cce4a1",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Brand identity renders correctly on mobile (375x667)",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 352,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 45
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 45
+                          },
+                          "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 43 |\u001b[39m       \n \u001b[90m 44 |\u001b[39m       \u001b[90m// Navigate to the homepage\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 45 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 46 |\u001b[39m       \n \u001b[90m 47 |\u001b[39m       \u001b[90m// Wait for the page to be fully loaded and rendered\u001b[39m\n \u001b[90m 48 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:45:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:29.932Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-27d49-orrectly-on-mobile-375x667--webkit/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 45
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-e7b8c859a5957308cd3c",
+              "file": "screenshots.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "Visual comparison across all viewports",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 491,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:98:18",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 18,
+                          "line": 98
+                        },
+                        "snippet": "\u001b[0m \u001b[90m  96 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m { name\u001b[33m,\u001b[39m width\u001b[33m,\u001b[39m height } \u001b[36mof\u001b[39m viewports) {\n \u001b[90m  97 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m,\u001b[39m height })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m1000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 18,
+                            "line": 98
+                          },
+                          "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m  96 |\u001b[39m     \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m { name\u001b[33m,\u001b[39m width\u001b[33m,\u001b[39m height } \u001b[36mof\u001b[39m viewports) {\n \u001b[90m  97 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m,\u001b[39m height })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m  98 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                  \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m  99 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 100 |\u001b[39m       \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m1000\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 101 |\u001b[39m       \u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:98:18\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:30.976Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-8fdfc-arison-across-all-viewports-webkit/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 18,
+                        "line": 98
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-189b8c9082a3ca1bbb23",
+              "file": "screenshots.spec.ts",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "Accessibility and semantic structure validation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 408,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:119:16",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 16,
+                          "line": 119
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 117 |\u001b[39m     \u001b[90m// Test at desktop viewport for accessibility validation\u001b[39m\n \u001b[90m 118 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m:\u001b[39m \u001b[35m1920\u001b[39m\u001b[33m,\u001b[39m height\u001b[33m:\u001b[39m \u001b[35m1080\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 119 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 120 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m     \n \u001b[90m 122 |\u001b[39m     \u001b[90m// Verify semantic HTML structure\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 16,
+                            "line": 119
+                          },
+                          "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 117 |\u001b[39m     \u001b[90m// Test at desktop viewport for accessibility validation\u001b[39m\n \u001b[90m 118 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39msetViewportSize({ width\u001b[33m:\u001b[39m \u001b[35m1920\u001b[39m\u001b[33m,\u001b[39m height\u001b[33m:\u001b[39m \u001b[35m1080\u001b[39m })\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 119 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 120 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m     \n \u001b[90m 122 |\u001b[39m     \u001b[90m// Verify semantic HTML structure\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:119:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:32.126Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-238f4-mantic-structure-validation-webkit/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 16,
+                        "line": 119
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-b1c75a2b685206ce918e",
+              "file": "screenshots.spec.ts",
+              "line": 116,
+              "column": 3
+            },
+            {
+              "title": "Performance and loading validation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 365,
+                      "error": {
+                        "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n",
+                        "stack": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:144:16",
+                        "location": {
+                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                          "column": 16,
+                          "line": 144
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 142 |\u001b[39m     \u001b[90m// Measure loading performance\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m startTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m loadTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow() \u001b[33m-\u001b[39m startTime\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                            "column": 16,
+                            "line": 144
+                          },
+                          "message": "Error: page.goto: Could not connect to the server.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:4173/\", waiting until \"load\"\u001b[22m\n\n\n\u001b[0m \u001b[90m 142 |\u001b[39m     \u001b[90m// Measure loading performance\u001b[39m\n \u001b[90m 143 |\u001b[39m     \u001b[36mconst\u001b[39m startTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 144 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgoto(\u001b[32m'/'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 145 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForLoadState(\u001b[32m'networkidle'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 146 |\u001b[39m     \u001b[36mconst\u001b[39m loadTime \u001b[33m=\u001b[39m \u001b[33mDate\u001b[39m\u001b[33m.\u001b[39mnow() \u001b[33m-\u001b[39m startTime\u001b[33m;\u001b[39m\n \u001b[90m 147 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts:144:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-09-17T23:17:33.131Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/screenshots-Brand-Identity-932bb-ance-and-loading-validation-webkit/video.webm"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/screenshots.spec.ts",
+                        "column": 16,
+                        "line": 144
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "677a4938ef65bfc6a6e5-598b564618ea92e9b3cc",
+              "file": "screenshots.spec.ts",
+              "line": 138,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-09-17T23:17:26.348Z",
+    "duration": 14864.073999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 18,
+    "flaky": 0
+  }
+}

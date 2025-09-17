@@ -5,7 +5,7 @@ const isCI = !!process.env.CI;
 // Resolve base URL from environment: PREVIEW_URL, otherwise build from PREVIEW_HOST/PREVIEW_PORT with defaults
 const PREVIEW_HOST = process.env.PREVIEW_HOST || '127.0.0.1';
 
-const PREVIEW_PORT = process.env.PREVIEW_PORT || process.env.VITE_PORT || '5173';
+const PREVIEW_PORT = process.env.PREVIEW_PORT || process.env.VITE_PORT || '4173';
 
 const BASE_URL = process.env.PREVIEW_URL || `http://${PREVIEW_HOST}:${PREVIEW_PORT}`;
 
@@ -26,6 +26,16 @@ export default defineConfig({
     // sensible defaults
     actionTimeout: 0,
     navigationTimeout: 30_000,
+  },
+
+  // Automatically start preview server before tests and stop after
+  webServer: {
+    command: 'npm run build && npm run preview -- --host 127.0.0.1',
+    url: `http://127.0.0.1:${PREVIEW_PORT}`,
+    reuseExistingServer: !isCI,
+    stdout: 'pipe',
+    stderr: 'pipe',
+    timeout: 120_000,
   },
   projects: [
     {

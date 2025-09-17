@@ -67,3 +67,6 @@ temp/
 # Monorepo artifacts (keeping for migration)
 packages/
 apps/
+
+# Generated library documentation symlinks
+docs/libraries/

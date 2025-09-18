@@ -1,6 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
+// Skip in CI environments to avoid deployment failures
+if (process.env.CI || process.env.VERCEL || process.env.GITHUB_ACTIONS) {
+  console.log('[prepare-libraries] Skipping in CI environment');
+  process.exit(0);
+}
+
 const root = process.cwd();
 
 const pkgPath = path.join(root, 'package.json');

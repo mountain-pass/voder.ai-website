@@ -70,3 +70,4 @@ apps/
 
 # Generated library documentation symlinks
 docs/libraries/
+.vercel

@@ -20,7 +20,7 @@ export function init(): void {
         <section class="hero-section">
           <h1 class="hero-title">Keep Shipping Fast</h1>
           <p class="hero-description">
-            Prevent codebase degradation while maintaining development speed.
+            Stop AI from turning your codebase into an unmaintainable mess.
             AI development that stays clean and scales with your team.
           </p>
           <div class="status-indicator">

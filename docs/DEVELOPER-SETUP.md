@@ -1,4 +1,4 @@
-Developer Setup & Verification Guide
+# Developer Setup & Verification Guide
 
 ## Purpose
 

@@ -15,7 +15,7 @@ Install dependencies (non-interactive)
 Run locally
 
 - npm run dev
-  Starts the Vite dev server (default: http://localhost:5173). Open that URL in the browser.
+  Starts the Vite dev server (default: <http://localhost:5173>). Open that URL in the browser.
 
 Build for production
 

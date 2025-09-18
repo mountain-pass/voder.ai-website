@@ -9,6 +9,9 @@ const PREVIEW_PORT = process.env.PREVIEW_PORT || process.env.VITE_PORT || '4173'
 
 const BASE_URL = process.env.PREVIEW_URL || `http://${PREVIEW_HOST}:${PREVIEW_PORT}`;
 
+// Only start local webServer if PREVIEW_URL is not set (i.e., not testing production)
+const useLocalWebServer = !process.env.PREVIEW_URL;
+
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 30_000,
@@ -28,15 +31,17 @@ export default defineConfig({
     navigationTimeout: 30_000,
   },
 
-  // Automatically start preview server before tests and stop after
-  webServer: {
-    command: 'npm run build && npm run preview -- --host 127.0.0.1',
-    url: `http://127.0.0.1:${PREVIEW_PORT}`,
-    reuseExistingServer: !isCI,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    timeout: 120_000,
-  },
+  // Automatically start preview server before tests and stop after (only for local testing)
+  ...(useLocalWebServer && {
+    webServer: {
+      command: 'npm run build && npm run preview -- --host 127.0.0.1',
+      url: `http://127.0.0.1:${PREVIEW_PORT}`,
+      reuseExistingServer: !isCI,
+      stdout: 'pipe',
+      stderr: 'pipe',
+      timeout: 120_000,
+    },
+  }),
   projects: [
     {
       name: 'chromium',

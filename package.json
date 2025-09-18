@@ -15,6 +15,7 @@
     "test:ci": "vitest run --coverage --reporter=verbose",
     "screenshots": "playwright test tests/e2e/screenshots.spec.ts --reporter=list",
     "screenshots:headed": "playwright test tests/e2e/screenshots.spec.ts --headed --reporter=list",
+    "e2e:ci:prod": "PREVIEW_URL=https://voder.ai playwright test tests/e2e/screenshots.spec.ts --reporter=list",
     "e2e:ci": "npx playwright test --reporter=json --output=test-results/",
     "clean": "rm -rf dist/ coverage/ .cache/ .vite/ .eslintcache",
     "format": "NODE_OPTIONS=\"--experimental-strip-types\" prettier . --write",

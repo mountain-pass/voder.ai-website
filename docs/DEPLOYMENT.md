@@ -49,10 +49,53 @@ npm run deploy:preview
 
 # Check current deployment status
 npm run deploy:status
-
-# Production deployment (handled automatically by Vercel)
-npm run deploy:production
 ```
+
+### Automatic Deployment
+
+**Primary Deployment Method**: Automatic deployment via Vercel's GitHub integration
+
+- **Trigger**: Push to `main` branch
+- **Process**: Vercel automatically detects changes and deploys
+- **Configuration**: Defined in `vercel.json`
+- **Monitoring**: GitHub Actions workflow provides build validation
+- **Status**: Check deployment status via `npm run deploy:status`
+
+**No manual deployment required** - Vercel handles everything automatically when code is pushed to the main branch.
+
+### Pre-deployment Verification
+
+The `deploy:check` script runs:
+
+- Security audit (`npm audit`)
+- Linting (ESLint, Stylelint, HTMLHint, Markdownlint)
+- Type checking (TypeScript)
+- Formatting verification (Prettier)
+- Production build
+- Unit tests with coverage
+- Screenshot tests across all viewports
+
+## Deployment Process
+
+### Automatic Deployment Workflow
+
+1. **Push to main**: Triggers Vercel deployment automatically
+2. **GitHub Actions**: Runs verification pipeline in parallel
+3. **Build Process**: Vercel runs `npm run build` using configuration in `vercel.json`
+4. **Deploy**: Static files deployed to global CDN with security headers
+5. **Notification**: GitHub Actions provides status updates
+
+### Pre-deployment Verification (Optional)
+
+```bash
+# Verify everything is ready for deployment locally
+npm run deploy:check
+
+# Check current deployment status
+npm run deploy:status
+```
+
+````
 
 ### Pre-deployment Verification
 
@@ -86,7 +129,7 @@ npm run deploy:status
 
 # Test production build locally
 npm run deploy:preview
-```
+````
 
 ## Custom Domain Configuration
 

@@ -31,9 +31,6 @@
     "verify": "npm run audit:fix && npm run lint:fix && npm run lint:check && npm run format:check && npm run build && npm run test:ci",
     "deploy:check": "npm run verify && npm run screenshots",
     "deploy:preview": "npm run build && npm run preview",
-    "deploy:production": "npm run deploy:check && npx vercel --prod",
-    "deploy:init": "npx vercel",
-    "deploy:domain": "npx vercel domains add voder.ai",
     "deploy:status": "node scripts/deployment-status.js",
     "docs:setup": "node setup-package-docs.js --all",
     "docs:report": "npm run docs:setup && node setup-package-docs.js --report",
@@ -82,7 +79,6 @@
     "stylelint-order": "^7.0.0",
     "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "vercel": "^48.0.2",
     "vite": "^7.1.5",
     "vitest": "^3.2.4"
   },

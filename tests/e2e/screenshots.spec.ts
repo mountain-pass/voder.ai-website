@@ -38,6 +38,20 @@ const viewports = [
 test.describe('Brand Identity Screenshot Validation', () => {
   viewports.forEach(({ name, width, height, description: _description }) => {
     test(`Brand identity renders correctly on ${name} (${width}x${height})`, async ({ page }) => {
+      // Set up console error monitoring (ignore expected cookie domain errors on localhost)
+      const consoleErrors: string[] = [];
+
+      page.on('console', (msg) => {
+        if (msg.type() === 'error') {
+          const errorText = msg.text();
+
+          // Ignore expected cookie domain errors when testing on localhost
+          if (!errorText.includes('Cookie') || !errorText.includes('invalid domain')) {
+            consoleErrors.push(errorText);
+          }
+        }
+      });
+
       // Set viewport size
       await page.setViewportSize({ width, height });
 
@@ -84,10 +98,27 @@ test.describe('Brand Identity Screenshot Validation', () => {
       const logoFontFamily = await logoText.evaluate((el) => getComputedStyle(el).fontFamily);
 
       expect(logoFontFamily).toContain('Inter');
+
+      // Verify no console errors occurred during page execution
+      expect(consoleErrors).toHaveLength(0);
     });
   });
 
   test('Visual comparison across all viewports', async ({ page }) => {
+    // Set up console error monitoring (ignore expected cookie domain errors on localhost)
+    const consoleErrors: string[] = [];
+
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        const errorText = msg.text();
+
+        // Ignore expected cookie domain errors when testing on localhost
+        if (!errorText.includes('Cookie') || !errorText.includes('invalid domain')) {
+          consoleErrors.push(errorText);
+        }
+      }
+    });
+
     // This test captures screenshots at all viewports for visual comparison
     const screenshots = [];
 
@@ -110,9 +141,26 @@ test.describe('Brand Identity Screenshot Validation', () => {
 
     // Log screenshot information for assessment purposes
     console.log('Brand identity screenshots generated:', screenshots);
+
+    // Verify no console errors occurred during page execution
+    expect(consoleErrors).toHaveLength(0);
   });
 
   test('Accessibility and semantic structure validation', async ({ page }) => {
+    // Set up console error monitoring (ignore expected cookie domain errors on localhost)
+    const consoleErrors: string[] = [];
+
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        const errorText = msg.text();
+
+        // Ignore expected cookie domain errors when testing on localhost
+        if (!errorText.includes('Cookie') || !errorText.includes('invalid domain')) {
+          consoleErrors.push(errorText);
+        }
+      }
+    });
+
     // Test at desktop viewport for accessibility validation
     await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto('/');
@@ -132,9 +180,26 @@ test.describe('Brand Identity Screenshot Validation', () => {
       fullPage: true,
       animations: 'disabled',
     });
+
+    // Verify no console errors occurred during page execution
+    expect(consoleErrors).toHaveLength(0);
   });
 
   test('Performance and loading validation', async ({ page }) => {
+    // Set up console error monitoring (ignore expected cookie domain errors on localhost)
+    const consoleErrors: string[] = [];
+
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        const errorText = msg.text();
+
+        // Ignore expected cookie domain errors when testing on localhost
+        if (!errorText.includes('Cookie') || !errorText.includes('invalid domain')) {
+          consoleErrors.push(errorText);
+        }
+      }
+    });
+
     // Test at mobile viewport for performance validation
     await page.setViewportSize({ width: 375, height: 667 });
 
@@ -145,8 +210,8 @@ test.describe('Brand Identity Screenshot Validation', () => {
     await page.waitForLoadState('networkidle');
     const loadTime = Date.now() - startTime;
 
-    // Verify reasonable load time (should be under 2 seconds for minimal assets)
-    expect(loadTime).toBeLessThan(2000);
+    // Verify reasonable load time (should be under 3 seconds for minimal assets with analytics)
+    expect(loadTime).toBeLessThan(3000);
 
     // Take performance validation screenshot
     await page.screenshot({
@@ -156,5 +221,8 @@ test.describe('Brand Identity Screenshot Validation', () => {
     });
 
     console.log(`Page load time: ${loadTime}ms`);
+
+    // Verify no console errors occurred during page execution
+    expect(consoleErrors).toHaveLength(0);
   });
 });

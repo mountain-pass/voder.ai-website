@@ -1,132 +1,159 @@
 # Project Plan
 
 **Updated**: September 18, 2025  
-**Based on**: Implementation Progress Assessment (94.3/100) - 17 of 18 stories complete  
-**Current Status**: Outstanding project quality - only production verification automation missing
+**Based on**: Implementation Progress Assessment (87.1/100) - 18 of 19 stories complete  
+**Current Status**: Excellent project quality - analytics implementation and security vulnerabilities need attention
 
 ---
 
 ## NOW
 
-**Track untracked story file to restore clean git state**
+**Restore clean git state and implement analytics tracking (Story 015.0-PO-ANALYTICS-PAGEVIEWS)**
 
-**Current Situation**: The comprehensive assessment revealed 17 of 18 stories are complete (94.3/100). Only story 014.1-DEV-PROD-VERIFICATION is incomplete (missing `npm run e2e:ci:prod` script). One untracked story file prevents clean git state required before starting new work.
+**Current Situation**: The comprehensive assessment revealed 18 of 19 stories are complete (87.1/100). Story 015.0-PO-ANALYTICS-PAGEVIEWS is incomplete - Microsoft Clarity dependency is installed but not integrated. Uncommitted files prevent clean git state required for systematic development.
 
 **Immediate Action Required**:
-1. **Track the untracked story file**:
-   - `git add prompts/release-0.5/in-scope/014.1-DEV-PROD-VERIFICATION.md`
-   - Commit message: "feat: add production verification story for automated deployment validation"
+1. **Track untracked files and commit current state**:
+   ```bash
+   git add prompts/release-0.5/in-scope/015.0-PO-ANALYTICS-PAGEVIEWS.md
+   git add .voder/implementation-progress.md
+   git commit -m "feat: add analytics story and update assessment"
+   ```
 
-2. **Verify clean git state**:
-   - Confirm `git status` shows clean working tree
-   - Run quality checks to ensure all gates still pass
+2. **Implement Microsoft Clarity analytics integration**:
+   - Add Clarity import and initialization in `src/main.ts`
+   - Configure Clarity with environment variable `CLARITY_PROJECT_ID=t5zu4kays7`
+   - Test analytics integration works correctly on local and production
+   - Update tests to handle analytics initialization gracefully
 
-**Priority**: Critical - Required to restore clean git state for continued development  
-**Effort**: 2 minutes  
-**Impact**: Enables new story development and maintains systematic development approach
+3. **Create analytics tooling ADR**:
+   - Document decision to use Microsoft Clarity for pageview tracking
+   - Create `docs/decisions/XXXX-use-microsoft-clarity-for-analytics.accepted.md`
+   - Follow MADR 4.0 format with rationale and alternatives considered
+
+4. **Verify story completion**:
+   - Confirm all REQ-PAGEVIEW-TRACKING requirements met
+   - Test visitor counting and metrics access functionality
+   - Ensure privacy compliance with visitor data handling
+
+**Priority**: Critical - Required to complete Release 0.5 and restore clean development workflow  
+**Effort**: 2-4 hours  
+**Impact**: Achieves analytics visibility for product owner and completes story portfolio
 
 ---
 
 ## NEXT
 
-**Complete story 014.1-DEV-PROD-VERIFICATION to achieve 100% story completion**
+**Address security vulnerabilities and complete Release 0.5 excellence**
 
-After restoring clean git state, implement the final missing piece to complete all 18 stories.
+After implementing analytics tracking and restoring clean git state, address remaining quality issues to achieve exceptional completion.
 
 **Priority Actions**:
-1. **Implement missing npm script**:
-   - Add `e2e:ci:prod` script to package.json that runs Playwright tests against https://voder.ai
-   - Configure environment variable for production URL targeting
-   - Adapt existing screenshot tests to work in production environment
-   - Add content validation to detect hosting provider holding pages
+1. **Resolve security vulnerabilities in deployment tooling**:
+   - Evaluate impact of upgrading to `vercel@25.2.0` (breaking change)
+   - Test deployment pipeline with security fixes applied
+   - Address 10 vulnerabilities (6 moderate, 4 high) in Vercel CLI tools
+   - Verify deployment automation continues working after upgrades
 
-2. **Verify complete functionality**:
-   - Test the new script works correctly
-   - Ensure all 18 stories are fully implemented and functional
-   - Run final comprehensive assessment to achieve 95%+ score
-   - Update project history with completion milestone
+2. **Validate complete story portfolio**:
+   - Run comprehensive verification pipeline to ensure all 19 stories functional
+   - Execute `npm run verify` to confirm all quality gates pass
+   - Test both local development and production deployment flows
+   - Update project history with Release 0.5 completion milestone
 
-**Priority**: High - Required to complete Release 0.5 with all stories implemented  
-**Effort**: 1-2 hours  
-**Impact**: Achieves 100% story completion and production verification automation
+3. **Achieve target assessment score**:
+   - Run final comprehensive assessment to achieve 90%+ score
+   - Document any remaining minor issues and mitigation strategies
+   - Ensure all story acceptance criteria verified and functional
+   - Prepare for Release 1.0 planning with clean foundation
+
+**Priority**: High - Required to complete Release 0.5 with exceptional quality  
+**Effort**: 4-6 hours  
+**Impact**: Achieves complete story portfolio (19/19) with security best practices and 90%+ assessment score
 
 ---
 
 ## LATER
 
-**Release 1.0 business content development and advanced features**
+**Release 1.0 business content development and advanced user experience**
 
-With Release 0.5 complete (18/18 stories, target 95%+ quality score) and exceptional development foundation established, focus on business value delivery and user experience.
+With Release 0.5 complete (19/19 stories, target 90%+ quality score) and exceptional development foundation established, focus on business value delivery and enhanced user engagement.
 
 **High-level initiatives**:
 
-1. **Release 1.0 planning and business content**
-   - Review business priorities for enhanced brand messaging and user engagement
-   - Implement compelling content that resonates with developer and founder audiences
-   - Add interactive elements, animations, and rich visual components
+1. **Enhanced analytics and business intelligence**
+   - Implement advanced analytics beyond basic pageview tracking
+   - Add conversion funnel analysis and user behavior insights
+   - Create analytics dashboard for product owner decision making
+   - Implement A/B testing framework for message optimization and design effectiveness
+
+2. **Advanced brand experience and content strategy**
+   - Develop compelling content that resonates with developer and founder audiences
+   - Add interactive elements, animations, and rich visual components using GSAP
    - Create message validation testing framework per startup methodology
+   - Implement progressive enhancement for sophisticated user interactions
 
-2. **Advanced user experience and conversion optimization**
-   - Implement A/B testing for message resonance and design effectiveness
-   - Add contact forms, lead capture, and user engagement tracking
-   - Create responsive design patterns with progressive enhancement
-   - Implement advanced accessibility features and inclusive design
+3. **User engagement and conversion optimization**
+   - Add contact forms, lead capture, and email marketing integration
+   - Implement advanced call-to-action strategies and conversion tracking
+   - Create responsive design patterns with mobile-first optimization
+   - Add social proof elements and customer testimonials
 
-3. **Production operations and performance optimization**
-   - Configure comprehensive monitoring (performance, analytics, error tracking)
+4. **Production excellence and performance optimization**
+   - Configure comprehensive monitoring (performance, analytics, error tracking, uptime)
    - Implement advanced security hardening and Content Security Policy
-   - Add automated Lighthouse scoring and performance optimization
-   - Set up real user metrics and business conversion tracking
+   - Add automated Lighthouse scoring and Core Web Vitals optimization
+   - Set up real user metrics (RUM) and business conversion tracking
 
-4. **Development capability expansion**
-   - Extend visual regression testing with advanced screenshot validation
-   - Implement comprehensive accessibility testing automation
-   - Add API integration capabilities for dynamic content management
-   - Create deployment pipeline with automated post-deployment verification
-
-5. **Business growth and scaling preparation**
+5. **SEO and content management capabilities**
    - Implement SEO optimization and search ranking strategies
-   - Add social media integration and content sharing capabilities
-   - Create content management system for dynamic business updates
-   - Develop landing page variations for different user segments
+   - Add dynamic content management system for business updates
+   - Create landing page variations for different user segments
+   - Implement social media integration and content sharing capabilities
 
-6. **Team scaling and process excellence**
+6. **Development capability expansion and team scaling**
+   - Extend visual regression testing with advanced screenshot validation
+   - Implement comprehensive accessibility testing automation beyond current standards
+   - Add API integration capabilities for dynamic content management
    - Onboard additional developers using established foundation and quality standards
-   - Maintain systematic story management and architectural decision processes
-   - Continue achieving 95%+ assessment scores through automation
-   - Document best practices for scaling development with quality maintenance
 
 **Priority**: Future - Business value delivery and scaling after foundation completion  
-**Effort**: Varies by business requirements and feature scope  
-**Impact**: Delivers advanced user-facing functionality and enables sustainable business growth
+**Effort**: Varies by business requirements and feature complexity  
+**Impact**: Delivers advanced user-facing functionality, analytics insights, and enables sustainable business growth
 
 ---
 
 ## Assessment Summary
 
-**Current State**: The project has achieved **outstanding quality** (94.3/100) with:
-- **Perfect scores** in code quality, testing, execution, and security (100/100 each)
-- **Excellent scores** in functionality (94/100), documentation (95/100), and dependencies (97/100)
-- **Good score** in version control (85/100) due to untracked story file
-- **17/18 stories completely implemented** with comprehensive automation and quality enforcement
-- **1 incomplete story**: 014.1-DEV-PROD-VERIFICATION (missing npm script only)
+**Current State**: The project has achieved **excellent quality** (87.1/100) with:
+- **Perfect scores** in testing (100/100) and execution (100/100)
+- **Excellent scores** in functionality (94/100), code quality (90/100), documentation (95/100)
+- **Good scores** in dependencies (75/100), security (75/100), version control (80/100)
+- **18/19 stories completely implemented** with comprehensive automation and quality enforcement
+- **1 incomplete story**: 015.0-PO-ANALYTICS-PAGEVIEWS (dependencies installed, integration needed)
 - **Modern tooling excellence** (TypeScript 5.x, ESLint v9, Vitest 3.x, Vite 7.1+)
 - **100% test coverage** with 32 total tests (14 unit + 18 E2E screenshot tests)
-- **Zero security vulnerabilities** in production dependencies
+- **Security vulnerabilities** in development/deployment tooling only (10 total: 6 moderate, 4 high)
 - **Complete development infrastructure** with git hooks, automated quality enforcement
-- **Production deployment ready** with Vercel, security headers, and monitoring
+- **Production deployment operational** with Vercel, security headers, and monitoring
 
-**Immediate Needs**:
-- **Restore clean git state**: Track untracked story file
-- **Complete final story**: Implement production verification npm script
-- **Achieve 95%+ completion**: Target all 18 stories functional
+**Immediate Blockers**:
+- **Git state issues**: Uncommitted files preventing clean development workflow
+- **Incomplete analytics**: Story 015.0 needs Microsoft Clarity integration
+- **Security vulnerabilities**: Deployment tooling needs security updates
 
-**Next Phase Readiness**: After completing production verification, the project will have:
-- **Perfect Release 0.5**: All 18 stories implemented and fully functional
-- **Production deployment**: Live site with complete verification automation
+**Current Gaps**:
+- **Analytics integration**: Microsoft Clarity dependency installed but not activated in code
+- **Analytics ADR**: No architectural decision record for analytics tooling selection
+- **Security patches**: Vercel CLI vulnerabilities need breaking change upgrade
+
+**Next Phase Readiness**: After completing analytics implementation and security fixes, the project will have:
+- **Complete Release 0.5**: All 19 stories implemented and fully functional
+- **Production analytics**: Pageview tracking and visitor insights operational
+- **Security compliance**: All vulnerabilities addressed with updated tooling
 - **Clean development state**: Ready for Release 1.0 business content development
 - **Exceptional foundation**: Supporting sophisticated business features with automated quality
 - **Team scaling ready**: Complete processes, documentation, and quality automation
-- **Outstanding quality baseline**: 95%+ assessment scores maintained automatically
+- **Target quality baseline**: 90%+ assessment scores maintained automatically
 
-**Ready for**: Git state cleanup, production verification completion, then Release 1.0 business content and user experience development.
+**Ready for**: Analytics implementation, security updates, then Release 1.0 business content and advanced user experience development.

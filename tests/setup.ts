@@ -2,7 +2,9 @@ import '@testing-library/jest-dom';
 
 import { beforeEach } from 'vitest';
 
-// Clear DOM between tests
+// Clear DOM between tests (only when document is available)
 beforeEach(() => {
-  document.body.innerHTML = '';
+  if (typeof document !== 'undefined' && document.body) {
+    document.body.innerHTML = '';
+  }
 });

@@ -210,4 +210,49 @@ describe('src/main', () => {
 
     consoleSpy.mockRestore();
   });
+
+  it('tracks traffic source after analytics initialization', async () => {
+    const initMock = vi.fn();
+
+    const analyzeTrafficSourceMock = vi.fn().mockReturnValue({
+      category: 'direct',
+      source: 'direct',
+      referrer: '',
+      isLinkedIn: false,
+      isPaid: false,
+      utmParams: {},
+    });
+
+    const trackTrafficSourceMock = vi.fn();
+
+    vi.doMock('../src/app', () => ({ init: initMock }));
+    vi.doMock('../src/traffic-analytics', () => ({
+      analyzeTrafficSource: analyzeTrafficSourceMock,
+      trackTrafficSource: trackTrafficSourceMock,
+    }));
+
+    // Mock the Microsoft Clarity NPM package
+    const clarityMock = {
+      init: vi.fn(),
+    };
+
+    vi.doMock('@microsoft/clarity', () => ({
+      default: clarityMock,
+    }));
+
+    await import('../src/main.js');
+
+    // Wait for async analytics initialization and traffic tracking
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
+    expect(analyzeTrafficSourceMock).toHaveBeenCalled();
+    expect(trackTrafficSourceMock).toHaveBeenCalledWith({
+      category: 'direct',
+      source: 'direct',
+      referrer: '',
+      isLinkedIn: false,
+      isPaid: false,
+      utmParams: {},
+    });
+  });
 });

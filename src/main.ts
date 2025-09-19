@@ -2,6 +2,7 @@
 import './style.css';
 
 import { init } from './app.js';
+import { analyzeTrafficSource, trackTrafficSource } from './traffic-analytics.js';
 
 // Initialize Microsoft Clarity analytics
 async function initializeAnalytics() {
@@ -19,6 +20,13 @@ async function initializeAnalytics() {
       // Microsoft Clarity NPM package initialization
       (Clarity as any).init(clarityProjectId);
       console.warn('Analytics initialized with Clarity project:', clarityProjectId);
+
+      // Track traffic source after Clarity is initialized
+      setTimeout(() => {
+        const trafficSource = analyzeTrafficSource();
+
+        trackTrafficSource(trafficSource);
+      }, 100);
     } catch (error) {
       console.warn('Analytics initialization failed:', error);
     }

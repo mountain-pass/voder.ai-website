@@ -38,6 +38,10 @@ Tests
   Runs the test suite (Vitest, jsdom).
 - npm run test:coverage
   Runs tests and generates a coverage report (text + html). The HTML report is written to `coverage/index.html`.
+- npm run screenshots
+  Runs Playwright E2E tests locally to generate visual regression screenshots.
+- npm run e2e:ci:prod
+  Runs production verification tests against https://voder.ai to ensure the deployed site is working correctly and not showing hosting provider holding pages.
 
 Lint and format
 

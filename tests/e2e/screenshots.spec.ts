@@ -36,6 +36,68 @@ const viewports = [
 ];
 
 test.describe('Brand Identity Screenshot Validation', () => {
+  // First, add a production verification test to detect holding pages
+  test('Production site verification - not showing hosting holding pages', async ({ page }) => {
+    // Set up console error monitoring
+    const consoleErrors: string[] = [];
+
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        const errorText = msg.text();
+
+        // Ignore expected cookie domain errors on localhost
+        if (!errorText.includes('Cookie') || !errorText.includes('invalid domain')) {
+          consoleErrors.push(errorText);
+        }
+      }
+    });
+
+    // Navigate to the homepage
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+
+    // Get page content for holding page detection
+    const pageContent = await page.content();
+
+    const pageTitle = await page.title();
+
+    // Check for common hosting provider holding pages
+    const holdingPageIndicators = [
+      'namecheap',
+      'holding page',
+      'domain parking',
+      'under construction',
+      'default page',
+      'apache test',
+      'nginx test',
+      'iis',
+      'cpanel',
+      'plesk',
+      'this domain is for sale',
+      'parked domain',
+      'sedo domain parking',
+    ];
+
+    const lowerContent = pageContent.toLowerCase();
+
+    const lowerTitle = pageTitle.toLowerCase();
+
+    for (const indicator of holdingPageIndicators) {
+      expect(lowerContent).not.toContain(indicator);
+      expect(lowerTitle).not.toContain(indicator);
+    }
+
+    // Verify expected Voder content is present (not holding page)
+    await expect(page.locator('.logo-text')).toContainText('VODER');
+    await expect(page.locator('.hero-title')).toContainText('Keep Shipping Fast');
+
+    // Verify page title matches our site
+    expect(pageTitle).toContain('Voder');
+
+    // Verify no console errors
+    expect(consoleErrors).toHaveLength(0);
+  });
+
   viewports.forEach(({ name, width, height, description: _description }) => {
     test(`Brand identity renders correctly on ${name} (${width}x${height})`, async ({ page }) => {
       // Set up console error monitoring (ignore expected cookie domain errors on localhost)

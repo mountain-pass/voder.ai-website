@@ -18,6 +18,17 @@ export interface UTMParams {
   content?: string;
 }
 
+export interface BounceAnalytics {
+  sessionStart: number;
+  pageViewCount: number;
+  engagementThreshold: number;
+  bounceTracked: boolean;
+  trafficSource: TrafficSource;
+}
+
+// Global bounce tracking state
+let bounceState: BounceAnalytics | null = null;
+
 /**
  * Extract UTM parameters from the current URL
  */
@@ -195,5 +206,187 @@ export function trackTrafficSource(trafficSource: TrafficSource): void {
       isLinkedIn: trafficSource.isLinkedIn,
       isPaid: trafficSource.isPaid,
     });
+  }
+}
+
+/**
+ * Initialize bounce rate tracking for the current session
+ */
+export function initializeBounceTracking(trafficSource: TrafficSource): void {
+  if (typeof window === 'undefined') return;
+
+  bounceState = {
+    sessionStart: Date.now(),
+    pageViewCount: 1,
+    engagementThreshold: 10000, // 10 seconds
+    bounceTracked: false,
+    trafficSource,
+  };
+
+  // Set up engagement tracking
+  setupEngagementTracking();
+
+  // Set up exit tracking
+  setupExitTracking();
+}
+
+/**
+ * Set up engagement tracking to detect meaningful interaction
+ */
+function setupEngagementTracking(): void {
+  if (typeof window === 'undefined' || !bounceState) return;
+
+  // Track scroll engagement
+  const handleScroll = () => {
+    if (!bounceState || bounceState.bounceTracked) return;
+
+    const scrollPercent =
+      (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+
+    if (scrollPercent > 25) {
+      trackEngagement('scroll', { scrollPercent });
+    }
+  };
+
+  // Track time-based engagement
+  setTimeout(() => {
+    if (!bounceState || bounceState.bounceTracked) return;
+    trackEngagement('time', { duration: bounceState.engagementThreshold });
+  }, bounceState.engagementThreshold);
+
+  // Track click engagement
+  const handleClick = () => {
+    if (!bounceState || bounceState.bounceTracked) return;
+    trackEngagement('click', {});
+  };
+
+  // Add event listeners
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  document.addEventListener('click', handleClick);
+
+  // Cleanup function for event listeners
+  const cleanup = () => {
+    window.removeEventListener('scroll', handleScroll);
+    document.removeEventListener('click', handleClick);
+  };
+
+  // Store cleanup function for later use
+  (window as any).__bounceTrackingCleanup = cleanup;
+}
+
+/**
+ * Set up exit tracking to detect bounce behavior
+ */
+function setupExitTracking(): void {
+  if (typeof window === 'undefined' || !bounceState) return;
+
+  // Track page unload for potential bounce
+  const handleBeforeUnload = () => {
+    if (!bounceState) return;
+
+    const sessionDuration = Date.now() - bounceState.sessionStart;
+
+    const isBounce = bounceState.pageViewCount === 1 && !bounceState.bounceTracked;
+
+    if (isBounce) {
+      const bounceType = sessionDuration < bounceState.engagementThreshold ? 'quick' : 'considered';
+
+      trackBounce(bounceType, sessionDuration);
+    }
+  };
+
+  // Track visibility change for mobile/tab switching
+  const handleVisibilityChange = () => {
+    if (!bounceState || document.hidden) return;
+
+    const sessionDuration = Date.now() - bounceState.sessionStart;
+
+    if (sessionDuration > bounceState.engagementThreshold && !bounceState.bounceTracked) {
+      trackEngagement('visibility', { duration: sessionDuration });
+    }
+  };
+
+  window.addEventListener('beforeunload', handleBeforeUnload);
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+}
+
+/**
+ * Track engagement event that prevents bounce classification
+ */
+function trackEngagement(type: string, data: Record<string, any>): void {
+  if (!bounceState || bounceState.bounceTracked) return;
+
+  bounceState.bounceTracked = true;
+
+  if (typeof window !== 'undefined' && (window as any).clarity) {
+    const clarity = (window as any).clarity;
+
+    // Track engagement event
+    clarity('event', 'engagement', {
+      type,
+      ...data,
+      sessionDuration: Date.now() - bounceState.sessionStart,
+      trafficCategory: bounceState.trafficSource.category,
+      trafficSource: bounceState.trafficSource.source,
+      isLinkedIn: bounceState.trafficSource.isLinkedIn,
+    });
+
+    console.warn('Engagement tracked:', {
+      type,
+      data,
+      sessionDuration: Date.now() - bounceState.sessionStart,
+    });
+  }
+}
+
+/**
+ * Track bounce event with classification
+ */
+function trackBounce(bounceType: 'quick' | 'considered', duration: number): void {
+  if (!bounceState) return;
+
+  if (typeof window !== 'undefined' && (window as any).clarity) {
+    const clarity = (window as any).clarity;
+
+    // Track bounce event
+    clarity('event', 'bounce', {
+      bounceType,
+      duration,
+      trafficCategory: bounceState.trafficSource.category,
+      trafficSource: bounceState.trafficSource.source,
+      isLinkedIn: bounceState.trafficSource.isLinkedIn,
+      isPaid: bounceState.trafficSource.isPaid,
+    });
+
+    // Set bounce rate custom tags
+    clarity('set', 'bounce_rate', 'true');
+    clarity('set', 'bounce_type', bounceType);
+    clarity('set', 'session_duration', duration.toString());
+
+    console.warn('Bounce tracked:', {
+      bounceType,
+      duration,
+      trafficSource: bounceState.trafficSource.source,
+    });
+  }
+}
+
+/**
+ * Get current bounce analytics state (for testing)
+ */
+export function getBounceState(): BounceAnalytics | null {
+  return bounceState;
+}
+
+/**
+ * Reset bounce tracking state (for testing)
+ */
+export function resetBounceTracking(): void {
+  bounceState = null;
+
+  // Cleanup event listeners if they exist
+  if (typeof window !== 'undefined' && (window as any).__bounceTrackingCleanup) {
+    (window as any).__bounceTrackingCleanup();
+    delete (window as any).__bounceTrackingCleanup;
   }
 }

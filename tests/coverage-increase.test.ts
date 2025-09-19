@@ -225,10 +225,13 @@ describe('src/main', () => {
 
     const trackTrafficSourceMock = vi.fn();
 
+    const initializeBounceTrackingMock = vi.fn();
+
     vi.doMock('../src/app', () => ({ init: initMock }));
     vi.doMock('../src/traffic-analytics', () => ({
       analyzeTrafficSource: analyzeTrafficSourceMock,
       trackTrafficSource: trackTrafficSourceMock,
+      initializeBounceTracking: initializeBounceTrackingMock,
     }));
 
     // Mock the Microsoft Clarity NPM package
@@ -247,6 +250,14 @@ describe('src/main', () => {
 
     expect(analyzeTrafficSourceMock).toHaveBeenCalled();
     expect(trackTrafficSourceMock).toHaveBeenCalledWith({
+      category: 'direct',
+      source: 'direct',
+      referrer: '',
+      isLinkedIn: false,
+      isPaid: false,
+      utmParams: {},
+    });
+    expect(initializeBounceTrackingMock).toHaveBeenCalledWith({
       category: 'direct',
       source: 'direct',
       referrer: '',

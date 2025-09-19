@@ -2,7 +2,11 @@
 import './style.css';
 
 import { init } from './app.js';
-import { analyzeTrafficSource, trackTrafficSource } from './traffic-analytics.js';
+import {
+  analyzeTrafficSource,
+  initializeBounceTracking,
+  trackTrafficSource,
+} from './traffic-analytics.js';
 
 // Initialize Microsoft Clarity analytics
 async function initializeAnalytics() {
@@ -26,6 +30,9 @@ async function initializeAnalytics() {
         const trafficSource = analyzeTrafficSource();
 
         trackTrafficSource(trafficSource);
+
+        // Initialize bounce rate tracking
+        initializeBounceTracking(trafficSource);
       }, 100);
     } catch (error) {
       console.warn('Analytics initialization failed:', error);

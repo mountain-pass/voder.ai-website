@@ -123,6 +123,12 @@ describe('categorizeTrafficSource', () => {
     expect(categorizeTrafficSource('', utmParams2)).toBe('search');
   });
 
+  it('categorizes referral traffic based on UTM medium', () => {
+    const utmParams: UTMParams = { medium: 'referral' };
+
+    expect(categorizeTrafficSource('', utmParams)).toBe('referral');
+  });
+
   it('categorizes direct traffic for empty referrer', () => {
     const utmParams: UTMParams = {};
 
@@ -133,6 +139,13 @@ describe('categorizeTrafficSource', () => {
     const utmParams: UTMParams = {};
 
     expect(categorizeTrafficSource('https://voder.ai/about', utmParams)).toBe('direct');
+  });
+
+  it('categorizes direct traffic when referrer includes hostname', () => {
+    const utmParams: UTMParams = {};
+
+    // Test the specific branch: referrer.includes(window.location.hostname)
+    expect(categorizeTrafficSource('https://subdomain.voder.ai/path', utmParams)).toBe('direct');
   });
 
   it('categorizes social traffic based on referrer domain', () => {
@@ -554,6 +567,91 @@ describe('Bounce Tracking', () => {
       });
 
       vi.useRealTimers();
+    });
+
+    it('tracks engagement on visibility change after threshold', () => {
+      const trafficSource: TrafficSource = {
+        category: 'social',
+        source: 'linkedin.com',
+        referrer: 'https://linkedin.com',
+        isLinkedIn: true,
+        isPaid: false,
+        utmParams: { source: 'linkedin' },
+      };
+
+      initializeBounceTracking(trafficSource);
+
+      // Get the visibility change handler
+      const visibilityHandler = (document.addEventListener as any).mock.calls.find(
+        (call: any) => call[0] === 'visibilitychange',
+      )[1];
+
+      // Mock document.hidden to be false (page is visible)
+      Object.defineProperty(document, 'hidden', {
+        value: false,
+        writable: true,
+        configurable: true,
+      });
+
+      // Manually advance the session start time to simulate time passing
+      const bounceState = getBounceState();
+
+      if (bounceState) {
+        bounceState.sessionStart = Date.now() - 12000; // 12 seconds ago
+      }
+
+      // Trigger visibility change
+      visibilityHandler();
+
+      expect(mockClarity.event).toHaveBeenCalledWith('engagement', {
+        type: 'visibility',
+        duration: 12000,
+        sessionDuration: 12000,
+        trafficCategory: 'social',
+        trafficSource: 'linkedin.com',
+        isLinkedIn: true,
+      });
+    });
+
+    it('does not track engagement on visibility change when document is hidden', () => {
+      const trafficSource: TrafficSource = {
+        category: 'direct',
+        source: 'direct',
+        referrer: '',
+        isLinkedIn: false,
+        isPaid: false,
+        utmParams: {},
+      };
+
+      initializeBounceTracking(trafficSource);
+
+      // Get the visibility change handler
+      const visibilityHandler = (document.addEventListener as any).mock.calls.find(
+        (call: any) => call[0] === 'visibilitychange',
+      )[1];
+
+      // Mock document.hidden to be true (page is hidden)
+      Object.defineProperty(document, 'hidden', {
+        value: true,
+        writable: true,
+        configurable: true,
+      });
+
+      // Manually advance the session start time to simulate time passing
+      const bounceState = getBounceState();
+
+      if (bounceState) {
+        bounceState.sessionStart = Date.now() - 12000; // 12 seconds ago
+      }
+
+      // Clear previous calls
+      mockClarity.event.mockClear();
+
+      // Trigger visibility change
+      visibilityHandler();
+
+      // Should not track engagement when document is hidden
+      expect(mockClarity.event).not.toHaveBeenCalled();
     });
   });
 

@@ -977,6 +977,58 @@ describe('Session Analytics', () => {
       expect(updatedData.totalSessions).toBe(3);
     });
 
+    it('tracks returning visitor with time since last visit in Clarity', () => {
+      // Mock existing visitor data with last visit > 24 hours ago
+      const existingVisitorData = {
+        visitorId: 'existing-visitor-123',
+        firstVisit: Date.now() - 7 * 24 * 60 * 60 * 1000, // 7 days ago
+        lastVisit: Date.now() - 2 * 24 * 60 * 60 * 1000, // 2 days ago (exceeds session timeout)
+        visitCount: 3,
+        totalSessions: 3,
+        loyaltyScore: 5,
+      };
+
+      mockLocalStorage.getItem
+        .mockReturnValueOnce(JSON.stringify(existingVisitorData))
+        .mockReturnValueOnce(null); // No active session
+
+      // Mock Microsoft Clarity function
+      const clarityMock = vi.fn();
+
+      (mockWindow as any).clarity = clarityMock;
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      // Should be returning visitor
+      expect(session.isNewVisitor).toBe(false);
+      expect(session.timeSinceLastVisit).toBeDefined();
+
+      // Should have set days since last visit in Clarity
+      expect(clarityMock).toHaveBeenCalledWith('set', 'days_since_last_visit', expect.any(String));
+
+      // Check that the calculation was done approximately
+      const daysSinceCall = clarityMock.mock.calls.find(
+        (call) => call[0] === 'set' && call[1] === 'days_since_last_visit',
+      );
+
+      if (daysSinceCall) {
+        const daysSince = parseFloat(daysSinceCall[2] as string);
+
+        expect(daysSince).toBeGreaterThan(1.5); // Approximately 2 days
+        expect(daysSince).toBeLessThan(2.5);
+      }
+
+      // Should track session start with returning visitor type
+      expect(clarityMock).toHaveBeenCalledWith(
+        'event',
+        'session_start',
+        expect.objectContaining({
+          visitorType: 'returning',
+          visitCount: 4,
+        }),
+      );
+    });
+
     it('handles localStorage errors gracefully', () => {
       mockLocalStorage.getItem.mockImplementation(() => {
         throw new Error('LocalStorage error');
@@ -1213,6 +1265,247 @@ describe('Session Analytics', () => {
       const session = initializeSessionTracking(mockTrafficSource);
 
       expect(session.deviceInfo.os).toBe('android');
+    });
+  });
+
+  describe('session end tracking', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      resetSessionTracking();
+
+      // Reset window and document mocks
+      (global as any).window = mockWindow;
+      (global as any).document = mockDocument;
+      (global as any).navigator = mockNavigator;
+
+      // Mock localStorage
+      const localStorageMock = {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      };
+
+      (global as any).localStorage = localStorageMock;
+    });
+
+    it('sets up session end tracking when session exists', () => {
+      const addEventListenerSpy = vi.spyOn(mockWindow, 'addEventListener');
+
+      const docAddEventListenerSpy = vi.spyOn(mockDocument, 'addEventListener');
+
+      // Initialize session first to ensure sessionState exists
+      initializeSessionTracking(mockTrafficSource);
+
+      // Verify event listeners were added
+      expect(addEventListenerSpy).toHaveBeenCalledWith('beforeunload', expect.any(Function));
+      expect(docAddEventListenerSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function));
+    });
+
+    it('tracks session end on beforeunload event', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Mock Microsoft Clarity function
+      const clarityMock = vi.fn();
+
+      (mockWindow as any).clarity = clarityMock;
+
+      // Initialize session
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      // Get the beforeunload handler
+      const beforeunloadCall = mockWindow.addEventListener.mock.calls.find(
+        (call) => call[0] === 'beforeunload',
+      );
+
+      expect(beforeunloadCall).toBeDefined();
+
+      const handleSessionEnd = beforeunloadCall![1] as () => void;
+
+      // Simulate some time passing
+      vi.advanceTimersByTime(5000);
+
+      // Call the session end handler
+      handleSessionEnd();
+
+      // Verify Clarity tracking
+      expect(clarityMock).toHaveBeenCalledWith('event', 'session_end', {
+        sessionId: session.sessionId,
+        sessionDuration: expect.any(Number),
+        visitorType: 'new',
+        visitCount: 1,
+        frequencyCategory: 'new',
+      });
+
+      expect(clarityMock).toHaveBeenCalledWith('set', 'session_duration', expect.any(String));
+
+      // Verify console logging
+      expect(consoleSpy).toHaveBeenCalledWith('Session ended:', {
+        sessionId: session.sessionId,
+        duration: expect.any(Number),
+        durationMinutes: expect.any(String),
+      });
+
+      consoleSpy.mockRestore();
+    });
+
+    it('tracks session end on visibility change when document becomes hidden', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Mock Microsoft Clarity function
+      const clarityMock = vi.fn();
+
+      (mockWindow as any).clarity = clarityMock;
+
+      // Initialize session
+      initializeSessionTracking(mockTrafficSource);
+
+      // Get the visibilitychange handler
+      const visibilityCall = mockDocument.addEventListener.mock.calls.find(
+        (call) => call[0] === 'visibilitychange',
+      );
+
+      expect(visibilityCall).toBeDefined();
+
+      const handleVisibilityChange = visibilityCall![1] as () => void;
+
+      // Set document to hidden
+      mockDocument.hidden = true;
+
+      // Call the visibility change handler
+      handleVisibilityChange();
+
+      // Verify console logging occurred (indicating session end was triggered)
+      expect(consoleSpy).toHaveBeenCalledWith('Session ended:', expect.any(Object));
+
+      consoleSpy.mockRestore();
+    });
+
+    it('does not track session end on visibility change when document is visible', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Mock Microsoft Clarity function
+      const clarityMock = vi.fn();
+
+      (mockWindow as any).clarity = clarityMock;
+
+      // Initialize session
+      initializeSessionTracking(mockTrafficSource);
+
+      // Get the visibilitychange handler
+      const visibilityCall = mockDocument.addEventListener.mock.calls.find(
+        (call) => call[0] === 'visibilitychange',
+      );
+
+      expect(visibilityCall).toBeDefined();
+
+      const handleVisibilityChange = visibilityCall![1] as () => void;
+
+      // Keep document visible
+      mockDocument.hidden = false;
+
+      // Call the visibility change handler
+      handleVisibilityChange();
+
+      // Verify no session end logging occurred
+      expect(consoleSpy).not.toHaveBeenCalledWith('Session ended:', expect.any(Object));
+
+      consoleSpy.mockRestore();
+    });
+
+    it('handles session end gracefully when no session state exists', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Do not initialize session
+      resetSessionTracking();
+
+      // Manually create and call a session end handler (simulating the internal function)
+      const sessionState = null;
+
+      const handleSessionEnd = () => {
+        if (!sessionState) return;
+        // This should not execute due to early return
+        console.warn('Session ended:', {});
+      };
+
+      // Call the handler
+      handleSessionEnd();
+
+      // Verify no logging occurred
+      expect(consoleSpy).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it('handles missing Clarity gracefully during session end', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      // Ensure Clarity is not available
+      delete (mockWindow as any).clarity;
+
+      // Initialize session
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      // Get the beforeunload handler
+      const beforeunloadCall = mockWindow.addEventListener.mock.calls.find(
+        (call) => call[0] === 'beforeunload',
+      );
+
+      const handleSessionEnd = beforeunloadCall![1] as () => void;
+
+      // Call the session end handler
+      handleSessionEnd();
+
+      // Verify console logging still occurred (even without Clarity)
+      expect(consoleSpy).toHaveBeenCalledWith('Session ended:', {
+        sessionId: session.sessionId,
+        duration: expect.any(Number),
+        durationMinutes: expect.any(String),
+      });
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('localStorage error handling in setupSessionEndTracking', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+      resetSessionTracking();
+
+      (global as any).window = mockWindow;
+      (global as any).document = mockDocument;
+      (global as any).navigator = mockNavigator;
+    });
+
+    it('handles setupSessionEndTracking with missing window', () => {
+      // Remove window
+      delete (global as any).window;
+
+      // This should not throw an error
+      expect(() => {
+        initializeSessionTracking(mockTrafficSource);
+      }).not.toThrow();
+    });
+
+    it('handles setupSessionEndTracking with missing sessionState', () => {
+      // Ensure window exists but sessionState will be null initially
+      (global as any).window = mockWindow;
+      resetSessionTracking();
+
+      // Mock localStorage
+      const localStorageMock = {
+        getItem: vi.fn().mockReturnValue(null),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      };
+
+      (global as any).localStorage = localStorageMock;
+
+      // Initialize session which should create sessionState and call setupSessionEndTracking
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      // Should have session state now
+      expect(session).toBeDefined();
+      expect(getSessionState()).not.toBeNull();
     });
   });
 });

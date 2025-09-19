@@ -89,7 +89,6 @@ body {
 .logo-text {
   background: linear-gradient(135deg, var(--paper-white) 0%, var(--soft-teal-glow) 100%);
   background-clip: text;
-  background-clip: text;
   color: var(--paper-white);
   font-family: Inter, system-ui, sans-serif;
   font-size: var(--font-size-2xl);

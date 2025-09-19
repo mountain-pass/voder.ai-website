@@ -5,6 +5,7 @@ import { init } from './app.js';
 import {
   analyzeTrafficSource,
   initializeBounceTracking,
+  initializeSessionTracking,
   trackTrafficSource,
 } from './traffic-analytics.js';
 
@@ -31,8 +32,17 @@ async function initializeAnalytics() {
 
         trackTrafficSource(trafficSource);
 
+        // Initialize session tracking first
+        const sessionAnalytics = initializeSessionTracking(trafficSource);
+
         // Initialize bounce rate tracking
         initializeBounceTracking(trafficSource);
+
+        console.warn('Analytics fully initialized:', {
+          sessionId: sessionAnalytics.sessionId,
+          visitorType: sessionAnalytics.isNewVisitor ? 'new' : 'returning',
+          trafficSource: trafficSource.source,
+        });
       }, 100);
     } catch (error) {
       console.warn('Analytics initialization failed:', error);

@@ -9,10 +9,13 @@ import {
   extractSourceName,
   extractUTMParams,
   getBounceState,
+  getSessionState,
   initializeBounceTracking,
+  initializeSessionTracking,
   isLinkedInTraffic,
   isPaidTraffic,
   resetBounceTracking,
+  resetSessionTracking,
   trackTrafficSource,
   type TrafficSource,
   type UTMParams,
@@ -24,20 +27,54 @@ const mockWindow = {
     search: '',
     hostname: 'voder.ai',
   },
+  screen: {
+    width: 1920,
+    height: 1080,
+  },
+  innerWidth: 1200,
+  innerHeight: 800,
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
 };
 
 const mockDocument = {
   referrer: '',
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  hidden: false,
+};
+
+const mockNavigator = {
+  userAgent:
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+};
+
+const mockLocalStorage = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 };
 
 // Setup global mocks
 beforeEach(() => {
   vi.stubGlobal('window', mockWindow);
   vi.stubGlobal('document', mockDocument);
+  vi.stubGlobal('navigator', mockNavigator);
+  vi.stubGlobal('localStorage', mockLocalStorage);
 
   // Reset values
   mockWindow.location.search = '';
   mockDocument.referrer = '';
+  mockLocalStorage.getItem.mockReturnValue(null);
+  mockLocalStorage.setItem.mockClear();
+  mockLocalStorage.removeItem.mockClear();
+  mockWindow.addEventListener.mockClear();
+  mockDocument.addEventListener.mockClear();
+
+  // Reset session and bounce tracking
+  resetSessionTracking();
+  resetBounceTracking();
 });
 
 describe('extractUTMParams', () => {
@@ -796,6 +833,386 @@ describe('Bounce Tracking', () => {
       resetBounceTracking();
 
       expect(mockCleanup).toHaveBeenCalled();
+    });
+  });
+});
+
+describe('Session Analytics', () => {
+  const mockTrafficSource: TrafficSource = {
+    category: 'direct',
+    source: 'direct',
+    referrer: '',
+    isLinkedIn: false,
+    isPaid: false,
+    utmParams: {},
+  };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2024-01-01T12:00:00Z'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  describe('initializeSessionTracking', () => {
+    it('creates session for new visitor', () => {
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session).toMatchObject({
+        isNewVisitor: true,
+        isReturningVisitor: false,
+        visitCount: 1,
+        frequencyCategory: 'new',
+      });
+      expect(session.sessionId).toMatch(/^session_/);
+      expect(session.visitorId).toMatch(/^visitor_/);
+      expect(session.sessionStart).toBe(Date.now());
+      expect(session.lastVisit).toBeUndefined();
+      expect(session.timeSinceLastVisit).toBeUndefined();
+    });
+
+    it('tracks device information correctly', () => {
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo).toMatchObject({
+        isMobile: false,
+        isTablet: false,
+        isDesktop: true,
+        browser: 'chrome',
+        os: 'macos',
+        screen: { width: 1920, height: 1080 },
+        viewport: { width: 1200, height: 800 },
+      });
+    });
+
+    it('detects mobile device correctly', () => {
+      mockWindow.innerWidth = 600;
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.isMobile).toBe(true);
+      expect(session.deviceInfo.isTablet).toBe(false);
+      expect(session.deviceInfo.isDesktop).toBe(false);
+    });
+
+    it('detects tablet device correctly', () => {
+      mockWindow.innerWidth = 900;
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.isMobile).toBe(false);
+      expect(session.deviceInfo.isTablet).toBe(true);
+      expect(session.deviceInfo.isDesktop).toBe(false);
+    });
+
+    it('creates session for returning visitor', () => {
+      const originalTime = Date.now() - 2 * 60 * 60 * 1000; // 2 hours ago
+
+      const existingVisitorData = {
+        visitorId: 'visitor_123',
+        visitCount: 3,
+        lastVisit: originalTime,
+        totalSessions: 3,
+        firstVisit: Date.now() - 7 * 24 * 60 * 60 * 1000, // 7 days ago
+        loyaltyScore: 5,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(existingVisitorData));
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session).toMatchObject({
+        isNewVisitor: false,
+        isReturningVisitor: true,
+        visitCount: 4, // Should increment
+        visitorId: 'visitor_123',
+        frequencyCategory: 'regular',
+      });
+      // After a new session, lastVisit in session should be the original time before update
+      expect(session.lastVisit).toBe(originalTime);
+      expect(session.timeSinceLastVisit).toBe(2 * 60 * 60 * 1000);
+    });
+
+    it('stores visitor data in localStorage for new visitor', () => {
+      initializeSessionTracking(mockTrafficSource);
+
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        'voder_visitor_data',
+        expect.stringContaining('visitor_'),
+      );
+
+      const storedData = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+
+      expect(storedData).toMatchObject({
+        visitCount: 1,
+        totalSessions: 1,
+        loyaltyScore: 1,
+      });
+    });
+
+    it('updates visitor data for returning visitor', () => {
+      const existingData = {
+        visitorId: 'visitor_123',
+        visitCount: 2,
+        lastVisit: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago (new session)
+        totalSessions: 2,
+        firstVisit: Date.now() - 3 * 24 * 60 * 60 * 1000, // 3 days ago
+        loyaltyScore: 2,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(existingData));
+
+      initializeSessionTracking(mockTrafficSource);
+
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+        'voder_visitor_data',
+        expect.stringContaining('visitor_123'),
+      );
+
+      const updatedData = JSON.parse(mockLocalStorage.setItem.mock.calls[0][1]);
+
+      expect(updatedData.visitCount).toBe(3);
+      expect(updatedData.totalSessions).toBe(3);
+    });
+
+    it('handles localStorage errors gracefully', () => {
+      mockLocalStorage.getItem.mockImplementation(() => {
+        throw new Error('LocalStorage error');
+      });
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.isNewVisitor).toBe(true);
+      expect(session.visitCount).toBe(1);
+    });
+
+    it('stores session state globally', () => {
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(getSessionState()).toEqual(session);
+    });
+
+    it('sets up event listeners for session end tracking', () => {
+      initializeSessionTracking(mockTrafficSource);
+
+      expect(mockWindow.addEventListener).toHaveBeenCalledWith(
+        'beforeunload',
+        expect.any(Function),
+      );
+      expect(mockDocument.addEventListener).toHaveBeenCalledWith(
+        'visibilitychange',
+        expect.any(Function),
+      );
+    });
+  });
+
+  describe('frequency categorization', () => {
+    it('categorizes new visitor as "new"', () => {
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.frequencyCategory).toBe('new');
+    });
+
+    it('categorizes occasional visitor correctly', () => {
+      // Visitor with 3 visits over 10 days = 0.3 visits/day = occasional
+      const visitorData = {
+        visitorId: 'visitor_123',
+        visitCount: 3,
+        lastVisit: Date.now() - 31 * 60 * 1000, // New session
+        totalSessions: 3,
+        firstVisit: Date.now() - 10 * 24 * 60 * 60 * 1000,
+        loyaltyScore: 3,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(visitorData));
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.frequencyCategory).toBe('occasional');
+    });
+
+    it('categorizes regular visitor correctly', () => {
+      // Visitor with 7 visits over 10 days = 0.7 visits/day = regular
+      const visitorData = {
+        visitorId: 'visitor_123',
+        visitCount: 7,
+        lastVisit: Date.now() - 31 * 60 * 1000, // New session
+        totalSessions: 7,
+        firstVisit: Date.now() - 10 * 24 * 60 * 60 * 1000,
+        loyaltyScore: 7,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(visitorData));
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.frequencyCategory).toBe('regular');
+    });
+
+    it('categorizes frequent visitor correctly', () => {
+      // Visitor with 10 visits over 5 days = 2 visits/day = frequent
+      const visitorData = {
+        visitorId: 'visitor_123',
+        visitCount: 10,
+        lastVisit: Date.now() - 31 * 60 * 1000, // New session
+        totalSessions: 10,
+        firstVisit: Date.now() - 5 * 24 * 60 * 60 * 1000,
+        loyaltyScore: 10,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(visitorData));
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.frequencyCategory).toBe('frequent');
+    });
+  });
+
+  describe('session timeout detection', () => {
+    it('treats visitor as returning when last visit exceeds timeout', () => {
+      const visitorData = {
+        visitorId: 'visitor_123',
+        visitCount: 2,
+        lastVisit: Date.now() - 31 * 60 * 1000, // 31 minutes ago (> 30 min timeout)
+        totalSessions: 2,
+        firstVisit: Date.now() - 24 * 60 * 60 * 1000,
+        loyaltyScore: 2,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(visitorData));
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.isReturningVisitor).toBe(true);
+      expect(session.visitCount).toBe(3); // Should increment for new session
+    });
+
+    it('treats visitor as same session when within timeout', () => {
+      const visitorData = {
+        visitorId: 'visitor_123',
+        visitCount: 2,
+        lastVisit: Date.now() - 15 * 60 * 1000, // 15 minutes ago (< 30 min timeout)
+        totalSessions: 2,
+        firstVisit: Date.now() - 24 * 60 * 60 * 1000,
+        loyaltyScore: 2,
+      };
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(visitorData));
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.isReturningVisitor).toBe(true);
+      expect(session.visitCount).toBe(2); // Should not increment for same session
+    });
+  });
+
+  describe('getSessionState', () => {
+    it('returns null when no session is initialized', () => {
+      expect(getSessionState()).toBeNull();
+    });
+
+    it('returns current session state after initialization', () => {
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(getSessionState()).toEqual(session);
+    });
+  });
+
+  describe('resetSessionTracking', () => {
+    it('clears session state', () => {
+      initializeSessionTracking(mockTrafficSource);
+      expect(getSessionState()).not.toBeNull();
+
+      resetSessionTracking();
+      expect(getSessionState()).toBeNull();
+    });
+
+    it('clears localStorage data', () => {
+      resetSessionTracking();
+
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('voder_visitor_data');
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('voder_session_data');
+    });
+
+    it('handles localStorage errors gracefully', () => {
+      mockLocalStorage.removeItem.mockImplementation(() => {
+        throw new Error('LocalStorage error');
+      });
+
+      expect(() => resetSessionTracking()).not.toThrow();
+    });
+  });
+
+  describe('browser detection', () => {
+    it('detects Chrome browser', () => {
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.browser).toBe('chrome');
+    });
+
+    it('detects Firefox browser', () => {
+      mockNavigator.userAgent =
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0) Gecko/20100101 Firefox/91.0';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.browser).toBe('firefox');
+    });
+
+    it('detects Safari browser', () => {
+      mockNavigator.userAgent =
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.browser).toBe('safari');
+    });
+
+    it('detects Edge browser', () => {
+      mockNavigator.userAgent =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.browser).toBe('edge');
+    });
+  });
+
+  describe('operating system detection', () => {
+    it('detects macOS', () => {
+      // Reset to macOS userAgent for this test
+      mockNavigator.userAgent =
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.os).toBe('macos');
+    });
+
+    it('detects Windows', () => {
+      mockNavigator.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.os).toBe('windows');
+    });
+
+    it('detects Linux', () => {
+      mockNavigator.userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.os).toBe('linux');
+    });
+
+    it('detects Android', () => {
+      mockNavigator.userAgent = 'Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36';
+
+      const session = initializeSessionTracking(mockTrafficSource);
+
+      expect(session.deviceInfo.os).toBe('android');
     });
   });
 });

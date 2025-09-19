@@ -26,8 +26,59 @@ export interface BounceAnalytics {
   trafficSource: TrafficSource;
 }
 
+export interface SessionAnalytics {
+  sessionId: string;
+  sessionStart: number;
+  sessionEnd?: number;
+  isNewVisitor: boolean;
+  isReturningVisitor: boolean;
+  visitorId: string;
+  visitCount: number;
+  lastVisit?: number;
+  timeSinceLastVisit?: number;
+  sessionDuration?: number;
+  deviceInfo: DeviceInfo;
+  frequencyCategory: 'new' | 'occasional' | 'regular' | 'frequent';
+}
+
+export interface DeviceInfo {
+  userAgent: string;
+  screen: {
+    width: number;
+    height: number;
+  };
+  viewport: {
+    width: number;
+    height: number;
+  };
+  isMobile: boolean;
+  isTablet: boolean;
+  isDesktop: boolean;
+  browser: string;
+  os: string;
+}
+
+export interface VisitorData {
+  visitorId: string;
+  visitCount: number;
+  lastVisit: number;
+  totalSessions: number;
+  firstVisit: number;
+  loyaltyScore: number;
+}
+
 // Global bounce tracking state
 let bounceState: BounceAnalytics | null = null;
+
+// Global session tracking state
+let sessionState: SessionAnalytics | null = null;
+
+// Session configuration constants
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+const VISITOR_STORAGE_KEY = 'voder_visitor_data';
+
+const SESSION_STORAGE_KEY = 'voder_session_data';
 
 /**
  * Extract UTM parameters from the current URL
@@ -48,19 +99,222 @@ export function extractUTMParams(): UTMParams {
  * Detect if traffic is from LinkedIn
  */
 export function isLinkedInTraffic(referrer: string, utmSource?: string): boolean {
-  if (utmSource?.toLowerCase().includes('linkedin')) {
-    return true;
+  const isLinkedInReferrer =
+    referrer.toLowerCase().includes('linkedin.com') || referrer.toLowerCase().includes('lnkd.in');
+
+  const isLinkedInUTM = utmSource?.toLowerCase().includes('linkedin') ?? false;
+
+  return isLinkedInReferrer || isLinkedInUTM;
+}
+
+/**
+ * Generate a unique visitor ID or retrieve existing one
+ */
+function generateVisitorId(): string {
+  if (typeof window === 'undefined') return 'server-side';
+
+  // Try to get existing visitor ID from localStorage
+  try {
+    const storedData = localStorage.getItem(VISITOR_STORAGE_KEY);
+
+    if (storedData) {
+      const visitorData: VisitorData = JSON.parse(storedData);
+
+      return visitorData.visitorId;
+    }
+  } catch (error) {
+    console.warn('Error reading visitor data from localStorage:', error);
   }
 
-  const linkedInDomains = [
-    'linkedin.com',
-    'www.linkedin.com',
-    'm.linkedin.com',
-    'touch.www.linkedin.com',
-    'lnkd.in',
-  ];
+  // Generate new visitor ID
+  const timestamp = Date.now();
 
-  return linkedInDomains.some((domain) => referrer.toLowerCase().includes(domain));
+  const random = Math.random().toString(36).substring(2, 15);
+
+  return `visitor_${timestamp}_${random}`;
+}
+
+/**
+ * Generate a unique session ID
+ */
+function generateSessionId(): string {
+  const timestamp = Date.now();
+
+  const random = Math.random().toString(36).substring(2, 15);
+
+  return `session_${timestamp}_${random}`;
+}
+
+/**
+ * Detect device information
+ */
+function detectDeviceInfo(): DeviceInfo {
+  if (typeof window === 'undefined') {
+    return {
+      userAgent: 'server-side',
+      screen: { width: 0, height: 0 },
+      viewport: { width: 0, height: 0 },
+      isMobile: false,
+      isTablet: false,
+      isDesktop: true,
+      browser: 'unknown',
+      os: 'unknown',
+    };
+  }
+
+  const userAgent = navigator.userAgent;
+
+  const screen = {
+    width: window.screen.width,
+    height: window.screen.height,
+  };
+
+  const viewport = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+
+  // Simple device type detection based on viewport width
+  const isMobile = viewport.width <= 768;
+
+  const isTablet = viewport.width > 768 && viewport.width <= 1024;
+
+  const isDesktop = viewport.width > 1024;
+
+  // Simple browser detection
+  let browser = 'unknown';
+
+  if (userAgent.includes('Edg/')) browser = 'edge';
+  else if (userAgent.includes('Firefox')) browser = 'firefox';
+  else if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) browser = 'safari';
+  else if (userAgent.includes('Chrome')) browser = 'chrome';
+
+  // Simple OS detection
+  let os = 'unknown';
+
+  if (userAgent.includes('Android')) os = 'android';
+  else if (userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iOS'))
+    os = 'ios';
+  else if (userAgent.includes('Windows')) os = 'windows';
+  else if (userAgent.includes('Mac')) os = 'macos';
+  else if (userAgent.includes('Linux')) os = 'linux';
+
+  return {
+    userAgent,
+    screen,
+    viewport,
+    isMobile,
+    isTablet,
+    isDesktop,
+    browser,
+    os,
+  };
+}
+
+/**
+ * Get or create visitor data from localStorage
+ * Returns both current and original lastVisit times
+ */
+function getVisitorData(): {
+  visitorData: VisitorData;
+  originalLastVisit?: number;
+  timeSinceLastVisit?: number;
+} {
+  if (typeof window === 'undefined') {
+    return {
+      visitorData: {
+        visitorId: 'server-side',
+        visitCount: 1,
+        lastVisit: Date.now(),
+        totalSessions: 1,
+        firstVisit: Date.now(),
+        loyaltyScore: 1,
+      },
+    };
+  }
+
+  try {
+    const storedData = localStorage.getItem(VISITOR_STORAGE_KEY);
+
+    if (storedData) {
+      const visitorData: VisitorData = JSON.parse(storedData);
+
+      const originalLastVisit = visitorData.lastVisit;
+
+      // Check if this is a new session (based on session timeout)
+      const timeSinceLastVisit = Date.now() - visitorData.lastVisit;
+
+      const isNewSession = timeSinceLastVisit > SESSION_TIMEOUT;
+
+      if (isNewSession) {
+        // Update visitor data for new session
+        visitorData.visitCount += 1;
+        visitorData.totalSessions += 1;
+        visitorData.lastVisit = Date.now();
+
+        // Calculate loyalty score based on frequency
+        const daysSinceFirst = (Date.now() - visitorData.firstVisit) / (1000 * 60 * 60 * 24);
+
+        visitorData.loyaltyScore = Math.min(
+          visitorData.visitCount / Math.max(daysSinceFirst, 1),
+          10,
+        );
+
+        // Save updated data
+        localStorage.setItem(VISITOR_STORAGE_KEY, JSON.stringify(visitorData));
+
+        return {
+          visitorData,
+          originalLastVisit,
+          timeSinceLastVisit,
+        };
+      }
+
+      return {
+        visitorData,
+        originalLastVisit: undefined, // Same session
+        timeSinceLastVisit: undefined,
+      };
+    }
+  } catch (error) {
+    console.warn('Error reading visitor data from localStorage:', error);
+  }
+
+  // Create new visitor data
+  const newVisitorData: VisitorData = {
+    visitorId: generateVisitorId(),
+    visitCount: 1,
+    lastVisit: Date.now(),
+    totalSessions: 1,
+    firstVisit: Date.now(),
+    loyaltyScore: 1,
+  };
+
+  try {
+    localStorage.setItem(VISITOR_STORAGE_KEY, JSON.stringify(newVisitorData));
+  } catch (error) {
+    console.warn('Error storing visitor data to localStorage:', error);
+  }
+
+  return { visitorData: newVisitorData };
+}
+
+/**
+ * Calculate frequency category based on visit patterns
+ */
+function calculateFrequencyCategory(
+  visitorData: VisitorData,
+): 'new' | 'occasional' | 'regular' | 'frequent' {
+  if (visitorData.visitCount === 1) return 'new';
+
+  const daysSinceFirst = (Date.now() - visitorData.firstVisit) / (1000 * 60 * 60 * 24);
+
+  const visitsPerDay = visitorData.visitCount / Math.max(daysSinceFirst, 1);
+
+  if (visitsPerDay >= 1) return 'frequent';
+  if (visitsPerDay >= 0.5) return 'regular';
+
+  return 'occasional';
 }
 
 /**
@@ -206,6 +460,211 @@ export function trackTrafficSource(trafficSource: TrafficSource): void {
       isLinkedIn: trafficSource.isLinkedIn,
       isPaid: trafficSource.isPaid,
     });
+  }
+}
+
+/**
+ * Initialize session tracking for the current visitor
+ */
+export function initializeSessionTracking(trafficSource: TrafficSource): SessionAnalytics {
+  if (typeof window === 'undefined') {
+    // Return minimal session data for server-side rendering
+    return {
+      sessionId: 'server-side',
+      sessionStart: Date.now(),
+      isNewVisitor: true,
+      isReturningVisitor: false,
+      visitorId: 'server-side',
+      visitCount: 1,
+      deviceInfo: detectDeviceInfo(),
+      frequencyCategory: 'new',
+    };
+  }
+
+  // Get or create visitor data
+  const {
+    visitorData,
+    originalLastVisit,
+    timeSinceLastVisit: calculatedTimeSinceLastVisit,
+  } = getVisitorData();
+
+  // Determine if this is a new visitor based on the current visit count
+  // Note: getVisitorData() increments visitCount for new sessions
+  const isNewVisitor = visitorData.visitCount === 1;
+
+  const isReturningVisitor = !isNewVisitor;
+
+  // For returning visitors, use the calculated times from getVisitorData
+  const sessionLastVisit = isReturningVisitor ? originalLastVisit : undefined;
+
+  const sessionTimeSinceLastVisit = isReturningVisitor ? calculatedTimeSinceLastVisit : undefined;
+
+  // Create session analytics object
+  const session: SessionAnalytics = {
+    sessionId: generateSessionId(),
+    sessionStart: Date.now(),
+    isNewVisitor,
+    isReturningVisitor,
+    visitorId: visitorData.visitorId,
+    visitCount: visitorData.visitCount,
+    lastVisit: sessionLastVisit,
+    timeSinceLastVisit: sessionTimeSinceLastVisit,
+    deviceInfo: detectDeviceInfo(),
+    frequencyCategory: calculateFrequencyCategory(visitorData),
+  };
+
+  // Store session state globally
+  sessionState = session;
+
+  // Track session with Microsoft Clarity
+  trackSessionWithClarity(session, trafficSource);
+
+  // Set up session end tracking
+  setupSessionEndTracking();
+
+  return session;
+}
+
+/**
+ * Track session data with Microsoft Clarity custom tags
+ */
+function trackSessionWithClarity(session: SessionAnalytics, trafficSource: TrafficSource): void {
+  if (typeof window === 'undefined' || !(window as any).clarity) return;
+
+  const clarity = (window as any).clarity;
+
+  // Set session-related custom tags
+  clarity('set', 'session_id', session.sessionId);
+  clarity('set', 'visitor_id', session.visitorId);
+  clarity('set', 'is_new_visitor', session.isNewVisitor.toString());
+  clarity('set', 'is_returning_visitor', session.isReturningVisitor.toString());
+  clarity('set', 'visit_count', session.visitCount.toString());
+  clarity('set', 'frequency_category', session.frequencyCategory);
+
+  // Set device information
+  clarity(
+    'set',
+    'device_type',
+    session.deviceInfo.isMobile ? 'mobile' : session.deviceInfo.isTablet ? 'tablet' : 'desktop',
+  );
+  clarity('set', 'browser', session.deviceInfo.browser);
+  clarity('set', 'operating_system', session.deviceInfo.os);
+  clarity(
+    'set',
+    'screen_resolution',
+    `${session.deviceInfo.screen.width}x${session.deviceInfo.screen.height}`,
+  );
+  clarity(
+    'set',
+    'viewport_size',
+    `${session.deviceInfo.viewport.width}x${session.deviceInfo.viewport.height}`,
+  );
+
+  // Set time since last visit for returning visitors
+  if (session.timeSinceLastVisit !== undefined) {
+    const daysSinceLastVisit = session.timeSinceLastVisit / (1000 * 60 * 60 * 24);
+
+    clarity('set', 'days_since_last_visit', daysSinceLastVisit.toFixed(1));
+  }
+
+  // Track session start event
+  clarity('event', 'session_start', {
+    sessionId: session.sessionId,
+    visitorType: session.isNewVisitor ? 'new' : 'returning',
+    visitCount: session.visitCount,
+    frequencyCategory: session.frequencyCategory,
+    deviceType: session.deviceInfo.isMobile
+      ? 'mobile'
+      : session.deviceInfo.isTablet
+        ? 'tablet'
+        : 'desktop',
+    browser: session.deviceInfo.browser,
+    os: session.deviceInfo.os,
+    trafficCategory: trafficSource.category,
+    trafficSource: trafficSource.source,
+  });
+
+  console.warn('Session tracking initialized:', {
+    sessionId: session.sessionId,
+    visitorType: session.isNewVisitor ? 'new' : 'returning',
+    visitCount: session.visitCount,
+    frequencyCategory: session.frequencyCategory,
+    deviceType: session.deviceInfo.isMobile
+      ? 'mobile'
+      : session.deviceInfo.isTablet
+        ? 'tablet'
+        : 'desktop',
+  });
+}
+
+/**
+ * Set up session end tracking
+ */
+function setupSessionEndTracking(): void {
+  if (typeof window === 'undefined' || !sessionState) return;
+
+  const handleSessionEnd = () => {
+    if (!sessionState) return;
+
+    const sessionDuration = Date.now() - sessionState.sessionStart;
+
+    sessionState.sessionEnd = Date.now();
+    sessionState.sessionDuration = sessionDuration;
+
+    // Track session end with Microsoft Clarity
+    if ((window as any).clarity) {
+      const clarity = (window as any).clarity;
+
+      clarity('event', 'session_end', {
+        sessionId: sessionState.sessionId,
+        sessionDuration,
+        visitorType: sessionState.isNewVisitor ? 'new' : 'returning',
+        visitCount: sessionState.visitCount,
+        frequencyCategory: sessionState.frequencyCategory,
+      });
+
+      clarity('set', 'session_duration', sessionDuration.toString());
+    }
+
+    console.warn('Session ended:', {
+      sessionId: sessionState.sessionId,
+      duration: sessionDuration,
+      durationMinutes: (sessionDuration / (1000 * 60)).toFixed(1),
+    });
+  };
+
+  // Track session end on page unload
+  window.addEventListener('beforeunload', handleSessionEnd);
+
+  // Track session end on visibility change (for mobile/tab switching)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      handleSessionEnd();
+    }
+  });
+}
+
+/**
+ * Get current session analytics state (for testing and debugging)
+ */
+export function getSessionState(): SessionAnalytics | null {
+  return sessionState;
+}
+
+/**
+ * Reset session tracking state (for testing)
+ */
+export function resetSessionTracking(): void {
+  sessionState = null;
+
+  // Clear localStorage for testing
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.removeItem(VISITOR_STORAGE_KEY);
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+    } catch (error) {
+      console.warn('Error clearing session storage:', error);
+    }
   }
 }
 

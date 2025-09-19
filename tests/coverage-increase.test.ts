@@ -227,11 +227,18 @@ describe('src/main', () => {
 
     const initializeBounceTrackingMock = vi.fn();
 
+    const initializeSessionTrackingMock = vi.fn().mockReturnValue({
+      sessionId: 'session_123',
+      isNewVisitor: true,
+      visitorType: 'new',
+    });
+
     vi.doMock('../src/app', () => ({ init: initMock }));
     vi.doMock('../src/traffic-analytics', () => ({
       analyzeTrafficSource: analyzeTrafficSourceMock,
       trackTrafficSource: trackTrafficSourceMock,
       initializeBounceTracking: initializeBounceTrackingMock,
+      initializeSessionTracking: initializeSessionTrackingMock,
     }));
 
     // Mock the Microsoft Clarity NPM package
@@ -250,6 +257,14 @@ describe('src/main', () => {
 
     expect(analyzeTrafficSourceMock).toHaveBeenCalled();
     expect(trackTrafficSourceMock).toHaveBeenCalledWith({
+      category: 'direct',
+      source: 'direct',
+      referrer: '',
+      isLinkedIn: false,
+      isPaid: false,
+      utmParams: {},
+    });
+    expect(initializeSessionTrackingMock).toHaveBeenCalledWith({
       category: 'direct',
       source: 'direct',
       referrer: '',

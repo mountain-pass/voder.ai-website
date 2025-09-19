@@ -36,32 +36,51 @@ const viewports = [
 ];
 
 test.describe('Brand Identity Screenshot Validation', () => {
-  // First, add a production verification test to detect holding pages
-  test('Production site verification - not showing hosting holding pages', async ({ page }) => {
+  // Enhanced production verification test to detect holding pages and validate performance
+  test('Production site verification - comprehensive health check', async ({ page }) => {
     // Set up console error monitoring
     const consoleErrors: string[] = [];
+
+    const networkErrors: string[] = [];
+
+    const performanceMetrics = {
+      loadStart: 0,
+      loadEnd: 0,
+      networkIdle: 0,
+    };
 
     page.on('console', (msg) => {
       if (msg.type() === 'error') {
         const errorText = msg.text();
 
-        // Ignore expected cookie domain errors on localhost
+        // Ignore expected cookie domain errors on localhost/testing environments
         if (!errorText.includes('Cookie') || !errorText.includes('invalid domain')) {
           consoleErrors.push(errorText);
         }
       }
     });
 
+    page.on('response', (response) => {
+      if (!response.ok() && response.status() >= 400) {
+        networkErrors.push(`${response.status()} ${response.statusText()} - ${response.url()}`);
+      }
+    });
+
+    // Record performance timing
+    performanceMetrics.loadStart = Date.now();
+
     // Navigate to the homepage
     await page.goto('/');
     await page.waitForLoadState('networkidle');
+
+    performanceMetrics.networkIdle = Date.now();
 
     // Get page content for holding page detection
     const pageContent = await page.content();
 
     const pageTitle = await page.title();
 
-    // Check for common hosting provider holding pages
+    // Enhanced holding page detection with more indicators
     const holdingPageIndicators = [
       'namecheap',
       'holding page',
@@ -76,26 +95,59 @@ test.describe('Brand Identity Screenshot Validation', () => {
       'this domain is for sale',
       'parked domain',
       'sedo domain parking',
+      'godaddy',
+      'bluehost',
+      'hostgator',
+      'temporarily unavailable',
+      'maintenance mode',
+      'site not found',
+      'domain expired',
+      'suspended',
+      'bandwidth exceeded',
+      'account suspended',
     ];
 
     const lowerContent = pageContent.toLowerCase();
 
     const lowerTitle = pageTitle.toLowerCase();
 
+    // Check for holding page indicators
     for (const indicator of holdingPageIndicators) {
-      expect(lowerContent).not.toContain(indicator);
-      expect(lowerTitle).not.toContain(indicator);
+      if (lowerContent.includes(indicator) || lowerTitle.includes(indicator)) {
+        throw new Error(
+          `Detected holding page indicator: "${indicator}" in ${lowerContent.includes(indicator) ? 'content' : 'title'}`,
+        );
+      }
     }
 
-    // Verify expected Voder content is present (not holding page)
+    // Verify expected Voder content is present (proves it's our site, not holding page)
     await expect(page.locator('.logo-text')).toContainText('VODER');
     await expect(page.locator('.hero-title')).toContainText('Keep Shipping Fast');
+    await expect(page.locator('.hero-description')).toContainText('AI development');
 
     // Verify page title matches our site
     expect(pageTitle).toContain('Voder');
+    expect(pageTitle).toContain('Keep Shipping Fast');
 
-    // Verify no console errors
-    expect(consoleErrors).toHaveLength(0);
+    // Verify no console errors occurred during load
+    if (consoleErrors.length > 0) {
+      throw new Error(`Console errors detected: ${consoleErrors.join(', ')}`);
+    }
+
+    // Verify no network errors
+    if (networkErrors.length > 0) {
+      throw new Error(`Network errors detected: ${networkErrors.join(', ')}`);
+    }
+
+    // Performance validation - site should load reasonably fast
+    const loadTime = performanceMetrics.networkIdle - performanceMetrics.loadStart;
+
+    console.log(`Page load time: ${loadTime}ms`);
+
+    // Allow up to 10 seconds for load (generous for production environments)
+    expect(loadTime).toBeLessThan(10000);
+
+    performanceMetrics.loadEnd = Date.now();
   });
 
   viewports.forEach(({ name, width, height, description: _description }) => {

@@ -1,10 +1,12 @@
 #!/usr/bin/env node
-// Non-interactive health-check script
-// Uses only Node built-ins: fs, path, child_process, os, process
+// Non-interactive health-check script with production URL verification
+// Uses only Node built-ins: fs, path, child_process, os, process, and https for URL checking
 
 // Using ESM import syntax to be compatible with package.json "type": "module"
 import child_process from 'child_process';
 import fs from 'fs';
+import http from 'http';
+import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -132,6 +134,127 @@ function checkLockfileAndNodeModules() {
   return ok;
 }
 
+async function checkProductionUrl(url = 'https://voder.ai') {
+  console.log('='.repeat(72));
+  console.log(`Production URL Health Check: ${url}`);
+  console.log('='.repeat(72));
+
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+
+    const protocol = url.startsWith('https:') ? https : http;
+
+    const request = protocol.get(
+      url,
+      {
+        timeout: 10000, // 10 second timeout
+        headers: {
+          'User-Agent': 'Voder-Health-Check/1.0',
+        },
+      },
+      (response) => {
+        const endTime = Date.now();
+
+        const responseTime = endTime - startTime;
+
+        console.log(`Response: ${response.statusCode} ${response.statusMessage}`);
+        console.log(`Response time: ${responseTime}ms`);
+
+        let data = '';
+
+        response.on('data', (chunk) => {
+          data += chunk;
+        });
+
+        response.on('end', () => {
+          // Check for successful response
+          if (response.statusCode < 200 || response.statusCode >= 400) {
+            console.error(`❌ Production site returned ${response.statusCode}`);
+            resolve({ success: false, error: `HTTP ${response.statusCode}`, responseTime });
+
+            return;
+          }
+
+          // Check for holding page indicators
+          const lowerData = data.toLowerCase();
+
+          const holdingPageIndicators = [
+            'namecheap',
+            'holding page',
+            'domain parking',
+            'under construction',
+            'default page',
+            'apache test',
+            'nginx test',
+            'iis',
+            'cpanel',
+            'plesk',
+            'this domain is for sale',
+            'parked domain',
+            'sedo domain parking',
+            'godaddy',
+            'bluehost',
+            'hostgator',
+            'temporarily unavailable',
+            'maintenance mode',
+            'site not found',
+            'domain expired',
+            'suspended',
+            'bandwidth exceeded',
+            'account suspended',
+          ];
+
+          for (const indicator of holdingPageIndicators) {
+            if (lowerData.includes(indicator)) {
+              console.error(`❌ Detected holding page indicator: "${indicator}"`);
+              resolve({
+                success: false,
+                error: `Holding page detected: ${indicator}`,
+                responseTime,
+              });
+
+              return;
+            }
+          }
+
+          // Check for expected content
+          const expectedContent = ['voder', 'keep shipping fast'];
+
+          const hasExpectedContent = expectedContent.some((content) =>
+            lowerData.includes(content.toLowerCase()),
+          );
+
+          if (!hasExpectedContent) {
+            console.error(`❌ Expected content not found. Got: ${data.slice(0, 200)}...`);
+            resolve({ success: false, error: 'Expected content not found', responseTime });
+
+            return;
+          }
+
+          console.log(`✅ Production site is healthy (${responseTime}ms)`);
+          console.log(`✅ Content validation passed`);
+          resolve({ success: true, responseTime });
+        });
+      },
+    );
+
+    request.on('timeout', () => {
+      console.error(`❌ Request timeout after 10 seconds`);
+      request.destroy();
+      resolve({ success: false, error: 'Timeout', responseTime: 10000 });
+    });
+
+    request.on('error', (error) => {
+      const endTime = Date.now();
+
+      const responseTime = endTime - startTime;
+
+      console.error(`❌ Request failed: ${error.message}`);
+      resolve({ success: false, error: error.message, responseTime });
+    });
+  });
+}
+
 function runCommand(cmd, args, label) {
   return new Promise((resolve) => {
     console.log('='.repeat(72));
@@ -159,6 +282,8 @@ async function main() {
 
   const enginesNode = pkg && pkg.engines && pkg.engines.node;
 
+  console.log('🔍 Voder Health Check Starting...\n');
+
   const nodeOk = checkNodeEngine(enginesNode);
 
   if (!nodeOk) process.exitCode = 2;
@@ -172,6 +297,7 @@ async function main() {
     process.exit(2);
   }
 
+  // Development environment checks
   const steps = [
     { cmd: 'npm', args: ['run', 'type-check'], label: 'TypeScript type-check' },
     { cmd: 'npm', args: ['run', 'lint:check'], label: 'ESLint (check - zero warnings allowed)' },
@@ -181,20 +307,14 @@ async function main() {
   const results = [];
 
   for (const step of steps) {
-    // Each step streams output to the console so the caller sees diagnostics first.
-    // We await completion and store the exit code for summary reporting.
-    // Note: spawn with shell false expects command to be in PATH (npm is available).
-    // If npm isn't available in PATH, this will fail with code 127.
-    // We intentionally do not run in interactive mode.
-    // Print a short hint if a step is expected to be long.
     if (step.label === 'TypeScript type-check') {
       console.log('Note: type-check may take a few seconds on first run.');
     }
-    // run
 
     const r = await runCommand(step.cmd, step.args, step.label);
 
     results.push({ label: step.label, code: r.code });
+
     if (r.code !== 0) {
       console.error(`\n${step.label} failed with exit code ${r.code}.`);
       if (step.label === 'TypeScript type-check') {
@@ -210,29 +330,54 @@ async function main() {
           'Remediation: run `npm run format` to auto-format files, then `npm run format:check`.',
         );
       }
-      // stop further steps on first failure
       break;
     }
   }
 
-  console.log('\nHealth-check summary:');
+  // Production URL health check (if enabled)
+  const checkProduction = process.env.CHECK_PRODUCTION_URL !== 'false';
+
+  const productionUrl = process.env.PRODUCTION_URL || 'https://voder.ai';
+
+  if (checkProduction) {
+    console.log('\n📡 Production Health Check...');
+    const urlResult = await checkProductionUrl(productionUrl);
+
+    results.push({
+      label: `Production URL (${productionUrl})`,
+      code: urlResult.success ? 0 : 1,
+      responseTime: urlResult.responseTime,
+    });
+
+    if (!urlResult.success) {
+      console.error(`\nProduction URL check failed: ${urlResult.error}`);
+      console.error('Remediation: Check deployment status and verify site is accessible');
+    }
+  } else {
+    console.log('\n⏭️  Skipping production URL check (CHECK_PRODUCTION_URL=false)');
+  }
+
+  console.log('\n📊 Health-check summary:');
   let failed = false;
 
   for (const r of results) {
-    const status = r.code === 0 ? 'OK' : `FAILED (code ${r.code})`;
+    const status = r.code === 0 ? '✅ OK' : `❌ FAILED (code ${r.code})`;
 
-    console.log(` - ${r.label}: ${status}`);
+    const timing = r.responseTime ? ` (${r.responseTime}ms)` : '';
+
+    console.log(` - ${r.label}: ${status}${timing}`);
     if (r.code !== 0) failed = true;
   }
 
   if (failed) {
     console.error(
-      '\nOne or more health-check steps failed. See logs above for details and run the remediation commands suggested.',
+      '\n❌ One or more health-check steps failed. See logs above for details and run the remediation commands suggested.',
     );
     process.exit(1);
   }
 
-  console.log('\nAll health-check steps passed.');
+  console.log('\n✅ All health-check steps passed.');
+  console.log('🚀 System is healthy and ready for development/deployment.');
   process.exit(0);
 }
 

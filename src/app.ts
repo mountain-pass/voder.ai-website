@@ -26,8 +26,73 @@ export function init(): void {
           <div class="status-indicator">
             <span class="status-text">Coming Soon</span>
           </div>
+          <div class="interest-capture">
+            <h2 class="signup-title">Get notified when we launch</h2>
+            <form class="signup-form" id="interest-form" aria-label="Email signup form">
+              <div class="form-group">
+                <label for="email" class="sr-only">Email address</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  placeholder="Enter your email address" 
+                  required 
+                  class="email-input"
+                  aria-describedby="email-hint"
+                />
+                <span id="email-hint" class="sr-only">We'll notify you when Voder launches</span>
+              </div>
+              <button type="submit" class="signup-button">Join the Waitlist</button>
+              <div class="form-status" id="form-status" aria-live="polite"></div>
+            </form>
+          </div>
         </section>
       </div>
     </main>
   `;
+
+  // Add form submission handling
+  const form = document.getElementById('interest-form') as HTMLFormElement;
+
+  const emailInput = document.getElementById('email') as HTMLInputElement;
+
+  const formStatus = document.getElementById('form-status') as HTMLDivElement;
+
+  if (form && emailInput && formStatus) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const email = emailInput.value.trim();
+
+      // Basic email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email) {
+        formStatus.textContent = 'Please enter your email address.';
+        formStatus.className = 'form-status error';
+        emailInput.focus();
+
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        formStatus.textContent = 'Please enter a valid email address.';
+        formStatus.className = 'form-status error';
+        emailInput.focus();
+
+        return;
+      }
+
+      // Simulate form submission (in a real app, this would send to a server)
+      formStatus.textContent = "Thank you! We'll notify you when Voder launches.";
+      formStatus.className = 'form-status success';
+      emailInput.value = '';
+
+      // Track the signup conversion in analytics
+      if (typeof window !== 'undefined' && (window as any).clarity) {
+        (window as any).clarity('set', 'email_signup', email);
+        (window as any).clarity('event', 'waitlist_signup');
+      }
+    });
+  }
 }

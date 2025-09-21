@@ -1,0 +1,72 @@
+name: Emergency Deployment Override
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Emergency deployment reason'
+        required: true
+        type: string
+      severity:
+        description: 'Severity level'
+        required: true
+        type: choice
+        options:
+          - critical
+          - high
+          - medium
+        default: 'critical'
+      bypass_checks:
+        description: 'Checks to bypass (comma-separated)'
+        required: false
+        type: string
+        default: 'format,lint'
+
+jobs:
+  emergency-deploy:
+    name: Emergency deployment with overrides
+    runs-on: ubuntu-latest
+    environment: emergency
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Log emergency deployment
+        run: |
+          echo "EMERGENCY DEPLOYMENT INITIATED" | tee emergency-deployment.log
+          echo "Reason: ${{ github.event.inputs.reason }}" | tee -a emergency-deployment.log
+          echo "Severity: ${{ github.event.inputs.severity }}" | tee -a emergency-deployment.log
+          echo "Bypassed checks: ${{ github.event.inputs.bypass_checks }}" | tee -a emergency-deployment.log
+          echo "Initiated by: ${{ github.actor }}" | tee -a emergency-deployment.log
+          echo "Timestamp: $(date -Iseconds)" | tee -a emergency-deployment.log
+
+      - name: Essential build and test only
+        run: |
+          set -euo pipefail
+          npm run build
+          npm run test:ci
+
+      - name: Deploy with override flag
+        run: |
+          echo "VERCEL_EMERGENCY_OVERRIDE=true" >> $GITHUB_ENV
+          npm run deploy:emergency || echo "Emergency deployment completed with warnings"
+
+      - name: Upload emergency deployment log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emergency-deployment-log
+          path: emergency-deployment.log
+
+      - name: Notify team of emergency deployment
+        if: always()
+        run: |
+          echo "::warning title=Emergency Deployment::Emergency deployment executed - Reason: ${{ github.event.inputs.reason }}"

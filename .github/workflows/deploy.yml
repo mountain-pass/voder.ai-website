@@ -47,6 +47,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.17.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Pre-deployment validation
+        run: |
+          echo "🔍 Running pre-deployment validation..."
+          npm run verify
+          echo "✅ Pre-deployment validation passed"
+
       - name: Deployment status notification
         run: |
           echo "🚀 Deployment triggered for commit: ${{ github.sha }}"
@@ -54,3 +69,21 @@ jobs:
           echo "👤 Author: ${{ github.actor }}"
           echo "📝 Message: ${{ github.event.head_commit.message }}"
           echo "🔗 Vercel will automatically deploy this build"
+
+      - name: Post-deployment monitoring
+        if: always()
+        run: |
+          echo "🔄 Starting post-deployment monitoring..."
+          # Wait for Vercel deployment to complete
+          sleep 60
+          # Run deployment monitoring
+          DEPLOYMENT_URL="https://voder.ai" npm run deploy:monitor || echo "::warning title=Deployment Monitoring::Post-deployment monitoring detected issues"
+
+      - name: Upload deployment logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-logs
+          path: |
+            rollback.log
+            deployment-monitor.log

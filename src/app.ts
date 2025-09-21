@@ -26,8 +26,40 @@ export function init(): void {
           <div class="status-indicator">
             <span class="status-text">Coming Soon</span>
           </div>
-          <div class="interest-capture">
-            <h2 class="signup-title">Get notified when we launch</h2>
+        </section>
+
+        <section class="problem-space" role="region" aria-labelledby="problem-title">
+          <h2 id="problem-title" class="problem-title">Sound Familiar?</h2>
+          <div class="problem-content">
+            <p class="problem-description">
+              You started using AI to ship faster, but now your codebase looks like it was written by a caffeinated intern having a breakdown.
+            </p>
+            <div class="problem-examples">
+              <div class="problem-item">
+                <span class="problem-icon">📁</span>
+                <p>Empty .md files everywhere because AI "documented" your features</p>
+              </div>
+              <div class="problem-item">
+                <span class="problem-icon">🔧</span>
+                <p>Scripts that work once, then break mysteriously in production</p>
+              </div>
+              <div class="problem-item">
+                <span class="problem-icon">🏗️</span>
+                <p>Architecture that made sense to GPT but confuses every human</p>
+              </div>
+              <div class="problem-item">
+                <span class="problem-icon">⏰</span>
+                <p>Debugging takes longer than writing the original code</p>
+              </div>
+            </div>
+            <div class="problem-question">
+              <p class="resonance-check">Does this resonate with your experience?</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="interest-capture">
+          <h2 class="signup-title">Get notified when we launch</h2>
             <form class="signup-form" id="interest-form" aria-label="Email signup form">
               <div class="form-group">
                 <label for="email" class="sr-only">Email address</label>

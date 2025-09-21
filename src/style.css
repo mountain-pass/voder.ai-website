@@ -155,6 +155,76 @@ body {
   text-transform: uppercase;
 }
 
+/* Problem space section */
+.problem-space {
+  margin-top: var(--space-12);
+  padding: var(--space-8) 0;
+}
+
+.problem-title {
+  color: var(--paper-white);
+  font-size: var(--font-size-3xl);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+  text-align: center;
+}
+
+.problem-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.problem-description {
+  color: var(--paper-white);
+  font-size: var(--font-size-xl);
+  line-height: 1.6;
+  margin-bottom: var(--space-8);
+  opacity: 0.9;
+  text-align: center;
+}
+
+.problem-examples {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  margin-bottom: var(--space-8);
+}
+
+.problem-item {
+  align-items: flex-start;
+  background: rgb(255 255 255 / 5%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 8px;
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.problem-icon {
+  font-size: var(--font-size-xl);
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.problem-item p {
+  color: var(--paper-white);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.problem-question {
+  text-align: center;
+}
+
+.resonance-check {
+  color: var(--soft-teal-glow);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  margin: 0;
+}
+
 /* Responsive design */
 @media (width <= 768px) {
   .brand-header {

@@ -17,25 +17,25 @@
 
 # Developer Story Map with Releases
 
-| **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**              | **Maintain**        |
-| ------------------------------------------ | ------------- | ------------------ | -------------------- | ----------------------- | ------------------- |
-| **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build              | Story management    |
-|                                            | Dependencies  | Code formatting    | CSS linting          | Deployment              | Decision management |
-|                                            | -             | Vite dev server    | HTML linting         | Production verification | -                   |
-|                                            | -             | -                  | Markdown linting     | -                       | -                   |
-|                                            | -             | -                  | Unit testing         | -                       | -                   |
-|                                            | -             | -                  | Test coverage        | -                       | -                   |
-|                                            | -             | -                  | Git hooks            | -                       | -                   |
-|                                            | -             | -                  | Prepare script       | -                       | -                   |
-|                                            | -             | -                  | E2E testing          | -                       | -                   |
-|                                            | -             | -                  | E2E screenshots      | -                       | -                   |
+| **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**                | **Maintain**        |
+| ------------------------------------------ | ------------- | ------------------ | -------------------- | ------------------------- | ------------------- |
+| **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build                | Story management    |
+|                                            | Dependencies  | Code formatting    | CSS linting          | Core CI pipeline          | Decision management |
+|                                            | -             | Vite dev server    | HTML linting         | Security CI pipeline      | -                   |
+|                                            | -             | -                  | Markdown linting     | Deploy readiness pipeline | -                   |
+|                                            | -             | -                  | Unit testing         | Stability monitoring      | -                   |
+|                                            | -             | -                  | Test coverage        | Deployment protection     | -                   |
+|                                            | -             | -                  | Git hooks            | Production verification   | -                   |
+|                                            | -             | -                  | Prepare script       | -                         | -                   |
+|                                            | -             | -                  | E2E testing          | -                         | -                   |
+|                                            | -             | -                  | E2E screenshots      | -                         | -                   |
 
 | **Release 1 (Enhanced Quality)**  | **Setup** | **Write Code**    | **Validate Quality**  | **Deploy**            | **Maintain**           |
 | --------------------------------- | --------- | ----------------- | --------------------- | --------------------- | ---------------------- |
-| **Advanced testing & validation** | -         | Testing utilities | Integration tests     | CI/CD pipeline        | Performance monitoring |
-|                                   | -         | Debug tools       | Visual regression     | Asset optimization    | Error tracking         |
+| **Advanced testing & validation** | -         | Testing utilities | Integration tests     | Asset optimization    | Performance monitoring |
+|                                   | -         | Debug tools       | Visual regression     | Preview deployments   | Error tracking         |
 |                                   | -         | Component tools   | Accessibility testing | Deployment validation | Automated testing      |
-|                                   | -         | -                 | Security scanning     | -                     | -                      |
+|                                   | -         | -                 | Advanced security     | -                     | -                      |
 
 | **Release 2 (Advanced Tooling)** | **Setup** | **Write Code**  | **Validate Quality** | **Deploy**          | **Maintain**       |
 | -------------------------------- | --------- | --------------- | -------------------- | ------------------- | ------------------ |

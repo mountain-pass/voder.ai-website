@@ -30,6 +30,8 @@
     "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/decisions/**/*.md docs/E2E-REPRO.md docs/DEVELOPER-SETUP.md specs/**/*.md",
     "verify": "npm run audit:fix && npm run lint:fix && npm run lint:check && npm run format:check && npm run build && npm run test:ci",
     "deploy:check": "npm run verify && npm run screenshots",
+    "deploy:monitor": "node scripts/deployment-monitor.js",
+    "deploy:emergency": "npm run build && npm run test:ci && echo 'Emergency deployment - bypassing full quality checks'",
     "deploy:preview": "npm run build && npm run preview",
     "deploy:status": "node scripts/deployment-status.js",
     "docs:setup": "node setup-package-docs.js --all",

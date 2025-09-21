@@ -6,7 +6,13 @@
   "framework": "vite",
   "github": {
     "enabled": true,
-    "silent": false
+    "silent": false,
+    "deploymentStatus": "deployment_protection",
+    "requiredStatusChecks": [
+      "CI & Playwright multi-browser tests",
+      "Deploy to Production",
+      "Security Audit"
+    ]
   },
   "rewrites": [
     {

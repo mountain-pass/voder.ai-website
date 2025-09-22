@@ -20,7 +20,7 @@
 | **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**         | **Maintain**        |
 | ------------------------------------------ | ------------- | ------------------ | -------------------- | ------------------ | ------------------- |
 | **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build         | Story management    |
-|                                            | Dependencies  | Code formatting    | CSS linting          | -                  | Decision management |
+|                                            | Dependencies  | Code formatting    | CSS linting          | Basic deployment   | Decision management |
 |                                            | -             | Vite dev server    | HTML linting         | -                  | -                   |
 |                                            | -             | -                  | Markdown linting     | -                  | -                   |
 |                                            | -             | -                  | Unit testing         | -                  | -                   |

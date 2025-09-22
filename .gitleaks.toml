@@ -1,0 +1,29 @@
+# Gitleaks configuration
+# This configuration defines rules for secret detection
+[extend]
+  # Use default gitleaks rules
+  useDefault = true
+
+[allowlist]
+  description = "Allowlist for common false positives"
+  paths = [
+    # Allow in documentation and example files
+    "**/*.md",
+    "**/docs/**",
+    "**/examples/**",
+    # Allow in test files with mock data
+    "**/test/**",
+    "**/tests/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+  ]
+  
+  # Allow specific patterns that are not actual secrets
+  regexes = [
+    # Placeholder API keys in docs/examples
+    '''(?i)(api_key|apikey|secret).*(example|placeholder|dummy|test|xxx)''',
+    # Version strings that might look like secrets
+    '''v\d+\.\d+\.\d+''',
+    # Git commit hashes
+    '''\b[a-f0-9]{40}\b''',
+  ]

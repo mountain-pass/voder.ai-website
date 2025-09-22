@@ -49,7 +49,7 @@
 **Goal**: Establish robust development foundation with quality infrastructure
 **Success Metric**: Complete development environment with full quality gates
 **Scope**: Story management, decision management, development environment, quality tooling, basic brand entry, analytics foundation
-**Stories**: 001.0-001.1 (Management), 002.0-012.4 (Dev Environment & Quality), 013.0 (Brand Entry), 014.0-014.1 (Deploy), 015.0-016.0 (Analytics)
+**Stories**: 001.0-001.1 (Management), 002.0-012.4 (Dev Environment & Quality), 013.0 (Brand Entry), 015.0-016.0 (Analytics)
 
 ### Release 1: MVP Problem Validation (2-3 weeks)
 

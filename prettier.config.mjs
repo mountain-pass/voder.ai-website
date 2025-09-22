@@ -1,6 +1,4 @@
-import type { Config } from 'prettier';
-
-const config: Config = {
+export default {
   printWidth: 100,
   semi: true,
   singleQuote: true,
@@ -17,5 +15,3 @@ const config: Config = {
     },
   ],
 };
-
-export default config;

@@ -17,16 +17,16 @@
 
 # Developer Story Map with Releases
 
-| **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**         | **Maintain**        |
-| ------------------------------------------ | ------------- | ------------------ | -------------------- | ------------------ | ------------------- |
-| **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build         | Story management    |
-|                                            | Dependencies  | Code formatting    | CSS linting          | Basic deployment   | Decision management |
-|                                            | -             | Vite dev server    | HTML linting         | -                  | -                   |
-|                                            | -             | -                  | Markdown linting     | -                  | -                   |
-|                                            | -             | -                  | Unit testing         | -                  | -                   |
-|                                            | -             | -                  | Test coverage        | -                  | -                   |
-|                                            | -             | -                  | E2E testing          | -                  | -                   |
-|                                            | -             | -                  | Prepare script       | -                  | -                   |
+| **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**       | **Maintain**        |
+| ------------------------------------------ | ------------- | ------------------ | -------------------- | ---------------- | ------------------- |
+| **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build       | Story management    |
+|                                            | Dependencies  | Code formatting    | CSS linting          | Basic deployment | Decision management |
+|                                            | -             | Vite dev server    | HTML linting         | -                | -                   |
+|                                            | -             | -                  | Markdown linting     | -                | -                   |
+|                                            | -             | -                  | Unit testing         | -                | -                   |
+|                                            | -             | -                  | Test coverage        | -                | -                   |
+|                                            | -             | -                  | E2E testing          | -                | -                   |
+|                                            | -             | -                  | Prepare script       | -                | -                   |
 
 | **Release 1 (Enhanced Quality)**  | **Setup** | **Write Code**    | **Validate Quality**  | **Deploy**            | **Maintain**           |
 | --------------------------------- | --------- | ----------------- | --------------------- | --------------------- | ---------------------- |
@@ -35,11 +35,11 @@
 |                                   | -         | Component tools   | Accessibility testing | Preview deployments   | Automated testing      |
 |                                   | -         | -                 | Advanced security     | Deployment protection | -                      |
 
-| **Release 2 (Advanced Tooling)** | **Setup** | **Write Code**  | **Validate Quality** | **Deploy**           | **Maintain**       |
-| -------------------------------- | --------- | --------------- | -------------------- | -------------------- | ------------------ |
-| **Advanced dev experience**      | -         | IDE integration | Visual regression    | CI/CD automation     | Documentation      |
-|                                  | -         | Component tools | Advanced linting     | Preview deployments  | Dependency updates |
-|                                  | -         | -               | Security scanning    | Automated releases   | Change logs        |
+| **Release 2 (Advanced Tooling)** | **Setup** | **Write Code**  | **Validate Quality** | **Deploy**          | **Maintain**       |
+| -------------------------------- | --------- | --------------- | -------------------- | ------------------- | ------------------ |
+| **Advanced dev experience**      | -         | IDE integration | Visual regression    | CI/CD automation    | Documentation      |
+|                                  | -         | Component tools | Advanced linting     | Preview deployments | Dependency updates |
+|                                  | -         | -               | Security scanning    | Automated releases  | Change logs        |
 
 ---
 

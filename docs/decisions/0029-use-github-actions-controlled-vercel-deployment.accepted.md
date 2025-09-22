@@ -13,6 +13,7 @@ informed: Project Stakeholders
 We need to establish a deployment architecture for the voder.ai website that balances simplicity with essential capabilities. After removing the previous complex CI/CD infrastructure, we must choose how to implement deployment to Vercel with quality gates, post-deployment validation, and rollback capabilities.
 
 The deployment solution must support:
+
 - Quality checks before deployment (lint, test, build, security)
 - Post-deployment validation and health checks
 - Automatic rollback capabilities on deployment failures
@@ -78,6 +79,7 @@ GitHub Push → Quality Gates → Deploy to Vercel → Health Checks → Rollbac
 ### Consequences
 
 **Good:**
+
 - ✅ **Meets all requirements**: Quality checks, post-deployment validation, automatic rollback
 - ✅ **Right complexity level**: Not too simple (missing features) or over-engineered
 - ✅ **Cost effective**: Uses existing GitHub Actions, no additional services required
@@ -88,12 +90,14 @@ GitHub Push → Quality Gates → Deploy to Vercel → Health Checks → Rollbac
 - ✅ **Deployment gates**: Prevents broken code from reaching production
 
 **Bad:**
+
 - ❌ **GitHub Actions costs**: Execution time costs for quality checks and deployment
 - ❌ **Token management**: Need to securely manage Vercel deployment tokens
 - ❌ **Single point of failure**: GitHub Actions outage affects deployments
 - ❌ **Setup complexity**: More complex initial setup than simple auto-deploy
 
 **Neutral:**
+
 - **Learning curve**: Team needs to understand GitHub Actions deployment workflows
 - **Maintenance**: Requires ongoing maintenance of workflow configurations
 
@@ -185,6 +189,7 @@ This decision supports the project's goal of maintaining essential deployment ca
 - **Phase 3**: Consider upgrading to GitHub Deployment Environments if enterprise features become necessary
 
 **Related Decisions**:
+
 - [ADR-0026: Use Vercel for Static Site Deployment](0026-use-vercel-for-static-site-deployment.accepted.md) - Establishes Vercel as deployment platform
 - [ADR-0024: Adopt DORA-style Trunk-based Development](0024-adopt-dora-style-trunk-based-development.accepted.md) - Deployment strategy must support trunk-based workflow
 

@@ -182,14 +182,138 @@ const artifacts = scanArtifacts();
 
 const out = { generatedAt: new Date().toISOString(), stats, artifacts };
 
+// Historical data preservation
+function preserveHistoricalData(currentData) {
+  const historyFile = 'e2e-stability-history.json';
+
+  let history = [];
+
+  // Load existing history
+  try {
+    if (fs.existsSync(historyFile)) {
+      const historyContent = fs.readFileSync(historyFile, 'utf8');
+
+      const parsed = JSON.parse(historyContent);
+
+      // Handle both old format (array) and new format (object with entries)
+      history = Array.isArray(parsed) ? parsed : parsed.entries || [];
+    }
+  } catch (error) {
+    console.warn('Failed to load history file, starting fresh:', error.message);
+    history = [];
+  }
+
+  // Ensure history is an array
+  if (!Array.isArray(history)) {
+    history = [];
+  }
+
+  // Add current data to history
+  history.push({
+    timestamp: currentData.generatedAt,
+    stats: currentData.stats,
+    artifactCount: currentData.artifacts.length,
+  });
+
+  // Keep only last 30 days of data (assuming daily runs)
+  const maxEntries = 30;
+
+  if (history.length > maxEntries) {
+    history = history.slice(-maxEntries);
+  }
+
+  // Calculate trends
+  const trends = calculateTrends(history);
+
+  // Save updated history
+  try {
+    const historyData = {
+      lastUpdated: currentData.generatedAt,
+      entries: history,
+      trends: trends,
+    };
+
+    fs.writeFileSync(historyFile, JSON.stringify(historyData, null, 2));
+    console.log(`Historical data preserved (${history.length} entries)`);
+
+    return trends;
+  } catch (error) {
+    console.error('Failed to write history file:', error.message);
+
+    return null;
+  }
+}
+
+function calculateTrends(history) {
+  if (history.length < 2) {
+    return { message: 'Insufficient data for trend analysis' };
+  }
+
+  const recent = history.slice(-7); // Last 7 entries
+
+  const passRates = recent.map((entry) =>
+    entry.stats.total > 0 ? (entry.stats.passed / entry.stats.total) * 100 : 0,
+  );
+
+  const avgPassRate = passRates.reduce((a, b) => a + b, 0) / passRates.length;
+
+  const trend = passRates.length > 1 ? passRates[passRates.length - 1] - passRates[0] : 0;
+
+  // Early warning thresholds
+  const isUnstable = Math.abs(trend) >= 10; // 10% change
+
+  const isLowPerformance = avgPassRate < 80; // Less than 80% pass rate
+
+  const isFailingTrend = trend < -5; // Declining by more than 5%
+
+  const warnings = [];
+
+  if (isUnstable) warnings.push('High variability detected');
+  if (isLowPerformance) warnings.push('Low pass rate detected');
+  if (isFailingTrend) warnings.push('Declining trend detected');
+
+  return {
+    averagePassRate: Math.round(avgPassRate * 100) / 100,
+    trend: Math.round(trend * 100) / 100,
+    isStable: Math.abs(trend) < 5, // Less than 5% change
+    recentRuns: recent.length,
+    warnings: warnings,
+    alertLevel: warnings.length > 0 ? (warnings.length > 1 ? 'HIGH' : 'MEDIUM') : 'LOW',
+  };
+}
+
+// Preserve historical data and get trends
+const trends = preserveHistoricalData(out);
+
+if (trends) {
+  out.trends = trends;
+}
+
 try {
-  fs.writeFileSync('e2e-stability.json', JSON.stringify(out, null, 2));
+  // Ensure the output data is serializable
+  const outputData = JSON.parse(JSON.stringify(out));
+
+  fs.writeFileSync('e2e-stability.json', JSON.stringify(outputData, null, 2));
   fs.writeFileSync(
     'e2e-stability.txt',
-    `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\n`,
+    `generatedAt: ${out.generatedAt}\ntotal: ${stats.total}\npassed: ${stats.passed}\nfailed: ${stats.failed}\nflaky: ${stats.flaky}\npassRate: ${stats.total > 0 ? Math.round((stats.passed / stats.total) * 100) : 0}%\n${trends ? `avgPassRate: ${trends.averagePassRate}%\ntrend: ${trends.trend}%\nstable: ${trends.isStable}\nalertLevel: ${trends.alertLevel}\nwarnings: ${trends.warnings.join(', ') || 'none'}\n` : ''}`,
   );
-} catch {
-  console.error('Failed to write stability artifacts');
+
+  // Output alerts to console for GitHub Actions
+  if (trends && trends.warnings.length > 0) {
+    console.log('🚨 STABILITY ALERTS DETECTED:');
+    trends.warnings.forEach((warning) => console.log(`  - ${warning}`));
+    console.log(`Alert Level: ${trends.alertLevel}`);
+
+    // Create GitHub Actions notice
+    console.log(
+      `::notice title=Stability Alert::${trends.warnings.join(', ')} (Alert Level: ${trends.alertLevel})`,
+    );
+  } else if (trends) {
+    console.log('✅ Stability monitoring: No alerts detected');
+  }
+} catch (error) {
+  console.error('Failed to write stability artifacts:', error.message);
   process.exit(3);
 }
 

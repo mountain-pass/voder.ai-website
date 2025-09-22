@@ -1,0 +1,33 @@
+{
+  "lastUpdated": "2025-09-22T00:30:37.415Z",
+  "entries": [
+    {
+      "timestamp": "2025-09-22T00:29:45.886Z",
+      "stats": {
+        "total": 144,
+        "passed": 0,
+        "failed": 0,
+        "flaky": 0
+      },
+      "artifactCount": 3
+    },
+    {
+      "timestamp": "2025-09-22T00:30:37.415Z",
+      "stats": {
+        "total": 144,
+        "passed": 0,
+        "failed": 0,
+        "flaky": 0
+      },
+      "artifactCount": 3
+    }
+  ],
+  "trends": {
+    "averagePassRate": 0,
+    "trend": 0,
+    "isStable": true,
+    "recentRuns": 2,
+    "warnings": ["Low pass rate detected"],
+    "alertLevel": "MEDIUM"
+  }
+}

@@ -41,21 +41,36 @@ jobs:
           npm run preview &
           PREVIEW_PID=$!
           echo "preview_pid=$PREVIEW_PID" > preview.pid
+          echo "Preview server started with PID: $PREVIEW_PID"
           # wait for server to accept connections on 5173
           for i in $(seq 1 30); do
-            if nc -z localhost 5173; then
-              echo "preview listening"
+            if curl -s http://localhost:5173 > /dev/null 2>&1; then
+              echo "Preview server is ready and responding"
               break
             fi
-            sleep 1
+            echo "Waiting for preview server... attempt $i/30"
+            sleep 2
           done
+          # Final check
+          if ! curl -s http://localhost:5173 > /dev/null 2>&1; then
+            echo "Preview server failed to start properly"
+            exit 1
+          fi
 
       - name: Run Playwright tests (all browsers)
         env:
           CI: true
         run: |
           npx playwright install --with-deps
-          npx playwright test --reporter=json --output=test-results/
+          npx playwright test --output-dir=test-results/ || echo "Tests completed with exit code $?"
+        continue-on-error: true
+
+      - name: Run Production E2E tests
+        env:
+          CI: true
+        run: |
+          echo "Running production environment tests..."
+          npm run e2e:ci:prod || echo "Production tests completed with exit code $?"
         continue-on-error: true
 
       - name: Collect Playwright artifacts
@@ -68,7 +83,14 @@ jobs:
       - name: Generate stability summary
         if: always()
         run: |
+          echo "Checking for Playwright results files..."
+          ls -la playwright-results.json || echo "playwright-results.json not found"
+          ls -la test-results/ || echo "test-results directory not found"
+          find . -name "*.json" -type f | head -10 || echo "No JSON files found"
+          echo "Generating stability summary..."
           node .github/scripts/generate-e2e-stability-summary.js
+          echo "Generated files:"
+          ls -la e2e-stability.json e2e-stability.txt || echo "Generated files not found"
 
       - name: Verify E2E stability artifacts
         if: always()
@@ -83,6 +105,7 @@ jobs:
           path: |
             e2e-stability.json
             e2e-stability.txt
+            e2e-stability-history.json
 
       - name: Stop preview server
         if: always()

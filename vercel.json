@@ -4,17 +4,8 @@
   "installCommand": "npm ci",
   "devCommand": "npm run dev",
   "framework": "vite",
-  "github": {
-    "enabled": true,
-    "silent": false,
-    "deploymentStatus": "deployment_protection",
-    "requiredStatusChecks": [
-      "CI & Playwright multi-browser tests",
-      "Deploy to Production",
-      "Security Audit",
-      "Secret Scan (gitleaks)",
-      "Code Scanning - CodeQL"
-    ]
+  "git": {
+    "deploymentEnabled": false
   },
   "rewrites": [
     {

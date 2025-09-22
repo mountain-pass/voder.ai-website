@@ -43,7 +43,7 @@ This runs the complete pipeline:
 
 ### Pre-commit Hooks
 
-The repository uses Husky pre-commit hooks that run:
+The repository uses pre-commit hooks that run:
 
 - `npm run format:check`
 - `npm run lint:check`

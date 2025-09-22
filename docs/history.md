@@ -47,9 +47,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - # checkout, setup, install
-      - run: npm run build  # No quality checks!
-      - # deploy to Vercel
+      -  # checkout, setup, install
+      - run: npm run build # No quality checks!
+      -  # deploy to Vercel
 ```
 
 #### Workflow Structure After
@@ -59,17 +59,17 @@ jobs:
   quality-gates:
     runs-on: ubuntu-latest
     steps:
-      - # checkout, setup, install
+      -  # checkout, setup, install
       - name: Quality Gates
-        run: npm run verify  # audit, lint, format, build, test
+        run: npm run verify # audit, lint, format, build, test
 
   deploy:
-    needs: quality-gates  # Blocks deployment on quality failures
+    needs: quality-gates # Blocks deployment on quality failures
     runs-on: ubuntu-latest
     steps:
-      - # checkout, setup, install
+      -  # checkout, setup, install
       - run: npm run build
-      - # deploy to Vercel
+      -  # deploy to Vercel
 ```
 
 ### Impact on Project Safety
@@ -87,6 +87,7 @@ This implementation resolves the critical safety gap that was blocking story dev
 ### Quality Verification Results
 
 All quality checks pass locally:
+
 - ✅ **Security Audit**: 0 vulnerabilities found
 - ✅ **Linting**: All ESLint checks pass with 0 warnings
 - ✅ **Formatting**: All files conform to Prettier formatting

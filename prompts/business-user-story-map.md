@@ -1,7 +1,5 @@
 # Voder Website User Story Map
 
-# Voder Website User Story Map
-
 ## Journey Phases (Columns)
 
 | **Intrigue**                        | **Connect**                           | **Feel Pain**                             | **Love Alternative**                    | **Want It**                     |

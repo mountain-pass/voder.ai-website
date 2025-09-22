@@ -17,18 +17,18 @@
 
 # Developer Story Map with Releases
 
-| **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**                | **Maintain**        |
-| ------------------------------------------ | ------------- | ------------------ | -------------------- | ------------------------- | ------------------- |
-| **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build                | Story management    |
-|                                            | Dependencies  | Code formatting    | CSS linting          | Core CI pipeline          | Decision management |
-|                                            | -             | Vite dev server    | HTML linting         | Security CI pipeline      | -                   |
-|                                            | -             | -                  | Markdown linting     | Deploy readiness pipeline | -                   |
-|                                            | -             | -                  | Unit testing         | Stability monitoring      | -                   |
-|                                            | -             | -                  | Test coverage        | Deployment protection     | -                   |
-|                                            | -             | -                  | Git hooks            | Production verification   | -                   |
-|                                            | -             | -                  | Prepare script       | -                         | -                   |
-|                                            | -             | -                  | E2E testing          | -                         | -                   |
-|                                            | -             | -                  | E2E screenshots      | -                         | -                   |
+| **Release 0.5 (Essential Dev Experience)** | **Setup**     | **Write Code**     | **Validate Quality** | **Deploy**                 | **Maintain**        |
+| ------------------------------------------ | ------------- | ------------------ | -------------------- | -------------------------- | ------------------- |
+| **Foundation & Quality**                   | Node.js setup | TypeScript support | JavaScript linting   | Vite build                 | Story management    |
+|                                            | Dependencies  | Code formatting    | CSS linting          | Core CI pipeline           | Decision management |
+|                                            | -             | Vite dev server    | HTML linting         | Security CI pipeline       | -                   |
+|                                            | -             | -                  | Markdown linting     | Production build pipeline  | -                   |
+|                                            | -             | -                  | Unit testing         | E2E testing pipeline       | -                   |
+|                                            | -             | -                  | Test coverage        | Visual regression pipeline | -                   |
+|                                            | -             | -                  | Git hooks            | Deployment protection      | -                   |
+|                                            | -             | -                  | Prepare script       | Production verification    | -                   |
+|                                            | -             | -                  | E2E testing          | Stability monitoring       | -                   |
+|                                            | -             | -                  | Visual regression    | -                          | -                   |
 
 | **Release 1 (Enhanced Quality)**  | **Setup** | **Write Code**    | **Validate Quality**  | **Deploy**            | **Maintain**           |
 | --------------------------------- | --------- | ----------------- | --------------------- | --------------------- | ---------------------- |

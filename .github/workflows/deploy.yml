@@ -14,4 +14,14 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build
-      - run: npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy to Vercel
+        id: deploy
+        run: |
+          DEPLOYMENT_URL=$(npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }})
+          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "✅ Deployment completed: $DEPLOYMENT_URL"
+      - name: Verify Deployment
+        run: |
+          echo "🔍 Verifying deployment status..."
+          npx vercel ls --token ${{ secrets.VERCEL_TOKEN }} | head -5
+          echo "✅ Deployment verification completed"

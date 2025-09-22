@@ -17,7 +17,7 @@ jobs:
       - name: Deploy to Vercel
         id: deploy
         run: |
-          DEPLOYMENT_URL=$(npx vercel --prod --token ${{ secrets.VERCEL_TOKEN }})
+          DEPLOYMENT_URL=$(npx vercel --prod --yes --token ${{ secrets.VERCEL_TOKEN }})
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
           echo "✅ Deployment completed: $DEPLOYMENT_URL"
       - name: Verify Deployment

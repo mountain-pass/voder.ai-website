@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=verbose",
-    "screenshots": "npx playwright install && npx playwright install-deps chromium webkit && playwright test tests/e2e/screenshots.spec.ts --reporter=list || echo 'Screenshot tests skipped in deployment environment - system dependencies not available'",
+    "screenshots": "npx playwright install && npx playwright install-deps chromium webkit && playwright test tests/e2e/screenshots.spec.ts --reporter=list",
     "screenshots:headed": "playwright test tests/e2e/screenshots.spec.ts --headed --reporter=list",
     "e2e:ci:prod": "PREVIEW_URL=https://voder.ai playwright test tests/e2e/screenshots.spec.ts --reporter=list",
     "e2e:ci": "npx playwright test --reporter=json --output=test-results/",
@@ -33,9 +33,7 @@
     "docs:report": "npm run docs:setup && node setup-package-docs.js --report",
     "prepare": "node scripts/prepare-libraries.js",
     "postinstall": "simple-git-hooks",
-    "health-check": "node scripts/health-check.js",
-    "audit:fix": "npm audit fix --package-lock-only",
-    "security:local": "npm audit --json > audit.json && node .github/scripts/parse-audit.js audit.json"
+    "audit:fix": "npm audit fix --package-lock-only"
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.0",

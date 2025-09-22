@@ -1,0 +1,136 @@
+name: Deployment Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        type: string
+      target_deployment:
+        description: 'Target deployment URL or ID to rollback to (leave empty for previous successful deployment)'
+        required: false
+        type: string
+
+jobs:
+  rollback:
+    name: Rollback deployment
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.17.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Authenticate with Vercel
+        run: vercel --token ${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Get current deployment status
+        id: current_status
+        run: |
+          echo "🔍 Checking current deployment status..."
+          vercel ls --token ${{ secrets.VERCEL_TOKEN }} > current_deployments.txt
+          cat current_deployments.txt
+
+          # Extract the most recent deployment info
+          CURRENT_DEPLOYMENT=$(head -n 5 current_deployments.txt | tail -n 1 | awk '{print $2}')
+          echo "current_deployment=$CURRENT_DEPLOYMENT" >> $GITHUB_OUTPUT
+
+          # Find the last successful deployment if no target specified
+          if [ -z "${{ github.event.inputs.target_deployment }}" ]; then
+            LAST_SUCCESSFUL=$(grep "● Ready" current_deployments.txt | head -n 1 | awk '{print $2}')
+            echo "target_deployment=$LAST_SUCCESSFUL" >> $GITHUB_OUTPUT
+          else
+            echo "target_deployment=${{ github.event.inputs.target_deployment }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate rollback target
+        id: validate_target
+        run: |
+          TARGET="${{ steps.current_status.outputs.target_deployment }}"
+
+          if [ -z "$TARGET" ]; then
+            echo "❌ No target deployment found for rollback"
+            exit 1
+          fi
+
+          echo "✅ Rollback target: $TARGET"
+          echo "target_url=$TARGET" >> $GITHUB_OUTPUT
+
+      - name: Create rollback record
+        run: |
+          echo "📝 Creating rollback record..."
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          cat > rollback.log << EOF
+          Rollback executed at: $TIMESTAMP
+          Reason: ${{ github.event.inputs.reason }}
+          Triggered by: ${{ github.actor }}
+          From deployment: ${{ steps.current_status.outputs.current_deployment }}
+          To deployment: ${{ steps.validate_target.outputs.target_url }}
+          Commit SHA: ${{ github.sha }}
+          EOF
+
+      - name: Execute rollback
+        run: |
+          echo "🔄 Executing rollback to: ${{ steps.validate_target.outputs.target_url }}"
+
+          # Promote the target deployment to production
+          vercel promote ${{ steps.validate_target.outputs.target_url }} --token ${{ secrets.VERCEL_TOKEN }}
+
+          echo "✅ Rollback completed successfully"
+
+      - name: Verify rollback
+        run: |
+          echo "🔍 Verifying rollback..."
+          sleep 30
+
+          # Check that the deployment is live
+          curl -f -s -o /dev/null "https://voder.ai" || {
+            echo "❌ Rollback verification failed - site not responding"
+            exit 1
+          }
+
+          echo "✅ Rollback verification passed"
+
+      - name: Post-rollback notification
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ ROLLBACK SUCCESSFUL"
+            echo "🎯 Target: ${{ steps.validate_target.outputs.target_url }}"
+            echo "📝 Reason: ${{ github.event.inputs.reason }}"
+            echo "👤 Executed by: ${{ github.actor }}"
+          else
+            echo "❌ ROLLBACK FAILED"
+            echo "🚨 Manual intervention may be required"
+          fi
+
+      - name: Upload rollback logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-logs
+          path: |
+            rollback.log
+            current_deployments.txt

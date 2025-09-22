@@ -11,7 +11,9 @@
     "requiredStatusChecks": [
       "CI & Playwright multi-browser tests",
       "Deploy to Production",
-      "Security Audit"
+      "Security Audit",
+      "Secret Scan (gitleaks)",
+      "Code Scanning - CodeQL"
     ]
   },
   "rewrites": [

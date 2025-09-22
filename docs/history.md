@@ -2,9 +2,48 @@
 
 This document tracks significant changes and milestones in the voder.ai website project.
 
-## 2025-09-22: GitHub Actions Controlled Deployment Implementation
+## 2025-09-22: Deployment and CI Infrastructure Cleanup
 
 ### Summary
+
+Removed all deployment automation and CI/CD infrastructure per project reset decision. This includes GitHub Actions workflows, deployment stories, CI pipeline stories, and related configurations. The project now focuses on core development tools only.
+
+### Changes Made
+
+#### Stories Removed
+
+- **014.0-DEV-DEPLOY**: Deployment Pipeline (removed)
+- **014.1-DEV-PROD-VERIFICATION**: Production Verification (removed)
+- **021.1-DEV-CI-CORE**: Core CI Workflow (removed)
+- **021.2-DEV-CI-SECURITY**: Security CI Workflow (removed)
+- **021.3-DEV-CI-BUILD**: Build CI Workflow (removed)
+- **021.4-DEV-E2E-TESTING**: E2E Testing Pipeline (removed)
+- **021.5-DEV-VISUAL-REGRESSION**: Visual Regression Testing (removed)
+- **022.0-DEV-DEPLOY-PROTECTION**: Deployment Protection (removed)
+
+#### Infrastructure Removed
+
+- **GitHub Actions Workflows**: All .github/workflows/ files removed
+- **Deployment Scripts**: All deployment monitoring and health check scripts removed
+- **Vercel Configuration**: vercel.json removed
+- **Package.json Scripts**: Deployment-related npm scripts removed
+- **Configuration Files**: .gitleaks.toml and related CI configurations removed
+
+#### Documentation Cleanup
+
+- **Traceability Files**: Removed outdated traceability and plan files
+- **Story References**: Updated references to removed stories
+- **Dependencies**: Cleaned up dependency references between stories
+
+### Rationale
+
+Complexity of GitHub Actions orchestration with external dependencies became unwieldy. Applied Gull's Law simplification principle - starting fresh with core development tools only. This provides a clean baseline for future development without deployment automation overhead.
+
+## 2025-09-22: GitHub Actions Controlled Deployment Implementation (REMOVED)
+
+### Summary
+
+**NOTE: This implementation was subsequently removed during infrastructure cleanup.**
 
 Implemented GitHub Actions controlled deployment system to complete Story 022.0-DEV-DEPLOY-PROTECTION, transitioning from Vercel automatic deployments to GitHub Actions triggered deployment with comprehensive quality gate integration and deployment verification.
 
@@ -91,7 +130,9 @@ The deployment workflow now waits for completion of:
 
 ### Impact on Project Status
 
-This implementation directly resolves the FAILED status from Story 022.0-DEV-DEPLOY-PROTECTION assessment:
+**NOTE: This implementation was subsequently removed during infrastructure cleanup.**
+
+This implementation directly resolved the FAILED status from Story 022.0-DEV-DEPLOY-PROTECTION assessment before being removed:
 
 - ✅ **AC1**: Automatic deployment disabled with `git.deploymentEnabled: false`
 - ✅ **AC2**: GitHub Actions controls deployment triggering with Vercel CLI
@@ -122,9 +163,11 @@ This implementation directly resolves the FAILED status from Story 022.0-DEV-DEP
 - Assess readiness for continuing with remaining story implementations
 - Proceed with assessment of other stories in release 0.5 scope
 
-## 2025-09-22: E2E Stability Monitoring System Implementation
+## 2025-09-22: E2E Stability Monitoring System Implementation (REMOVED)
 
 ### Summary
+
+**NOTE: This implementation was subsequently removed during infrastructure cleanup.**
 
 Implemented comprehensive E2E stability monitoring system to complete Story 021.4-DEV-CI-STABILITY, addressing critical workflow execution failures and adding historical data tracking, early warning alerts, and production environment testing capabilities.
 
@@ -195,7 +238,9 @@ Early warning system provides actionable insights:
 
 ### Impact on Project Status
 
-This implementation directly resolves the BLOCKED status from Story 021.4-DEV-CI-STABILITY assessment:
+**NOTE: This implementation was subsequently removed during infrastructure cleanup.**
+
+This implementation directly resolved the BLOCKED status from Story 021.4-DEV-CI-STABILITY assessment before being removed:
 
 - All 8 acceptance criteria for stability monitoring now implemented
 - Systematic workflow execution failures resolved

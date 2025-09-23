@@ -5,6 +5,14 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[context.production]
+  publish = "dist"
+  command = "npm run build"
+
+# Site configuration
+[site]
+  id = "8e272de7-fb1a-4643-bcf0-6df07f143a9e"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

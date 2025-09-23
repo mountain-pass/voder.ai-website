@@ -32,26 +32,31 @@ jobs:
         run: |
           echo "🚀 Starting deployment to Netlify..."
 
-          # Deploy to Netlify and capture output
-          NETLIFY_OUTPUT=$(npx netlify deploy --prod --dir=dist --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --json 2>&1) || {
-            echo "❌ Netlify deploy failed"
+          # Deploy to Netlify production with site ID
+          NETLIFY_OUTPUT=$(npx netlify deploy --prod --dir=dist --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=8e272de7-fb1a-4643-bcf0-6df07f143a9e --json 2>&1)
+          DEPLOY_EXIT_CODE=$?
+
+          if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
+            echo "❌ Netlify deploy failed with exit code $DEPLOY_EXIT_CODE"
             echo "Output: $NETLIFY_OUTPUT"
             exit 1
-          }
+          fi
 
           echo "✅ Netlify deploy command completed"
           echo "Raw output: $NETLIFY_OUTPUT"
 
           # Parse deployment URL from JSON output
-          DEPLOYMENT_URL=$(echo "$NETLIFY_OUTPUT" | jq -r '.deploy_url // .url // "unknown"' 2>/dev/null) || {
+          DEPLOYMENT_URL=$(echo "$NETLIFY_OUTPUT" | jq -r '.url // .deploy_url // "unknown"' 2>/dev/null)
+
+          if [ "$DEPLOYMENT_URL" = "unknown" ] || [ "$DEPLOYMENT_URL" = "null" ]; then
             echo "⚠️  Could not parse JSON output, trying to extract URL manually"
             DEPLOYMENT_URL=$(echo "$NETLIFY_OUTPUT" | grep -oE 'https://[^[:space:]]+\.netlify\.app' | head -1 || echo "unknown")
-          }
+          fi
 
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
           echo "✅ Deployment completed: $DEPLOYMENT_URL"
       - name: Verify Deployment
         run: |
           echo "🔍 Verifying deployment status..."
-          npx netlify status --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}
+          npx netlify status --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=8e272de7-fb1a-4643-bcf0-6df07f143a9e
           echo "✅ Deployment verification completed"

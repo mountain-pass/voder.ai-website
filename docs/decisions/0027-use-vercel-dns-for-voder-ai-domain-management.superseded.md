@@ -1,12 +1,14 @@
 ---
-status: 'proposed'
-date: 2025-09-18
+status: 'superseded by ADR-0032'
+date: 2025-09-24
 decision-makers: Product Owner, Development Team
 consulted: DevOps Engineers, Site Reliability Engineers
 informed: Project Stakeholders
 ---
 
 # Use Vercel DNS for voder.ai Domain Management
+
+> **⚠️ SUPERSEDED**: This decision has been superseded by [ADR-0032: Switch from Vercel to Netlify for Integrated Form Handling](0032-switch-from-vercel-to-netlify-for-integrated-form-handling.accepted.md). The project has switched to Netlify hosting, which will handle domain and DNS management through Netlify's infrastructure.
 
 ## Context and Problem Statement
 

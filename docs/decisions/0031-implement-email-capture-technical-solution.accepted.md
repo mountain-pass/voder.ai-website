@@ -1,6 +1,6 @@
 ---
 status: 'superseded by ADR-0032'
-date: 2025-09-23
+date: 2025-09-24
 decision-makers: voder.ai website team
 consulted: startup advisors, technical team
 informed: stakeholders

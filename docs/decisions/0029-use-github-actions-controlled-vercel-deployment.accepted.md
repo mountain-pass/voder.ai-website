@@ -1,12 +1,14 @@
 ---
-status: 'accepted'
-date: 2025-09-22
+status: 'superseded by ADR-0032'
+date: 2025-09-24
 decision-makers: Product Owner, Development Team
 consulted: DevOps Engineers, Frontend Developers
 informed: Project Stakeholders
 ---
 
 # Use GitHub Actions Controlled Vercel Deployment
+
+> **⚠️ SUPERSEDED**: This decision has been superseded by [ADR-0032: Switch from Vercel to Netlify for Integrated Form Handling](0032-switch-from-vercel-to-netlify-for-integrated-form-handling.proposed.md). The project has switched to Netlify hosting to enable form handling capabilities required for email capture functionality.
 
 ## Context and Problem Statement
 

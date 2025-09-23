@@ -1,6 +1,6 @@
 ---
-status: 'proposed'
-date: 2025-09-23
+status: 'accepted'
+date: 2025-09-24
 decision-makers: voder.ai website team
 consulted: startup advisors, technical team
 informed: stakeholders

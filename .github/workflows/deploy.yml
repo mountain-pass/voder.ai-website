@@ -58,5 +58,5 @@ jobs:
       - name: Verify Deployment
         run: |
           echo "🔍 Verifying deployment status..."
-          npx netlify status --auth=${{ secrets.NETLIFY_AUTH_TOKEN }} --site=8e272de7-fb1a-4643-bcf0-6df07f143a9e
+          npx netlify status --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}
           echo "✅ Deployment verification completed"

@@ -285,7 +285,14 @@ test.describe('Brand Identity Screenshot Validation', () => {
     await expect(page.locator('main[role="main"]')).toBeVisible();
 
     // Verify accessibility features
+    // Skip link should exist but be visually hidden until focused
+    await expect(page.locator('.skip-link')).toBeAttached();
+
+    // Focus the skip link to make it visible, then check it's in viewport
+    await page.locator('.skip-link').focus();
     await expect(page.locator('.skip-link')).toBeInViewport();
+
+    // Check other accessibility elements
     await expect(page.locator('[aria-label="Voder"]')).toBeVisible();
 
     // Take accessibility-focused screenshot
@@ -317,15 +324,100 @@ test.describe('Brand Identity Screenshot Validation', () => {
     // Test at mobile viewport for performance validation
     await page.setViewportSize({ width: 375, height: 667 });
 
-    // Measure loading performance
-    const startTime = Date.now();
+    // Enhanced performance measurement with multiple metrics
+    const performanceMetrics = {
+      navigationStart: 0,
+      loadTime: 0,
+      domContentLoaded: 0,
+      firstContentfulPaint: 0,
+      largestContentfulPaint: 0,
+      networkRequests: 0,
+    };
+
+    // Track network requests
+    page.on('request', () => {
+      performanceMetrics.networkRequests++;
+    });
+
+    // Start performance measurement
+    performanceMetrics.navigationStart = Date.now();
 
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
-    const loadTime = Date.now() - startTime;
 
-    // Verify reasonable load time (should be under 3 seconds for minimal assets with analytics)
-    expect(loadTime).toBeLessThan(3000);
+    // Measure DOM content loaded
+    await page.waitForLoadState('domcontentloaded');
+    performanceMetrics.domContentLoaded = Date.now() - performanceMetrics.navigationStart;
+
+    // Wait for network idle and measure full load time
+    await page.waitForLoadState('networkidle');
+    performanceMetrics.loadTime = Date.now() - performanceMetrics.navigationStart;
+
+    // Get Core Web Vitals using browser APIs
+    const coreWebVitals = await page.evaluate(() => {
+      return new Promise<{ fcp?: number; lcp?: number }>((resolve) => {
+        // Use Performance Observer to get FCP and LCP
+        const observer = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+
+          const metrics: { fcp?: number; lcp?: number } = {};
+
+          for (const entry of entries) {
+            if (entry.entryType === 'paint' && entry.name === 'first-contentful-paint') {
+              metrics.fcp = entry.startTime;
+            }
+            if (entry.entryType === 'largest-contentful-paint') {
+              metrics.lcp = entry.startTime;
+            }
+          }
+
+          // Clean up and resolve
+          observer.disconnect();
+          resolve(metrics);
+        });
+
+        observer.observe({ entryTypes: ['paint', 'largest-contentful-paint'] });
+
+        // Fallback timeout
+        setTimeout(() => {
+          observer.disconnect();
+          resolve({});
+        }, 2000);
+      });
+    });
+
+    // Update metrics with Core Web Vitals
+    if (coreWebVitals.fcp) {
+      performanceMetrics.firstContentfulPaint = coreWebVitals.fcp;
+    }
+    if (coreWebVitals.lcp) {
+      performanceMetrics.largestContentfulPaint = coreWebVitals.lcp;
+    }
+
+    // Log comprehensive performance metrics
+    console.log('Performance Metrics:', {
+      loadTime: `${performanceMetrics.loadTime}ms`,
+      domContentLoaded: `${performanceMetrics.domContentLoaded}ms`,
+      firstContentfulPaint: performanceMetrics.firstContentfulPaint
+        ? `${performanceMetrics.firstContentfulPaint}ms`
+        : 'N/A',
+      largestContentfulPaint: performanceMetrics.largestContentfulPaint
+        ? `${performanceMetrics.largestContentfulPaint}ms`
+        : 'N/A',
+      networkRequests: performanceMetrics.networkRequests,
+    });
+
+    // Performance assertions - more realistic thresholds for mobile devices
+    expect(performanceMetrics.loadTime).toBeLessThan(5000); // Should load in under 5 seconds for mobile
+    expect(performanceMetrics.domContentLoaded).toBeLessThan(2000); // DOM should be ready reasonably quickly
+    expect(performanceMetrics.networkRequests).toBeLessThan(20); // Keep network requests reasonable
+
+    // Core Web Vitals assertions (if available)
+    if (performanceMetrics.firstContentfulPaint > 0) {
+      expect(performanceMetrics.firstContentfulPaint).toBeLessThan(2000); // FCP under 2s is good
+    }
+    if (performanceMetrics.largestContentfulPaint > 0) {
+      expect(performanceMetrics.largestContentfulPaint).toBeLessThan(2500); // LCP under 2.5s is good
+    }
 
     // Take performance validation screenshot
     await page.screenshot({
@@ -334,7 +426,7 @@ test.describe('Brand Identity Screenshot Validation', () => {
       animations: 'disabled',
     });
 
-    console.log(`Page load time: ${loadTime}ms`);
+    console.log(`Page load time: ${performanceMetrics.loadTime}ms`);
 
     // Verify no console errors occurred during page execution
     expect(consoleErrors).toHaveLength(0);

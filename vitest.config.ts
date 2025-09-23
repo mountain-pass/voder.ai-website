@@ -20,7 +20,7 @@ export default createVitestJsdomConfig({
       '**/vite.config.{js,ts}', // Vite configs
       '**/vitest.config.{js,ts}', // Vitest configs
       '**/postcss.config.{js,ts}', // PostCSS configs
-      '**/prettier.config.{js,ts}', // Prettier configs
+      '**/prettier.config.{js,ts,mjs}', // Prettier configs
       '**/stylelint.config.{js,ts}', // Stylelint configs
       '**/htmlhint.config.{js,ts}', // HTMLHint configs
       '**/playwright.config.{js,ts}', // Playwright configs

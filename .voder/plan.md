@@ -1,88 +1,62 @@
 # Implementation Plan
 
-Following Gall's Law: "A complex system that works is invariably found to have evolved from a simple system that worked."
+Based on current project status analysis, this plan focuses on completing the few remaining implementation gaps to achieve 100% story completion. The project already has exceptional quality infrastructure and is production-deployed.
 
 ## NOW
 
-**Fix email capture by implementing the simplest possible working solution**
+**Complete Git Hooks Implementation (012.1-DEV-GIT-HOOKS)**
 
-1. **Create Netlify account and connect repository**
-   - Sign up at netlify.com
-   - Connect GitHub repository (mountain-pass/voder.ai-website)
-   - Configure basic build settings:
-     - Build command: `npm run build`
-     - Publish directory: `dist`
-     - Base directory: (leave empty)
+The git hooks story has missing acceptance criteria that need implementation:
 
-2. **Deploy to Netlify temporary URL first**
-   - Let Netlify auto-deploy to get a working `xyz.netlify.app` URL
-   - Test that the site loads and functions correctly
-   - Verify build process works without errors
+- Install simple-git-hooks package to automate git hook setup
+- Create pre-commit hook that runs quality validation pipeline (lint → format → type check → test)
+- Configure hooks to install automatically during `npm install` 
+- Add npm script to run the same validation checks that hooks will run
+- Test hook functionality by making a commit with code that fails quality checks
+- Document hook behavior and bypass instructions for developers
 
-3. **Enable email capture with minimal changes**
-   - Add `data-netlify="true"` attribute to the form element in `src/app.ts`
-   - Remove `event.preventDefault()` from form submission handler
-   - Remove the "Simulate form submission" comment
-   - Keep existing client-side validation and analytics tracking
-   - Test email submission on the temporary Netlify URL
-
-4. **Verify email capture works**
-   - Submit test emails through the form
-   - Confirm emails appear in Netlify dashboard
-   - Test CSV export functionality
+This is the simplest missing piece - just adding automated quality enforcement to an already robust development environment. Implementation should take 15-30 minutes and immediately improves development workflow quality.
 
 ## NEXT
 
-**Migrate deployment pipeline and domain (after email capture is proven working)**
+**Complete E2E Screenshots Implementation (012.4-DEV-E2E-SCREENSHOTS)**
 
-1. **Update GitHub Actions for Netlify deployment**
-   - Install Netlify CLI: Add `netlify-cli` to package.json devDependencies
-   - Update `.github/workflows/deploy.yml`:
-     - Replace Vercel CLI commands with Netlify CLI
-     - Change `npx vercel --prod --yes --token ${{ secrets.VERCEL_TOKEN }}` to `npx netlify deploy --prod --dir=dist --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}`
-     - Update verification commands
-   - Add `NETLIFY_AUTH_TOKEN` to GitHub secrets
+The E2E screenshot testing has some unmet criteria:
 
-2. **Test deployment pipeline**
-   - Push changes and verify GitHub Actions deploys to Netlify successfully
-   - Confirm all quality gates still work
-   - Verify deployment URL capture and verification works
+- Enhance existing Playwright config for comprehensive screenshot testing across all viewports
+- Implement visual regression detection for UI changes
+- Add performance metrics capture during test execution  
+- Ensure cross-browser compatibility validation (already partially working)
+- Create npm scripts for running screenshot tests (may already exist)
+- Document screenshot testing workflow and CI integration
 
-3. **Set up custom domain on Netlify**
-   - Add `voder.ai` as custom domain in Netlify dashboard
-   - Get Netlify nameservers from dashboard
-   - **DO NOT change nameservers yet** - let Netlify provision SSL certificate
+**Complete Missing Brand and Closing Moment Details**
 
-4. **Prepare for DNS cutover**
-   - Verify HTTPS certificate is ready on Netlify
-   - Test site accessibility at both old and new platforms
-   - Coordinate nameserver change timing
-
-**USER ACTION REQUIRED**: Change nameservers at domain registrar from current provider to Netlify nameservers (will be provided after Netlify setup)
+- Review brand entry story (013.0-BIZ-BRAND-ENTRY) acceptance criteria
+- Review closing moment story (021.0-BIZ-CLOSING-MOMENT) acceptance criteria  
+- Complete any missing responsive design requirements
+- Ensure accessibility compliance meets WCAG 2.1 AA standards
+- Complete any missing professional presentation requirements
 
 ## LATER
 
-**Optimize and enhance (after migration is complete and stable)**
+**Optimize and Polish**
 
-1. **Remove Vercel configuration**
-   - Delete `vercel.json` file
-   - Remove any Vercel-specific environment variables
-   - Clean up any remaining Vercel references in documentation
+- Review all story acceptance criteria systematically to identify any remaining gaps
+- Optimize build performance (currently ~400ms, could potentially improve)
+- Consider additional quality gates if beneficial
+- Enhance documentation based on actual usage patterns
+- Consider advanced analytics features if valuable
+- Plan for team scaling and contributor onboarding improvements
 
-2. **Optimize Netlify configuration**
-   - Create `netlify.toml` for advanced configuration if needed
-   - Set up redirect rules for SEO
-   - Configure security headers
-   - Optimize build performance settings
+**Future Growth Preparation**
 
-3. **Enhance email capture functionality**
-   - Set up email notifications for new submissions
-   - Configure webhook integration for automation
-   - Implement email validation and spam protection
-   - Create email campaign workflows
+- Evaluate dependency management and update strategies
+- Consider advanced deployment strategies (blue-green, feature flags, etc.)
+- Plan for increased traffic and performance monitoring
+- Evaluate additional security hardening opportunities
+- Consider advanced testing strategies (contract testing, chaos engineering)
 
-4. **Performance and monitoring improvements**
-   - Set up Netlify Analytics (if needed beyond Microsoft Clarity)
-   - Implement performance monitoring
-   - Optimize build and deployment speed
-   - Add deployment notifications and alerts
+---
+
+*This plan prioritizes simple, high-impact completions first, following Gall's Law principle of building on the already-working robust foundation.*

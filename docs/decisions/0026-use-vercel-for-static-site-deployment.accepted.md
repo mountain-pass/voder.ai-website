@@ -1,9 +1,9 @@
 ---
-status: 'accepted'
-date: 2025-09-18
-decision-makers: Product Owner, Development Team
-consulted: DevOps Engineers, Frontend Developers
-informed: Project Stakeholders
+status: 'superseded by ADR-0032'
+date: 2025-09-23
+decision-makers: voder.ai website team
+consulted: startup advisors, technical team
+informed: stakeholders
 ---
 
 # Use Vercel for Static Site Deployment
@@ -137,6 +137,14 @@ Google's hosting solution with good performance and integration options.
 
 ## More Information
 
-This decision supports the DEV-DEPLOY story requirements for static hosting platform selection. The choice enables automatic deployment, custom domain configuration, SSL certificates, and deployment monitoring as specified in the acceptance criteria.
+**SUPERSEDED BY ADR-0032**: This decision has been superseded due to a critical architectural inconsistency discovered during email capture implementation. While Vercel provides excellent Vite integration and deployment experience, it cannot support Netlify Forms functionality required for Release 0.5's email capture goals.
 
-The decision prioritizes developer experience and deployment simplicity for the validation phase while maintaining the flexibility to scale or migrate as the product grows beyond the initial validation experiment.
+ADR-0032 switches hosting to Netlify to enable integrated form handling while maintaining GitHub Actions deployment control and quality gates. The business-critical need for working email capture outweighs the Vite optimization benefits for our single-page validation site.
+
+---
+
+**Original Decision Context** (superseded):
+
+This decision supports Release 0.5's deployment requirements by providing reliable static site hosting with automatic deployment, SSL certificate management, and global CDN distribution. The Vercel platform aligns with our Vite-based build system and GitHub-centric development workflow.
+
+The approach balances deployment automation with cost-effectiveness during the validation phase while providing a clear scaling path for future growth.

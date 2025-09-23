@@ -1,47 +1,88 @@
 # Implementation Plan
 
-Based on visual quality assessment, we need to fix critical layout issues preventing launch.
+Following Gall's Law: "A complex system that works is invariably found to have evolved from a simple system that worked."
 
 ## NOW
 
-**Fix email form positioning and mysterious teal line artifact on desktop**
+**Fix email capture by implementing the simplest possible working solution**
 
-Investigate and fix the two critical visual defects visible in desktop screenshots:
+1. **Create Netlify account and connect repository**
+   - Sign up at netlify.com
+   - Connect GitHub repository (mountain-pass/voder.ai-website)
+   - Configure basic build settings:
+     - Build command: `npm run build`
+     - Publish directory: `dist`
+     - Base directory: (leave empty)
 
-1. **Email form positioning**: The email signup form appears misaligned/awkwardly positioned on desktop viewport (1920x1080). Need to:
-   - Examine CSS for `.interest-capture` and `.signup-form` classes
-   - Check for margin/padding issues causing poor alignment
-   - Test positioning across different desktop resolutions
-   - Ensure form is properly centered and visually balanced
+2. **Deploy to Netlify temporary URL first**
+   - Let Netlify auto-deploy to get a working `xyz.netlify.app` URL
+   - Test that the site loads and functions correctly
+   - Verify build process works without errors
 
-2. **Mysterious teal line artifact**: There's an unexplained teal line/border visible in top-left corner of desktop layout. Need to:
-   - Identify source of the teal line (CSS border, outline, or positioning issue)
-   - Check for overflow, pseudo-elements, or stray styling
-   - Remove the artifact completely
-   - Verify clean layout across all desktop viewports
+3. **Enable email capture with minimal changes**
+   - Add `data-netlify="true"` attribute to the form element in `src/app.ts`
+   - Remove `event.preventDefault()` from form submission handler
+   - Remove the "Simulate form submission" comment
+   - Keep existing client-side validation and analytics tracking
+   - Test email submission on the temporary Netlify URL
 
-**Testing approach**: Make changes, run `npm run screenshots`, visually inspect desktop screenshots for fixes.
+4. **Verify email capture works**
+   - Submit test emails through the form
+   - Confirm emails appear in Netlify dashboard
+   - Test CSV export functionality
 
 ## NEXT
 
-**Optimize responsive layout quality**
+**Migrate deployment pipeline and domain (after email capture is proven working)**
 
-After fixing the critical desktop issues:
+1. **Update GitHub Actions for Netlify deployment**
+   - Install Netlify CLI: Add `netlify-cli` to package.json devDependencies
+   - Update `.github/workflows/deploy.yml`:
+     - Replace Vercel CLI commands with Netlify CLI
+     - Change `npx vercel --prod --yes --token ${{ secrets.VERCEL_TOKEN }}` to `npx netlify deploy --prod --dir=dist --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}`
+     - Update verification commands
+   - Add `NETLIFY_AUTH_TOKEN` to GitHub secrets
 
-1. **Polish spacing and alignment** across all components on desktop
-2. **Verify tablet layout quality** - ensure no similar artifacts exist
-3. **Fine-tune responsive breakpoints** if needed for better visual flow
-4. **Test email form functionality** on all viewports after CSS changes
+2. **Test deployment pipeline**
+   - Push changes and verify GitHub Actions deploys to Netlify successfully
+   - Confirm all quality gates still work
+   - Verify deployment URL capture and verification works
+
+3. **Set up custom domain on Netlify**
+   - Add `voder.ai` as custom domain in Netlify dashboard
+   - Get Netlify nameservers from dashboard
+   - **DO NOT change nameservers yet** - let Netlify provision SSL certificate
+
+4. **Prepare for DNS cutover**
+   - Verify HTTPS certificate is ready on Netlify
+   - Test site accessibility at both old and new platforms
+   - Coordinate nameserver change timing
+
+**USER ACTION REQUIRED**: Change nameservers at domain registrar from current provider to Netlify nameservers (will be provided after Netlify setup)
 
 ## LATER
 
-**Performance and polish improvements**
+**Optimize and enhance (after migration is complete and stable)**
 
-1. **Optimize loading performance** for faster first impressions
-2. **Add hover/focus states refinements** for better interactivity
-3. **Consider subtle animations** for more professional feel
-4. **Test across different browsers** for consistent rendering
+1. **Remove Vercel configuration**
+   - Delete `vercel.json` file
+   - Remove any Vercel-specific environment variables
+   - Clean up any remaining Vercel references in documentation
 
----
+2. **Optimize Netlify configuration**
+   - Create `netlify.toml` for advanced configuration if needed
+   - Set up redirect rules for SEO
+   - Configure security headers
+   - Optimize build performance settings
 
-*This plan follows Gall's Law by starting with the simplest fixes to make the current system work properly, then building up polish and refinements.*
+3. **Enhance email capture functionality**
+   - Set up email notifications for new submissions
+   - Configure webhook integration for automation
+   - Implement email validation and spam protection
+   - Create email campaign workflows
+
+4. **Performance and monitoring improvements**
+   - Set up Netlify Analytics (if needed beyond Microsoft Clarity)
+   - Implement performance monitoring
+   - Optimize build and deployment speed
+   - Add deployment notifications and alerts

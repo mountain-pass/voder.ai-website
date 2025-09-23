@@ -1,5 +1,5 @@
 ---
-status: 'accepted'
+status: 'superseded by ADR-0032'
 date: 2025-09-23
 decision-makers: voder.ai website team
 consulted: startup advisors, technical team
@@ -194,6 +194,14 @@ Success will be measured by:
 
 ## More Information
 
-This decision addresses the critical gap identified in ADR-0030 implementation where email signup forms appeared functional but weren't actually collecting actionable data. Netlify Forms provides the simplest path to functional email collection while maintaining the cost-effectiveness and rapid deployment requirements of Release 0.5.
+**SUPERSEDED BY ADR-0032**: This decision has been superseded due to the hosting platform migration from Vercel to Netlify (ADR-0032). The new Netlify hosting enables the originally planned Netlify Forms implementation to work as designed, resolving the critical architectural inconsistency.
 
-The solution establishes a foundation for email-based customer relationship building while preserving the option to migrate to more sophisticated email marketing platforms once product-market fit is validated and higher-volume customer communication becomes necessary.
+ADR-0032 implements the exact email capture approach originally specified in this decision (Netlify Forms with `data-netlify="true"`) but within the context of compatible Netlify hosting rather than incompatible Vercel hosting.
+
+---
+
+**Original Decision Context** (superseded):
+
+This decision supports Release 0.5's core goal of testing whether we can articulate the AI slop problem in a way that resonates with founders. Email capture provides the clearest signal of resonance while maintaining our ability to follow up and validate product-market fit through direct conversation.
+
+The approach aligns with startup best practices of maintaining control over customer relationships while minimizing fixed costs during the validation phase.

@@ -31,6 +31,12 @@
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Hidden form for Netlify build-time detection - required for JavaScript-rendered forms -->
+    <form name="waitlist-signup" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="email" name="email" />
+    </form>
+
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

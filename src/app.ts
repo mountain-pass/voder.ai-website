@@ -60,7 +60,15 @@ export function init(): void {
 
         <section class="interest-capture">
           <h2 class="signup-title">Get notified when we launch</h2>
-            <form class="signup-form" id="interest-form" aria-label="Email signup form" data-netlify="true" name="waitlist-signup">
+            <form class="signup-form" id="interest-form" aria-label="Email signup form" data-netlify="true" name="waitlist-signup" method="POST">
+              <!-- Required hidden input for Netlify JavaScript form handling -->
+              <input type="hidden" name="form-name" value="waitlist-signup" />
+              
+              <!-- Honeypot field for spam protection -->
+              <div style="display: none;">
+                <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+              </div>
+              
               <div class="form-group">
                 <label for="email" class="sr-only">Email address</label>
                 <input 
@@ -91,14 +99,15 @@ export function init(): void {
   const formStatus = document.getElementById('form-status') as HTMLDivElement;
 
   if (form && emailInput && formStatus) {
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault(); // Always prevent default for AJAX submission
+
       const email = emailInput.value.trim();
 
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
       if (!email) {
-        event.preventDefault();
         formStatus.textContent = 'Please enter your email address.';
         formStatus.className = 'form-status error';
         emailInput.focus();
@@ -107,7 +116,6 @@ export function init(): void {
       }
 
       if (!emailRegex.test(email)) {
-        event.preventDefault();
         formStatus.textContent = 'Please enter a valid email address.';
         formStatus.className = 'form-status error';
         emailInput.focus();
@@ -115,15 +123,38 @@ export function init(): void {
         return;
       }
 
-      // Track the signup conversion in analytics before form submission
-      if (typeof window !== 'undefined' && (window as any).clarity) {
-        (window as any).clarity('set', 'email_signup', email);
-        (window as any).clarity('event', 'waitlist_signup');
-      }
+      // Show loading state
+      formStatus.textContent = 'Subscribing...';
+      formStatus.className = 'form-status loading';
 
-      // Allow form to submit naturally to Netlify
-      formStatus.textContent = "Thank you! We'll notify you when Voder launches.";
-      formStatus.className = 'form-status success';
+      try {
+        // Track the signup conversion in analytics before form submission
+        if (typeof window !== 'undefined' && (window as any).clarity) {
+          (window as any).clarity('set', 'email_signup', email);
+          (window as any).clarity('event', 'waitlist_signup');
+        }
+
+        // Submit form data to Netlify using AJAX
+        const formData = new FormData(form);
+
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData as any).toString(),
+        });
+
+        if (response.ok) {
+          formStatus.textContent = "Thank you! We'll notify you when Voder launches.";
+          formStatus.className = 'form-status success';
+          form.reset(); // Clear the form
+        } else {
+          throw new Error('Network response was not ok');
+        }
+      } catch (error) {
+        console.error('Form submission error:', error);
+        formStatus.textContent = 'Something went wrong. Please try again.';
+        formStatus.className = 'form-status error';
+      }
     });
   }
 }

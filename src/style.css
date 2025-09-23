@@ -428,6 +428,10 @@ body {
   color: #ff6b6b;
 }
 
+.form-status.loading {
+  color: var(--soft-teal-glow);
+}
+
 /* Screen reader only text */
 .sr-only {
   border: 0;

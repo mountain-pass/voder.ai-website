@@ -53,17 +53,29 @@ body {
 /* Skip link for accessibility */
 .skip-link {
   background: var(--soft-teal-glow);
+
+  /* Ensure it's completely hidden when not focused using modern CSS */
+  clip-path: inset(50%);
   color: var(--voder-black);
+  height: 1px;
   left: 6px;
+  overflow: hidden;
   padding: 8px;
   position: absolute;
   text-decoration: none;
   top: -40px;
+  white-space: nowrap;
+  width: 1px;
   z-index: 100;
 }
 
 .skip-link:focus {
+  /* Restore visibility when focused */
+  clip-path: none;
+  height: auto;
   top: 6px;
+  white-space: normal;
+  width: auto;
 }
 
 /* App layout */
@@ -170,8 +182,8 @@ body {
 }
 
 .problem-content {
-  max-width: 900px;
   margin: 0 auto;
+  max-width: 900px;
 }
 
 .problem-description {
@@ -419,7 +431,7 @@ body {
 /* Screen reader only text */
 .sr-only {
   border: 0;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   height: 1px;
   margin: -1px;
   overflow: hidden;

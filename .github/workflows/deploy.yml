@@ -2,6 +2,16 @@ name: Deploy to Production
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_rollback:
+        description: 'Skip automatic rollback on deployment failure'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
 
 jobs:
   quality-gates:
@@ -55,8 +65,169 @@ jobs:
 
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
           echo "✅ Deployment completed: $DEPLOYMENT_URL"
-      - name: Verify Deployment
+      - name: Comprehensive Deployment Verification
+        id: verify
+        env:
+          SKIP_AUTO_ROLLBACK: ${{ inputs.skip_rollback || vars.SKIP_AUTO_ROLLBACK || 'false' }}
         run: |
-          echo "🔍 Verifying deployment status..."
-          npx netlify status --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}
-          echo "✅ Deployment verification completed"
+          DEPLOYMENT_URL="${{ steps.deploy.outputs.deployment_url }}"
+
+          echo "🔍 Starting comprehensive deployment verification..."
+          echo "🌐 Deployment URL: $DEPLOYMENT_URL"
+          echo "🔄 Skip rollback setting: $SKIP_AUTO_ROLLBACK"
+
+          if [ "$DEPLOYMENT_URL" = "unknown" ] || [ -z "$DEPLOYMENT_URL" ]; then
+            echo "❌ Cannot verify deployment - URL is unknown"
+            echo "rollback_needed=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          # Health check function
+          health_check() {
+            local check_num=$1
+            echo "⚕️  Running health check $check_num/12..."
+            
+            # HTTP Status Check
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$DEPLOYMENT_URL" || echo "000")
+            RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" --max-time 5 "$DEPLOYMENT_URL" || echo "999")
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "  ✅ HTTP Status: $HTTP_CODE"
+            else
+              echo "  ❌ HTTP Status: $HTTP_CODE (expected 200)"
+              return 1
+            fi
+            
+            # Response Time Check
+            if [ $(echo "$RESPONSE_TIME < 5.0" | bc -l 2>/dev/null || echo 0) = 1 ]; then
+              echo "  ✅ Response Time: ${RESPONSE_TIME}s"
+            else
+              echo "  ❌ Response Time: ${RESPONSE_TIME}s (expected <5s)"
+              return 1
+            fi
+            
+            # SSL Certificate Check (if HTTPS)
+            if echo "$DEPLOYMENT_URL" | grep -q "https://"; then
+              SSL_EXPIRY=$(curl -s --max-time 5 -vI "$DEPLOYMENT_URL" 2>&1 | grep "expire date" || echo "")
+              if [ -n "$SSL_EXPIRY" ]; then
+                echo "  ✅ SSL Certificate: Valid"
+              else
+                echo "  ⚠️  SSL Certificate: Could not verify (proceeding)"
+              fi
+            fi
+            
+            # Basic Content Check
+            CONTENT=$(curl -s --max-time 5 "$DEPLOYMENT_URL" || echo "")
+            if echo "$CONTENT" | grep -q "<title>" && echo "$CONTENT" | grep -q "</title>"; then
+              echo "  ✅ Basic HTML Content: Title tag found"
+            else
+              echo "  ❌ Basic HTML Content: No title tag found"
+              return 1
+            fi
+            
+            # Critical Asset Check (CSS)
+            if echo "$CONTENT" | grep -q "\.css" || echo "$CONTENT" | grep -q "<style"; then
+              echo "  ✅ CSS Assets: Found CSS references"
+            else
+              echo "  ⚠️  CSS Assets: No CSS found (proceeding)"
+            fi
+            
+            # Basic Functionality Check (form exists)
+            if echo "$CONTENT" | grep -q "<form" || echo "$CONTENT" | grep -q "email"; then
+              echo "  ✅ Basic Functionality: Email/form elements found"
+            else
+              echo "  ⚠️  Basic Functionality: No form elements found (proceeding)"
+            fi
+            
+            echo "  ✅ Health check $check_num passed"
+            return 0
+          }
+
+          # Run health checks for 2 minutes (12 checks with 10-second intervals)
+          FAILED_CHECKS=0
+          for i in {1..12}; do
+            if health_check $i; then
+              echo "✅ Check $i/12 successful"
+            else
+              echo "❌ Check $i/12 failed"
+              FAILED_CHECKS=$((FAILED_CHECKS + 1))
+              
+              # Fail fast if we have too many failures
+              if [ $FAILED_CHECKS -ge 3 ]; then
+                echo "❌ Too many health check failures ($FAILED_CHECKS/3)"
+                echo "rollback_needed=true" >> $GITHUB_OUTPUT
+                exit 1
+              fi
+            fi
+            
+            # Wait 10 seconds before next check (except for last check)
+            if [ $i -lt 12 ]; then
+              echo "⏳ Waiting 10 seconds before next check..."
+              sleep 10
+            fi
+          done
+
+          if [ $FAILED_CHECKS -eq 0 ]; then
+            echo "🎉 All health checks passed! Deployment is healthy."
+          else
+            echo "⚠️  Some health checks failed ($FAILED_CHECKS/12) but within tolerance"
+          fi
+
+      - name: Automatic Rollback
+        if: failure() && steps.verify.outputs.rollback_needed == 'true' && env.SKIP_AUTO_ROLLBACK != 'true'
+        run: |
+          echo "🚨 Health checks failed - initiating automatic rollback..."
+          echo "⏰ Starting rollback process (target: <60 seconds)"
+
+          START_TIME=$(date +%s)
+
+          # Get list of deployments to find previous one
+          echo "🔍 Finding previous deployment..."
+          DEPLOYMENTS=$(npx netlify api listSiteDeploys --site=8e272de7-fb1a-4643-bcf0-6df07f143a9e --auth=${{ secrets.NETLIFY_AUTH_TOKEN }})
+
+          # Extract the second deployment (previous one) - first is current failed one
+          PREVIOUS_DEPLOY_ID=$(echo "$DEPLOYMENTS" | jq -r '.[1].id' 2>/dev/null || echo "")
+
+          if [ -z "$PREVIOUS_DEPLOY_ID" ] || [ "$PREVIOUS_DEPLOY_ID" = "null" ]; then
+            echo "❌ Could not find previous deployment for rollback"
+            echo "Available deployments:"
+            echo "$DEPLOYMENTS" | jq -r '.[] | "\(.id): \(.state) - \(.created_at)"' | head -5
+            exit 1
+          fi
+
+          echo "🎯 Rolling back to deployment: $PREVIOUS_DEPLOY_ID"
+
+          # Restore the previous deployment
+          npx netlify api restoreSiteDeploy --site=8e272de7-fb1a-4643-bcf0-6df07f143a9e --deploy_id="$PREVIOUS_DEPLOY_ID" --auth=${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+          # Verify rollback was successful
+          echo "✅ Verifying rollback deployment health..."
+          sleep 5  # Give it a moment to propagate
+
+          ROLLBACK_URL="https://voder.ai"  # Production URL after rollback
+          ROLLBACK_HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$ROLLBACK_URL" || echo "000")
+
+          END_TIME=$(date +%s)
+          ROLLBACK_DURATION=$((END_TIME - START_TIME))
+
+          if [ "$ROLLBACK_HTTP_CODE" = "200" ]; then
+            echo "✅ Rollback successful! Site is responding normally."
+            echo "⏱️  Rollback completed in ${ROLLBACK_DURATION} seconds"
+          else
+            echo "❌ Rollback verification failed - site returning HTTP $ROLLBACK_HTTP_CODE"
+            echo "⏱️  Rollback attempted in ${ROLLBACK_DURATION} seconds"
+            exit 1
+          fi
+
+          if [ $ROLLBACK_DURATION -le 60 ]; then
+            echo "🎯 Rollback time target met: ${ROLLBACK_DURATION}s ≤ 60s"
+          else
+            echo "⚠️  Rollback took longer than target: ${ROLLBACK_DURATION}s > 60s"
+          fi
+
+      - name: Rollback Skipped Notice
+        if: failure() && steps.verify.outputs.rollback_needed == 'true' && env.SKIP_AUTO_ROLLBACK == 'true'
+        run: |
+          echo "⚠️  Deployment verification failed, but automatic rollback is disabled"
+          echo "🔧 SKIP_AUTO_ROLLBACK is set to: $SKIP_AUTO_ROLLBACK"
+          echo "📋 Manual intervention required to fix or rollback the deployment"

@@ -7,6 +7,31 @@ beforeEach(() => {
   document.body.innerHTML = '';
   vi.resetModules();
   vi.restoreAllMocks();
+
+  // Mock window.location if it doesn't exist
+  if (!window.location) {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '',
+        href: 'http://localhost:3000',
+        hostname: 'localhost',
+        pathname: '/',
+        hash: '',
+      },
+      configurable: true,
+    });
+  }
+
+  // Mock window.screen if it doesn't exist
+  if (!window.screen) {
+    Object.defineProperty(window, 'screen', {
+      value: {
+        width: 1920,
+        height: 1080,
+      },
+      configurable: true,
+    });
+  }
 });
 
 afterEach(() => {
@@ -46,6 +71,214 @@ describe('src/app', () => {
     expect(consoleSpy).toHaveBeenCalled();
 
     consoleSpy.mockRestore();
+  });
+
+  it('handles animation initialization error gracefully', async () => {
+    document.body.innerHTML = '<div id="app"></div><div id="hero-animation"></div>';
+
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    // Mock ThreeAnimation to reject during init
+    vi.doMock('../src/three-animation.js', () => ({
+      ThreeAnimation: vi.fn().mockImplementation(() => ({
+        init: vi.fn().mockRejectedValue(new Error('WebGL initialization failed')),
+        pause: vi.fn(),
+        resume: vi.fn(),
+      })),
+    }));
+
+    const { init } = await import('../src/app.js');
+
+    await init();
+
+    // Wait for the async error to be caught
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      '3D animation initialization failed:',
+      expect.any(Error),
+    );
+
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('handles matchMedia not being available', async () => {
+    document.body.innerHTML = '<div id="app"></div><div id="hero-animation"></div>';
+
+    // Mock canvas.getContext to return null (no WebGL support)
+    const mockGetContext = vi.fn().mockReturnValue(null);
+
+    const mockCanvas = {
+      getContext: mockGetContext,
+      width: 800,
+      height: 600,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      style: {},
+    } as any;
+
+    vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+      if (tagName === 'canvas') {
+        return mockCanvas;
+      }
+
+      // Return a basic mock element for other tag types
+      const element = {
+        tagName: tagName.toUpperCase(),
+        style: {},
+        appendChild: vi.fn(),
+        removeChild: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      } as any;
+
+      return element;
+    });
+
+    // Mock window without matchMedia
+    const originalWindow = global.window;
+
+    const originalMatchMedia = window.matchMedia;
+
+    // @ts-ignore
+    global.window = { ...originalWindow };
+    delete (global.window as any).matchMedia;
+    delete (window as any).matchMedia;
+
+    const { init } = await import('../src/app.js');
+
+    expect(() => init()).not.toThrow();
+
+    // Restore window and matchMedia
+    global.window = originalWindow;
+    window.matchMedia = originalMatchMedia;
+  });
+
+  it('pauses animation when prefers-reduced-motion is enabled', async () => {
+    document.body.innerHTML = '<div id="app"></div><div id="hero-animation"></div>';
+
+    const pauseMock = vi.fn();
+
+    const resumeMock = vi.fn();
+
+    const addEventListenerMock = vi.fn();
+
+    // Mock matchMedia to return matches: true
+    const matchMediaMock = vi.fn().mockReturnValue({
+      matches: true,
+      addEventListener: addEventListenerMock,
+    });
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: matchMediaMock,
+    });
+
+    vi.doMock('../src/three-animation.js', () => ({
+      ThreeAnimation: vi.fn().mockImplementation(() => ({
+        init: vi.fn().mockResolvedValue(undefined),
+        pause: pauseMock,
+        resume: resumeMock,
+      })),
+    }));
+
+    const { init } = await import('../src/app.js');
+
+    await init();
+
+    expect(matchMediaMock).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)');
+    expect(pauseMock).toHaveBeenCalled();
+    expect(addEventListenerMock).toHaveBeenCalledWith('change', expect.any(Function));
+  });
+
+  it('handles motion preference changes from reduced to normal', async () => {
+    document.body.innerHTML = '<div id="app"></div><div id="hero-animation"></div>';
+
+    const pauseMock = vi.fn();
+
+    const resumeMock = vi.fn();
+
+    let changeListener: any = null;
+
+    const addEventListenerMock = vi.fn().mockImplementation((event, callback) => {
+      if (event === 'change') {
+        changeListener = callback;
+      }
+    });
+
+    // Mock matchMedia to return matches: false initially
+    const matchMediaMock = vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: addEventListenerMock,
+    });
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: matchMediaMock,
+    });
+
+    vi.doMock('../src/three-animation.js', () => ({
+      ThreeAnimation: vi.fn().mockImplementation(() => ({
+        init: vi.fn().mockResolvedValue(undefined),
+        pause: pauseMock,
+        resume: resumeMock,
+      })),
+    }));
+
+    const { init } = await import('../src/app.js');
+
+    await init();
+
+    // Simulate motion preference change from reduced to normal
+    if (changeListener) {
+      changeListener({ matches: false });
+      expect(resumeMock).toHaveBeenCalled();
+    }
+  });
+
+  it('handles motion preference changes from normal to reduced', async () => {
+    document.body.innerHTML = '<div id="app"></div><div id="hero-animation"></div>';
+
+    const pauseMock = vi.fn();
+
+    const resumeMock = vi.fn();
+
+    let changeListener: any = null;
+
+    const addEventListenerMock = vi.fn().mockImplementation((event, callback) => {
+      if (event === 'change') {
+        changeListener = callback;
+      }
+    });
+
+    // Mock matchMedia to return matches: false initially
+    const matchMediaMock = vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: addEventListenerMock,
+    });
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: matchMediaMock,
+    });
+
+    vi.doMock('../src/three-animation.js', () => ({
+      ThreeAnimation: vi.fn().mockImplementation(() => ({
+        init: vi.fn().mockResolvedValue(undefined),
+        pause: pauseMock,
+        resume: resumeMock,
+      })),
+    }));
+
+    const { init } = await import('../src/app.js');
+
+    await init();
+
+    // Simulate motion preference change from normal to reduced
+    if (changeListener) {
+      changeListener({ matches: true });
+      expect(pauseMock).toHaveBeenCalled();
+    }
   });
 });
 

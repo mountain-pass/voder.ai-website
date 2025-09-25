@@ -2,39 +2,61 @@
 
 ## NOW
 
-**Implement the 3D animation story (025.0-BIZ-3D-ANIMATION)**
+**Fix Code Coverage Thresholds to Meet Quality Gates**
 
-Based on the project history showing Release 0.5 was completed in September 2025 and the package.json showing version 1.0.0, we are currently working on Release 1.0 features. The 3D animation story is a legitimate current requirement that needs implementation.
+The critical blocker is failing test coverage thresholds. Current coverage (79.54% lines, 82.6% functions, 79.54% statements) falls short of required thresholds (89% lines, 90% functions, 89% statements). 
 
-Start with the simplest 3D implementation that could work:
-1. Create a basic Three.js scene with a simple geometric shape (cube or sphere)
-2. Add basic mouse interaction (rotation on hover)
-3. Implement progressive loading with a 2D fallback
-4. Ensure it displays in the hero section without breaking existing functionality
+**Primary Issue**: `three-animation.ts` has only 26.31% line coverage, significantly dragging down overall project coverage.
+
+**Immediate Action**: 
+1. Examine `three-animation.ts` uncovered lines (152-256, 259-262 according to coverage report)
+2. Add comprehensive unit tests for the ThreeAnimation class to cover:
+   - WebGL support detection and fallback handling
+   - Animation initialization and cleanup
+   - Scene setup and rendering loop
+   - Error handling paths
+   - Browser compatibility checks
+3. Target bringing `three-animation.ts` coverage from 26.31% to at least 80% to lift overall project coverage above thresholds
+
+**Estimated Effort**: 2-3 hours
+**Success Criteria**: `npm run verify` passes completely without coverage threshold failures
 
 ## NEXT
 
-**Enhance and polish the 3D animation**
+**Improve Error Handling Coverage in app.ts**
 
-After the basic 3D implementation is working:
+After resolving the primary coverage issue, address the secondary gap in `app.ts` (82.89% coverage with missing lines 171, 176-190). These appear to be error handling and edge case paths that need test coverage.
 
-- Add more sophisticated 3D models and animations
-- Implement scroll-based interactions
-- Optimize performance for mobile devices
-- Add accessibility controls (motion reduction preferences)
-- Implement proper loading states and error handling
-- Test cross-browser compatibility and add fallbacks
+**Actions**:
+1. Add tests for error scenarios in the app initialization
+2. Test edge cases for missing DOM elements
+3. Cover error handling paths in the email form functionality
+
+**Estimated Effort**: 1-2 hours
 
 ## LATER
 
-**Complete remaining Release 1.0 stories and advanced features**
+**Optimize Test Performance and Coverage Collection**
 
-Continue with other Release 1.0 features and enhancements:
+Once coverage thresholds are met and the quality gates pass:
 
-- Complete any other unimplemented Release 1.0 stories identified in the assessment
-- Add advanced 3D interactions and particle systems
-- Implement sophisticated animations and transitions
-- Performance optimize for various device capabilities
-- Add analytics tracking for 3D interaction engagement
+1. **Performance Optimization**: 
+   - Review test execution time (currently 1.89s for 112 tests)
+   - Optimize slow-running tests if needed
+   - Consider parallel test execution improvements
 
-The key principle here is to start with the simplest 3D implementation that provides immediate value, then iterate and enhance based on user feedback and performance metrics.
+2. **Coverage Refinement**:
+   - Evaluate if any files should be excluded from coverage (like pure type definitions)
+   - Consider adjusting thresholds if current levels prove adequate for project maturity
+   - Add integration tests for better real-world coverage
+
+3. **Quality Enhancements**:
+   - Add more comprehensive E2E test coverage
+   - Implement visual regression testing for 3D animations
+   - Add performance benchmarks for animation rendering
+
+**Estimated Effort**: 3-4 hours over multiple iterations
+
+---
+
+**Note**: This plan focuses exclusively on implementation work to resolve the blocking coverage issues. No further assessment, validation, or traceability work is needed - those phases are complete.

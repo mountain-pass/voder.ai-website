@@ -165,28 +165,32 @@ export function init(): void {
   const animationContainer = document.getElementById('hero-animation');
 
   if (animationContainer) {
-    const animation = new ThreeAnimation({ container: animationContainer });
+    try {
+      const animation = new ThreeAnimation({ container: animationContainer });
 
-    animation.init().catch((error) => {
-      console.warn('3D animation initialization failed:', error);
-    });
-
-    // Handle reduced motion preference (check if matchMedia exists for test environment)
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-      if (prefersReducedMotion.matches) {
-        animation.pause();
-      }
-
-      // Listen for changes to motion preference
-      prefersReducedMotion.addEventListener('change', (e) => {
-        if (e.matches) {
-          animation.pause();
-        } else {
-          animation.resume();
-        }
+      animation.init().catch((error) => {
+        console.warn('3D animation initialization failed:', error);
       });
+
+      // Handle reduced motion preference (check if matchMedia exists for test environment)
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        if (prefersReducedMotion.matches) {
+          animation.pause();
+        }
+
+        // Listen for changes to motion preference
+        prefersReducedMotion.addEventListener('change', (e) => {
+          if (e.matches) {
+            animation.pause();
+          } else {
+            animation.resume();
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('3D animation constructor failed:', error);
     }
   }
 }

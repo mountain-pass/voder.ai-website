@@ -1,3 +1,5 @@
+import { ThreeAnimation } from './three-animation.js';
+
 // App initialization logic extracted for testability
 export function init(): void {
   const app = document.querySelector<HTMLDivElement>('#app');
@@ -18,6 +20,7 @@ export function init(): void {
     <main class="main-content" role="main">
       <div class="container">
         <section class="hero-section">
+          <div class="hero-animation" id="hero-animation"></div>
           <h1 class="hero-title">Keep Shipping Fast</h1>
           <p class="hero-description">
             Stop AI from turning your codebase into an unmaintainable mess.
@@ -156,5 +159,34 @@ export function init(): void {
         formStatus.className = 'form-status error';
       }
     });
+  }
+
+  // Initialize 3D animation
+  const animationContainer = document.getElementById('hero-animation');
+
+  if (animationContainer) {
+    const animation = new ThreeAnimation({ container: animationContainer });
+
+    animation.init().catch((error) => {
+      console.warn('3D animation initialization failed:', error);
+    });
+
+    // Handle reduced motion preference (check if matchMedia exists for test environment)
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      if (prefersReducedMotion.matches) {
+        animation.pause();
+      }
+
+      // Listen for changes to motion preference
+      prefersReducedMotion.addEventListener('change', (e) => {
+        if (e.matches) {
+          animation.pause();
+        } else {
+          animation.resume();
+        }
+      });
+    }
   }
 }

@@ -83,6 +83,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 }
 
 /* Brand header */
@@ -393,10 +395,7 @@ body {
   font-size: var(--font-size-base);
   font-weight: 500;
   padding: var(--space-3) var(--space-6);
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease;
-  width: 100%;
+  transition: all 0.2s ease-in-out;
 }
 
 .signup-button:hover {
@@ -417,7 +416,10 @@ body {
   font-size: var(--font-size-sm);
   margin-top: var(--space-2);
   min-height: 1.5rem;
+  opacity: 0;
   text-align: center;
+  transform: translateY(-8px);
+  transition: all 0.2s ease-in-out;
 }
 
 .form-status.success {
@@ -464,25 +466,25 @@ body {
 
 /* 3D Animation Styles */
 .hero-animation {
-  width: 200px;
   height: 200px;
   margin: 0 auto var(--space-8);
   position: relative;
+  width: 200px;
 }
 
 .hero-animation canvas {
-  width: 100%;
-  height: 100%;
   border-radius: 8px;
+  height: 100%;
+  width: 100%;
 }
 
 /* 2D Fallback Animation */
 .animation-fallback {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100%;
+  display: flex;
   height: 100%;
+  justify-content: center;
+  width: 100%;
 }
 
 .geometric-shape {
@@ -490,19 +492,19 @@ body {
 }
 
 .cube-2d {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  transform-style: preserve-3d;
   animation: rotate-cube 6s infinite linear;
+  height: 100px;
+  position: relative;
+  transform-style: preserve-3d;
+  width: 100px;
 }
 
 .cube-2d .face {
+  background: rgb(36 209 213 / 10%);
+  border: 2px solid var(--soft-teal-glow);
+  height: 100px;
   position: absolute;
   width: 100px;
-  height: 100px;
-  border: 2px solid var(--soft-teal-glow);
-  background: rgba(36, 209, 213, 0.1);
 }
 
 .cube-2d .front {
@@ -533,26 +535,27 @@ body {
   0% {
     transform: rotateX(0deg) rotateY(0deg);
   }
+
   100% {
     transform: rotateX(360deg) rotateY(360deg);
   }
 }
 
 /* Responsive 3D animation */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .hero-animation {
-    width: 150px;
     height: 150px;
+    width: 150px;
   }
 
   .cube-2d {
-    width: 75px;
     height: 75px;
+    width: 75px;
   }
 
   .cube-2d .face {
-    width: 75px;
     height: 75px;
+    width: 75px;
   }
 
   .cube-2d .front,
@@ -581,6 +584,31 @@ body {
   }
 }
 
+/* Progressive enhancement loading states */
+
+/* JavaScript loading class for smooth transitions */
+.js-loading #app {
+  opacity: 0.95;
+}
+
+.js-loaded #app {
+  opacity: 1;
+}
+
+/* Smooth form transitions */
+
+.form-status.success,
+.form-status.error,
+.form-status.loading {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.signup-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -591,5 +619,11 @@ body {
 
   .cube-2d {
     animation: none;
+  }
+
+  #app,
+  .form-status,
+  .signup-button {
+    transition: none !important;
   }
 }

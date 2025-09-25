@@ -1,8 +1,10 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import inlineSource from 'vite-plugin-inline-source';
 
 export default defineConfig({
   root: '.',
+  plugins: [inlineSource()],
   build: {
     outDir: 'dist',
     sourcemap: true,

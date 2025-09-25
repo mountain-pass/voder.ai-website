@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 3
+      "actualWorkers": 4
     },
     "preserveOutput": "always",
     "reporter": [
@@ -20,6 +20,13 @@
         "json",
         {
           "outputFile": "playwright-results.json"
+        }
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "test-results/html-report",
+          "open": "never"
         }
       ]
     ],
@@ -34,7 +41,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 4
         },
         "id": "chromium",
         "name": "chromium",
@@ -48,10 +55,10 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 4
         },
-        "id": "firefox",
-        "name": "firefox",
+        "id": "webkit",
+        "name": "webkit",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
@@ -62,10 +69,24 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 3
+          "actualWorkers": 4
         },
-        "id": "webkit",
-        "name": "webkit",
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
@@ -73,7 +94,7 @@
       }
     ],
     "shard": null,
-    "updateSnapshots": "changed",
+    "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.55.0",
     "workers": 4,
@@ -88,20 +109,20 @@
   },
   "suites": [
     {
-      "title": "closing-moment.spec.ts",
-      "file": "closing-moment.spec.ts",
+      "title": "fouc-prevention.test.ts",
+      "file": "fouc-prevention.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Closing Moment - Email Capture Form",
-          "file": "closing-moment.spec.ts",
-          "line": 10,
+          "title": "FOUC Prevention",
+          "file": "fouc-prevention.test.ts",
+          "line": 3,
           "column": 6,
           "specs": [
             {
-              "title": "displays coming soon message and email capture form",
+              "title": "should show proper content structure without JavaScript",
               "ok": true,
               "tags": [],
               "tests": [
@@ -116,28 +137,16 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1339,
+                      "duration": 534,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632274332_xh771238bxg, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632274332_xh771238bxg, visitorType: new, trafficSource: direct}\n"
+                          "text": "Content without JavaScript: \n      \n        \n          VODER\n        \n      \n\n      \n        \n          \n            \n            Keep Shipping Fast\n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-23T12:57:53.231Z",
+                      "startTime": "2025-09-25T10:13:56.349Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -145,13 +154,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "ed92c28bcaa7f25b53a5-0e94685ba44f55513e5d",
-              "file": "closing-moment.spec.ts",
-              "line": 28,
+              "id": "e7e29d74802d5fbd7c94-6a8c407a09c2911ff7fd",
+              "file": "fouc-prevention.test.ts",
+              "line": 83,
               "column": 3
             },
             {
-              "title": "validates email input correctly",
+              "title": "should show proper content structure without JavaScript",
               "ok": true,
               "tags": [],
               "tests": [
@@ -159,374 +168,23 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1187,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632275364_5cbqsjpl2b, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632275364_5cbqsjpl2b, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: click, data: Object, sessionDuration: 543}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:55.015Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-9ab2ac09fac55c05214b",
-              "file": "closing-moment.spec.ts",
-              "line": 71,
-              "column": 3
-            },
-            {
-              "title": "handles form submission states correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1301,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632276396_je85il3gqip, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632276396_je85il3gqip, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 429}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:56.212Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-8d0adc54a7dff7b47985",
-              "file": "closing-moment.spec.ts",
-              "line": 97,
-              "column": 3
-            },
-            {
-              "title": "handles form submission errors gracefully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 859,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632277719_pbxpdfiec1, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632277719_pbxpdfiec1, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 473}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:57.519Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-125ab3af056506d5a845",
-              "file": "closing-moment.spec.ts",
-              "line": 129,
-              "column": 3
-            },
-            {
-              "title": "tracks analytics events on form submission",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1247,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632278574_83dxus0t6qi, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632278574_83dxus0t6qi, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Session ended: {sessionId: session_1758632278574_83dxus0t6qi, duration: 423, durationMinutes: 0.0}\n"
-                        },
-                        {
-                          "text": "[warning] Bounce tracked: {bounceType: quick, duration: 422, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Session ended: {sessionId: session_1758632278574_83dxus0t6qi, duration: 430, durationMinutes: 0.0}\n"
-                        },
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632279138_ukj7o0wd9jb, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632279138_ukj7o0wd9jb, visitorType: new, trafficSource: direct}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:58.388Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-85055b6c3251cde1eaae",
-              "file": "closing-moment.spec.ts",
-              "line": 154,
-              "column": 3
-            },
-            {
-              "title": "form accessibility requirements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 851,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632279823_atocuh1p1tp, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632279823_atocuh1p1tp, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 479}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:59.643Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-7e530de858bb658f0c2a",
-              "file": "closing-moment.spec.ts",
-              "line": 208,
-              "column": 3
-            },
-            {
-              "title": "preserves form data during validation errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 766,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632280692_rudlv358mk, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632280692_rudlv358mk, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 415}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:00.501Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-86c84d2e4ea577197595",
-              "file": "closing-moment.spec.ts",
-              "line": 244,
-              "column": 3
-            },
-            {
-              "title": "displays coming soon message and email capture form",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
                   "results": [
                     {
                       "workerIndex": 1,
                       "parallelIndex": 1,
                       "status": "passed",
-                      "duration": 3958,
+                      "duration": 919,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
+                          "text": "Content without JavaScript: \n      \n        \n          VODER\n        \n      \n\n      \n        \n          \n            \n            Keep Shipping Fast\n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-23T12:57:53.217Z",
+                      "startTime": "2025-09-25T10:13:56.349Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -534,13 +192,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "ed92c28bcaa7f25b53a5-5b3b7c9e0fbf9d2e858e",
-              "file": "closing-moment.spec.ts",
-              "line": 28,
+              "id": "e7e29d74802d5fbd7c94-8c2399c97d10b4316743",
+              "file": "fouc-prevention.test.ts",
+              "line": 83,
               "column": 3
             },
             {
-              "title": "validates email input correctly",
+              "title": "should show proper content structure without JavaScript",
               "ok": true,
               "tags": [],
               "tests": [
@@ -548,38 +206,23 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
                   "results": [
                     {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
                       "status": "passed",
-                      "duration": 1720,
+                      "duration": 540,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: JSHandle@object\n"
+                          "text": "Content without JavaScript: \n      \n        \n          VODER\n        \n      \n\n      \n        \n          \n            \n            Keep Shipping Fast\n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-23T12:57:58.750Z",
+                      "startTime": "2025-09-25T10:13:56.359Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -587,13 +230,13 @@
                   "status": "expected"
                 }
               ],
-              "id": "ed92c28bcaa7f25b53a5-046188066be518a04b3e",
-              "file": "closing-moment.spec.ts",
-              "line": 71,
+              "id": "e7e29d74802d5fbd7c94-b358bef85068fc5d7601",
+              "file": "fouc-prevention.test.ts",
+              "line": 83,
               "column": 3
             },
             {
-              "title": "handles form submission states correctly",
+              "title": "should show proper content structure without JavaScript",
               "ok": true,
               "tags": [],
               "tests": [
@@ -601,255 +244,23 @@
                   "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 1730,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: JSHandle@object\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:00.482Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-f21d233aa885cd110390",
-              "file": "closing-moment.spec.ts",
-              "line": 97,
-              "column": 3
-            },
-            {
-              "title": "handles form submission errors gracefully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 1908,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: JSHandle@object\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:02.224Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-8670c03459f147d1e826",
-              "file": "closing-moment.spec.ts",
-              "line": 129,
-              "column": 3
-            },
-            {
-              "title": "tracks analytics events on form submission",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 2636,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeDefined\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeDefined\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts:198:27",
-                        "location": {
-                          "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts",
-                          "column": 27,
-                          "line": 198
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 196 |\u001b[39m       e\u001b[33m.\u001b[39mmethod \u001b[33m===\u001b[39m \u001b[32m'set'\u001b[39m \u001b[33m&&\u001b[39m e\u001b[33m.\u001b[39margs[\u001b[35m0\u001b[39m] \u001b[33m===\u001b[39m \u001b[32m'email_signup'\u001b[39m\n \u001b[90m 197 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 198 |\u001b[39m     expect(emailSetEvent)\u001b[33m.\u001b[39mtoBeDefined()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 199 |\u001b[39m     expect(emailSetEvent\u001b[33m?\u001b[39m\u001b[33m.\u001b[39margs[\u001b[35m1\u001b[39m])\u001b[33m.\u001b[39mtoBe(testEmail)\u001b[33m;\u001b[39m\n \u001b[90m 200 |\u001b[39m\n \u001b[90m 201 |\u001b[39m     \u001b[90m// Should track waitlist signup event\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts",
-                            "column": 27,
-                            "line": 198
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeDefined\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mundefined\u001b[39m\n\n\u001b[0m \u001b[90m 196 |\u001b[39m       e\u001b[33m.\u001b[39mmethod \u001b[33m===\u001b[39m \u001b[32m'set'\u001b[39m \u001b[33m&&\u001b[39m e\u001b[33m.\u001b[39margs[\u001b[35m0\u001b[39m] \u001b[33m===\u001b[39m \u001b[32m'email_signup'\u001b[39m\n \u001b[90m 197 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 198 |\u001b[39m     expect(emailSetEvent)\u001b[33m.\u001b[39mtoBeDefined()\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 199 |\u001b[39m     expect(emailSetEvent\u001b[33m?\u001b[39m\u001b[33m.\u001b[39margs[\u001b[35m1\u001b[39m])\u001b[33m.\u001b[39mtoBe(testEmail)\u001b[33m;\u001b[39m\n \u001b[90m 200 |\u001b[39m\n \u001b[90m 201 |\u001b[39m     \u001b[90m// Should track waitlist signup event\u001b[39m\u001b[0m\n\u001b[2m    at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts:198:27\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session ended: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: JSHandle@object\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:04.145Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-fbfa1-s-events-on-form-submission-firefox/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-fbfa1-s-events-on-form-submission-firefox/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-fbfa1-s-events-on-form-submission-firefox/error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts",
-                        "column": 27,
-                        "line": 198
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-ba9b9113e322f2062324",
-              "file": "closing-moment.spec.ts",
-              "line": 154,
-              "column": 3
-            },
-            {
-              "title": "form accessibility requirements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
                   "results": [
                     {
                       "workerIndex": 3,
-                      "parallelIndex": 0,
+                      "parallelIndex": 3,
                       "status": "passed",
-                      "duration": 2014,
+                      "duration": 906,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: JSHandle@object\n"
+                          "text": "Content without JavaScript: \n      \n        \n          VODER\n        \n      \n\n      \n        \n          \n            \n            Keep Shipping Fast\n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-09-23T12:58:07.690Z",
+                      "startTime": "2025-09-25T10:13:56.344Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -857,1174 +268,10 @@
                   "status": "expected"
                 }
               ],
-              "id": "ed92c28bcaa7f25b53a5-8802af5eecd6207c6660",
-              "file": "closing-moment.spec.ts",
-              "line": 208,
+              "id": "e7e29d74802d5fbd7c94-9b7bf2b969a9d930c41e",
+              "file": "fouc-prevention.test.ts",
+              "line": 83,
               "column": 3
-            },
-            {
-              "title": "preserves form data during validation errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1957,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: JSHandle@object\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: JSHandle@object\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:10.367Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-c85ef11546003f76c575",
-              "file": "closing-moment.spec.ts",
-              "line": 244,
-              "column": 3
-            },
-            {
-              "title": "displays coming soon message and email capture form",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1848,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632274830_n6lm5x3edfr, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632274830_n6lm5x3edfr, visitorType: new, trafficSource: direct}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:53.222Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-76186a2c225e5cdf96d6",
-              "file": "closing-moment.spec.ts",
-              "line": 28,
-              "column": 3
-            },
-            {
-              "title": "validates email input correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1207,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632275974_1bledtnsifk, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632275974_1bledtnsifk, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: undefined, sessionDuration: 479}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:55.600Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-1cf47287a5dbbd33e7ce",
-              "file": "closing-moment.spec.ts",
-              "line": 71,
-              "column": 3
-            },
-            {
-              "title": "handles form submission states correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1439,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632277592_fuvcdnfazr5, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632277592_fuvcdnfazr5, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: undefined, sessionDuration: 537}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:56.829Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-e4a461d5b563e6e4b2e3",
-              "file": "closing-moment.spec.ts",
-              "line": 97,
-              "column": 3
-            },
-            {
-              "title": "handles form submission errors gracefully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 891,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632278604_ntk3mzfs9jn, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632278604_ntk3mzfs9jn, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: undefined, sessionDuration: 475}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:58.282Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-2b23939ad97a8a438c56",
-              "file": "closing-moment.spec.ts",
-              "line": 129,
-              "column": 3
-            },
-            {
-              "title": "tracks analytics events on form submission",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1372,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632279474_xg2xvb4i218, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632279474_xg2xvb4i218, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Session ended: {sessionId: session_1758632279474_xg2xvb4i218, duration: 412, durationMinutes: 0.0}\n"
-                        },
-                        {
-                          "text": "[warning] Bounce tracked: {bounceType: quick, duration: 411, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Session ended: {sessionId: session_1758632279474_xg2xvb4i218, duration: 419, durationMinutes: 0.0}\n"
-                        },
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632280006_tjwq2fynpfk, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632280006_tjwq2fynpfk, visitorType: new, trafficSource: direct}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:57:59.182Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-555aff7f6c477c8dbf66",
-              "file": "closing-moment.spec.ts",
-              "line": 154,
-              "column": 3
-            },
-            {
-              "title": "form accessibility requirements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1009,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632281032_xcdq8xkuq3o, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632281032_xcdq8xkuq3o, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: undefined, sessionDuration: 462}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:00.564Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-babc1e816181c25f84db",
-              "file": "closing-moment.spec.ts",
-              "line": 208,
-              "column": 3
-            },
-            {
-              "title": "preserves form data during validation errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 876,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "[warning] Voder website starting...\n"
-                        },
-                        {
-                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
-                        },
-                        {
-                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
-                        },
-                        {
-                          "text": "[warning] Session tracking initialized: {sessionId: session_1758632281860_67seviqw5r7, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: desktop}\n"
-                        },
-                        {
-                          "text": "[warning] Analytics fully initialized: {sessionId: session_1758632281860_67seviqw5r7, visitorType: new, trafficSource: direct}\n"
-                        },
-                        {
-                          "text": "[warning] Engagement tracked: {type: scroll, data: undefined, sessionDuration: 467}\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:01.581Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-b85c9dd2d61f6235d52d",
-              "file": "closing-moment.spec.ts",
-              "line": 244,
-              "column": 3
-            }
-          ]
-        },
-        {
-          "title": "Closing Moment - Visual Regression",
-          "file": "closing-moment.spec.ts",
-          "line": 265,
-          "column": 6,
-          "specs": [
-            {
-              "title": "closing moment layout on desktop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 780,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:01.275Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-b55635e021058f2efd98",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on desktop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 730,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-desktop-chromium-darwin.png is re-generated, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:02.062Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-3cad1b8948cf2289d056",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on tablet",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 765,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:02.797Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-0064da2b78b6fa8c2e0d",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on tablet",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 910,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-tablet-chromium-darwin.png is re-generated, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:03.571Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-3f48480064b09e9d3676",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on mobile",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 920,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:04.494Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-fdd03d8eac1c037f3497",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on mobile",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 707,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-mobile-chromium-darwin.png is re-generated, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:05.423Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-fc286c00dfc6f5657a66",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on desktop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1422,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:12.332Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-69bfed9957c407ab2e5a",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on desktop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1254,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "A snapshot doesn't exist at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-desktop-firefox-darwin.png, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:13.759Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "form-loading-state-desktop-expected.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-desktop-firefox-darwin.png"
-                        },
-                        {
-                          "name": "form-loading-state-desktop-actual.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-0e85b-sion-form-states-on-desktop-firefox/form-loading-state-desktop-actual.png"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-88dd50a754c8dabc2525",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on tablet",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1418,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:15.018Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-7b6189f573d4b83efa62",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on tablet",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1237,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "A snapshot doesn't exist at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-tablet-firefox-darwin.png, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:16.441Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "form-loading-state-tablet-expected.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-tablet-firefox-darwin.png"
-                        },
-                        {
-                          "name": "form-loading-state-tablet-actual.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-079f9-ssion-form-states-on-tablet-firefox/form-loading-state-tablet-actual.png"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-d11d1fd78ca27cdbe424",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on mobile",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1396,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:17.684Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-6d86a9641fe8aaffc0a2",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on mobile",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "firefox",
-                  "projectName": "firefox",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1304,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "A snapshot doesn't exist at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-mobile-firefox-darwin.png, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:19.086Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "form-loading-state-mobile-expected.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-mobile-firefox-darwin.png"
-                        },
-                        {
-                          "name": "form-loading-state-mobile-actual.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-24116-ssion-form-states-on-mobile-firefox/form-loading-state-mobile-actual.png"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-888258f73dc142294e3c",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on desktop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1053,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:02.464Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-8f4b392409cfded59a76",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on desktop",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 982,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "A snapshot doesn't exist at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-desktop-webkit-darwin.png, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:03.522Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "form-loading-state-desktop-expected.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-desktop-webkit-darwin.png"
-                        },
-                        {
-                          "name": "form-loading-state-desktop-actual.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-0e85b-sion-form-states-on-desktop-webkit/form-loading-state-desktop-actual.png"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-e637c4282dc13d75d448",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on tablet",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 1008,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:04.511Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-edbcacbc8749a6cb4915",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on tablet",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 753,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "A snapshot doesn't exist at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-tablet-webkit-darwin.png, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:05.529Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "form-loading-state-tablet-expected.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-tablet-webkit-darwin.png"
-                        },
-                        {
-                          "name": "form-loading-state-tablet-actual.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-079f9-ssion-form-states-on-tablet-webkit/form-loading-state-tablet-actual.png"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-0a329277a29c392299ba",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
-            },
-            {
-              "title": "closing moment layout on mobile",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 804,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:06.289Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-1f204bc76aab4c56472e",
-              "file": "closing-moment.spec.ts",
-              "line": 273,
-              "column": 5
-            },
-            {
-              "title": "form states on mobile",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 593,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "A snapshot doesn't exist at /Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-mobile-webkit-darwin.png, writing actual.\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-09-23T12:58:07.100Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "form-loading-state-mobile-expected.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e/closing-moment.spec.ts-snapshots/form-loading-state-mobile-webkit-darwin.png"
-                        },
-                        {
-                          "name": "form-loading-state-mobile-actual.png",
-                          "contentType": "image/png",
-                          "path": "/Users/tomhoward/Projects/voder.ai-website/test-results/closing-moment-Closing-Mom-24116-ssion-form-states-on-mobile-webkit/form-loading-state-mobile-actual.png"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-b9b998fc38ad7d4adf16",
-              "file": "closing-moment.spec.ts",
-              "line": 290,
-              "column": 5
             }
           ]
         }
@@ -2033,11 +280,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-09-23T12:57:48.671Z",
-    "duration": 32098.135,
-    "expected": 38,
+    "startTime": "2025-09-25T10:13:50.854Z",
+    "duration": 7577.239,
+    "expected": 4,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

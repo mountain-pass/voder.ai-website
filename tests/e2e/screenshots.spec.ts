@@ -483,19 +483,23 @@ test.describe('3D Cube Viewport Validation', () => {
       timeout: 30000,
     });
 
-    // On tablet, animation is completely hidden - just wait for page to settle
-    await page.waitForTimeout(1000);
+    // Wait for 3D animation to load and settle
+    await page.waitForSelector('.hero-animation canvas', { timeout: 10000 });
+    await page.waitForTimeout(2000);
 
-    // Take viewport screenshot to validate clean layout without animation
+    // Take viewport screenshot to validate full viewport animation positioning
     await page.screenshot({
       path: 'screenshots/3d-cube-viewport-tablet-768x1024.png',
       fullPage: false, // Viewport only
     });
 
-    // Validate hero animation is completely hidden on tablet
+    // Validate hero animation is visible and properly positioned on tablet
     const heroAnimation = await page.locator('.hero-animation');
 
-    await expect(heroAnimation).toBeHidden();
+    const canvas = await page.locator('.hero-animation canvas');
+
+    await expect(heroAnimation).toBeVisible();
+    await expect(canvas).toBeVisible();
   });
 
   test('3D cube viewport positioning validation - mobile', async ({ page }) => {
@@ -507,19 +511,23 @@ test.describe('3D Cube Viewport Validation', () => {
       timeout: 30000,
     });
 
-    // On mobile, animation is completely hidden - just wait for page to settle
-    await page.waitForTimeout(1000);
+    // Wait for 3D animation to load and settle
+    await page.waitForSelector('.hero-animation canvas', { timeout: 10000 });
+    await page.waitForTimeout(2000);
 
-    // Take viewport screenshot to validate clean layout without animation
+    // Take viewport screenshot to validate full viewport animation positioning
     await page.screenshot({
       path: 'screenshots/3d-cube-viewport-mobile-375x667.png',
       fullPage: false, // Viewport only
     });
 
-    // Validate hero animation is completely hidden on mobile
+    // Validate hero animation is visible and properly positioned on mobile
     const heroAnimation = await page.locator('.hero-animation');
 
-    await expect(heroAnimation).toBeHidden();
+    const canvas = await page.locator('.hero-animation canvas');
+
+    await expect(heroAnimation).toBeVisible();
+    await expect(canvas).toBeVisible();
   });
 
   test('Content overlay validation across viewports', async ({ page }) => {
@@ -540,40 +548,30 @@ test.describe('3D Cube Viewport Validation', () => {
         timeout: 30000,
       });
 
-      // Wait for appropriate content to load (3D on desktop, hidden on mobile/tablet)
-      if (width > 768) {
-        await page.waitForSelector('.hero-animation canvas', { timeout: 10000 });
-        await page.waitForTimeout(2000);
-      } else {
-        // On mobile/tablet, animation is hidden - just wait for page to settle
-        await page.waitForTimeout(1000);
-      }
+      // Wait for 3D animation to load on all viewport sizes
+      await page.waitForSelector('.hero-animation canvas', { timeout: 10000 });
+      await page.waitForTimeout(2000);
 
-      // Take viewport screenshot focusing on content overlay
+      // Take viewport screenshot focusing on full viewport 3D animation
       const overlayPath = `screenshots/3d-cube-overlay-${name}-${width}x${height}.png`;
 
       await page.screenshot({
         path: overlayPath,
-        fullPage: false, // Viewport only to show overlay effect
+        fullPage: false, // Viewport only to show full viewport 3D animation
       });
 
       overlayScreenshots.push({ name, path: overlayPath, viewport: `${width}x${height}` });
 
-      // Validate that animation visibility and page content are correct per viewport
+      // Validate that animation and page content are visible on all viewport sizes
       const heroAnimation = await page.locator('.hero-animation');
+
+      const canvas = await page.locator('.hero-animation canvas');
 
       const pageContent = await page.locator('main, .hero-content, h1').first();
 
-      if (width > 768) {
-        // Desktop should have visible 3D animation
-        const canvas = await page.locator('.hero-animation canvas');
-
-        await expect(canvas).toBeVisible();
-      } else {
-        // Mobile/tablet should have completely hidden animation
-        await expect(heroAnimation).toBeHidden();
-      }
-
+      // All viewport sizes should have visible 3D animation at full viewport
+      await expect(heroAnimation).toBeVisible();
+      await expect(canvas).toBeVisible();
       await expect(pageContent).toBeVisible();
     }
 

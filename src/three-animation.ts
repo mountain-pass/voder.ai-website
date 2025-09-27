@@ -18,20 +18,6 @@ export class ThreeAnimation {
   constructor(options: ThreeAnimationOptions) {
     this.container = options.container;
 
-    // Workaround: Disable 3D on mobile/tablet to avoid positioning issues
-    // See docs/problems/3d-cube-responsive-positioning.md
-    if (typeof window !== 'undefined') {
-      const isMobileOrTablet = window.innerWidth <= 768;
-
-      if (isMobileOrTablet) {
-        // eslint-disable-next-line no-console
-        console.log('3D animation completely hidden on mobile/tablet viewport');
-        this.supportsWebGL = false;
-
-        return;
-      }
-    }
-
     this.checkWebGLSupport();
   }
 

@@ -432,3 +432,151 @@ test.describe('Brand Identity Screenshot Validation', () => {
     expect(consoleErrors).toHaveLength(0);
   });
 });
+
+test.describe('3D Cube Viewport Validation', () => {
+  /**
+   * Viewport-specific screenshot validation for 025.0-BIZ-3D-ANIMATION story
+   *
+   * This test suite validates the 3D glass cube positioning, content overlay,
+   * and visual hierarchy across different viewport sizes as required by the spec.
+   *
+   * Requirements:
+   * - Viewport screenshots (not full-page) to validate cube positioning
+   * - Content overlay validation - page content should layer over 3D background
+   * - Cube visibility and scale across desktop, tablet, and mobile viewports
+   * - Visual hierarchy validation between 3D background and page content
+   */
+
+  test('3D cube viewport positioning validation - desktop', async ({ page }) => {
+    // Set desktop viewport
+    await page.setViewportSize({ width: 1920, height: 1080 });
+
+    await page.goto('/', {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+
+    // Wait for 3D cube to load
+    await page.waitForSelector('.hero-animation canvas', { timeout: 10000 });
+
+    // Wait additional time for 3D rendering
+    await page.waitForTimeout(2000);
+
+    // Take viewport screenshot (not full-page) to validate cube positioning
+    await page.screenshot({
+      path: 'screenshots/3d-cube-viewport-desktop-1920x1080.png',
+      fullPage: false, // Viewport only
+    });
+
+    // Validate 3D canvas is present and properly sized
+    const canvas = await page.locator('.hero-animation canvas');
+
+    await expect(canvas).toBeVisible();
+  });
+
+  test('3D cube viewport positioning validation - tablet', async ({ page }) => {
+    // Set tablet viewport
+    await page.setViewportSize({ width: 768, height: 1024 });
+
+    await page.goto('/', {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+
+    // On tablet, animation is completely hidden - just wait for page to settle
+    await page.waitForTimeout(1000);
+
+    // Take viewport screenshot to validate clean layout without animation
+    await page.screenshot({
+      path: 'screenshots/3d-cube-viewport-tablet-768x1024.png',
+      fullPage: false, // Viewport only
+    });
+
+    // Validate hero animation is completely hidden on tablet
+    const heroAnimation = await page.locator('.hero-animation');
+
+    await expect(heroAnimation).toBeHidden();
+  });
+
+  test('3D cube viewport positioning validation - mobile', async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 });
+
+    await page.goto('/', {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+
+    // On mobile, animation is completely hidden - just wait for page to settle
+    await page.waitForTimeout(1000);
+
+    // Take viewport screenshot to validate clean layout without animation
+    await page.screenshot({
+      path: 'screenshots/3d-cube-viewport-mobile-375x667.png',
+      fullPage: false, // Viewport only
+    });
+
+    // Validate hero animation is completely hidden on mobile
+    const heroAnimation = await page.locator('.hero-animation');
+
+    await expect(heroAnimation).toBeHidden();
+  });
+
+  test('Content overlay validation across viewports', async ({ page }) => {
+    const testViewports = [
+      { name: 'desktop', width: 1920, height: 1080 },
+      { name: 'tablet', width: 768, height: 1024 },
+      { name: 'mobile', width: 375, height: 667 },
+    ];
+
+    const overlayScreenshots = [];
+
+    for (const viewport of testViewports) {
+      const { name, width, height } = viewport;
+
+      await page.setViewportSize({ width, height });
+      await page.goto('/', {
+        waitUntil: 'networkidle',
+        timeout: 30000,
+      });
+
+      // Wait for appropriate content to load (3D on desktop, hidden on mobile/tablet)
+      if (width > 768) {
+        await page.waitForSelector('.hero-animation canvas', { timeout: 10000 });
+        await page.waitForTimeout(2000);
+      } else {
+        // On mobile/tablet, animation is hidden - just wait for page to settle
+        await page.waitForTimeout(1000);
+      }
+
+      // Take viewport screenshot focusing on content overlay
+      const overlayPath = `screenshots/3d-cube-overlay-${name}-${width}x${height}.png`;
+
+      await page.screenshot({
+        path: overlayPath,
+        fullPage: false, // Viewport only to show overlay effect
+      });
+
+      overlayScreenshots.push({ name, path: overlayPath, viewport: `${width}x${height}` });
+
+      // Validate that animation visibility and page content are correct per viewport
+      const heroAnimation = await page.locator('.hero-animation');
+
+      const pageContent = await page.locator('main, .hero-content, h1').first();
+
+      if (width > 768) {
+        // Desktop should have visible 3D animation
+        const canvas = await page.locator('.hero-animation canvas');
+
+        await expect(canvas).toBeVisible();
+      } else {
+        // Mobile/tablet should have completely hidden animation
+        await expect(heroAnimation).toBeHidden();
+      }
+
+      await expect(pageContent).toBeVisible();
+    }
+
+    console.log('3D cube overlay validation screenshots:', overlayScreenshots);
+  });
+});

@@ -129,11 +129,17 @@ body {
 }
 
 /* Hero section */
+/* Hero Section Styles */
 .hero-section {
   align-items: center;
+  background-color: transparent; /* Let the 3D background show through */
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  position: relative;
+  z-index: 1; /* Above the 3D background */
 }
 
 .hero-title {
@@ -464,19 +470,22 @@ body {
   }
 }
 
-/* 3D Animation Styles */
+/* 3D Animation Styles - FULL VIEWPORT BACKGROUND */
 .hero-animation {
-  height: 200px;
-  margin: 0 auto var(--space-8);
   position: relative;
-  width: 200px;
+  width: 100vw;
+  height: 100vh;
+  margin: 0 0 -100vh 0; /* Negative bottom margin pulls content up over canvas */
+  padding: 0;
 }
 
 .hero-animation canvas {
-  border-radius: 8px;
-  height: 100%;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  display: block;
 }
+
+/* Canvas is now full viewport - no responsive sizing needed */
 
 /* 2D Fallback Animation */
 .animation-fallback {
@@ -541,11 +550,10 @@ body {
   }
 }
 
-/* Responsive 3D animation */
+/* Responsive 3D animation - hide completely on mobile/tablet */
 @media (width <= 768px) {
   .hero-animation {
-    height: 150px;
-    width: 150px;
+    display: none;
   }
 
   .cube-2d {

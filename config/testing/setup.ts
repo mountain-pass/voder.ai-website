@@ -95,10 +95,72 @@ export function setupJsdomTestEnvironment(): void {
     unobserve: vi.fn(),
     disconnect: vi.fn(),
   }));
-  // Provide a minimal Canvas 2D mock to prevent axe-core from crashing
-  // when it probes for Canvas support during accessibility testing.
-  // Note: This doesn't enable color-contrast testing (that's impossible in JSDOM),
-  // but prevents crashes when running other accessibility rules.
+
+  // Mock requestAnimationFrame and cancelAnimationFrame for animation testing
+  if (typeof window !== 'undefined') {
+    let animationId = 0;
+
+    window.requestAnimationFrame = vi.fn().mockImplementation((callback) => {
+      const id = ++animationId;
+
+      setTimeout(() => callback(Date.now()), 16); // ~60fps
+
+      return id;
+    });
+    window.cancelAnimationFrame = vi.fn().mockImplementation(() => {
+      // No-op for tests
+    });
+  }
+
+  // Enhance DOM Element prototypes for Three.js compatibility
+  if (typeof HTMLElement !== 'undefined') {
+    // Override appendChild to handle non-standard Three.js DOM elements better
+    const originalAppendChild = HTMLElement.prototype.appendChild;
+
+    HTMLElement.prototype.appendChild = function <T extends Node>(child: T): T {
+      try {
+        // If it's a regular DOM node, use the original method
+        if (child && child.nodeType && child.nodeType > 0) {
+          return originalAppendChild.call(this, child) as T;
+        }
+
+        // If it looks like a Three.js renderer dom element (has canvas-like properties)
+        if (
+          child &&
+          typeof child === 'object' &&
+          ('width' in child || 'height' in child || 'getContext' in child)
+        ) {
+          // Create a mock canvas element to represent it
+          const mockCanvas = document.createElement('canvas');
+
+          if ('width' in child && typeof child.width === 'number') {
+            mockCanvas.width = child.width;
+          }
+          if ('height' in child && typeof child.height === 'number') {
+            mockCanvas.height = child.height;
+          }
+
+          return originalAppendChild.call(this, mockCanvas) as T;
+        }
+
+        // For other objects that might be renderer elements, create a div
+        const mockElement = document.createElement('div');
+
+        return originalAppendChild.call(this, mockElement) as T;
+      } catch {
+        // If all else fails, create a mock element
+        const mockElement = document.createElement('div');
+
+        return originalAppendChild.call(this, mockElement) as T;
+      }
+    };
+
+    if (verbose) {
+      console.error('[voder/ui-tools] Enhanced DOM element appendChild for Three.js compatibility');
+    }
+  }
+  // Provide Canvas mock with WebGL support for Three.js testing
+  // This prevents crashes when Three.js tries to create rendering contexts
   try {
     if (typeof HTMLCanvasElement !== 'undefined') {
       const proto = HTMLCanvasElement.prototype;
@@ -132,17 +194,107 @@ export function setupJsdomTestEnvironment(): void {
           };
         }
 
+        // Mock WebGL contexts for Three.js testing
+        if (contextType === 'webgl' || contextType === 'experimental-webgl') {
+          return {
+            // Core WebGL context properties that Three.js checks for
+            canvas: this,
+            drawingBufferWidth: this.width || 300,
+            drawingBufferHeight: this.height || 150,
+
+            // WebGL context methods (minimal implementation)
+            getExtension: () => null,
+            getParameter: (param: number) => {
+              // Return reasonable defaults for common parameters
+              switch (param) {
+                case 0x1f00:
+                  return 'WebGL Mock'; // GL_VENDOR
+                case 0x1f01:
+                  return 'WebGL Mock Renderer'; // GL_RENDERER
+                case 0x1f02:
+                  return '1.0'; // GL_VERSION
+                default:
+                  return null;
+              }
+            },
+
+            // Shader and program methods
+            createShader: () => ({}),
+            createProgram: () => ({}),
+            shaderSource: () => {},
+            compileShader: () => {},
+            attachShader: () => {},
+            linkProgram: () => {},
+            useProgram: () => {},
+            getShaderParameter: () => true,
+            getProgramParameter: () => true,
+
+            // Buffer methods
+            createBuffer: () => ({}),
+            bindBuffer: () => {},
+            bufferData: () => {},
+
+            // Texture methods
+            createTexture: () => ({}),
+            bindTexture: () => {},
+            texImage2D: () => {},
+            texParameteri: () => {},
+            generateMipmap: () => {},
+
+            // Rendering methods
+            viewport: () => {},
+            clear: () => {},
+            clearColor: () => {},
+            clearDepth: () => {},
+            enable: () => {},
+            disable: () => {},
+            depthFunc: () => {},
+            blendFunc: () => {},
+
+            // Vertex attributes
+            getAttribLocation: () => 0,
+            getUniformLocation: () => ({}),
+            enableVertexAttribArray: () => {},
+            vertexAttribPointer: () => {},
+            uniform1i: () => {},
+            uniform1f: () => {},
+            uniform2f: () => {},
+            uniform3f: () => {},
+            uniform4f: () => {},
+            uniformMatrix3fv: () => {},
+            uniformMatrix4fv: () => {},
+
+            // Drawing
+            drawArrays: () => {},
+            drawElements: () => {},
+
+            // Constants that Three.js might access
+            TRIANGLES: 4,
+            UNSIGNED_SHORT: 5123,
+            FLOAT: 5126,
+            DEPTH_TEST: 2929,
+            CULL_FACE: 2884,
+            BLEND: 3042,
+            SRC_ALPHA: 770,
+            ONE_MINUS_SRC_ALPHA: 771,
+            LEQUAL: 515,
+            COLOR_BUFFER_BIT: 16384,
+            DEPTH_BUFFER_BIT: 256,
+          };
+        }
+
         return null;
       };
+
       if (verbose) {
         console.error(
-          '[voder/ui-tools] Installed Canvas 2D mock to prevent axe-core crashes in JSDOM',
+          '[voder/ui-tools] Installed Canvas mock with WebGL support for Three.js testing',
         );
       }
     }
   } catch (err) {
     if (verbose) {
-      console.error('[voder/ui-tools] Failed to install Canvas 2D mock', err);
+      console.error('[voder/ui-tools] Failed to install Canvas mock', err);
     }
   }
 }

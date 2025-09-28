@@ -2,6 +2,43 @@
 
 This file tracks the major milestones and changes in the voder.ai website project development.
 
+## September 28, 2025 - Scroll-Linked Cube Rotation Implementation
+
+**Scroll Interaction Feature:**
+- Implemented story 025.2-BIZ-SCROLL-ROTATION (Scroll-Linked Cube Rotation)
+- Added scroll-synchronized rotation to the 3D glass cube element
+- Cube now rotates smoothly in response to page scroll position with direct 1:1 correspondence
+
+**Technical Implementation:**
+- **Enhanced src/three-animation.ts**: Added `addScrollInteraction()` method with proper scroll handling
+- **Responsive Rotation Sensitivity**: Mobile (0.003 radians/pixel) vs Desktop (0.005 radians/pixel)
+- **Performance Optimization**: Uses requestAnimationFrame and proper event throttling for smooth 60fps
+- **Directional Mapping**: Scroll down = rotate left (negative Y-axis), scroll up = rotate right (positive Y-axis)
+
+**Key Features:**
+- **Scroll Position Mapping**: Direct correlation between scroll position and cube rotation angle
+- **Bidirectional Control**: Immediate rotation reversal when scroll direction changes
+- **Continuous Rotation**: No rotation limits - cube can spin multiple full rotations in either direction
+- **Cross-Device Compatibility**: Works on desktop scroll wheel, trackpad, and mobile touch scroll
+- **Memory Management**: Proper event listener setup with passive scrolling for performance
+
+**Quality Assurance:**
+- All tests passing (142/142) with comprehensive coverage maintained
+- ESLint validation clean with proper code formatting
+- Build pipeline successful with scroll interaction integration
+- Development server running properly with real-time scroll rotation testing
+
+**User Experience:**
+- Creates engaging interactive experience demonstrating sophisticated front-end capabilities
+- Maintains glass material properties and lighting during rotation
+- Preserves initial 45-degree corner orientation while adding dynamic rotation
+- Smooth rotation follows scroll with no perceivable delay or stuttering
+
+**Story Completion:**
+- Story 025.2-BIZ-SCROLL-ROTATION: ✅ COMPLETE (NOW section)
+- Basic scroll-linked rotation functionality implemented and validated
+- Ready for NEXT section enhancements (responsive sensitivity, cross-device optimization)
+
 ## January 23, 2025 - 3D Animation Hero Feature Implementation
 
 **3D Animation Integration:**

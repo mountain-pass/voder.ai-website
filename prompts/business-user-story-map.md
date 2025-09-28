@@ -21,11 +21,12 @@
 | -------------------------------------- | ------------ | ----------------- | ----------- | -------------------- | -------------- |
 | **Business Value Delivery**            | Brand Entry  | Problem Statement | -           | -                    | Closing Moment |
 
-| **Release 1 (MVP Problem Validation)** | **Intrigue** | **Feel Pain**               | **Connect**                   | **Love Alternative** | **Want It**        |
-| -------------------------------------- | ------------ | --------------------------- | ----------------------------- | -------------------- | ------------------ |
-| **Must-haves**                         | 3D animation | Visual chaos representation | "Software starts with intent" | "Better way" teaser  | "See the code" CTA |
-|                                        | -            | -                           | -                             | -                    | -                  |
-|                                        | -            | -                           | -                             | -                    | -                  |
+| **Release 1 (MVP Problem Validation)** | **Intrigue**               | **Feel Pain**               | **Connect**                   | **Love Alternative** | **Want It**        |
+| -------------------------------------- | -------------------------- | --------------------------- | ----------------------------- | -------------------- | ------------------ |
+| **Must-haves**                         | 3D animation (025.0)       | Visual chaos representation | "Software starts with intent" | "Better way" teaser  | "See the code" CTA |
+|                                        | Scroll interaction (025.2) | -                           | -                             | -                    | -                  |
+|                                        | -                          | -                           | -                             | -                    | -                  |
+|                                        | -                          | -                           | -                             | -                    | -                  |
 
 | **Release 2 (Solution Validation)** | **Intrigue** | **Feel Pain**           | **Connect**         | **Love Alternative** | **Want It**        |
 | ----------------------------------- | ------------ | ----------------------- | ------------------- | -------------------- | ------------------ |
@@ -66,6 +67,12 @@
 **Goal**: Test AI slop message resonance with multiple framings
 **Success Metric**: >70% of founders say "This is exactly my problem"
 **Pages**: 3-4 simple pages focusing on problem articulation
+
+**Stories by Category:**
+
+- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement)
+
+**Total**: 3 stories focusing on sophisticated visual presentation and user engagement
 
 ### Release 2: Solution Validation (3-4 weeks)
 

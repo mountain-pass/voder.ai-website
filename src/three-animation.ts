@@ -164,8 +164,8 @@ export class ThreeAnimation {
     // Create AWESOME living cube with wisps
     this.createAwesomeCube();
 
-    // Add scroll interaction - DISABLED while sorting positioning
-    // this.addScrollInteraction();
+    // Add scroll interaction for cube rotation
+    this.addScrollInteraction();
 
     // Start animation loop
     this.animate();
@@ -336,19 +336,25 @@ export class ThreeAnimation {
     let ticking = false;
 
     const updateOnScroll = () => {
-      // Static cube - no phase transitions needed
+      if (!this.cube) {
+        ticking = false;
 
-      // Handle cube phase - DISABLED while sorting positioning
-      // if (this.cube && this.animationPhase === 'cube') {
-      //   const scale = 1 + scrollProgress * 0.3;
-      //   this.cube.scale.setScalar(scale);
-      //   this.cube.rotation.z = scrollProgress * Math.PI * 0.25;
-      //
-      //   // Make cube visible
-      //   if (this.cube.material instanceof THREE.MeshPhongMaterial) {
-      //     this.cube.material.opacity = Math.min(scrollProgress * 2, 0.8);
-      //   }
-      // }
+        return;
+      }
+
+      // Calculate responsive rotation multiplier based on viewport width
+      const isMobile = window.innerWidth <= 480;
+
+      const rotationMultiplier = isMobile ? 0.003 : 0.005;
+
+      // Map scroll position directly to Y-axis rotation
+      // Scroll down = rotate left (negative), scroll up = rotate right (positive)
+      const scrollPosition = window.scrollY;
+
+      const rotationY = Math.PI / 4 + scrollPosition * rotationMultiplier;
+
+      // Apply rotation to cube (maintains the initial 45-degree corner orientation)
+      this.cube.rotation.y = rotationY;
 
       ticking = false;
     };
@@ -448,6 +454,7 @@ export class ThreeAnimation {
     }
 
     window.removeEventListener('resize', () => this.handleResize());
+    // Note: Individual scroll event listeners are cleaned up automatically when the window is destroyed
     this.isInitialized = false;
   }
 

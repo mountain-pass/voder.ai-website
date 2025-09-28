@@ -21,6 +21,50 @@ export class ThreeAnimation {
     this.checkWebGLSupport();
   }
 
+  // Public method for testing device detection
+  public getDeviceType(): 'mobile' | 'tablet' | 'desktop' {
+    if (typeof navigator === 'undefined') return 'desktop';
+
+    const userAgent = navigator.userAgent;
+
+    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
+      userAgent,
+    );
+
+    const isTablet = /iPad|Android(?!.*Mobile)|Kindle|Silk/i.test(userAgent);
+
+    if (isMobile && !isTablet) return 'mobile';
+    if (isTablet) return 'tablet';
+
+    return 'desktop';
+  }
+
+  // Public method for testing responsive calculations
+  public getResponsiveConfig(): { fov: number; cameraZ: number } {
+    if (typeof window === 'undefined') {
+      return { fov: 65, cameraZ: 5 };
+    }
+
+    const deviceType = this.getDeviceType();
+
+    let fov: number;
+
+    let cameraZ: number;
+
+    if (deviceType === 'mobile') {
+      fov = 75; // Wide FOV for mobile
+      cameraZ = 6; // Move camera back for mobile
+    } else if (deviceType === 'tablet') {
+      fov = 70; // Medium-wide FOV for tablet
+      cameraZ = 5.5; // Slightly back for tablet
+    } else {
+      fov = 65; // Standard FOV for desktop
+      cameraZ = 5; // Standard position for desktop
+    }
+
+    return { fov, cameraZ };
+  }
+
   private checkWebGLSupport(): void {
     // Check if we're in a browser environment
     if (typeof document === 'undefined' || typeof window === 'undefined') {
@@ -86,31 +130,25 @@ export class ThreeAnimation {
 
     const viewportHeight = window.innerHeight;
 
-    // Calculate responsive FOV and positioning
-    const isMobile = viewportWidth <= 480;
+    // Use responsive configuration
+    const config = this.getResponsiveConfig();
 
-    const isTablet = viewportWidth <= 768 && !isMobile;
+    this.camera = new THREE.PerspectiveCamera(
+      config.fov,
+      viewportWidth / viewportHeight,
+      0.1,
+      1000,
+    );
 
-    // Responsive FOV - wider on smaller screens to show more of the scene
-    let fov: number;
+    // Position camera using responsive configuration
+    const deviceType = this.getDeviceType();
 
-    if (isMobile) {
-      fov = 75; // Wide FOV for mobile to show full cube in smaller viewport
-    } else if (isTablet) {
-      fov = 70; // Medium-wide FOV for tablet
-    } else {
-      fov = 65; // Standard FOV for desktop
-    }
-
-    this.camera = new THREE.PerspectiveCamera(fov, viewportWidth / viewportHeight, 0.1, 1000);
-
-    // Position camera further back on smaller screens to show full cube
-    if (isMobile) {
+    if (deviceType === 'mobile') {
       // Mobile: Further back with wide FOV to show complete cube
       this.camera.position.x = 0;
       this.camera.position.y = 20;
       this.camera.position.z = 45;
-    } else if (isTablet) {
+    } else if (deviceType === 'tablet') {
       // Tablet: Medium distance with good viewing angle
       this.camera.position.x = 0;
       this.camera.position.y = 18;
@@ -342,10 +380,10 @@ export class ThreeAnimation {
         return;
       }
 
-      // Calculate responsive rotation multiplier based on viewport width
-      const isMobile = window.innerWidth <= 480;
+      // Calculate responsive rotation multiplier based on device type
+      const deviceType = this.getDeviceType();
 
-      const rotationMultiplier = isMobile ? 0.003 : 0.005;
+      const rotationMultiplier = deviceType === 'mobile' ? 0.003 : 0.005;
 
       // Map scroll position directly to Y-axis rotation
       // Scroll down = rotate left (negative), scroll up = rotate right (positive)
@@ -386,31 +424,24 @@ export class ThreeAnimation {
 
     const viewportHeight = window.innerHeight;
 
-    // Calculate responsive FOV and positioning
-    const isMobile = viewportWidth <= 480;
+    // Use responsive configuration
+    const config = this.getResponsiveConfig();
 
-    const isTablet = viewportWidth <= 768 && !isMobile;
-
-    // Update FOV responsively
-    if (isMobile) {
-      this.camera.fov = 45; // Narrow FOV for mobile
-    } else if (isTablet) {
-      this.camera.fov = 55; // Medium FOV for tablet
-    } else {
-      this.camera.fov = 75; // Wide FOV for desktop
-    }
+    this.camera.fov = config.fov;
 
     this.camera.aspect = viewportWidth / viewportHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(viewportWidth, viewportHeight);
 
-    // Update camera position based on new viewport size
-    if (isMobile) {
+    // Update camera position based on device type
+    const deviceType = this.getDeviceType();
+
+    if (deviceType === 'mobile') {
       // Mobile: Much closer camera with narrow FOV
       this.camera.position.x = 0;
       this.camera.position.y = 8;
       this.camera.position.z = 15;
-    } else if (isTablet) {
+    } else if (deviceType === 'tablet') {
       // Tablet: Closer camera with medium FOV
       this.camera.position.x = 0;
       this.camera.position.y = 10;

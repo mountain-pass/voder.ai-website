@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-deprecated */
+import * as THREE from 'three';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ThreeAnimation } from '../src/three-animation.js';
@@ -21,8 +22,9 @@ vi.mock('three', async (importOriginal) => {
     WebGLRenderer: vi.fn(() => {
       const canvas = document.createElement('canvas');
 
-      // Ensure the canvas is a proper DOM element
+      // Ensure the canvas is a proper DOM element for appendChild
       Object.defineProperty(canvas, 'nodeType', { value: 1 }); // Node.ELEMENT_NODE
+      Object.defineProperty(canvas, 'parentNode', { value: null, writable: true });
 
       return {
         setSize: vi.fn(),
@@ -36,11 +38,24 @@ vi.mock('three', async (importOriginal) => {
         dispose: vi.fn(),
       };
     }),
-    BoxGeometry: vi.fn(),
-    EdgesGeometry: vi.fn(),
-    LineBasicMaterial: vi.fn(),
-    LineSegments: vi.fn(),
-    MeshPhongMaterial: vi.fn(),
+    BoxGeometry: vi.fn(() => ({
+      scale: vi.fn(),
+      translate: vi.fn(),
+      toNonIndexed: vi.fn(() => ({
+        attributes: {
+          position: { array: new Float32Array(24), count: 8 },
+          normal: { array: new Float32Array(24), count: 8 },
+        },
+      })),
+      attributes: {
+        position: { array: new Float32Array(24), count: 8 },
+        normal: { array: new Float32Array(24), count: 8 },
+      },
+    })),
+    EdgesGeometry: vi.fn(() => ({})),
+    LineBasicMaterial: vi.fn(() => ({})),
+    LineSegments: vi.fn(() => ({})),
+    MeshPhongMaterial: vi.fn(() => ({})),
     Mesh: vi.fn(() => ({
       rotation: { x: 0, y: 0, z: 0 },
       scale: { setScalar: vi.fn() },
@@ -57,6 +72,13 @@ vi.mock('three', async (importOriginal) => {
       },
     })),
     Color: vi.fn(),
+    Vector3: vi.fn(() => ({
+      x: 0,
+      y: 0,
+      z: 0,
+      set: vi.fn(),
+      fromBufferAttribute: vi.fn(),
+    })),
     PCFSoftShadowMap: 'PCFSoftShadowMap',
   };
 });
@@ -223,6 +245,34 @@ describe('ThreeAnimation', () => {
       expect(container.children.length).toBeGreaterThan(0);
     });
 
+    it('should initialize with Three.js and setup 3D scene', async () => {
+      // Mock WebGL context to exist
+      const mockWebGLContext = {
+        getParameter: vi.fn(() => 'WebGL'),
+        getExtension: vi.fn(() => ({})),
+      } as any;
+
+      const originalGetContext = HTMLCanvasElement.prototype.getContext;
+
+      HTMLCanvasElement.prototype.getContext = vi.fn((contextId) => {
+        if (contextId === 'webgl' || contextId === 'experimental-webgl') {
+          return mockWebGLContext;
+        }
+
+        return originalGetContext.call(this, contextId as any);
+      }) as any;
+
+      const animation = new ThreeAnimation({ container });
+
+      await animation.init();
+
+      // Should have added canvas to container since WebGL is available
+      expect(container.children.length).toBeGreaterThan(0);
+
+      // Restore original method
+      HTMLCanvasElement.prototype.getContext = originalGetContext;
+    });
+
     it('should not initialize twice', async () => {
       const animation = new ThreeAnimation({ container });
 
@@ -372,6 +422,40 @@ describe('ThreeAnimation', () => {
       window.dispatchEvent(scrollEvent);
 
       expect(() => window.dispatchEvent(scrollEvent)).not.toThrow();
+    });
+
+    it('should handle mobile device detection and responsive scroll', async () => {
+      // Mock mobile user agent
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+
+      const animation = new ThreeAnimation({ container });
+
+      await animation.init();
+
+      // Mock scroll event on mobile
+      Object.defineProperty(window, 'scrollY', { value: 200, writable: true });
+      const scrollEvent = new Event('scroll');
+
+      window.dispatchEvent(scrollEvent);
+
+      expect(() => window.dispatchEvent(scrollEvent)).not.toThrow();
+    });
+
+    it('should handle tablet device detection', async () => {
+      // Mock tablet user agent
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+
+      const animation = new ThreeAnimation({ container });
+
+      await animation.init();
+
+      expect(animation).toBeDefined();
     });
   });
 
@@ -575,6 +659,208 @@ describe('ThreeAnimation', () => {
       const nullContainer = document.createElement('div');
 
       expect(() => new ThreeAnimation({ container: nullContainer })).not.toThrow();
+    });
+
+    it('should exercise Three.js initialization with proper mocks', async () => {
+      // Set up a complete working mock environment
+      const mockRenderer = {
+        setSize: vi.fn(),
+        setPixelRatio: vi.fn(),
+        shadowMap: { enabled: false, type: null },
+        domElement: document.createElement('canvas'),
+        render: vi.fn(),
+        dispose: vi.fn(),
+      };
+
+      const mockScene = {
+        background: null,
+        add: vi.fn(),
+      };
+
+      const mockCamera = {
+        position: { z: 0 },
+        aspect: 1,
+        updateProjectionMatrix: vi.fn(),
+      };
+
+      const mockGeometry = {
+        scale: vi.fn(),
+        translate: vi.fn(),
+        toNonIndexed: vi.fn(() => ({
+          attributes: {
+            position: { array: new Float32Array(24), count: 8 },
+            normal: { array: new Float32Array(24), count: 8 },
+          },
+        })),
+        attributes: {
+          position: { array: new Float32Array(24), count: 8 },
+          normal: { array: new Float32Array(24), count: 8 },
+        },
+      };
+
+      const mockMesh = {
+        rotation: { x: 0, y: 0, z: 0 },
+        scale: { setScalar: vi.fn() },
+        castShadow: false,
+        receiveShadow: false,
+        add: vi.fn(),
+      };
+
+      // Override the mocks for this specific test
+      vi.mocked(THREE.WebGLRenderer).mockImplementationOnce(() => mockRenderer as any);
+      vi.mocked(THREE.Scene).mockImplementationOnce(() => mockScene as any);
+      vi.mocked(THREE.PerspectiveCamera).mockImplementationOnce(() => mockCamera as any);
+      vi.mocked(THREE.BoxGeometry).mockImplementationOnce(() => mockGeometry as any);
+      vi.mocked(THREE.Mesh).mockImplementationOnce(() => mockMesh as any);
+
+      // Mock WebGL support
+      mockCanvas.getContext = vi.fn((type) => {
+        if (type === 'webgl' || type === 'experimental-webgl') {
+          return {
+            getParameter: vi.fn(() => 'WebGL'),
+            getExtension: vi.fn(() => ({})),
+          };
+        }
+
+        return null;
+      }) as any;
+
+      const animation = new ThreeAnimation({ container });
+
+      await animation.init();
+
+      // Verify the 3D components were created
+      expect(THREE.Scene).toHaveBeenCalled();
+      expect(THREE.PerspectiveCamera).toHaveBeenCalled();
+      expect(THREE.WebGLRenderer).toHaveBeenCalled();
+      expect(mockRenderer.setSize).toHaveBeenCalled();
+      expect(container.children.length).toBeGreaterThan(0);
+    });
+
+    it('should exercise device detection utility methods', () => {
+      new ThreeAnimation({ container });
+
+      // Exercise device detection by mocking different user agents
+      const originalUserAgent = navigator.userAgent;
+
+      // Test mobile detection
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+
+      const animation1 = new ThreeAnimation({ container });
+
+      expect(animation1).toBeDefined();
+
+      // Test tablet detection
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+
+      const animation2 = new ThreeAnimation({ container });
+
+      expect(animation2).toBeDefined();
+
+      // Restore original
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUserAgent,
+        writable: true,
+      });
+    });
+
+    it('should handle various window sizes for responsive behavior', () => {
+      new ThreeAnimation({ container });
+
+      // Test different screen sizes to trigger responsive logic
+      const originalWidth = window.innerWidth;
+
+      const originalHeight = window.innerHeight;
+
+      // Mobile
+      Object.defineProperty(window, 'innerWidth', { value: 480, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true });
+      const mobileAnimation = new ThreeAnimation({ container });
+
+      expect(mobileAnimation).toBeDefined();
+
+      // Tablet
+      Object.defineProperty(window, 'innerWidth', { value: 768, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 1024, configurable: true });
+      const tabletAnimation = new ThreeAnimation({ container });
+
+      expect(tabletAnimation).toBeDefined();
+
+      // Desktop
+      Object.defineProperty(window, 'innerWidth', { value: 1920, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: 1080, configurable: true });
+      const desktopAnimation = new ThreeAnimation({ container });
+
+      expect(desktopAnimation).toBeDefined();
+
+      // Restore
+      Object.defineProperty(window, 'innerWidth', { value: originalWidth, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: originalHeight, configurable: true });
+    });
+
+    it('should correctly detect device types', () => {
+      const animation = new ThreeAnimation({ container });
+
+      // Test mobile detection
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+      expect(animation.getDeviceType()).toBe('mobile');
+
+      // Test tablet detection
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+      expect(animation.getDeviceType()).toBe('tablet');
+
+      // Test desktop detection
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        writable: true,
+      });
+      expect(animation.getDeviceType()).toBe('desktop');
+    });
+
+    it('should provide responsive configuration values', () => {
+      const animation = new ThreeAnimation({ container });
+
+      // Test mobile config
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+      const mobileConfig = animation.getResponsiveConfig();
+
+      expect(mobileConfig.fov).toBe(75);
+      expect(mobileConfig.cameraZ).toBe(6);
+
+      // Test tablet config
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+      const tabletConfig = animation.getResponsiveConfig();
+
+      expect(tabletConfig.fov).toBe(70);
+      expect(tabletConfig.cameraZ).toBe(5.5);
+
+      // Test desktop config
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        writable: true,
+      });
+      const desktopConfig = animation.getResponsiveConfig();
+
+      expect(desktopConfig.fov).toBe(65);
+      expect(desktopConfig.cameraZ).toBe(5);
     });
   });
 });

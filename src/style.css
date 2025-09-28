@@ -550,21 +550,8 @@ body {
   }
 }
 
-/* Responsive 3D animation - maintain full viewport on all devices */
+/* Responsive 2D fallback cube sizing */
 @media (width <= 768px) {
-  .hero-animation {
-    /* Ensure full viewport is maintained on mobile/tablet */
-    width: 100vw !important;
-    height: 100vh !important;
-    position: relative;
-    margin: 0 0 -100vh 0;
-  }
-
-  .hero-animation canvas {
-    width: 100vw !important;
-    height: 100vh !important;
-  }
-
   .cube-2d {
     height: 75px;
     width: 75px;

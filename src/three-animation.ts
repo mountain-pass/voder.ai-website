@@ -91,32 +91,32 @@ export class ThreeAnimation {
 
     const isTablet = viewportWidth <= 768 && !isMobile;
 
-    // Responsive FOV - narrower on smaller screens to keep cube centered
+    // Responsive FOV - wider on smaller screens to show more of the scene
     let fov: number;
 
     if (isMobile) {
-      fov = 45; // Narrow FOV for mobile to keep cube centered
+      fov = 75; // Wide FOV for mobile to show full cube in smaller viewport
     } else if (isTablet) {
-      fov = 55; // Medium FOV for tablet
+      fov = 70; // Medium-wide FOV for tablet
     } else {
-      fov = 75; // Wide FOV for desktop
+      fov = 65; // Standard FOV for desktop
     }
 
     this.camera = new THREE.PerspectiveCamera(fov, viewportWidth / viewportHeight, 0.1, 1000);
 
-    // Position camera above and centered - responsive to viewport size
+    // Position camera further back on smaller screens to show full cube
     if (isMobile) {
-      // Mobile: Much closer camera with narrow FOV
+      // Mobile: Further back with wide FOV to show complete cube
       this.camera.position.x = 0;
-      this.camera.position.y = 8;
-      this.camera.position.z = 15;
+      this.camera.position.y = 20;
+      this.camera.position.z = 45;
     } else if (isTablet) {
-      // Tablet: Closer camera with medium FOV
+      // Tablet: Medium distance with good viewing angle
       this.camera.position.x = 0;
-      this.camera.position.y = 10;
-      this.camera.position.z = 20;
+      this.camera.position.y = 18;
+      this.camera.position.z = 42;
     } else {
-      // Desktop: Original positioning with wide FOV
+      // Desktop: Original positioning works well
       this.camera.position.x = 0;
       this.camera.position.y = 16;
       this.camera.position.z = 40;

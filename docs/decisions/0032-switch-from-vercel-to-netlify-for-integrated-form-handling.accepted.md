@@ -112,7 +112,7 @@ Chosen option: **Option 1 - Switch to Netlify Hosting + Forms**, because it prov
 
 Success will be measured by:
 
-- Site successfully deployed and accessible at https://voder.ai
+- Site successfully deployed and accessible at <https://voder.ai>
 - Email addresses captured and accessible via Netlify dashboard
 - CSV export functionality working for email campaign preparation
 - Maintained Microsoft Clarity conversion tracking

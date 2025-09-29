@@ -41,7 +41,7 @@ Tests
 - npm run screenshots
   Runs Playwright E2E tests locally to generate visual regression screenshots.
 - npm run e2e:ci:prod
-  Runs production verification tests against https://voder.ai to ensure the deployed site is working correctly and not showing hosting provider holding pages.
+  Runs production verification tests against <https://voder.ai> to ensure the deployed site is working correctly and not showing hosting provider holding pages.
 
 Lint and format
 

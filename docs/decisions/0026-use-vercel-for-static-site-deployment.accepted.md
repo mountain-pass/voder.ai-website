@@ -54,7 +54,7 @@ Chosen option: "Vercel", because it provides the best balance of automatic deplo
 
 Deployment success confirmed by:
 
-- Site accessible at https://voder.ai with valid SSL certificate
+- Site accessible at <https://voder.ai> with valid SSL certificate
 - Automatic deployment triggered on main branch commits
 - Site loads under 2 seconds from multiple global locations
 - Deployment status visible in Vercel dashboard and GitHub integration

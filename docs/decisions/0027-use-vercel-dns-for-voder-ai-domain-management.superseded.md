@@ -59,7 +59,7 @@ DNS configuration success confirmed by:
 
 - voder.ai domain automatically configured in Vercel DNS after nameserver change
 - SSL certificate issued automatically by Vercel after DNS verification
-- Website loads at https://voder.ai with Vercel's optimized routing
+- Website loads at <https://voder.ai> with Vercel's optimized routing
 - DNS propagation completed within 24 hours globally
 - Vercel dashboard showing domain status as verified and active
 
@@ -163,5 +163,5 @@ Migration steps:
 1. Update nameservers at Namecheap to Vercel DNS (ns1.vercel-dns.com, ns2.vercel-dns.com)
 2. Verify DNS propagation and automatic Vercel domain verification
 3. Confirm HTTPS certificate issued automatically by Vercel
-4. Test website accessibility at https://voder.ai
+4. Test website accessibility at <https://voder.ai>
 5. Monitor DNS performance through Vercel dashboard

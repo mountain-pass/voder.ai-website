@@ -419,6 +419,11 @@ export class ThreeAnimation {
   private handleResize(): void {
     if (!this.camera || !this.renderer) return;
 
+    // Skip resize handling on mobile to prevent size jumps (workaround for mobile viewport issue)
+    if (this.getDeviceType() === 'mobile') {
+      return;
+    }
+
     // Update for full viewport dimensions
     const viewportWidth = window.innerWidth;
 

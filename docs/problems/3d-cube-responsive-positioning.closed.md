@@ -2,9 +2,12 @@
 
 **Date**: 2025-09-27  
 **Updated**: 2025-09-28  
-**Status**: ✅ CLOSED - Fixed  
+**Status**: ✅ CLOSED  
 **Resolution Date**: 2025-09-28  
 **Severity**: ~~Medium~~ → Fixed  
+**Impact**: Medium (2) - Affected 51.9% of page views (mobile + tablet users, per MS Clarity Data Export API - no tablet users in period)  
+**Likelihood**: High (3) - Occurred consistently on mobile/tablet viewports  
+**Priority**: 6 (Medium×High) - Was high priority, immediate fix implemented  
 **Component**: 3D Animation System (`src/three-animation.ts`, `src/style.css`)
 
 ## Problem Description (RESOLVED)

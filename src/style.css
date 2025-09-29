@@ -599,6 +599,23 @@ body {
   opacity: 1;
 }
 
+/* Text flash prevention - hide hero content until 3D system is ready */
+.hero-title,
+.hero-description,
+.status-indicator {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.js-loaded .hero-title,
+.js-loaded .status-indicator {
+  opacity: 1;
+}
+
+.js-loaded .hero-description {
+  opacity: 0.9; /* Preserve original opacity */
+}
+
 /* Smooth form transitions */
 
 .form-status.success,

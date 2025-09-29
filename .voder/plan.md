@@ -1,59 +1,164 @@
-# Implementation Plan---
-
-mode: agent
-
-## NOW---
+# Implementation Plan# Implementation Plan# Implementation Plan---
 
 
 
-**Implement workaround for Text Flash Before 3D Render (Priority 9 - Critical)**Firstly, delete any existing #file:.voder/plan.md file to ensure a fresh plan.
+Based on the current assessment, the project is blocked by formatting issues in the dependencies validation phase, and there are 2 open problems requiring root cause analysis and workarounds.
 
 
 
-Following ITIL problem management process, implement the quickest, simplest workaround to eliminate the jarring text flash that affects 100% of users on first page load.Then create a new #file:.voder/plan.md based on what we should do to complete the implementation of the software project.
+## NOWFollowing Gall's Law: "A complex system that works is invariably found to have evolved from a simple system that worked."mode: agent
 
 
 
-### Workaround Strategy: Hide Text Content Initially (Option 1)Make sure you follow Gall's Law: "A complex system that works is invariably found to have evolved from a simple system that worked."
+**Fix code formatting issues blocking dependency validation**
 
-This is the simplest implementation that could possibly work - pure CSS solution with minimal risk.
 
-So, start with the simplest possible implementation that could possibly work, then iterate and improve it.
 
-**Implementation Steps:**
+Run `npm run format` to automatically fix the formatting issues in `docs/history.md` and `index.html` that are causing the verify script to fail. This is blocking all progress as the dependency validation phase cannot complete successfully with failing quality gates.## NOW## NOW---
 
-1. **Modify CSS** in `src/style.css`:**CRITICAL PROCESS REQUIREMENT**: For any open problems identified in the assessment, you MUST follow the ITIL problem management process as defined in #file:../../docs/PROBLEM-MANAGEMENT.md:
 
-   - Add CSS rule to hide hero text content until 3D system is ready
+
+After formatting is fixed, commit the changes to ensure the working directory is clean for proper version control validation.
+
+
+
+## NEXT**Root Cause Analysis for Text Flash Problem** - Conduct systematic investigation of why "Keep Shipping Fast" and "Coming Soon" text still flashes on page load despite CSS workaround attempts.
+
+
+
+**Conduct root cause analysis for open problems (following ITIL process)**
+
+
+
+Two open problems require systematic investigation:**Investigation Steps**:**Implement workaround for Text Flash Before 3D Render (Priority 9 - Critical)**Firstly, delete any existing #file:.voder/plan.md file to ensure a fresh plan.
+
+
+
+1. **mobile-3d-cube-size-jump-scroll.open.md**: Analyze root cause of mobile 3D cube size jumping during scroll1. **5 Whys Analysis** - Why does text flash occur?
+
+   - Use structured analysis techniques (5 Whys, timeline analysis)
+
+   - Create failing Playwright test that reproduces the scroll jump behavior   - Why: Text is visible before CSS hides it
+
+   - Design targeted workaround based on root cause (likely CSS/animation timing issue)
+
+   - Consider feature disabling if root cause suggests architectural issues   - Why: CSS is loaded asynchronously by Vite 
+
+   - Transition to known-error status once workaround implemented
+
+   - Why: Critical CSS is not inlined in HTML headFollowing ITIL problem management process, implement the quickest, simplest workaround to eliminate the jarring text flash that affects 100% of users on first page load.Then create a new #file:.voder/plan.md based on what we should do to complete the implementation of the software project.
+
+2. **text-flash-before-3d-render.open.md**: Analyze root cause of text flashing before 3D render
+
+   - Investigate timing between text display and 3D scene initialization   - Why: We relied on external stylesheet loading timing
+
+   - Create failing test that captures the flash behavior
+
+   - Implement workaround (possibly CSS opacity/visibility controls or loading state management)   - Why: We didn't account for CSS loading delay vs HTML rendering
+
+   - Transition to known-error status
+
+
+
+Both problems should have workarounds implemented within 24 hours if they are Priority 6+ (High priority), with service stability prioritized over feature availability.
+
+2. **Timeline Analysis** - Document exact sequence:### Workaround Strategy: Hide Text Content Initially (Option 1)Make sure you follow Gall's Law: "A complex system that works is invariably found to have evolved from a simple system that worked."
+
+## LATER
+
+   - HTML loads and renders text immediately
+
+**Create permanent fix stories for known-error problems**
+
+   - Vite loads CSS asynchronously  This is the simplest implementation that could possibly work - pure CSS solution with minimal risk.
+
+Once problems are transitioned to known-error status with implemented workarounds:
+
+   - CSS applies opacity rules after brief delay
+
+1. Create INVEST-compliant user stories for permanent fixes to the 3D cube and text rendering issues
+
+2. Implement permanent solutions through normal development process   - JavaScript adds .js-loaded class laterSo, start with the simplest possible implementation that could possibly work, then iterate and improve it.
+
+3. Remove workarounds and restore full functionality
+
+4. Close resolved problems   - Text becomes visible again with transition
+
+
+
+**Dependency updates****Implementation Steps:**
+
+
+
+Address the outdated dependencies identified in the assessment:3. **Create Failing Test** - E2E Playwright test that:
+
+- Update ESLint, TypeScript ESLint plugins, and other dev tools to latest versions
+
+- Test compatibility and update any breaking changes   - Loads page with network throttling1. **Modify CSS** in `src/style.css`:**CRITICAL PROCESS REQUIREMENT**: For any open problems identified in the assessment, you MUST follow the ITIL problem management process as defined in #file:../../docs/PROBLEM-MANAGEMENT.md:
+
+- Update Playwright, Vite, and other build tools
+
+- Maintain compatibility with Node.js 22.17.0+ requirement   - Captures screenshot at initial load moment
+
+   - Verifies text is NOT visible before .js-loaded class   - Add CSS rule to hide hero text content until 3D system is ready
+
+   - Documents the exact timing issue
 
    - Use opacity transition for smooth loading experience1. **Implement workarounds FIRST** - You don't "fix" problems directly. You implement workarounds to mitigate impact immediately.
 
+4. **Analyze Root Cause** - CSS loading timing issue where external stylesheets load after HTML renders, creating unavoidable flash window
+
    ```css2. **Then conduct root cause analysis** - Use structured techniques (5 Whys, fishbone, timeline analysis)
+
+## NEXT
 
    .hero-title, .hero-description, .status-indicator {3. **Create failing tests** that reproduce the problem
 
+**Implement Targeted Workaround Based on Root Cause** - Now that we understand the CSS loading timing issue, implement the correct solution:
+
      opacity: 0;4. **Transition problems to known-error status** when workaround is implemented and root cause identified
 
-     transition: opacity 0.3s ease;5. **Create INVEST-compliant stories** for permanent fixes
+1. **Critical CSS Inline Solution** - Move essential opacity rules directly into HTML head to eliminate any loading delay
 
-   }6. **Finally implement permanent fixes** through normal development process
+2. **Verify Workaround Effectiveness** - Test that inline critical CSS prevents flash completely       transition: opacity 0.3s ease;5. **Create INVEST-compliant stories** for permanent fixes
 
-   
+3. **Document Targeted Workaround** - Update problem documentation with root cause findings and targeted solution
 
-   .js-loaded .hero-title,Use the following the now-next-later template:
-
-   .js-loaded .hero-description, 
-
-   .js-loaded .status-indicator {```
-
-     opacity: 1;## NOW
-
-   }
-
-   ```The single action to do now - detailed
+4. **Transition to Known Error** - Move problem to known-error status with proper documentation   }6. **Finally implement permanent fixes** through normal development process
 
 
 
+**Mobile Cube Size Jump Root Cause Analysis** - Apply same methodology to mobile scroll issue:   
+
+1. **Device Detection Analysis** - Verify mobile detection is working correctly
+
+2. **Resize Event Investigation** - Understand why resize events cause size jumps on mobile   .js-loaded .hero-title,Use the following the now-next-later template:
+
+3. **Canvas/WebGL Behavior Study** - Document how mobile browsers handle WebGL canvas sizing
+
+4. **Create Failing Mobile Test** - E2E test that reproduces mobile size jump issue   .js-loaded .hero-description, 
+
+
+
+## LATER   .js-loaded .status-indicator {```
+
+
+
+**Permanent Fix Implementation** - After root causes are fully understood and targeted workarounds are working:     opacity: 1;## NOW
+
+
+
+1. **Create INVEST-compliant Stories** - For permanent fixes based on root cause analysis findings   }
+
+2. **Optimize CSS Loading Strategy** - Implement proper critical CSS extraction for production builds  
+
+3. **Mobile WebGL Optimization** - Permanent solution for mobile canvas handling based on root cause findings   ```The single action to do now - detailed
+
+4. **Performance Monitoring** - Add monitoring to detect similar timing and mobile rendering issues in the future
+
+
+
+**Process Improvement** - Enhance problem management workflow based on lessons learned from first implementation cycle.
 2. **Verify workaround** - Test that:## NEXT
 
    - No text flash occurs on page load

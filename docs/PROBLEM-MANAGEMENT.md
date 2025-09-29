@@ -21,29 +21,32 @@ The problem management process follows ITIL best practices with analytics-driven
 - Calculate priority using Impact × Likelihood matrix
 - Assign severity level based on user experience impact
 
-### 3. Workaround Implementation
-
-- Prioritize speed of implementation over elegance
-- Feature disabling is acceptable and often the best approach
-- Service stability takes priority over feature availability
-- **Skip/disable tests** when features are disabled as workaround
-- **Exclude disabled code** from coverage reports when appropriate
-- Document implementation steps, limitations, and rollback procedures
-
-### 4. Root Cause Analysis
+### 3. Root Cause Analysis
 
 - Use structured analysis techniques (5 Whys, fishbone diagrams, timeline analysis)
 - Document evidence supporting conclusions
 - Identify contributing factors and prevention strategies
 - **Create failing test** that reproduces the problem (unit test or E2E Playwright test)
 - Maintain focus on systematic investigation
+- **Must complete BEFORE implementing workarounds** to ensure targeted solutions
+
+### 4. Workaround Implementation
+
+- Design workarounds based on root cause understanding for maximum effectiveness
+- Prioritize speed of implementation over elegance, but ensure workaround addresses the actual cause
+- Feature disabling is acceptable and often the best approach when root cause suggests architectural issues
+- Service stability takes priority over feature availability
+- **Skip/disable tests** when features are disabled as workaround
+- **Exclude disabled code** from coverage reports when appropriate
+- Document implementation steps, limitations, and rollback procedures
 
 ### 5. Status Transition to Known Error
 
 Problems move to `<name>.known-error.md` when:
 
-- Workaround is implemented and documented
 - Root cause is identified and documented
+- Failing test that reproduces the problem is created
+- Targeted workaround is implemented based on root cause understanding
 - Permanent fix story is created (adhering to INVEST criteria)
 
 ### 6. Story Creation
@@ -131,13 +134,15 @@ Problems move to `<name>.known-error.md` when:
 
 ### Implementation Process
 
-1. Identify quickest path to problem mitigation
-2. Assess business impact of proposed workaround
-3. Implement workaround with minimal risk
-4. Document all aspects of the workaround
-5. Monitor effectiveness and side effects
-6. Communicate with stakeholders if user-facing changes
-7. Plan for eventual rollback when permanent fix is deployed
+1. Conduct thorough root cause analysis using appropriate methodology
+2. Create failing test that reproduces the problem based on root cause understanding
+3. Identify most effective workaround approach based on root cause findings
+4. Assess business impact of proposed workaround
+5. Implement targeted workaround with minimal risk
+6. Document all aspects of the workaround including root cause basis
+7. Monitor effectiveness and side effects
+8. Communicate with stakeholders if user-facing changes
+9. Plan for eventual rollback when permanent fix is deployed
 
 ## Test-Driven Problem Resolution
 
@@ -331,9 +336,9 @@ docs/problems/
 
 **Open → Known Error**:
 
-- [ ] Workaround implemented and documented
 - [ ] Root cause identified and documented
 - [ ] **Failing test created** that reproduces the problem
+- [ ] Targeted workaround implemented based on root cause understanding
 - [ ] Tests skipped/disabled if feature is disabled as workaround
 - [ ] Permanent fix story created (INVEST compliant)
 

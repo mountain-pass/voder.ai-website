@@ -28,6 +28,55 @@
       property="twitter:description"
       content="Stop AI from turning your codebase into an unmaintainable mess. AI development that stays clean and scales with your team."
     />
+
+    <!-- Critical CSS: Prevent text flash before JavaScript loads -->
+    <style>
+      /* WORKAROUND: Aggressive hiding to prevent text flash - see docs/problems/text-flash-before-3d-render.open.md */
+      .hero-title,
+      .hero-description,
+      .status-indicator {
+        display: none;
+      }
+
+      .js-loaded .hero-title,
+      .js-loaded .status-indicator {
+        display: block;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease forwards;
+      }
+
+      .js-loaded .hero-description {
+        display: block;
+        opacity: 0;
+        animation: fadeInUp 0.6s ease 0.2s forwards;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+      }
+
+      .js-loaded .hero-description {
+        animation-name: fadeInUpDesc;
+      }
+
+      @keyframes fadeInUpDesc {
+        to {
+          opacity: 0.9;
+          transform: translateY(0);
+        }
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+      }
+    </style>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>

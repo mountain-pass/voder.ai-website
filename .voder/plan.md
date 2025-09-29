@@ -1,79 +1,154 @@
-# Implementation Plan# Implementation Plan# Implementation Plan
+# Development Plan# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
-Based on the assessment showing **BLOCKED BY DEPENDENCIES** status, this plan focuses on resolving the identified dependency issues to enable progress.
+Based on the assessment results in `.voder/implementation-progress.md`, the project is currently blocked by critical dependency issues that must be resolved before any new story development can proceed.
 
 
 
-## NOWBased on the assessment that identified **BLOCKED BY DEPENDENCIES** status, this plan follows Gall's Law by starting with the simplest possible fix and follows ITIL problem management for systematic resolution.## NOW
+## NOWBased on the assessment showing **BLOCKED BY DEPENDENCIES** status, this plan focuses on resolving the identified dependency issues to enable progress.
 
 
 
-**Update all outdated dependencies to their latest versions**
+**Update Critical Dependencies - Systematic Approach**
 
 
 
-Update the 8 identified outdated packages using npm update, then run comprehensive testing to ensure compatibility:## NOW**Resolve P003: Coming Soon Button Overlapping 3D Cube (Priority 7 - High)**
+Execute dependency updates in a careful, systematic manner to avoid breaking changes and ensure compatibility:## NOWBased on the assessment that identified **BLOCKED BY DEPENDENCIES** status, this plan follows Gall's Law by starting with the simplest possible fix and follows ITIL problem management for systematic resolution.## NOW
 
 
 
-1. **Update Dependencies**:
-
-   ```bash
-
-   npm update**Update Critical Dependencies to Unblock Development**Follow ITIL problem management process:
-
-   ```
-
-
-
-2. **Verify Build Still Works**:
-
-   ```bashPerform a targeted dependency update focusing on security and stability fixes first:1. **Complete Root Cause Analysis** for P003
-
-   npm run build
-
-   ```   - Problem is already identified: CSS negative margin (`margin: 0 0 -100vh`) in `.hero-animation` pulls content up over the 3D canvas
-
-
-
-3. **Run Full Test Suite**:1. **Update patch versions first** (lowest risk):   - The `hero-animation` div (3D canvas container) is positioned before the text content in HTML, but uses negative margin to overlay text on top
+1. **Update @types/node** (Critical Priority):
 
    ```bash
 
-   npm run test:ci   ```bash   - Layout creates visual overlap where "Coming Soon" button appears directly over 3D cube
-
-   ```
-
-   npm update @eslint/js @playwright/test tsx vite
-
-4. **Verify Code Quality Tools**:
-
-   ```bash   ```2. **Create Failing Test** 
-
-   npm run lint:check
-
-   npm run format:check     - Write Playwright E2E test that verifies button and 3D cube don't overlap
+   npm install --save-dev @types/node@24.6.0**Update all outdated dependencies to their latest versions**
 
    npm run type-check
 
-   ```2. **Update TypeScript tooling** (development dependencies):   - Test should check z-index stacking and visual positioning
-
-
-
-5. **Security Audit**:   ```bash   - Confirm test fails with current layout (reproduces the problem)
-
-   ```bash
-
-   npm audit   npm update @typescript-eslint/eslint-plugin @typescript-eslint/parser
+   npm run test:ci
 
    ```
 
-   ```3. **Implement Targeted Workaround**
+   - This is the highest priority as it affects TypeScript compilation across the entire projectUpdate the 8 identified outdated packages using npm update, then run comprehensive testing to ensure compatibility:## NOW**Resolve P003: Coming Soon Button Overlapping 3D Cube (Priority 7 - High)**
 
-6. **End-to-End Testing**:
+   - Test thoroughly after update to catch any type compatibility issues
 
+
+
+2. **Update testing dependencies** (High Priority):
+
+   ```bash1. **Update Dependencies**:
+
+   npm install --save-dev jest-axe@10.0.0
+
+   npm run test:ci   ```bash
+
+   npm install --save-dev happy-dom@19.0.2  
+
+   npm run test:ci   npm update**Update Critical Dependencies to Unblock Development**Follow ITIL problem management process:
+
+   npm install --save-dev jsdom@27.0.0
+
+   npm run test:ci   ```
+
+   ```
+
+   - Update one at a time and test after each to isolate any issues
+
+   - These affect test execution and must be stable
+
+2. **Verify Build Still Works**:
+
+3. **Update linting dependencies** (Medium Priority):
+
+   ```bash   ```bashPerform a targeted dependency update focusing on security and stability fixes first:1. **Complete Root Cause Analysis** for P003
+
+   npm install --save-dev eslint-plugin-unicorn@61.0.2
+
+   npm run lint:check   npm run build
+
+   ```
+
+   - Update and verify linting rules still work correctly   ```   - Problem is already identified: CSS negative margin (`margin: 0 0 -100vh`) in `.hero-animation` pulls content up over the 3D canvas
+
+
+
+4. **Comprehensive verification** after all updates:
+
+   ```bash
+
+   npm install3. **Run Full Test Suite**:1. **Update patch versions first** (lowest risk):   - The `hero-animation` div (3D canvas container) is positioned before the text content in HTML, but uses negative margin to overlay text on top
+
+   npm run verify
+
+   npm run build   ```bash
+
+   npm run test:e2e
+
+   ```   npm run test:ci   ```bash   - Layout creates visual overlap where "Coming Soon" button appears directly over 3D cube
+
+   - Full quality gate verification to ensure no regressions
+
+   ```
+
+## NEXT
+
+   npm update @eslint/js @playwright/test tsx vite
+
+After dependency updates are complete and verified:
+
+4. **Verify Code Quality Tools**:
+
+1. **Re-run complete assessment** to identify any remaining blockers:
+
+   - Execute full assessment process from Phase 1 through Phase 11   ```bash   ```2. **Create Failing Test** 
+
+   - Verify all quality gates are passing
+
+   - Check for any new issues introduced by dependency updates   npm run lint:check
+
+
+
+2. **Address any remaining blockers** identified in the new assessment:   npm run format:check     - Write Playwright E2E test that verifies button and 3D cube don't overlap
+
+   - Fix any test failures caused by dependency updates
+
+   - Resolve any new linting or type checking issues   npm run type-check
+
+   - Handle any security vulnerabilities if introduced
+
+   ```2. **Update TypeScript tooling** (development dependencies):   - Test should check z-index stacking and visual positioning
+
+## LATER
+
+
+
+Once all dependencies are updated and assessment shows "READY FOR NEW STORY":
+
+5. **Security Audit**:   ```bash   - Confirm test fails with current layout (reproduces the problem)
+
+1. **Begin new story development** following the established development process
+
+2. **Regular dependency maintenance** - establish a schedule for keeping dependencies current   ```bash
+
+3. **Automated dependency monitoring** - consider tools like Dependabot for automated updates
+
+   npm audit   npm update @typescript-eslint/eslint-plugin @typescript-eslint/parser
+
+---
+
+   ```
+
+**Critical Success Factors**:
+
+- Update dependencies systematically, not all at once   ```3. **Implement Targeted Workaround**
+
+- Test thoroughly after each major update
+
+- Run full quality verification before proceeding6. **End-to-End Testing**:
+
+- Be prepared to rollback individual updates if they cause issues
    ```bash   - Based on root cause: Adjust CSS layout to prevent overlap
 
    npm run test:e2e

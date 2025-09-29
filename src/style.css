@@ -136,6 +136,7 @@ body {
   background-color: transparent; /* Let the 3D background show through */
   display: flex;
   flex-direction: column;
+  justify-content: center; /* WORKAROUND P003: Center content vertically */
   min-height: 100vh;
   padding: var(--space-8) var(--space-4);
   position: relative;
@@ -474,10 +475,13 @@ body {
 /* 3D Animation Styles - FULL VIEWPORT BACKGROUND */
 .hero-animation {
   height: 100vh;
-  margin: 0 0 -100vh; /* Negative bottom margin pulls content up over canvas */
+  margin: 0; /* WORKAROUND P003: Remove negative margin to prevent content overlap */
   padding: 0;
-  position: relative;
+  position: fixed; /* WORKAROUND P003: Use fixed positioning for true background */
+  top: 0;
+  left: 0;
   width: 100vw;
+  z-index: 0; /* WORKAROUND P003: Ensure canvas stays in background */
 }
 
 .hero-animation canvas {

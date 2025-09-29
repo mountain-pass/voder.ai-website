@@ -4,91 +4,121 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ThreeAnimation } from '../src/three-animation.js';
 
-// Mock Three.js
-vi.mock('three', async (importOriginal) => {
-  const actual = (await importOriginal()) as any;
+describe('ThreeAnimation', () => {
+  let container: HTMLDivElement;
 
-  return {
-    ...actual,
-    Scene: vi.fn(() => ({
-      background: null,
-      add: vi.fn(),
-    })),
-    PerspectiveCamera: vi.fn(() => ({
-      position: { z: 0 },
-      aspect: 1,
-      updateProjectionMatrix: vi.fn(),
-    })),
-    WebGLRenderer: vi.fn(() => {
-      const canvas = document.createElement('canvas');
+  let mockCanvas: Partial<HTMLCanvasElement>;
 
-      // Ensure the canvas is a proper DOM element for appendChild
-      Object.defineProperty(canvas, 'nodeType', { value: 1 }); // Node.ELEMENT_NODE
-      Object.defineProperty(canvas, 'parentNode', { value: null, writable: true });
+  let mockContext: any;
 
-      return {
-        setSize: vi.fn(),
-        setPixelRatio: vi.fn(),
-        shadowMap: {
-          enabled: false,
-          type: null,
-        } as any,
-        domElement: canvas,
-        render: vi.fn(),
-        dispose: vi.fn(),
-      };
-    }),
-    BoxGeometry: vi.fn(() => ({
-      scale: vi.fn(),
-      translate: vi.fn(),
-      toNonIndexed: vi.fn(() => ({
+  let rafCallbacks: Set<FrameRequestCallback>;
+
+  beforeEach(() => {
+    // Override global mocks with test-specific controlled mocks
+    let rafId = 1;
+
+    rafCallbacks = new Set<FrameRequestCallback>();
+
+    global.requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
+      const id = rafId++;
+
+      rafCallbacks.add(callback);
+
+      // Don't execute immediately - let tests control when callbacks run
+      return id;
+    });
+
+    global.cancelAnimationFrame = vi.fn((_id: number) => {
+      // In a real implementation, we'd remove the specific callback
+      // For testing, we'll implement a simple approach
+      console.log(`cancelAnimationFrame called with id: ${_id}`);
+    });
+  });
+
+  afterEach(() => {
+    if (rafCallbacks) {
+      rafCallbacks.clear();
+    }
+  });
+
+  // Mock Three.js
+  vi.mock('three', async (importOriginal) => {
+    const actual = (await importOriginal()) as any;
+
+    return {
+      ...actual,
+      Scene: vi.fn(() => ({
+        background: null,
+        add: vi.fn(),
+      })),
+      PerspectiveCamera: vi.fn(() => ({
+        position: { z: 0 },
+        aspect: 1,
+        updateProjectionMatrix: vi.fn(),
+      })),
+      WebGLRenderer: vi.fn(() => {
+        const canvas = document.createElement('canvas');
+
+        // Ensure the canvas is a proper DOM element for appendChild
+        Object.defineProperty(canvas, 'nodeType', { value: 1 }); // Node.ELEMENT_NODE
+        Object.defineProperty(canvas, 'parentNode', { value: null, writable: true });
+
+        return {
+          setSize: vi.fn(),
+          setPixelRatio: vi.fn(),
+          shadowMap: {
+            enabled: false,
+            type: null,
+          } as any,
+          domElement: canvas,
+          render: vi.fn(),
+          dispose: vi.fn(),
+        };
+      }),
+      BoxGeometry: vi.fn(() => ({
+        scale: vi.fn(),
+        translate: vi.fn(),
+        toNonIndexed: vi.fn(() => ({
+          attributes: {
+            position: { array: new Float32Array(24), count: 8 },
+            normal: { array: new Float32Array(24), count: 8 },
+          },
+        })),
         attributes: {
           position: { array: new Float32Array(24), count: 8 },
           normal: { array: new Float32Array(24), count: 8 },
         },
       })),
-      attributes: {
-        position: { array: new Float32Array(24), count: 8 },
-        normal: { array: new Float32Array(24), count: 8 },
-      },
-    })),
-    EdgesGeometry: vi.fn(() => ({})),
-    LineBasicMaterial: vi.fn(() => ({})),
-    LineSegments: vi.fn(() => ({})),
-    MeshPhongMaterial: vi.fn(() => ({})),
-    Mesh: vi.fn(() => ({
-      rotation: { x: 0, y: 0, z: 0 },
-      scale: { setScalar: vi.fn() },
-      castShadow: false,
-      receiveShadow: false,
-      add: vi.fn(),
-    })),
-    AmbientLight: vi.fn(),
-    DirectionalLight: vi.fn(() => ({
-      position: { set: vi.fn() },
-      castShadow: false,
-      shadow: {
-        mapSize: { width: 0, height: 0 },
-      },
-    })),
-    Color: vi.fn(),
-    Vector3: vi.fn(() => ({
-      x: 0,
-      y: 0,
-      z: 0,
-      set: vi.fn(),
-      fromBufferAttribute: vi.fn(),
-    })),
-    PCFSoftShadowMap: 'PCFSoftShadowMap',
-  };
-});
-
-describe('ThreeAnimation', () => {
-  let container: HTMLElement;
-
-  let mockCanvas: HTMLCanvasElement;
-
-  let mockContext: any;
+      EdgesGeometry: vi.fn(() => ({})),
+      LineBasicMaterial: vi.fn(() => ({})),
+      LineSegments: vi.fn(() => ({})),
+      MeshPhongMaterial: vi.fn(() => ({})),
+      Mesh: vi.fn(() => ({
+        rotation: { x: 0, y: 0, z: 0 },
+        scale: { setScalar: vi.fn() },
+        castShadow: false,
+        receiveShadow: false,
+        add: vi.fn(),
+      })),
+      AmbientLight: vi.fn(),
+      DirectionalLight: vi.fn(() => ({
+        position: { set: vi.fn() },
+        castShadow: false,
+        shadow: {
+          mapSize: { width: 0, height: 0 },
+        },
+      })),
+      Color: vi.fn(),
+      Vector3: vi.fn(() => ({
+        x: 0,
+        y: 0,
+        z: 0,
+        set: vi.fn(),
+        fromBufferAttribute: vi.fn(),
+      })),
+      PCFSoftShadowMap: 'PCFSoftShadowMap',
+    };
+  });
 
   beforeEach(() => {
     // Create container using JSDOM
@@ -136,18 +166,22 @@ describe('ThreeAnimation', () => {
       return element;
     });
 
-    // Mock requestAnimationFrame and cancelAnimationFrame
-    let rafId = 1;
+    // Override global mocks with test-specific controlled mocks
+    let testRafId = 1;
+
+    const testRafCallbacks = new Set<() => void>();
 
     global.requestAnimationFrame = vi.fn((callback) => {
-      const id = rafId++;
+      const id = testRafId++;
 
-      setTimeout(callback, 16);
+      testRafCallbacks.add(callback);
 
+      // Don't execute immediately - let tests control when callbacks run
       return id;
     });
+
     global.cancelAnimationFrame = vi.fn((_id) => {
-      // Mock implementation - in real tests this would cancel the animation
+      // Mock implementation - find and remove callback if needed
     });
 
     // Mock window properties
@@ -180,6 +214,11 @@ describe('ThreeAnimation', () => {
         document.body.removeChild(c);
       }
     });
+
+    // Clear pending animation frame callbacks
+    if (rafCallbacks) {
+      rafCallbacks.clear();
+    }
 
     // Clear all active timeouts and animation frames
     vi.clearAllTimers();

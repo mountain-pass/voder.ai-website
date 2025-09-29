@@ -84,7 +84,7 @@ Chosen option: **Option 1 - Self-hosted Email Signup Form**, because it provides
 
 ## Pros and Cons of the Options
 
-### Option 1: Self-hosted Email Signup Form
+### Option 1: Self-hosted Email Signup Form Analysis
 
 - Good, because email is the primary business communication channel for founders
 - Good, because we own the relationship and data completely
@@ -93,7 +93,7 @@ Chosen option: **Option 1 - Self-hosted Email Signup Form**, because it provides
 - Bad, because requires responsible data handling practices
 - Bad, because success depends entirely on our follow-up execution
 
-### Option 2: Contact Information Display Only
+### Option 2: Contact Information Display Only Analysis
 
 - Good, because zero implementation cost and no data handling
 - Good, because appears professional and established
@@ -101,7 +101,7 @@ Chosen option: **Option 1 - Self-hosted Email Signup Form**, because it provides
 - Bad, because no way to measure or track interest levels
 - Bad, because puts all burden on user to initiate contact
 
-### Option 3: Third-party Form Service
+### Option 3: Third-party Form Service Analysis
 
 - Good, because professional appearance and built-in CRM features
 - Good, because handles compliance and data management automatically
@@ -109,7 +109,7 @@ Chosen option: **Option 1 - Self-hosted Email Signup Form**, because it provides
 - Bad, because creates vendor dependency and data portability concerns
 - Bad, because requires integration work and doesn't leverage existing analytics
 
-### Option 4: Calendar Booking Link
+### Option 4: Calendar Booking Link Analysis
 
 - Good, because pre-qualifies highly interested prospects
 - Good, because directly converts to sales conversations
@@ -117,7 +117,7 @@ Chosen option: **Option 1 - Self-hosted Email Signup Form**, because it provides
 - Bad, because creates immediate time commitment pressure
 - Bad, because inappropriate for early product-market fit testing stage
 
-### Option 5: Social Media Follow Buttons
+### Option 5: Social Media Follow Buttons Analysis
 
 - Good, because very low friction and familiar user pattern
 - Good, because leverages existing platform engagement mechanisms
@@ -125,7 +125,7 @@ Chosen option: **Option 1 - Self-hosted Email Signup Form**, because it provides
 - Bad, because difficult to convert social engagement to business conversations
 - Bad, because platform dependency and algorithm changes affect reach
 
-### Option 6: Hybrid Approach
+### Option 6: Hybrid Approach Analysis
 
 - Good, because provides multiple engagement paths for different user preferences
 - Good, because maintains professional appearance while gathering analytics

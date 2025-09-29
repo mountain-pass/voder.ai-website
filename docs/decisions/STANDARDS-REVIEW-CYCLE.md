@@ -116,7 +116,7 @@ Gather qualitative input:
 
 #### Standard Promotion
 
-**Proposed → Accepted**
+##### Proposed → Accepted
 
 - Criteria: Positive production track record, low exemption rate, team satisfaction
 - Process: Update status, document success metrics, communicate endorsement
@@ -124,7 +124,7 @@ Gather qualitative input:
 
 #### Standard Modification
 
-**Accepted → Updated Version**
+##### Accepted → Updated Version
 
 - Triggers: Exemption patterns reveal improvement opportunities
 - Process: Create new version, deprecate old version, provide migration guidance
@@ -132,7 +132,7 @@ Gather qualitative input:
 
 #### Standard Deprecation
 
-**Accepted → Deprecated**
+##### Accepted → Deprecated
 
 - Criteria: Consistent exemptions, negative outcomes, better alternatives available
 - Process: Mark deprecated, set transition timeline, document replacement approach
@@ -140,7 +140,7 @@ Gather qualitative input:
 
 #### Standard Supersession
 
-**Accepted → Superseded**
+##### Accepted → Superseded
 
 - Triggers: New standard covers same area more effectively
 - Process: Explicit reference to superseding standard, clear migration timeline

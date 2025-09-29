@@ -45,7 +45,7 @@ Chosen option: **"GitHub Actions Controlled Deployment"**, because it is the onl
 
 ### Implementation Architecture
 
-```
+```text
 GitHub Push → Quality Gates → Deploy to Vercel → Health Checks → Rollback if Failed
 ├── Pre-deployment: Lint, Test, Build, Security Scan
 ├── Deployment: Deploy via `vercel --prod` CLI

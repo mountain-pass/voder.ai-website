@@ -150,6 +150,8 @@ body {
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.2;
+  opacity: 0; /* Start hidden for animation-first approach */
+  transition: opacity 0.3s ease;
 }
 
 .hero-description {
@@ -157,7 +159,8 @@ body {
   font-size: var(--font-size-xl);
   line-height: 1.6;
   max-width: 600px;
-  opacity: 0.9;
+  opacity: 0; /* Start hidden for animation-first approach */
+  transition: opacity 0.3s ease;
 }
 
 .status-indicator {
@@ -482,12 +485,14 @@ body {
   left: 0;
   width: 100vw;
   z-index: 0; /* WORKAROUND P003: Ensure canvas stays in background */
+  pointer-events: none; /* Allow clicks to pass through to form elements */
 }
 
 .hero-animation canvas {
   display: block;
   height: 100vh;
   width: 100vw;
+  pointer-events: none; /* Allow clicks to pass through to form elements */
 }
 
 /* Canvas is now full viewport - no responsive sizing needed */

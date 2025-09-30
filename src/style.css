@@ -478,21 +478,21 @@ body {
 /* 3D Animation Styles - FULL VIEWPORT BACKGROUND */
 .hero-animation {
   height: 100vh;
+  left: 0;
   margin: 0; /* WORKAROUND P003: Remove negative margin to prevent content overlap */
   padding: 0;
+  pointer-events: none; /* Allow clicks to pass through to form elements */
   position: fixed; /* WORKAROUND P003: Use fixed positioning for true background */
   top: 0;
-  left: 0;
   width: 100vw;
   z-index: 0; /* WORKAROUND P003: Ensure canvas stays in background */
-  pointer-events: none; /* Allow clicks to pass through to form elements */
 }
 
 .hero-animation canvas {
   display: block;
   height: 100vh;
-  width: 100vw;
   pointer-events: none; /* Allow clicks to pass through to form elements */
+  width: 100vw;
 }
 
 /* Canvas is now full viewport - no responsive sizing needed */

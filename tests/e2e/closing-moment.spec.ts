@@ -170,17 +170,36 @@ test.describe('Closing Moment - Email Capture Form', () => {
     test.skip(browserName === 'firefox', 'Analytics tracking varies between browsers');
     test.skip(browserName === 'webkit', 'Analytics tracking varies between browsers');
 
-    // Monitor clarity API calls
-    await page.addInitScript(() => {
-      (window as any).clarity = (method: string, ...args: any[]) => {
-        (window as any).__clarityEvents = (window as any).__clarityEvents || [];
-        (window as any).__clarityEvents.push({ method, args });
-      };
-    });
-
     // Reload to ensure analytics tracking is set up
     await page.reload();
     await page.waitForSelector('#app', { state: 'visible' });
+
+    // Wait for analytics initialization to complete
+    await page.waitForTimeout(1000);
+
+    // Override clarity function after analytics has fully loaded
+    await page.evaluate(() => {
+      // Create events array to store analytics calls
+      (window as any).__clarityEvents = [];
+
+      // Store the original clarity function if it exists
+      const originalClarity = (window as any).clarity;
+
+      // Create proxy function that captures calls and optionally calls original
+      (window as any).clarity = function (method: string, ...args: any[]) {
+        (window as any).__clarityEvents.push({ method, args });
+
+        // Also call original clarity for system functions (but not for our test tracking)
+        if (originalClarity && typeof originalClarity === 'function') {
+          // Don't call original for our test-specific tracking to avoid real analytics pollution
+          if (method !== 'set' || args[0] !== 'email_signup') {
+            if (method !== 'event' || args[0] !== 'waitlist_signup') {
+              originalClarity(method, ...args);
+            }
+          }
+        }
+      };
+    });
 
     const emailInput = page.locator('#email');
 
@@ -206,8 +225,10 @@ test.describe('Closing Moment - Email Capture Form', () => {
     // Wait for analytics events to be tracked
     await page.waitForTimeout(500);
 
-    // Check that analytics events were fired
-    const events = await page.evaluate(() => (window as any).__clarityEvents || []);
+    // Debug: Log all events captured
+    const events = await page.evaluate(() => {
+      return (window as any).__clarityEvents || [];
+    });
 
     // Should track email signup
     const emailSetEvent = events.find(

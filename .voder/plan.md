@@ -1,44 +1,84 @@
-# Implementation Plan# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
-## NOW
+Based on the implementation progress assessment, this plan addresses the immediate blocking issue and ensures project completion.
 
 
 
-Fix the P003 button overlap test logic that is incorrectly calculating button positioning relative to the hero-animation container instead of proper viewport positioning. The test logic assumes the button should be positioned within the 400px canvas container, but the current layout correctly positions the button below the animation in normal document flow.Based on the assessment results from October 1, 2025, the implementation is currently blocked by dependency issues that need immediate resolution.Based on the current assessment results showing blocked dependencies, this plan focuses on resolving the blocking issues to enable continued development.
+## NOW## NOW
 
 
+
+**Fix CSS Linting Errors in src/style.css**
+
+
+
+The assessment identified 6 CSS linting errors that are blocking further development. These errors are related to modern CSS color function notation requirements:Fix the P003 button overlap test logic that is incorrectly calculating button positioning relative to the hero-animation container instead of proper viewport positioning. The test logic assumes the button should be positioned within the 400px canvas container, but the current layout correctly positions the button below the animation in normal document flow.Based on the assessment results from October 1, 2025, the implementation is currently blocked by dependency issues that need immediate resolution.Based on the current assessment results showing blocked dependencies, this plan focuses on resolving the blocking issues to enable continued development.
+
+
+
+1. Lines 388-389: Convert `rgba()` functions to modern `rgb()` notation with alpha parameters
+
+2. Lines 388-389: Convert decimal alpha values (0.1, 0.3) to percentage notation (10%, 30%)
 
 **Root Cause**: The test was written for a previous layout where the canvas was viewport-sized, but the current implementation uses a contained 400x400px animation with content flowing below it in normal document flow.
 
+Actions:
 
+- Run `npm run lint:css:fix` to automatically fix the color function notation issues
 
-**Solution**: Update the test logic to correctly validate the current layout where:## NOW## NOW
+- Verify fixes by running `npm run lint:css` to confirm all errors are resolved
 
-1. The hero-animation is a 400x400px contained element
-
-2. The status-indicator (Coming Soon button) is positioned below it in normal document flow
-
-3. The test should verify proper spacing and readability, not arbitrary distance calculations
-
-**Update and fix dependency management issues****Update all outdated dependencies to resolve blocking issues**
-
-**Changes needed**:
-
-1. Fix test logic in `tests/e2e/p003-button-overlap.test.ts` to properly calculate positioning
-
-2. Update test expectations to match the actual intended layout
-
-3. Ensure the test validates the button is not overlapping the 3D cube visuallyUpdate the outdated `netlify-cli` dependency and ensure proper package lock file management:The assessment identified 4 outdated dependencies that are preventing new story development:
+- Run `npm run verify` to ensure overall project health after fixes**Solution**: Update the test logic to correctly validate the current layout where:## NOW## NOW
 
 
 
-## NEXT
+This is a simple auto-fix that should take 2-5 minutes and will unblock all future development work.1. The hero-animation is a 400x400px contained element
 
 
 
-After fixing the button overlap test:1. Update netlify-cli from version 23.8.1 to 23.9.0 using `npm update netlify-cli`1. Update `@testing-library/jest-dom` from 6.8.0 to 6.9.0
+## NEXT2. The status-indicator (Coming Soon button) is positioned below it in normal document flow
+
+
+
+**Validate Project Health After CSS Fixes**3. The test should verify proper spacing and readability, not arbitrary distance calculations
+
+
+
+After fixing the CSS linting errors:**Update and fix dependency management issues****Update all outdated dependencies to resolve blocking issues**
+
+- Run complete build process to ensure no regressions
+
+- Execute all test suites to verify functionality remains intact**Changes needed**:
+
+- Generate fresh screenshots if any visual changes occurred
+
+- Confirm deployment readiness1. Fix test logic in `tests/e2e/p003-button-overlap.test.ts` to properly calculate positioning
+
+
+
+## LATER2. Update test expectations to match the actual intended layout
+
+
+
+**Monitor and Maintain Code Quality**3. Ensure the test validates the button is not overlapping the 3D cube visuallyUpdate the outdated `netlify-cli` dependency and ensure proper package lock file management:The assessment identified 4 outdated dependencies that are preventing new story development:
+
+
+
+- Set up automated CSS linting in CI/CD pipeline to prevent future color function notation issues
+
+- Consider updating stylelint configuration to auto-fix common modern CSS notation requirements
+
+- Regular dependency updates to stay current with CSS standards evolution## NEXT
+
+
+
+---
+
+
+
+*This plan follows Gall's Law by addressing the simplest blocking issue first (CSS linting auto-fix) before proceeding to validation and maintenance activities.*After fixing the button overlap test:1. Update netlify-cli from version 23.8.1 to 23.9.0 using `npm update netlify-cli`1. Update `@testing-library/jest-dom` from 6.8.0 to 6.9.0
 
 1. Investigate and fix the screenshot timeout issue in Brand Identity Screenshot Validation test
 

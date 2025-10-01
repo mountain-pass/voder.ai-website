@@ -1,34 +1,64 @@
-# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
-Based on the assessment results from October 1, 2025, the implementation is currently blocked by dependency issues that need immediate resolution.Based on the current assessment results showing blocked dependencies, this plan focuses on resolving the blocking issues to enable continued development.
+## NOW
 
 
 
-## NOW## NOW
+Fix the P003 button overlap test logic that is incorrectly calculating button positioning relative to the hero-animation container instead of proper viewport positioning. The test logic assumes the button should be positioned within the 400px canvas container, but the current layout correctly positions the button below the animation in normal document flow.Based on the assessment results from October 1, 2025, the implementation is currently blocked by dependency issues that need immediate resolution.Based on the current assessment results showing blocked dependencies, this plan focuses on resolving the blocking issues to enable continued development.
 
 
+
+**Root Cause**: The test was written for a previous layout where the canvas was viewport-sized, but the current implementation uses a contained 400x400px animation with content flowing below it in normal document flow.
+
+
+
+**Solution**: Update the test logic to correctly validate the current layout where:## NOW## NOW
+
+1. The hero-animation is a 400x400px contained element
+
+2. The status-indicator (Coming Soon button) is positioned below it in normal document flow
+
+3. The test should verify proper spacing and readability, not arbitrary distance calculations
 
 **Update and fix dependency management issues****Update all outdated dependencies to resolve blocking issues**
 
+**Changes needed**:
+
+1. Fix test logic in `tests/e2e/p003-button-overlap.test.ts` to properly calculate positioning
+
+2. Update test expectations to match the actual intended layout
+
+3. Ensure the test validates the button is not overlapping the 3D cube visuallyUpdate the outdated `netlify-cli` dependency and ensure proper package lock file management:The assessment identified 4 outdated dependencies that are preventing new story development:
 
 
-Update the outdated `netlify-cli` dependency and ensure proper package lock file management:The assessment identified 4 outdated dependencies that are preventing new story development:
+
+## NEXT
 
 
 
-1. Update netlify-cli from version 23.8.1 to 23.9.0 using `npm update netlify-cli`1. Update `@testing-library/jest-dom` from 6.8.0 to 6.9.0
+After fixing the button overlap test:1. Update netlify-cli from version 23.8.1 to 23.9.0 using `npm update netlify-cli`1. Update `@testing-library/jest-dom` from 6.8.0 to 6.9.0
 
-2. Verify package-lock.json is generated/updated properly by running `npm install`2. Update `@types/node` from 24.6.0 to 24.6.1  
+1. Investigate and fix the screenshot timeout issue in Brand Identity Screenshot Validation test
+
+2. Re-run all E2E tests to ensure they pass2. Verify package-lock.json is generated/updated properly by running `npm install`2. Update `@types/node` from 24.6.0 to 24.6.1  
+
+3. Complete the remaining assessment phases (7-11)
 
 3. Test all npm scripts to ensure compatibility after updates:3. Update `jiti` from 2.6.0 to 2.6.1
 
+## LATER
+
    - Run `npm run build` to verify build still works4. Update `typescript` from 5.9.2 to 5.9.3
 
-   - Run `npm run test:ci` to verify tests still pass
+After all tests pass and assessment is complete:
 
-   - Run `npm run lint:check` to verify linting still worksRun `npm update` to update all dependencies to their latest versions, then verify the installation with `npm install` and run the full test suite to ensure compatibility.
+1. Resume normal story development workflow   - Run `npm run test:ci` to verify tests still pass
+
+2. Consider any additional layout improvements if needed
+
+3. Monitor for any regressions in future development   - Run `npm run lint:check` to verify linting still worksRun `npm update` to update all dependencies to their latest versions, then verify the installation with `npm install` and run the full test suite to ensure compatibility.
 
    - Run `npm run format:check` to verify formatting still works
 

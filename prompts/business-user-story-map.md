@@ -70,9 +70,9 @@
 
 **Stories by Category:**
 
-- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement)
+- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement), 025.4-BIZ-GLASS-MATERIAL (enhanced glass effects)
 
-**Total**: 3 stories focusing on sophisticated visual presentation and user engagement
+**Total**: 4 stories focusing on sophisticated visual presentation and user engagement
 
 ### Release 2: Solution Validation (3-4 weeks)
 

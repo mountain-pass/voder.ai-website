@@ -30,30 +30,29 @@ test.describe('P003: Coming Soon Button Overlapping 3D Cube', () => {
     expect(canvasBox).not.toBeNull();
 
     if (buttonBox && canvasBox) {
-      // With the P003 workaround, canvas is now fixed positioned as background
-      // and content is overlaid. Verify the button is properly readable
-      // by checking it has sufficient distance from canvas edges for readability
+      // Current layout: hero-animation is a 400x400px container with the button positioned below it
+      // Verify the button is not overlapping the 3D animation container
 
-      const buttonCenterY = buttonBox.y + buttonBox.height / 2;
+      const buttonTop = buttonBox.y;
 
-      const viewportHeight = canvasBox.height;
+      const canvasBottom = canvasBox.y + canvasBox.height;
 
-      const buttonDistanceFromTop = buttonCenterY;
+      // Button should be positioned below the canvas container (no overlap)
+      const verticalSeparation = buttonTop - canvasBottom;
 
-      const buttonDistanceFromBottom = viewportHeight - buttonCenterY;
-
-      // Button should be positioned in a readable area (not too close to edges)
-      const minReadableDistance = 100; // pixels
+      // Ensure proper vertical separation between animation and button
+      const minSeparation = 16; // pixels - reasonable spacing for the current layout
 
       expect(
-        buttonDistanceFromTop,
-        'Button should have readable distance from top',
-      ).toBeGreaterThan(minReadableDistance);
+        verticalSeparation,
+        'Button should be positioned below the 3D animation container with proper spacing',
+      ).toBeGreaterThanOrEqual(minSeparation);
 
+      // Additional check: button should be visible and not hidden by the animation
       expect(
-        buttonDistanceFromBottom,
-        'Button should have readable distance from bottom',
-      ).toBeGreaterThan(minReadableDistance);
+        buttonTop,
+        'Button should be positioned below the animation container',
+      ).toBeGreaterThanOrEqual(canvasBottom);
     }
   });
 

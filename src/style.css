@@ -46,6 +46,7 @@ body {
   font-synthesis: none;
   font-weight: 400;
   line-height: 1.6;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
   text-rendering: optimizelegibility;
   text-size-adjust: 100%;
 }
@@ -82,7 +83,6 @@ body {
 #app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
 }
@@ -93,6 +93,8 @@ body {
   display: flex;
   justify-content: center;
   padding: var(--space-6) var(--space-4);
+  position: relative;
+  z-index: 10; /* Ensure header appears above 3D animation */
 }
 
 .logo-container {
@@ -116,7 +118,6 @@ body {
 .main-content {
   align-items: center;
   display: flex;
-  flex: 1;
   justify-content: center;
   padding: var(--space-4);
 }
@@ -124,8 +125,10 @@ body {
 .container {
   max-width: 900px;
   padding: var(--space-8);
+  position: relative;
   text-align: center;
   width: 100%;
+  z-index: 5; /* Ensure container content is above 3D animation */
 }
 
 /* Hero section */
@@ -136,8 +139,8 @@ body {
   background-color: transparent; /* Let the 3D background show through */
   display: flex;
   flex-direction: column;
-  justify-content: center; /* WORKAROUND P003: Center content vertically */
-  min-height: 100vh;
+  justify-content: center;
+  min-height: 40vh; /* Further reduced to ensure form visibility */
   padding: var(--space-8) var(--space-4);
   position: relative;
   text-align: center;
@@ -184,6 +187,8 @@ body {
 .problem-space {
   margin-top: var(--space-16);
   padding: var(--space-8) 0;
+  position: relative;
+  z-index: 10; /* Ensure problem content is above 3D animation */
 }
 
 .problem-title {
@@ -354,7 +359,9 @@ body {
   gap: var(--space-6);
   margin: var(--space-16) auto 0;
   max-width: 420px;
+  position: relative;
   width: 100%;
+  z-index: 100; /* Ensure form section is above 3D animation */
 }
 
 .signup-title {
@@ -367,7 +374,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  position: relative;
   width: 100%;
+  z-index: 101; /* Ensure form is above 3D animation */
 }
 
 .form-group {
@@ -376,14 +385,16 @@ body {
 }
 
 .email-input {
-  background: var(--deep-navy);
-  border: 1px solid var(--cool-grey);
-  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(36, 209, 213, 0.3);
+  border-radius: 8px;
   color: var(--paper-white);
   font-size: var(--font-size-base);
   padding: var(--space-3) var(--space-4);
+  position: relative;
   transition: border-color 0.2s ease;
   width: 100%;
+  z-index: 102; /* Highest z-index for direct interaction */
 }
 
 .email-input:focus {
@@ -406,7 +417,9 @@ body {
   font-size: var(--font-size-base);
   font-weight: 500;
   padding: var(--space-3) var(--space-6);
+  position: relative;
   transition: all 0.2s ease-in-out;
+  z-index: 102; /* Ensure button is clickable above 3D animation */
 }
 
 .signup-button:hover {
@@ -475,24 +488,29 @@ body {
   }
 }
 
-/* 3D Animation Styles - FULL VIEWPORT BACKGROUND */
+/* 3D Animation Styles - POSITIONED BETWEEN LOGO AND TITLE */
 .hero-animation {
-  height: 100vh;
-  left: 0;
-  margin: 0; /* WORKAROUND P003: Remove negative margin to prevent content overlap */
+  height: 400px; /* Square container for proper cube proportions */
+  margin: var(--space-8) auto; /* Center horizontally and add vertical spacing */
+  max-width: 100%; /* Prevent overflow */
+  overflow: hidden; /* Hide any canvas overflow */
   padding: 0;
   pointer-events: none; /* Allow clicks to pass through to form elements */
-  position: fixed; /* WORKAROUND P003: Use fixed positioning for true background */
-  top: 0;
-  width: 100vw;
-  z-index: 0; /* WORKAROUND P003: Ensure canvas stays in background */
+  position: relative; /* Normal document flow */
+  width: 400px; /* Square container */
+  z-index: 0; /* Between background and text content */
 }
 
 .hero-animation canvas {
   display: block;
-  height: 100vh;
+  height: 400px; /* Square canvas for proper cube aspect ratio */
+  left: 50%;
+  max-width: 100%; /* Prevent overflow */
   pointer-events: none; /* Allow clicks to pass through to form elements */
-  width: 100vw;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%); /* Center the canvas within container */
+  width: 400px; /* Square canvas */
 }
 
 /* Canvas is now full viewport - no responsive sizing needed */

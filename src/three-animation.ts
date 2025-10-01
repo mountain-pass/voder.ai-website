@@ -125,17 +125,17 @@ export class ThreeAnimation {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x0a0a0a); // Voder Black
 
-    // Camera setup - Full viewport positioning
-    const viewportWidth = window.innerWidth;
+    // Camera setup - Use container dimensions instead of viewport
+    const containerWidth = this.container.clientWidth || 400;
 
-    const viewportHeight = window.innerHeight;
+    const containerHeight = this.container.clientHeight || 400;
 
     // Use responsive configuration
     const config = this.getResponsiveConfig();
 
     this.camera = new THREE.PerspectiveCamera(
       config.fov,
-      viewportWidth / viewportHeight,
+      containerWidth / containerHeight, // Use container aspect ratio
       0.1,
       1000,
     );
@@ -169,7 +169,7 @@ export class ThreeAnimation {
       antialias: true,
       alpha: true,
     });
-    this.renderer.setSize(viewportWidth, viewportHeight);
+    this.renderer.setSize(containerWidth, containerHeight); // Use container dimensions
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -424,19 +424,19 @@ export class ThreeAnimation {
       return;
     }
 
-    // Update for full viewport dimensions
-    const viewportWidth = window.innerWidth;
+    // Update for container dimensions instead of viewport
+    const containerWidth = this.container.clientWidth || 400;
 
-    const viewportHeight = window.innerHeight;
+    const containerHeight = this.container.clientHeight || 400;
 
     // Use responsive configuration
     const config = this.getResponsiveConfig();
 
     this.camera.fov = config.fov;
 
-    this.camera.aspect = viewportWidth / viewportHeight;
+    this.camera.aspect = containerWidth / containerHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(viewportWidth, viewportHeight);
+    this.renderer.setSize(containerWidth, containerHeight);
 
     // Update camera position based on device type
     const deviceType = this.getDeviceType();

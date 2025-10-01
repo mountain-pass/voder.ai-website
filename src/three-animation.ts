@@ -175,32 +175,46 @@ export class ThreeAnimation {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.container.appendChild(this.renderer.domElement);
 
-    // Clean, elegant lighting for glass cube
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6); // Neutral ambient
+    // Clean, elegant lighting for glass cube with enhanced environment
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Reduced ambient for better glass contrast
 
     this.scene.add(ambientLight);
 
-    // Main light from top-right
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    // Main light from top-right - enhanced for glass reflections
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
 
     mainLight.position.set(10, 15, 10);
     mainLight.castShadow = true;
     this.scene.add(mainLight);
 
-    // Softer fill light from left
-    const fillLight = new THREE.DirectionalLight(0x00aaff, 0.6);
+    // Softer fill light from left - teal tinted to complement glass
+    const fillLight = new THREE.DirectionalLight(0x00aaff, 0.8);
 
     fillLight.position.set(-10, 8, 5);
     this.scene.add(fillLight);
 
-    // Subtle back rim light for glass effect
-    const rimLight = new THREE.DirectionalLight(0x0066aa, 0.4);
+    // Enhanced back rim light for glass edge definition
+    const rimLight = new THREE.DirectionalLight(0x0066aa, 0.6);
 
     rimLight.position.set(0, 5, -15);
     this.scene.add(rimLight);
 
+    // Additional side lights for glass reflections
+    const sideLight1 = new THREE.DirectionalLight(0x00cccc, 0.3);
+
+    sideLight1.position.set(15, 8, 0);
+    this.scene.add(sideLight1);
+
+    const sideLight2 = new THREE.DirectionalLight(0x0088aa, 0.3);
+
+    sideLight2.position.set(-15, 8, 0);
+    this.scene.add(sideLight2);
+
     // Create AWESOME living cube with wisps
     this.createAwesomeCube();
+
+    // Create simple environment for reflections (after cube creation)
+    this.setupEnvironmentForGlass();
 
     // Add scroll interaction for cube rotation
     this.addScrollInteraction();
@@ -216,13 +230,20 @@ export class ThreeAnimation {
     // Create proper rounded cube using the correct RoundedBoxGeometry implementation
     const geometry = this.createRoundedBoxGeometry(6, 6, 6, 2, 0.2);
 
-    // Glass-like material with elegant transparency - BRIGHTER for positioning
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x00ffff,
+    // Advanced glass material with realistic physical properties
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0x00ffff, // Teal brand color
       transparent: true,
-      opacity: 0.4, // Increased from 0.15 to see better
-      emissive: 0x006666, // Brighter emissive
-      emissiveIntensity: 0.6, // Increased from 0.3
+      opacity: 0.2, // 80% transparency (meets 70-85% requirement)
+      transmission: 0.9, // High transmission for realistic glass light passing
+      thickness: 1.0, // Glass thickness for depth perception
+      roughness: 0.05, // Very smooth surface with minimal imperfections
+      metalness: 0.0, // Non-metallic for pure glass appearance
+      clearcoat: 1.0, // Full clearcoat for surface reflections
+      clearcoatRoughness: 0.02, // Very smooth clearcoat for sharp reflections
+      ior: 1.5, // Index of refraction for realistic glass
+      reflectivity: 0.8, // High reflectivity for glass-like surface
+      envMapIntensity: 1.0, // Environment map reflection intensity
       side: THREE.DoubleSide,
     });
 
@@ -232,6 +253,56 @@ export class ThreeAnimation {
 
     // Simple orientation: cube sits on bottom face, rotated 45° to show corner-to-camera
     this.cube.rotation.y = Math.PI / 4; // 45 degrees - shows two faces at corner angle
+  }
+
+  private setupEnvironmentForGlass(): void {
+    // Create a simple environment map for glass reflections
+    // Using a gradient environment to create subtle reflections
+    const envMapSize = 256;
+
+    const envMapTexture = new THREE.DataTexture(
+      new Uint8Array(envMapSize * envMapSize * 4),
+      envMapSize,
+      envMapSize,
+      THREE.RGBAFormat,
+    );
+
+    // Create a simple gradient environment
+    const data = envMapTexture.image.data;
+
+    for (let i = 0; i < envMapSize; i++) {
+      for (let j = 0; j < envMapSize; j++) {
+        const index = (i * envMapSize + j) * 4;
+
+        const x = (j / envMapSize) * 2 - 1;
+
+        const y = (i / envMapSize) * 2 - 1;
+
+        const distance = Math.sqrt(x * x + y * y);
+
+        // Create a radial gradient with teal tones
+        const intensity = Math.max(0, 1 - distance);
+
+        data[index] = Math.floor(0 * 255 * intensity); // R
+        data[index + 1] = Math.floor(0.8 * 255 * intensity); // G (teal)
+        data[index + 2] = Math.floor(0.9 * 255 * intensity); // B (teal)
+        data[index + 3] = 255; // A
+      }
+    }
+
+    envMapTexture.needsUpdate = true;
+    envMapTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+    // Apply environment map to the scene for reflections
+    if (this.scene) {
+      this.scene.environment = envMapTexture;
+    }
+
+    // Apply the environment map to the cube material if it exists
+    if (this.cube && this.cube.material instanceof THREE.MeshPhysicalMaterial) {
+      this.cube.material.envMap = envMapTexture;
+      this.cube.material.needsUpdate = true;
+    }
   }
 
   private createRoundedBoxGeometry(

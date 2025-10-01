@@ -122,6 +122,8 @@ export const complete: Linter.Config[] = [
     },
     rules: {
       'no-console': 'off', // Allow console statements in test files for debugging
+      '@typescript-eslint/no-deprecated': 'off', // Allow deprecated createElement for test mocking
+      '@typescript-eslint/no-unused-vars': 'off', // Allow unused vars in test setup/teardown
     },
   },
   // Script files: Node globals

@@ -176,36 +176,36 @@ export class ThreeAnimation {
     this.container.appendChild(this.renderer.domElement);
 
     // Clean, elegant lighting for glass cube with enhanced environment
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.4); // Reduced ambient for better glass contrast
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.7); // Balanced ambient lighting
 
     this.scene.add(ambientLight);
 
-    // Main light from top-right - enhanced for glass reflections
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    // Main light from top-right - much more angled for softer glass reflections
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
 
-    mainLight.position.set(10, 15, 10);
+    mainLight.position.set(5, 8, 20);
     mainLight.castShadow = true;
     this.scene.add(mainLight);
 
     // Softer fill light from left - teal tinted to complement glass
-    const fillLight = new THREE.DirectionalLight(0x00aaff, 0.8);
+    const fillLight = new THREE.DirectionalLight(0x00aaff, 0.6);
 
-    fillLight.position.set(-10, 8, 5);
+    fillLight.position.set(-15, 4, 12);
     this.scene.add(fillLight);
 
-    // Enhanced back rim light for glass edge definition
-    const rimLight = new THREE.DirectionalLight(0x0066aa, 0.6);
+    // Enhanced back rim light for glass edge definition - moved right to break symmetry
+    const rimLight = new THREE.DirectionalLight(0x0066aa, 0.8);
 
-    rimLight.position.set(0, 5, -15);
+    rimLight.position.set(0.5, 5, -15); // Moved from (0, 5, -15) to (3, 5, -15)
     this.scene.add(rimLight);
 
     // Additional side lights for glass reflections
-    const sideLight1 = new THREE.DirectionalLight(0x00cccc, 0.3);
+    const sideLight1 = new THREE.DirectionalLight(0x00cccc, 0.5);
 
     sideLight1.position.set(15, 8, 0);
     this.scene.add(sideLight1);
 
-    const sideLight2 = new THREE.DirectionalLight(0x0088aa, 0.3);
+    const sideLight2 = new THREE.DirectionalLight(0x0088aa, 0.5);
 
     sideLight2.position.set(-15, 8, 0);
     this.scene.add(sideLight2);
@@ -228,22 +228,22 @@ export class ThreeAnimation {
 
   private createAwesomeCube(): void {
     // Create proper rounded cube using the correct RoundedBoxGeometry implementation
-    const geometry = this.createRoundedBoxGeometry(6, 6, 6, 2, 0.2);
+    const geometry = this.createRoundedBoxGeometry(6, 6, 6, 2, 0.3);
 
     // Advanced glass material with realistic physical properties
     const material = new THREE.MeshPhysicalMaterial({
       color: 0x00ffff, // Teal brand color
       transparent: true,
-      opacity: 0.2, // 80% transparency (meets 70-85% requirement)
-      transmission: 0.9, // High transmission for realistic glass light passing
+      opacity: 0.15, // Balanced opacity for visibility without being too bright
+      transmission: 0.95, // Very high transmission for realistic glass light passing
       thickness: 1.0, // Glass thickness for depth perception
-      roughness: 0.05, // Very smooth surface with minimal imperfections
+      roughness: 0.01, // Ultra-smooth surface for perfect glass reflections
       metalness: 0.0, // Non-metallic for pure glass appearance
-      clearcoat: 1.0, // Full clearcoat for surface reflections
-      clearcoatRoughness: 0.02, // Very smooth clearcoat for sharp reflections
+      clearcoat: 0.9, // High clearcoat for crisp glass surface reflections
+      clearcoatRoughness: 0.05, // Very smooth clearcoat for sharp reflections
       ior: 1.5, // Index of refraction for realistic glass
-      reflectivity: 0.8, // High reflectivity for glass-like surface
-      envMapIntensity: 1.0, // Environment map reflection intensity
+      reflectivity: 0.9, // Very high reflectivity for premium glass appearance
+      envMapIntensity: 1.2, // Enhanced environment reflections for realistic glass
       side: THREE.DoubleSide,
     });
 
@@ -280,12 +280,12 @@ export class ThreeAnimation {
 
         const distance = Math.sqrt(x * x + y * y);
 
-        // Create a radial gradient with teal tones
-        const intensity = Math.max(0, 1 - distance);
+        // Create a radial gradient with teal tones - balanced brightness
+        const intensity = Math.max(0.15, (1 - distance) * 0.7); // Balanced intensity
 
-        data[index] = Math.floor(0 * 255 * intensity); // R
-        data[index + 1] = Math.floor(0.8 * 255 * intensity); // G (teal)
-        data[index + 2] = Math.floor(0.9 * 255 * intensity); // B (teal)
+        data[index] = Math.floor(0.05 * 255 * intensity); // R - subtle warmth
+        data[index + 1] = Math.floor(0.65 * 255 * intensity); // G - moderate teal
+        data[index + 2] = Math.floor(0.75 * 255 * intensity); // B - moderate teal
         data[index + 3] = 255; // A
       }
     }

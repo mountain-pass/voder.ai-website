@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-deprecated */
 import * as THREE from 'three';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

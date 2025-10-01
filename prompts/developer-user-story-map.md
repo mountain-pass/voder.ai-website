@@ -17,25 +17,25 @@
 
 # Developer Story Map with Releases
 
-| **Release 0.5 (Essential Dev Experience)** | **Setup**           | **Write Code**        | **Validate Quality**     | **Deploy**              | **Maintain** |
-| ------------------------------------------ | ------------------- | --------------------- | ------------------------ | ----------------------- | ------------ |
-| **Foundation & Quality**                   | Node.js setup (002) | TypeScript (004)      | JavaScript linting (010) | Vite build (005)        | -            |
-|                                            | Dependencies (003)  | Code formatting (006) | CSS linting (007)        | Quality gates (023)     | -            |
-|                                            | -                   | Vite dev server (005) | HTML linting (008)       | Verify & rollback (024) | -            |
-|                                            | -                   | -                     | Markdown linting (009)   | -                       | -            |
-|                                            | -                   | -                     | Unit testing (011)       | -                       | -            |
-|                                            | -                   | -                     | Test coverage (012.0)    | -                       | -            |
-|                                            | -                   | -                     | Git hooks (012.1)        | -                       | -            |
-|                                            | -                   | -                     | Prepare script (012.2)   | -                       | -            |
-|                                            | -                   | -                     | E2E screenshots (012.4)  | -                       | -            |
-|                                            | -                   | -                     | Simple deployment (022)  | -                       | -            |
+| **Release 0.5 (Essential Dev Experience)** (Completed) | **Setup**           | **Write Code**        | **Validate Quality**     | **Deploy**              | **Maintain** |
+| ------------------------------------------------------ | ------------------- | --------------------- | ------------------------ | ----------------------- | ------------ |
+| **Foundation & Quality**                               | Node.js setup (002) | TypeScript (004)      | JavaScript linting (010) | Vite build (005)        | -            |
+|                                                        | Dependencies (003)  | Code formatting (006) | CSS linting (007)        | Quality gates (023)     | -            |
+|                                                        | -                   | Vite dev server (005) | HTML linting (008)       | Verify & rollback (024) | -            |
+|                                                        | -                   | -                     | Markdown linting (009)   | -                       | -            |
+|                                                        | -                   | -                     | Unit testing (011)       | -                       | -            |
+|                                                        | -                   | -                     | Test coverage (012.0)    | -                       | -            |
+|                                                        | -                   | -                     | Git hooks (012.1)        | -                       | -            |
+|                                                        | -                   | -                     | Prepare script (012.2)   | -                       | -            |
+|                                                        | -                   | -                     | E2E screenshots (012.4)  | -                       | -            |
+|                                                        | -                   | -                     | Simple deployment (022)  | -                       | -            |
 
-| **Release 1 (Enhanced Quality)**   | **Setup** | **Write Code** | **Validate Quality** | **Deploy** | **Maintain** |
-| ---------------------------------- | --------- | -------------- | -------------------- | ---------- | ------------ |
-| **Essential quality improvements** | -         | -              | -                    | -          | -            |
-|                                    | -         | -              | -                    | -          | -            |
-|                                    | -         | -              | -                    | -          | -            |
-|                                    | -         | -              | -                    | -          | -            |
+| **Release 1.0 (Enhanced Quality)** (Current Release) | **Setup** | **Write Code**       | **Validate Quality**    | **Deploy** | **Maintain**               |
+| ---------------------------------------------------- | --------- | -------------------- | ----------------------- | ---------- | -------------------------- |
+| **3D Experience & Problem Management**               | -         | 3D Animation (025.0) | FOUC Prevention (025.1) | -          | Problem Management (025.3) |
+|                                                      | -         | -                    | -                       | -          | -                          |
+|                                                      | -         | -                    | -                       | -          | -                          |
+|                                                      | -         | -                    | -                       | -          | -                          |
 
 | **Release 2 (Advanced Tooling)** | **Setup** | **Write Code**  | **Validate Quality**  | **Deploy**          | **Maintain**       |
 | -------------------------------- | --------- | --------------- | --------------------- | ------------------- | ------------------ |

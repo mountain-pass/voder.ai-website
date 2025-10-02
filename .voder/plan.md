@@ -1,34 +1,48 @@
+# Critical Visual Layout Fix Plan
+
 ## NOW
 
-Implement the BIZ-VIEWPORT-LAYOUT story specifications that were identified as non-compliant during the assessment. The current CSS implementation uses generic responsive design patterns rather than the precise mathematical viewport specifications required by the story.
+**Fix the critical 3D cube positioning and mobile layout breaks immediately**
 
-**Critical Implementation Tasks:**
+The core issue is that the CSS layout assumes a linear vertical flow, but the 3D cube needs to be positioned absolutely behind/between the content elements while the text content needs proper viewport allocation. The current implementation has several critical flaws:
 
-1. **Replace fixed pixel sizing with viewport-relative units** - Update CSS to use vh/vw units as specified in REQ-CSS-VIEWPORT-UNITS
-2. **Implement precise viewport percentage allocations** - Apply the exact percentages specified in the story:
-   - Desktop (1920x1080): Logo 15%, Cube 35%, Headline 15%, Description 15%, CTA 20%
-   - Tablet (768x1024): Logo 12%, Cube 30%, Headline+Description 25%, CTA+margin 33%
-   - Mobile (375x667): Logo 10%, Cube 25%, Headline 15%, Description 20%, CTA 15%, Margin 15%
-3. **Establish mathematical spacing relationships** - Implement REQ-VERTICAL-RHYTHM base unit scaling (desktop 1x, tablet 0.75x, mobile 0.6x)
-4. **Update CSS architecture** to follow ADR-0034 specifications that were documented but not implemented
+1. **3D Cube Positioning Problem**: The hero-animation div is in document flow but positioned with absolute canvas inside, creating layout conflicts
+2. **Mobile Layout Breaks**: Viewport-relative units are causing text overflow and poor containment on small screens
+3. **Content Overlap**: Elements are fighting for the same viewport space instead of being properly layered
 
-**Files to Modify:**
-- `src/style.css` - Replace current responsive breakpoints with precise viewport-relative measurements
-- Update media queries to implement exact spacing mathematics per viewport
+**Immediate Fix Strategy**:
+- Change hero-animation to position: absolute to remove it from document flow
+- Fix mobile text sizing to use proper responsive units (rem/em instead of vw which causes overflow)
+- Restructure the main layout to be overlay-based rather than sequential
+- Ensure 3D cube renders behind content as visual background, not competing for layout space
+
+**Key Changes**:
+1. Make `.hero-animation` position: absolute and center it on viewport as background
+2. Convert `.hero-section` to use full viewport height with proper internal spacing
+3. Fix mobile typography to prevent text cutoff (remove vw units for text)
+4. Ensure proper z-index layering so cube appears behind content
 
 ## NEXT
 
-After implementing the viewport layout specifications:
+**Verify the 3D animation system is working correctly**
 
-1. **Run screenshot tests** to verify visual compliance with new mathematical layout
-2. **Validate measurements** against story requirements using browser developer tools
-3. **Update test expectations** if any visual regression tests need adjustment
-4. **Verify accessibility compliance** is maintained after layout changes
+After fixing the layout structure, ensure the 3D cube is actually rendering:
+1. Test 3D animation initialization and rendering 
+2. Verify WebGL context creation is working
+3. Check for any JavaScript errors preventing cube display
+4. Ensure the cube appears correctly across all device types
+
+**Validate responsive scaling system**:
+1. Test mathematical viewport relationships work correctly
+2. Verify smooth transitions between breakpoints
+3. Ensure touch targets are properly sized on mobile
 
 ## LATER
 
-Once BIZ-VIEWPORT-LAYOUT implementation is complete and verified:
+**Optimize and polish the layout implementation**
 
-1. **Re-run full assessment** to confirm story compliance and unblock development
-2. **Document implementation lessons learned** for future precise specification stories
-3. **Consider automation** of specification compliance validation in CI/CD pipeline
+Once the critical issues are resolved:
+1. Fine-tune the mathematical spacing relationships for better visual balance
+2. Optimize performance of viewport-relative calculations
+3. Add smooth animations for responsive transitions
+4. Consider progressive enhancement for 3D features on low-power devices

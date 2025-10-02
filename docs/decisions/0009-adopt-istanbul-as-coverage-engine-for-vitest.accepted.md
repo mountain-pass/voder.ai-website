@@ -150,6 +150,13 @@ export default defineConfig({
 - [Istanbul Coverage Exclusion](https://github.com/istanbuljs/nyc#parsing-hints-ignoring-lines)
 - [V8 Coverage Documentation](https://v8.dev/blog/javascript-code-coverage)
 
+**Important Implementation Notes**:
+
+- **Coverage Ignore Syntax**: With Vitest 3.2+ using v8 provider, use `/* istanbul ignore next */` syntax, NOT `/* c8 ignore next */` or `/* v8 ignore next */`
+- **Why Istanbul Syntax Works**: Vitest 3.2+ introduced AST-aware remapping via `ast-v8-to-istanbul` which supports Istanbul-compatible ignore comments
+- **Syntax Verification**: Always verify ignore comments work by confirming coverage improvement and function coverage reduction
+- **esbuild Consideration**: Alternative syntaxes like `/* c8 ignore next */` are stripped during TypeScript compilation and do not work
+
 **Decision Confidence**: High - based on clear requirements for coverage exclusion capabilities and alignment with dual testing strategy needs.
 
 **Future Reevaluation Triggers**:

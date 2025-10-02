@@ -65,6 +65,15 @@ Run the following sequence. Each step is designed to be non-interactive. Stop an
 - If `npm run test:coverage` fails due to coverage thresholds
   - Open the generated coverage HTML (coverage/index.html) and inspect which files are under-covered.
   - Add focused unit tests for uncovered code. Tests should use os.tmpdir(), fs.mkdtempSync for filesystem fixtures and vi.mock for mocking native modules, and must clean up after themselves.
+  - For code that genuinely cannot be tested (e.g., WebGL in JSDOM, platform-specific code), use coverage ignore comments:
+    - **Use c8 ignore syntax with @preserve keyword**: `/* c8 ignore start -- @preserve: reason */` ... `/* c8 ignore stop */`
+    - **Working solution for Vitest 3.2.4 with v8 provider**: c8 ignore blocks work reliably when properly applied
+    - **@preserve keyword required**: Prevents esbuild from stripping comments during TypeScript compilation
+    - **Include clear reasons**: Always document why code cannot be tested (e.g., "WebGL operations cannot be tested in JSDOM environment")
+    - **Block-level coverage exclusion**: Use start/stop blocks for entire methods rather than line-by-line exclusions
+    - **Avoid Istanbul syntax**: `/* istanbul ignore */` statements have compatibility issues with Vitest v8 provider
+    - Place the comment immediately before the function/block to exclude
+    - Verify exclusion worked by checking that coverage improves in the affected file
   - If you cannot add tests immediately, relax thresholds temporarily in config/testing/vitest-jsdom.ts (document the change and add a TODO to restore thresholds). Prefer raising coverage in small PRs rather than long-term threshold relaxations.
 
 ## Reproducing the npm audit parser locally

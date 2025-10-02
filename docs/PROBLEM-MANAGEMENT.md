@@ -10,9 +10,10 @@ The problem management process follows ITIL best practices with analytics-driven
 
 ### 1. Problem Identification
 
-- Problems are documented in `docs/problems/<name>.open.md`
+- Problems are documented in `docs/problems/<ID>-<kebab-case-title>.open.md`
 - Use the template from `prompt-assets/problem-template.md`
-- Follow naming convention: descriptive kebab-case names
+- Follow naming convention: `<ID>-<descriptive-kebab-case-title>.open.md`
+- Sequential ID numbering starting from 001
 
 ### 2. Initial Assessment
 
@@ -42,7 +43,7 @@ The problem management process follows ITIL best practices with analytics-driven
 
 ### 5. Status Transition to Known Error
 
-Problems move to `<name>.known-error.md` when:
+Problems move to `<ID>-<kebab-case-title>.investigating.md` when:
 
 - Root cause is identified and documented
 - Failing test that reproduces the problem is created
@@ -73,7 +74,7 @@ Problems move to `<name>.known-error.md` when:
 
 ### 9. Closure
 
-- Problems move to `<name>.closed.md`
+- Problems move to `<ID>-<kebab-case-title>.closed.md`
 - Document resolution confirmation and lessons learned
 - Update any related documentation or processes
 
@@ -208,22 +209,23 @@ Problems move to `<name>.known-error.md` when:
 
 ### Filename Conventions
 
-Problems follow the same pattern as architectural decisions:
+Problems follow a consistent naming pattern:
 
-- `<problem-name>.<status>.md`
-- **Status values**: `open`, `known-error`, `closed`
+- `<ID>-<kebab-case-title>.<status>.md`
+- **ID Format**: Sequential numbers (001, 002, 003, etc.)
+- **Status values**: `open`, `investigating`, `resolved`, `closed`, `wontfix`
 - **Examples**:
-  - `mobile-3d-cube-size-jump-scroll.open.md`
-  - `text-flash-before-3d-render.known-error.md`
-  - `login-validation-error.closed.md`
+  - `001-mobile-3d-cube-size-jump-scroll.open.md`
+  - `002-vitest-coverage-ignore-statements-not-working.resolved.md`
+  - `003-text-flash-before-3d-render.investigating.md`
 
 ### Directory Structure
 
 ```
 docs/problems/
-├── problem-1.open.md
-├── problem-2.known-error.md
-├── problem-3.closed.md
+├── 001-mobile-3d-cube-size-jump-scroll.open.md
+├── 002-vitest-coverage-ignore-statements-not-working.resolved.md
+├── 003-text-flash-before-3d-render.investigating.md
 └── [additional problems...]
 ```
 
@@ -334,7 +336,7 @@ docs/problems/
 
 ### Status Progression Checklist
 
-**Open → Known Error**:
+**Open → Investigating**:
 
 - [ ] Root cause identified and documented
 - [ ] **Failing test created** that reproduces the problem
@@ -342,7 +344,7 @@ docs/problems/
 - [ ] Tests skipped/disabled if feature is disabled as workaround
 - [ ] Permanent fix story created (INVEST compliant)
 
-**Known Error → Closed**:
+**Investigating → Resolved**:
 
 - [ ] Permanent fix implemented
 - [ ] **Previously failing tests re-enabled** and now passing
@@ -350,8 +352,15 @@ docs/problems/
 - [ ] Problem no longer occurs
 - [ ] Monitoring period completed
 
+**Resolved → Closed**:
+
+- [ ] Final confirmation of resolution
+- [ ] Documentation updated
+- [ ] Lessons learned documented
+
 ### File Naming Examples
 
-- `mobile-3d-cube-size-jump-scroll.open.md`
-- `text-flash-before-3d-render.known-error.md`
-- `api-timeout-handling.closed.md`
+- `001-mobile-3d-cube-size-jump-scroll.open.md`
+- `002-vitest-coverage-ignore-statements-not-working.resolved.md`
+- `003-text-flash-before-3d-render.investigating.md`
+- `004-api-timeout-handling.closed.md`

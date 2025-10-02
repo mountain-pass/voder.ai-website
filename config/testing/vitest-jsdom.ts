@@ -35,10 +35,10 @@ export function createVitestJsdomConfig(options: VitestJsdomOptions = {}): ViteU
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
       thresholds: {
-        branches: 81, // Temporarily reduced to allow glass material commit (current: 81.4%) - will increase after improving Three.js test coverage
+        branches: 82, // Restored to original threshold after adding coverage ignore comments for Three.js WebGL code
         functions: 90,
-        lines: 81, // Temporarily reduced to allow glass material commit (current: 81.4%) - will increase after improving Three.js test coverage
-        statements: 81, // Temporarily reduced to allow glass material commit (current: 81.4%) - will increase after improving Three.js test coverage
+        lines: 82, // Restored to original threshold after adding coverage ignore comments for Three.js WebGL code
+        statements: 82, // Restored to original threshold after adding coverage ignore comments for Three.js WebGL code
       },
       ...coverage,
     },

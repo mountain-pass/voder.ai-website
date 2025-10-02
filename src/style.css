@@ -273,6 +273,17 @@ body {
   .interest-capture {
     margin-top: var(--space-24);
   }
+
+  /* Desktop: Heroic cube sizing for large viewports */
+  .hero-animation {
+    height: 500px;
+    width: 500px;
+  }
+
+  .hero-animation canvas {
+    height: 500px;
+    width: 500px;
+  }
 }
 
 @media (width >= 769px) and (width <= 1199px) {
@@ -290,6 +301,17 @@ body {
 
   .interest-capture {
     margin-top: var(--space-16);
+  }
+
+  /* Tablet: Focused cube sizing */
+  .hero-animation {
+    height: 350px;
+    width: 350px;
+  }
+
+  .hero-animation canvas {
+    height: 350px;
+    width: 350px;
   }
 }
 
@@ -320,6 +342,17 @@ body {
 
   .interest-capture {
     margin-top: var(--space-12);
+  }
+
+  /* Mobile: Compact cube sizing */
+  .hero-animation {
+    height: 300px;
+    width: 300px;
+  }
+
+  .hero-animation canvas {
+    height: 300px;
+    width: 300px;
   }
 }
 
@@ -490,27 +523,27 @@ body {
 
 /* 3D Animation Styles - POSITIONED BETWEEN LOGO AND TITLE */
 .hero-animation {
-  height: 400px; /* Square container for proper cube proportions */
+  height: 400px; /* Smaller container for focused cube display */
   margin: var(--space-8) auto; /* Center horizontally and add vertical spacing */
   max-width: 100%; /* Prevent overflow */
   overflow: hidden; /* Hide any canvas overflow */
   padding: 0;
   pointer-events: none; /* Allow clicks to pass through to form elements */
   position: relative; /* Normal document flow */
-  width: 400px; /* Square container */
+  width: 400px; /* Square container for focused cube display */
   z-index: 0; /* Between background and text content */
 }
 
 .hero-animation canvas {
   display: block;
-  height: 400px; /* Square canvas for proper cube aspect ratio */
+  height: 400px; /* Smaller canvas for focused cube display */
   left: 50%;
   max-width: 100%; /* Prevent overflow */
   pointer-events: none; /* Allow clicks to pass through to form elements */
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%); /* Center the canvas within container */
-  width: 400px; /* Square canvas */
+  width: 400px; /* Smaller canvas for focused cube display */
 }
 
 /* Canvas is now full viewport - no responsive sizing needed */

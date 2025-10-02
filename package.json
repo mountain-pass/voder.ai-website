@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=verbose",
-    "screenshots": "npx playwright install && npx playwright install-deps chromium webkit && playwright test tests/e2e/screenshots.spec.ts --reporter=list",
+    "screenshots": "npx playwright install && npx playwright install-deps chromium && playwright test tests/e2e/screenshots.spec.ts --project=chromium --reporter=list",
     "screenshots:headed": "playwright test tests/e2e/screenshots.spec.ts --headed --reporter=list",
     "e2e": "npx playwright test --reporter=list",
     "e2e:headed": "npx playwright test --headed --reporter=list",

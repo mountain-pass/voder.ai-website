@@ -89,7 +89,7 @@ describe('ThreeAnimation Coverage Tests', () => {
 
       const config = animation.getResponsiveConfig();
 
-      expect(config.fov).toBe(75);
+      expect(config.fov).toBe(35);
       expect(config.cameraZ).toBe(6);
     });
 
@@ -103,7 +103,7 @@ describe('ThreeAnimation Coverage Tests', () => {
 
       const config = animation.getResponsiveConfig();
 
-      expect(config.fov).toBe(70);
+      expect(config.fov).toBe(30);
       expect(config.cameraZ).toBe(5.5);
     });
 
@@ -117,7 +117,7 @@ describe('ThreeAnimation Coverage Tests', () => {
 
       const config = animation.getResponsiveConfig();
 
-      expect(config.fov).toBe(65);
+      expect(config.fov).toBe(25);
       expect(config.cameraZ).toBe(5);
     });
 

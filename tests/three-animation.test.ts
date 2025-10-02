@@ -877,7 +877,7 @@ describe('ThreeAnimation', () => {
       });
       const mobileConfig = animation.getResponsiveConfig();
 
-      expect(mobileConfig.fov).toBe(75);
+      expect(mobileConfig.fov).toBe(35);
       expect(mobileConfig.cameraZ).toBe(6);
 
       // Test tablet config
@@ -887,7 +887,7 @@ describe('ThreeAnimation', () => {
       });
       const tabletConfig = animation.getResponsiveConfig();
 
-      expect(tabletConfig.fov).toBe(70);
+      expect(tabletConfig.fov).toBe(30);
       expect(tabletConfig.cameraZ).toBe(5.5);
 
       // Test desktop config
@@ -897,7 +897,7 @@ describe('ThreeAnimation', () => {
       });
       const desktopConfig = animation.getResponsiveConfig();
 
-      expect(desktopConfig.fov).toBe(65);
+      expect(desktopConfig.fov).toBe(25);
       expect(desktopConfig.cameraZ).toBe(5);
     });
   });

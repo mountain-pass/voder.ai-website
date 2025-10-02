@@ -52,13 +52,13 @@ export class ThreeAnimation {
     let cameraZ: number;
 
     if (deviceType === 'mobile') {
-      fov = 75; // Wide FOV for mobile
+      fov = 35; // Narrower FOV for zoomed cube on mobile
       cameraZ = 6; // Move camera back for mobile
     } else if (deviceType === 'tablet') {
-      fov = 70; // Medium-wide FOV for tablet
+      fov = 30; // Narrower FOV for zoomed cube on tablet
       cameraZ = 5.5; // Slightly back for tablet
     } else {
-      fov = 65; // Standard FOV for desktop
+      fov = 25; // Narrow FOV for zoomed cube on desktop
       cameraZ = 5; // Standard position for desktop
     }
 

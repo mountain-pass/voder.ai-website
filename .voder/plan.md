@@ -1,46 +1,125 @@
-# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
+## NOW## NOW## NOW
 
 
 
-## NOW*Generated: October 2, 2025*
+**Resolve version control blocking issues by committing the documented changes**
 
 
 
-Update outdated npm dependencies to resolve blocking conditions. The project is currently blocked due to 3 outdated dependencies that need to be updated to their latest patch versions:
+The assessment identified that all technical validation phases passed successfully (dependencies, security, code quality, documentation, testing, and runtime), but the project is blocked by uncommitted changes in two files outside the .voder/ directory:Fix the 3 critical E2E test failures blocking runtime validation:Implement Playwright coverage for the email form UI states and add a basic accessibility check:
 
 
 
-1. Update `@testing-library/jest-dom` from 6.9.0 to 6.9.1Based on the assessment findings, the primary blocking issue is incomplete Release 1.0 glass material implementation. The technical foundation is excellent, but we need to complete the advanced glass material effects to meet the specified requirements.
+1. `docs/history.md` - Contains documented assessment results and E2E test resolution
 
-2. Update `@types/node` from 24.6.1 to 24.6.2  
+2. `package-lock.json` - Contains dependency lock updates
 
-3. Update `netlify-cli` from 23.9.0 to 23.9.1Based on the implementation progress assessment, this plan addresses the immediate blocking issue and ensures project completion.
+1. **[chromium] Canvas Pointer Events test** - Timeout after 30s with form interaction blocked- Add `tests/e2e/screenshots-form.spec.ts` to capture desktop (1920x1080) and mobile (375x667) screenshots for:
+
+**Action**: Review the changes in both files and commit them since they represent valid work:
+
+- The history.md changes document the successful assessment completion and E2E test resolution   - Investigate why the canvas is blocking form interactions despite problem #008 being marked as closed  - default (idle)
+
+- The package-lock.json changes represent normal dependency lock updates
+
+   - Check if the canvas overlay z-index or pointer-events CSS is causing issues## NOW
+
+Execute:
+
+```bash   - Verify the test selector for form elements is still valid
+
+git add docs/history.md package-lock.json
+
+git commit -m "Assessment complete: document E2E test resolution and update dependency locks   - Debug the test timeout issue by examining the actual form interaction flowImplement Playwright coverage for the email form UI states and add a basic accessibility check:
 
 
 
-Execute the dependency update command, verify no new vulnerabilities are introduced, run the full verification suite to ensure all tests pass, and commit the changes. This is a low-risk operation as all updates are patch-level changes with no breaking changes expected.## NOW
+- All E2E tests now passing (134/134 active tests)
 
+- Canvas pointer events, email validation, and FOUC prevention resolved
 
+- Project ready for new story development"2. **[chromium] Email validation test** - Timeout after 30s with form status visibility issues- Add tests/e2e/screenshots-form.spec.ts to capture screenshots for desktop (1920x1080) and mobile (375x667):
+
+```
+
+   - Examine the form status element visibility logic   - default (idle)
 
 ## NEXT
 
+   - Check if the form validation flow is working correctly   - focus (email input focused)
+
+**Clean up .voder/ directory deletions to complete version control state**
+
+   - Verify the CSS classes and DOM structure for form status messages   - validation error (invalid email)
+
+After resolving the blocking changes, ensure the deleted .voder/ files are properly handled:
+
+   - Debug why the test is timing out on form status visibility   - loading/submitting (mock delayed fetch)
+
+```bash
+
+git add .voder/   - success (mock 200 response)
+
+git commit -m "Clean up assessment artifacts after successful completion"
+
+```3. **[Mobile Chrome] FOUC Prevention test** - Timeout after 30s with network idle wait failure- Add tests/e2e/accessibility.spec.ts to run axe-core on homepage at desktop and mobile; fail on critical/serious violations.
 
 
-After dependency updates are complete and committed:**Implement Advanced Glass Material Effects**
+
+**Verify project is ready for development**   - Investigate the `page.waitForLoadState('networkidle')` timeout issue- Run tests locally to generate screenshots and ensure passing.
 
 
 
-1. **Run full project verification** - Execute the complete test suite, linting, formatting checks, and build process to ensure the dependency updates didn't introduce any regressions## NOW## NOW
+Run a quick verification to confirm all systems are ready:   - Check if there are ongoing network requests preventing the networkidle state
 
-2. **Re-run the assessment process** - Perform a complete project assessment to validate all phases (Security, Code Quality, Documentation, Testing, Runtime, Version Control, Pipeline, Problems, Traceability) now that dependencies are current
+```bash
 
-Replace the current basic `MeshPhongMaterial` implementation with advanced `MeshPhysicalMaterial` to meet Release 1.0 specification requirements:
+npm test && npm run build && npm run e2e   - Verify the test logic and consider alternative wait strategies## NEXT
+
+```
+
+   - Debug mobile Chrome specific loading behavior
 
 ## LATER
 
+- Extend screenshot coverage to tablet (768x1024) and add focused/hover CTA states.
+
+**Begin new story development**
+
+## NEXT- Wire optional visual regression assertions with toHaveScreenshot() for key views (opt-in locally).
+
+With all assessment phases passed and version control clean:
+
+- Project meets all quality gates (96.91% test coverage, 0 security vulnerabilities, 205/205 unit tests passing, 134/134 E2E tests passing)- Ensure Playwright HTML report artifacts are uploaded in CI and surface an a11y summary in logs.
+
+- All problems in docs/problems/ are closed
+
+- No ITIL problem management processes requiredAfter fixing the immediate E2E test failures:
+
+- Ready to implement new features following the established patterns and quality standards
+## LATER
+
+1. **Run full E2E test suite** to ensure all 156 tests pass (currently 3 failing, 131 passing, 22 skipped)
+
+2. **Verify cross-browser compatibility** - ensure fixes work across Chromium, WebKit, and Mobile Chrome- Optional hero spacing tweak for tall desktop viewports to pull “Sound Familiar?” closer to the fold.
+
+3. **Run complete quality assessment** to validate all phases pass (dependency, security, code quality, documentation, testing, runtime)- Re-enable Firefox project in Playwright when stable for our scene initialization.
+
+- Add form error-state visual screenshots for network/HTTP failures in production PREVIEW_URL runs.
+
+## LATERReplace the current basic `MeshPhongMaterial` implementation with advanced `MeshPhysicalMaterial` to meet Release 1.0 specification requirements:
 
 
-Once the project assessment passes and all validation phases are complete:
+
+Once all tests are passing and runtime validation is complete:## LATER
+
+
+
+1. **Monitor test stability** - ensure fixes don't introduce regressions in other test scenarios
+
+2. **Optimize test performance** - review if 30-second timeouts can be reduced without causing false positives
+
+3. **Consider test architecture improvements** - evaluate if test organization can be improved for better maintainabilityOnce the project assessment passes and all validation phases are complete:
 
 1. **Upgrade Material System**
 

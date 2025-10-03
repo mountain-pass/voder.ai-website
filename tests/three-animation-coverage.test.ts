@@ -89,8 +89,8 @@ describe('ThreeAnimation Coverage Tests', () => {
 
       const config = animation.getResponsiveConfig();
 
-      expect(config.fov).toBe(35);
-      expect(config.cameraZ).toBe(6);
+      expect(config.fov).toBe(25);
+      expect(config.cameraZ).toBe(40);
     });
 
     it('should return tablet configuration for tablet devices', () => {
@@ -103,8 +103,8 @@ describe('ThreeAnimation Coverage Tests', () => {
 
       const config = animation.getResponsiveConfig();
 
-      expect(config.fov).toBe(30);
-      expect(config.cameraZ).toBe(5.5);
+      expect(config.fov).toBe(25);
+      expect(config.cameraZ).toBe(40);
     });
 
     it('should return desktop configuration for desktop devices', () => {
@@ -118,7 +118,7 @@ describe('ThreeAnimation Coverage Tests', () => {
       const config = animation.getResponsiveConfig();
 
       expect(config.fov).toBe(25);
-      expect(config.cameraZ).toBe(5);
+      expect(config.cameraZ).toBe(40);
     });
 
     it('should return default configuration when window is undefined', () => {

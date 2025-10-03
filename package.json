@@ -93,9 +93,9 @@
   },
   "overrides": {
     "tmp": "^0.2.5",
-    "fast-redact": "^3.5.0",
+    "fast-redact": "^3.6.0",
     "netlify-cli": {
-      "fast-redact": "^3.5.0"
+      "fast-redact": "^3.6.0"
     }
   },
   "license": "UNLICENSED"

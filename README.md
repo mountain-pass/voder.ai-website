@@ -65,6 +65,14 @@ Git hooks
 - All quality checks must pass before commits are allowed
 - To bypass hooks temporarily (not recommended): `git commit --no-verify`
 
+Security
+
+- **Security Policy**: See `docs/SECURITY-POLICY.md` for vulnerability management procedures
+- **Security Incidents**: Unpatchable vulnerabilities documented in `docs/security-incidents/`
+- **npm audit**: Integrated into CI/CD pipeline for continuous security monitoring
+- **Vulnerability Acceptance**: 14-day acceptance criteria for unpatchable vulnerabilities
+- For unpatchable security issues: Create formal security incident using `prompt-assets/security-incident-template.md`
+
 Verification (CI-local)
 
 - The repository provides a `verify` script which runs an opinionated sequence of checks intended for CI and developer verification:

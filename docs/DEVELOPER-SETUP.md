@@ -94,6 +94,29 @@ npm run security:local
 
 If the parser detects high or critical vulnerabilities it will exit with a non-zero status and print a concise summary. Commit the resulting audit.json and a short audit summary (audit-summary.md) if you intend to open a remediation PR so reviewers can triage the findings quickly.
 
+### Security Vulnerability Management
+
+**Only unpatchable vulnerabilities require formal security policy documentation:**
+
+- **Policy Document**: `docs/SECURITY-POLICY.md`
+- **Incident Template**: `prompt-assets/security-incident-template.md`
+- **Technical Decision**: `docs/decisions/0020-supply-chain-audit-registry-mirror-policy.accepted.md`
+
+**Key Requirements:**
+
+- Create formal security incident documentation ONLY for vulnerabilities that cannot be patched
+- Apply 14-day vulnerability acceptance criteria for unpatchable vulnerabilities (regardless of dev/prod dependency type)
+- Do NOT document vulnerabilities that can be immediately patched - use standard commit messages
+- Follow risk-based vulnerability management framework
+
+**For any npm audit findings:**
+
+1. Try to apply available patches first (`npm audit fix` or dependency updates)
+2. If no patch available: Create security incident using the template
+3. Assess against vulnerability acceptance criteria
+4. Document risk assessment and monitoring plan
+5. Implement remediation or formal risk acceptance
+
 ## Developer utilities
 
 - Health check

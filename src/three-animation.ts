@@ -45,22 +45,11 @@ export class ThreeAnimation {
       return { fov: 65, cameraZ: 5 };
     }
 
-    const deviceType = this.getDeviceType();
+    // Use desktop configuration for all devices
 
-    let fov: number;
+    const fov = 25; // Narrow FOV for proper cube framing
 
-    let cameraZ: number;
-
-    if (deviceType === 'mobile') {
-      fov = 35; // Narrower FOV for zoomed cube on mobile
-      cameraZ = 6; // Move camera back for mobile
-    } else if (deviceType === 'tablet') {
-      fov = 30; // Narrower FOV for zoomed cube on tablet
-      cameraZ = 5.5; // Slightly back for tablet
-    } else {
-      fov = 25; // Narrow FOV for zoomed cube on desktop
-      cameraZ = 5; // Standard position for desktop
-    }
+    const cameraZ = 40; // Desktop position for all devices
 
     return { fov, cameraZ };
   }
@@ -143,25 +132,10 @@ export class ThreeAnimation {
       1000,
     );
 
-    // Position camera using responsive configuration
-    const deviceType = this.getDeviceType();
-
-    if (deviceType === 'mobile') {
-      // Mobile: Further back with wide FOV to show complete cube
-      this.camera.position.x = 0;
-      this.camera.position.y = 20;
-      this.camera.position.z = 45;
-    } else if (deviceType === 'tablet') {
-      // Tablet: Medium distance with good viewing angle
-      this.camera.position.x = 0;
-      this.camera.position.y = 18;
-      this.camera.position.z = 42;
-    } else {
-      // Desktop: Original positioning works well
-      this.camera.position.x = 0;
-      this.camera.position.y = 16;
-      this.camera.position.z = 40;
-    }
+    // Use desktop camera position for all devices
+    this.camera.position.x = 0;
+    this.camera.position.y = 16;
+    this.camera.position.z = 40;
 
     if (this.camera.lookAt) {
       this.camera.lookAt(0, 0, 0); // Look at cube center
@@ -526,25 +500,10 @@ export class ThreeAnimation {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(containerWidth, containerHeight);
 
-    // Update camera position based on device type
-    const deviceType = this.getDeviceType();
-
-    if (deviceType === 'mobile') {
-      // Mobile: Much closer camera with narrow FOV
-      this.camera.position.x = 0;
-      this.camera.position.y = 8;
-      this.camera.position.z = 15;
-    } else if (deviceType === 'tablet') {
-      // Tablet: Closer camera with medium FOV
-      this.camera.position.x = 0;
-      this.camera.position.y = 10;
-      this.camera.position.z = 20;
-    } else {
-      // Desktop: Original positioning with wide FOV
-      this.camera.position.x = 0;
-      this.camera.position.y = 16;
-      this.camera.position.z = 40;
-    }
+    // Use desktop camera position for all devices
+    this.camera.position.x = 0;
+    this.camera.position.y = 16;
+    this.camera.position.z = 40;
 
     if (this.camera.lookAt) {
       this.camera.lookAt(0, 0, 0); // Ensure camera still looks at center

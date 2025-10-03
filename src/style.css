@@ -94,6 +94,7 @@ body {
   height: 15vh; /* Desktop: 15% of viewport height for logo */
   justify-content: center;
   padding: 2vh 4vw;
+  pointer-events: none; /* Allow clicks to pass through to content below */
   position: relative;
   z-index: 10; /* Ensure header appears above 3D animation */
 }
@@ -115,72 +116,116 @@ body {
   text-transform: uppercase;
 }
 
-/* Main content with viewport-relative layout */
+/* Main content with full height layout */
 .main-content {
-  align-items: center;
+  align-items: stretch;
   display: flex;
-  height: 85vh; /* Remaining height after logo (15vh) */
-  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
   padding: 0;
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Full viewport height */
-  max-width: 900px;
-  padding: 0; /* Remove padding - handled by individual elements */
+  max-width: none; /* Remove width restriction for visual-first layout */
+  min-height: 100vh; /* Allow full scrolling layout */
+  padding: 0;
   position: relative;
   text-align: center;
   width: 100%;
-  z-index: 5; /* Ensure container content is above 3D animation */
+  z-index: 5;
 }
 
 /* Hero section */
 
-/* Hero Section with viewport-relative specifications */
+/* Hero Section - MINIMAL above-the-fold content with cube as primary element */
 .hero-section {
   align-items: center;
-  background-color: transparent; /* Let the 3D background show through */
+  background-color: transparent;
   display: flex;
   flex-direction: column;
-  height: 85vh; /* Full remaining height after brand header (15vh) */
+  gap: 2vh;
+  height: 100vh; /* Full viewport for visual-first layout */
   justify-content: center;
-  gap: 2vh; /* Mathematical spacing between elements */
-  padding: 2vh 4vw;
+  padding: 0;
   position: relative;
   text-align: center;
-  z-index: 2; /* Above the 3D background */
+  z-index: 2;
 }
 
+/* Minimal tagline above the fold - brief brand statement */
 .hero-title {
-  color: var(--soft-teal-glow);
-  font-size: var(--font-size-5xl); /* Use consistent typography scale */
-  font-weight: 600;
-  display: flex;
   align-items: center;
+  bottom: 10vh; /* Position at bottom 10% of viewport */
+  color: var(--soft-teal-glow);
+  display: flex;
+  font-size: var(--font-size-2xl); /* Much smaller - minimal above fold */
+  font-weight: 600;
   justify-content: center;
+  left: 50%;
   letter-spacing: -0.025em;
   line-height: 1.2;
   margin: 0;
-  opacity: 0; /* Start hidden for animation-first approach */
+  opacity: 1; /* Make visible above-the-fold */
+  position: absolute;
+  transform: translateX(-50%);
   transition: opacity 0.3s ease;
+  width: auto;
 }
 
+/* Move full description below the fold */
 .hero-description {
-  color: var(--paper-white);
-  font-size: var(--font-size-xl); /* Use consistent typography scale */
-  display: flex;
+  display: none; /* Hidden above the fold - move to below-fold section */
+}
+
+/* Hide status indicator above the fold */
+.status-indicator {
+  display: none; /* Hidden above the fold - move to below-fold section */
+}
+
+.status-text {
+  color: var(--soft-teal-glow);
+  font-size: var(--font-size-lg); /* Use consistent typography scale */
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Below-the-fold content section - progressive disclosure */
+.below-fold-content {
   align-items: center;
+  background-color: var(--voder-black);
+  display: flex;
+  flex-direction: column;
+  gap: 4vh;
   justify-content: center;
+  min-height: 100vh;
+  padding: 8vh 4vw;
+  position: relative;
+  text-align: center;
+  z-index: 10;
+}
+
+.value-proposition-title {
+  color: var(--soft-teal-glow);
+  font-size: var(--font-size-5xl);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.value-proposition-description {
+  color: var(--paper-white);
+  font-size: var(--font-size-xl);
   line-height: 1.6;
   margin: 0;
-  max-width: 800px; /* Fixed max-width prevents text overflow */
-  opacity: 0; /* Start hidden for animation-first approach */
-  transition: opacity 0.3s ease;
+  max-width: 800px;
+  opacity: 0.9;
 }
 
-.status-indicator {
+.coming-soon-indicator {
   align-items: center;
   background: rgb(36 209 213 / 10%);
   border: 1px solid var(--soft-teal-glow);
@@ -188,13 +233,13 @@ body {
   display: inline-flex;
   justify-content: center;
   margin: 0;
+  min-height: 60px;
   padding: var(--space-4) var(--space-8);
-  min-height: 60px; /* Minimum touch target size */
 }
 
-.status-text {
+.coming-soon-text {
   color: var(--soft-teal-glow);
-  font-size: var(--font-size-lg); /* Use consistent typography scale */
+  font-size: var(--font-size-lg);
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -274,114 +319,120 @@ body {
 
 /* Responsive design */
 @media (width >= 1200px) {
-  /* Desktop: Full specification implementation */
+  /* Desktop: Visual-first layout - 60% cube dominance */
   .brand-header {
-    height: 15vh; /* Logo: 15% of viewport height */
+    height: 10vh; /* Logo: top 10% of viewport as specified */
     padding: 2vh 4vw;
   }
 
   .hero-section {
-    height: 50vh; /* Headline 15% + Description 15% + CTA 20% */
-    gap: 2vh; /* Mathematical spacing */
-    padding: 2vh 4vw;
+    gap: 0; /* No gap needed for minimal content */
+    height: 100vh; /* Full viewport for visual-first layout */
+    padding: 0;
   }
 
-  .problem-space {
-    margin-top: 20vh; /* Professional spacing for below-the-fold */
-    padding: 3vh 0;
+  .hero-title {
+    bottom: 10vh; /* Bottom 10% of viewport */
+    font-size: var(--font-size-lg); /* Minimal tagline text */
   }
 
-  .interest-capture {
-    margin-top: 20vh;
-  }
-
-  /* Desktop: 35% of viewport height for cube as specified */
+  /* Desktop: 60% of viewport height for cube as primary element */
   .hero-animation {
-    height: 35vh;
-    width: 35vh; /* Maintain aspect ratio */
+    height: 60vh;
+    width: 60vh;
   }
 
   .hero-animation canvas {
-    height: 35vh;
-    width: 35vh;
+    height: 60vh;
+    width: 60vh;
+  }
+
+  .below-fold-content {
+    padding: 8vh 4vw;
   }
 }
 
 @media (width >= 769px) and (width <= 1199px) {
-  /* Tablet: Mathematical scaling at 0.75x base unit */
+  /* Tablet: Visual balance - 55% cube dominance */
   .brand-header {
-    height: 12vh; /* Tablet: 12% of viewport height for logo */
-    padding: 1.5vh 3vw; /* 0.75x scaling */
-  }
-
-  .hero-section {
-    height: 58vh; /* Headline+description 25% + CTA+margin 33% */
+    height: 8vh; /* Tablet: top 8% of viewport as specified */
     padding: 1.5vh 3vw;
   }
 
-  .problem-space {
-    margin-top: 12vh; /* 0.75x scaling from desktop */
+  .hero-section {
+    height: 100vh; /* Full viewport for visual-first layout */
+    padding: 0;
   }
 
-  .interest-capture {
-    margin-top: 12vh;
+  .hero-title {
+    bottom: 12vh; /* Bottom 12% of viewport */
+    font-size: var(--font-size-base); /* Smaller minimal tagline */
   }
 
-  /* Tablet: 30% of viewport height for cube */
+  /* Tablet: 55% of viewport height for cube maintaining visual focus */
   .hero-animation {
-    height: 30vh;
-    width: 30vh;
+    height: 55vh;
+    width: 55vh;
   }
 
   .hero-animation canvas {
-    height: 30vh;
-    width: 30vh;
+    height: 55vh;
+    width: 55vh;
+  }
+
+  .below-fold-content {
+    padding: 6vh 3vw;
+  }
+
+  .value-proposition-title {
+    font-size: var(--font-size-4xl);
   }
 }
 
 @media (width <= 768px) {
-  /* Mobile: Mathematical scaling at 0.6x base unit */
+  /* Mobile: Visual impact - 50% cube maintaining compelling focal point */
   .brand-header {
-    height: 10vh; /* Mobile: 10% of viewport height for logo */
-    padding: 1.2vh 2.4vw; /* 0.6x scaling */
-  }
-
-  .hero-section {
-    height: 50vh; /* Headline 15% + Description 20% + CTA 15% */
+    height: 12vh; /* Mobile: top 12% of viewport as specified */
     padding: 1.2vh 2.4vw;
   }
 
+  .hero-section {
+    height: 100vh; /* Full viewport for visual-first layout */
+    padding: 0;
+  }
+
   .hero-title {
-    font-size: var(--font-size-4xl); /* Smaller but readable on mobile */
+    bottom: 15vh; /* Bottom 15% of viewport */
+    font-size: var(--font-size-sm); /* Minimal tagline for mobile */
   }
 
-  .hero-description {
-    font-size: var(--font-size-lg); /* Smaller but readable on mobile */
-    max-width: 90%; /* Prevent text overflow on small screens */
-  }
-
-  .status-indicator {
-    padding: var(--space-3) var(--space-6); /* Smaller padding on mobile */
-    min-height: 48px; /* Ensure touch target */
-  }
-
-  .problem-space {
-    margin-top: 15vh; /* Bottom margin 15% + gap */
-  }
-
-  .interest-capture {
-    margin-top: 9vh; /* 0.6x scaling */
-  }
-
-  /* Mobile: 25% of viewport height for cube */
+  /* Mobile: 50% of viewport height for cube maintaining visual impact */
   .hero-animation {
-    height: 25vh;
-    width: 25vh;
+    height: 50vh;
+    width: 50vh;
   }
 
   .hero-animation canvas {
-    height: 25vh;
-    width: 25vh;
+    height: 50vh;
+    width: 50vh;
+  }
+
+  .below-fold-content {
+    padding: 6vh 2.4vw;
+  }
+
+  .value-proposition-title {
+    font-size: var(--font-size-3xl);
+  }
+
+  .value-proposition-description {
+    font-size: var(--font-size-lg);
+    max-width: 90%;
+  }
+
+  .coming-soon-indicator {
+    min-height: 48px;
+    padding: var(--space-3) var(--space-6);
   }
 }
 
@@ -389,8 +440,8 @@ body {
 @media (width >= 667px) and (height <= 480px) {
   /* Mobile landscape: Horizontal optimization */
   .container {
-    flex-direction: row;
     align-items: center;
+    flex-direction: row;
   }
 
   .brand-header {
@@ -398,9 +449,10 @@ body {
   }
 
   .hero-animation {
-    height: 60vh;
-    width: 30vw;
     flex-shrink: 0;
+    height: 60vh;
+    top: 15vh; /* Position in upper portion for landscape */
+    width: 30vw;
   }
 
   .hero-animation canvas {
@@ -409,8 +461,8 @@ body {
   }
 
   .hero-section {
-    height: 80vh;
     flex: 1;
+    height: 80vh;
     margin-left: 4vw;
   }
 }
@@ -419,6 +471,7 @@ body {
   /* Tablet landscape: Horizontal layout optimization */
   .hero-animation {
     height: 50vh;
+    top: 15vh; /* Position in upper portion for tablet landscape */
     width: 25vw;
   }
 
@@ -571,31 +624,31 @@ body {
   }
 }
 
-/* 3D Animation Styles - ABSOLUTE BACKGROUND POSITIONING */
+/* 3D Animation Styles - PRIMARY HERO ELEMENT */
 .hero-animation {
-  height: 35vh; /* Desktop: 35% of viewport height */
-  left: 50%; /* Center horizontally */
-  max-width: 100vw; /* Prevent overflow */
-  overflow: hidden; /* Hide any canvas overflow */
+  height: 60vh; /* Desktop: Dominant 60% of viewport as specified */
+  left: 50%;
+  max-width: 100vw;
+  overflow: visible; /* Allow full visibility */
   padding: 0;
   pointer-events: none; /* Allow clicks to pass through */
-  position: fixed; /* Remove from document flow - background element */
-  top: 50%; /* Center vertically */
-  transform: translate(-50%, -50%); /* Perfect centering */
-  width: 35vh; /* Maintain aspect ratio */
-  z-index: 0; /* Behind all content */
+  position: absolute; /* Position within hero section */
+  top: 50%;
+  transform: translate(-50%, -50%); /* Center perfectly in viewport */
+  width: 60vh; /* Maintain aspect ratio */
+  z-index: 1; /* Primary visual element, below text */
 }
 
 .hero-animation canvas {
   display: block;
-  height: 35vh; /* Match container height */
+  height: 60vh; /* Match container height */
   left: 50%;
-  max-width: 100%; /* Prevent overflow */
-  pointer-events: none; /* Allow clicks to pass through to form elements */
+  max-width: 100%;
+  pointer-events: none;
   position: absolute;
   top: 50%;
-  transform: translate(-50%, -50%); /* Center the canvas within container */
-  width: 35vh; /* Match container width */
+  transform: translate(-50%, -50%);
+  width: 60vh; /* Match container width */
 }
 
 /* Canvas is now full viewport - no responsive sizing needed */
@@ -713,14 +766,18 @@ body {
 }
 
 /* Text flash prevention - hide hero content until 3D system is ready */
-.hero-title,
 .hero-description,
 .status-indicator {
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
-.js-loaded .hero-title,
+/* Hero title should be visible above-the-fold immediately */
+.hero-title {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
 .js-loaded .status-indicator {
   opacity: 1;
 }

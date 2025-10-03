@@ -1,63 +1,91 @@
-# Implementation Plan
+# Implementation Plan - October 3, 2025
 
 ## NOW
 
-**Fix Security Vulnerabilities in Dependencies**
+**Fix Critical Runtime Failures Causing E2E Test Failures**
 
-The assessment identified security vulnerabilities in the `fast-redact` package that are blocking new story development. The current package.json override specifies a non-existent version (`^3.6.0`). 
+We have 7 E2E test failures across multiple browsers that are blocking all development. These appear to be regressions of previously "closed" problems:
 
-**Immediate Actions**:
+1. **Button Overlap Issue (4 test failures)**
+   - Tests: `P003: Coming Soon Button Overlapping 3D Cube › should not have button overlapping 3D cube`
+   - Browsers: Chromium, WebKit, Mobile Chrome, Mobile Safari
+   - Problem: Button positioned -237 to -276px instead of proper separation (minimum 16px required)
+   - Previous Fix: Problem 003 was marked CLOSED but appears to have regressed
 
-1. **Update package.json override configuration**: 
-   - Change `fast-redact` override from `^3.6.0` to `^3.5.0` (latest available version)
-   - Verify the override addresses the vulnerability properly
+2. **Engagement Tracking Timeouts (3 test failures)**
+   - Tests: `engagement tracking works on user interaction`
+   - Issue: `<header role="banner" class="brand-header">` intercepts pointer events preventing h1 clicks
+   - This is similar to Problem 008 (canvas pointer events) but affecting header element instead
 
-2. **Apply npm audit fix**:
-   - Run `npm audit fix` to resolve the 2 low severity vulnerabilities
-   - Verify the fix resolves the fast-redact prototype pollution issue
+**Root Cause Investigation Steps**:
+1. Examine CSS changes that may have caused P003 regression (button positioning)
+2. Check if header element pointer-events CSS got modified/removed
+3. Verify z-index stacking context hasn't been disrupted
+4. Test if recent dependency updates affected layout calculations
 
-3. **Clean reinstall dependencies**:
-   - Delete node_modules and package-lock.json
-   - Run `npm install` to ensure override takes effect
-   - Verify `npm audit` shows zero vulnerabilities
+**Immediate Fix Actions**:
+1. **Fix Button Positioning**:
+   - Inspect current CSS for `.hero-animation` and button positioning
+   - Restore proper spacing between 3D animation container and "Coming Soon" button
+   - Ensure minimum 16px vertical separation is maintained
+   - Verify fix works across all viewport sizes
 
-4. **Validate the fix**:
-   - Run `npm audit --audit-level=moderate` to confirm no security issues
-   - Test that netlify-cli functionality still works for deployment
-   - Run `npm run verify` to ensure all checks pass
+2. **Fix Header Pointer Events**:
+   - Add `pointer-events: none` to header element or specific child elements blocking h1
+   - Ensure h1 element remains clickable for engagement tracking
+   - Test click functionality across all browsers
+
+3. **Run Verification Tests**:
+   - Execute `npm run e2e` to verify all 7 failing tests now pass
+   - Ensure no regressions in the 159 currently passing tests
+   - Test on multiple browsers and device types
 
 ## NEXT
 
-**Complete Project Quality Verification**
+**Complete Runtime Stabilization and Quality Verification**
 
-After resolving security vulnerabilities:
+1. **Security Dependencies Resolution**
+   - Run `npm audit fix` to resolve the 2 low severity vulnerabilities
+   - Verify netlify-cli functionality still works after dependency updates
+   - Commit security fixes
 
-1. **Run comprehensive build and test validation**:
-   - Execute `npm run build` to ensure production build works
-   - Run `npm run test:ci` to verify all tests pass with good coverage
-   - Execute `npm run lint:check` and `npm run format:check` for code quality
+2. **Full E2E Test Suite Validation**
+   - Run complete E2E test suite: `npm run e2e`
+   - Verify all 188 tests pass with zero failures
+   - Check screenshot comparisons for visual regression testing
+   - Validate form submission functionality end-to-end
 
-2. **Commit security fixes**:
-   - Stage the package.json and package-lock.json changes
-   - Commit with clear message about security vulnerability resolution
-   - Push changes to trigger CI/CD pipeline validation
+3. **Performance and Build Verification**
+   - Run production build: `npm run build`
+   - Test preview deployment: `npm run preview`
+   - Verify 3D animation performance hasn't degraded
+   - Check bundle size and loading times
+
+4. **Update Problem Documentation**
+   - If P003 truly regressed, reopen problem with current findings
+   - Document new engagement tracking issue if not covered by existing problems
+   - Update problem status to reflect current state
 
 ## LATER
 
-**Resume Normal Development Workflow**
+**System Hardening and Monitoring Enhancement**
 
-Once security issues are resolved and quality checks pass:
+1. **Regression Prevention**
+   - Add additional E2E tests to catch button positioning regressions earlier
+   - Implement visual regression testing for layout stability
+   - Add CSS unit tests for critical layout components
 
-1. **Monitor dependency security**: 
-   - Set up periodic review of `npm audit` results
-   - Track if fast-redact package maintainer releases security patches
+2. **Monitoring and Alerting**
+   - Set up automated E2E test runs on main branch
+   - Configure alerts for test failures in CI/CD pipeline
+   - Add performance monitoring for 3D animation rendering
 
-2. **Maintain development quality standards**:
-   - Continue following existing test coverage requirements (96.91% maintained)
-   - Keep up with dependency updates through regular `npm outdated` checks
-   - Ensure CI/CD pipeline continues passing all quality gates
+3. **Technical Debt Reduction**
+   - Review and consolidate CSS positioning strategy for 3D/content overlay
+   - Implement design system patterns for consistent z-index management
+   - Optimize Three.js initialization and event handling
 
-3. **Development readiness**:
-   - Project will be ready for new story implementation
-   - All existing functionality preserved and working
-   - Quality standards maintained at current excellent levels
+4. **User Experience Enhancements**
+   - Add loading states for better perceived performance
+   - Implement graceful degradation for users without WebGL support
+   - Enhance mobile touch interaction responsiveness

@@ -32,13 +32,17 @@
     <!-- Critical CSS: Prevent text flash before JavaScript loads -->
     <style>
       /* WORKAROUND: Aggressive hiding to prevent text flash - see docs/problems/text-flash-before-3d-render.open.md */
-      .hero-title,
       .hero-description,
       .status-indicator {
         display: none;
       }
 
-      .js-loaded .hero-title,
+      /* Hero title should be visible above-the-fold immediately */
+      .hero-title {
+        opacity: 1;
+        display: block;
+      }
+
       .js-loaded .status-indicator {
         display: block;
         opacity: 0;
@@ -87,9 +91,6 @@
     </form>
 
     <div id="app">
-      <!-- 3D Animation as fixed background element -->
-      <div class="hero-animation" id="hero-animation"></div>
-
       <header class="brand-header" role="banner">
         <div class="logo-container">
           <div class="logo-text" aria-label="Voder">VODER</div>
@@ -98,14 +99,23 @@
 
       <main class="main-content" role="main" id="main-content">
         <div class="container">
+          <!-- Above-the-fold: Visual-first layout with minimal content -->
           <section class="hero-section">
+            <!-- 3D Animation as primary hero element -->
+            <div class="hero-animation" id="hero-animation"></div>
+            <!-- Minimal tagline positioned at bottom of viewport -->
             <h1 class="hero-title">Keep Shipping Fast</h1>
-            <p class="hero-description">
+          </section>
+
+          <!-- Below-the-fold: Progressive disclosure with full value proposition -->
+          <section class="below-fold-content">
+            <h2 class="value-proposition-title">Keep Shipping Fast</h2>
+            <p class="value-proposition-description">
               Stop AI from turning your codebase into an unmaintainable mess. AI development that
               stays clean and scales with your team.
             </p>
-            <div class="status-indicator">
-              <span class="status-text">Coming Soon</span>
+            <div class="coming-soon-indicator">
+              <span class="coming-soon-text">Coming Soon</span>
             </div>
           </section>
 

@@ -867,7 +867,7 @@ describe('ThreeAnimation', () => {
       expect(animation.getDeviceType()).toBe('desktop');
     });
 
-    it('should provide responsive configuration values', () => {
+    it('should provide unified desktop configuration for all devices', () => {
       const animation = new ThreeAnimation({ container });
 
       // Test mobile config
@@ -877,8 +877,9 @@ describe('ThreeAnimation', () => {
       });
       const mobileConfig = animation.getResponsiveConfig();
 
-      expect(mobileConfig.fov).toBe(35);
-      expect(mobileConfig.cameraZ).toBe(6);
+      // After unification, all devices use desktop config
+      expect(mobileConfig.fov).toBe(25);
+      expect(mobileConfig.cameraZ).toBe(40);
 
       // Test tablet config
       Object.defineProperty(navigator, 'userAgent', {
@@ -887,8 +888,9 @@ describe('ThreeAnimation', () => {
       });
       const tabletConfig = animation.getResponsiveConfig();
 
-      expect(tabletConfig.fov).toBe(30);
-      expect(tabletConfig.cameraZ).toBe(5.5);
+      // After unification, all devices use desktop config
+      expect(tabletConfig.fov).toBe(25);
+      expect(tabletConfig.cameraZ).toBe(40);
 
       // Test desktop config
       Object.defineProperty(navigator, 'userAgent', {
@@ -898,7 +900,7 @@ describe('ThreeAnimation', () => {
       const desktopConfig = animation.getResponsiveConfig();
 
       expect(desktopConfig.fov).toBe(25);
-      expect(desktopConfig.cameraZ).toBe(5);
+      expect(desktopConfig.cameraZ).toBe(40);
     });
   });
 });

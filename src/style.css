@@ -123,7 +123,8 @@ body {
   align-items: stretch;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback for older browsers */
+  min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   padding: 0;
 }
 
@@ -131,7 +132,8 @@ body {
   display: flex;
   flex-direction: column;
   max-width: none; /* Remove width restriction for visual-first layout */
-  min-height: 100vh; /* Allow full scrolling layout */
+  min-height: 100vh; /* Fallback for older browsers */
+  min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   padding: 0;
   position: relative;
   text-align: center;
@@ -146,7 +148,8 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Exactly one full viewport */
+  height: 100vh; /* Fallback for older browsers */
+  height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   justify-content: space-between; /* Equal spacing between elements */
   padding: 0;
   position: relative;
@@ -207,7 +210,8 @@ body {
   flex-direction: column;
   gap: 4vh;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 100vh; /* Fallback for older browsers */
+  min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   padding: 8vh 4vw;
   position: relative;
   text-align: center;
@@ -355,6 +359,19 @@ body {
   /* Mobile: Maintain flexbox layout - no absolute positioning */
   .hero-title {
     font-size: var(--font-size-sm); /* Minimal tagline for mobile */
+  }
+
+  /* Ensure hero section accounts for mobile browser UI */
+  .hero-section {
+    height: 100vh; /* Fallback */
+    height: 100dvh; /* Dynamic viewport height */
+    padding-bottom: env(safe-area-inset-bottom, 0); /* Account for iPhone home indicator */
+  }
+
+  /* Add extra bottom margin to ensure tagline visibility above navigation */
+  .hero-title-area {
+    margin-bottom: max(env(safe-area-inset-bottom, 0), 20px); /* Ensure visibility above nav bar */
+    padding-bottom: 20px; /* Additional padding for browser navigation UI */
   }
 
   .below-fold-content {

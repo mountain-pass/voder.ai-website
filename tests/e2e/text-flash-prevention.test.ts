@@ -20,17 +20,17 @@ test.describe('Text Flash Prevention', () => {
 
     const heroDescription = page.locator('.hero-description');
 
-    const statusIndicator = page.locator('.status-indicator');
+    const comingSoonIndicator = page.locator('.coming-soon-indicator');
 
     // Verify elements exist but are hidden initially
     await expect(heroTitle).toBeAttached();
     await expect(heroDescription).toBeAttached();
-    await expect(statusIndicator).toBeAttached();
+    await expect(comingSoonIndicator).toBeAttached();
 
     // Critical test: these elements should have opacity: 0 initially
     await expect(heroTitle).toHaveCSS('opacity', '0');
     await expect(heroDescription).toHaveCSS('opacity', '0');
-    await expect(statusIndicator).toHaveCSS('opacity', '0');
+    await expect(comingSoonIndicator).toHaveCSS('opacity', '0');
 
     // Wait for navigation to complete
     await navigationPromise;
@@ -40,7 +40,7 @@ test.describe('Text Flash Prevention', () => {
 
     // Now text should be visible
     await expect(heroTitle).toHaveCSS('opacity', '1');
-    await expect(statusIndicator).toHaveCSS('opacity', '1');
+    await expect(comingSoonIndicator).toHaveCSS('opacity', '1');
     await expect(heroDescription).toHaveCSS('opacity', '0.9');
   });
 

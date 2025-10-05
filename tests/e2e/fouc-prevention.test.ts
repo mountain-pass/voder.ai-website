@@ -54,7 +54,7 @@ test.describe('FOUC Prevention', () => {
     await page.waitForLoadState('networkidle');
 
     // Verify the page has visible content immediately
-    const heroTitle = page.locator('h1:has-text("Keep Shipping Fast")');
+    const heroTitle = page.locator('h1:has-text("AI Coding Without the Slop")');
 
     await expect(heroTitle).toBeVisible({ timeout: 100 }); // Very short timeout to catch flicker
 

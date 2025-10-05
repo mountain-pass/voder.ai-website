@@ -12,16 +12,16 @@ test.describe('P003: Coming Soon Button Overlapping 3D Cube', () => {
     await page.waitForSelector('.hero-section', { state: 'visible' });
 
     // Get the bounding boxes of the coming soon button and 3D canvas
-    const statusIndicator = page.locator('.status-indicator');
+    const comingSoonIndicator = page.locator('.coming-soon-indicator');
 
     const heroAnimation = page.locator('.hero-animation');
 
     // Wait for both elements to be visible
-    await expect(statusIndicator).toBeVisible();
+    await expect(comingSoonIndicator).toBeVisible();
     await expect(heroAnimation).toBeVisible();
 
     // Get bounding boxes
-    const buttonBox = await statusIndicator.boundingBox();
+    const buttonBox = await comingSoonIndicator.boundingBox();
 
     const canvasBox = await heroAnimation.boundingBox();
 
@@ -61,33 +61,33 @@ test.describe('P003: Coming Soon Button Overlapping 3D Cube', () => {
     await page.waitForLoadState('networkidle');
 
     // Check z-index values
-    const statusIndicator = page.locator('.status-indicator');
+    const comingSoonIndicator = page.locator('.coming-soon-indicator');
 
     const heroAnimation = page.locator('.hero-animation');
 
-    await expect(statusIndicator).toBeVisible();
+    await expect(comingSoonIndicator).toBeVisible();
     await expect(heroAnimation).toBeVisible();
 
     // Get computed styles
-    const buttonZIndex = await statusIndicator.evaluate((el) => {
-      const heroSection = el.closest('.hero-section');
-
-      return heroSection ? window.getComputedStyle(heroSection).zIndex : '0';
+    // The coming-soon-indicator is now in below-fold-content section, not in hero-section
+    // So we verify that hero-section (which contains hero-animation) has proper z-index
+    const heroSectionZIndex = await page.locator('.hero-section').evaluate((el) => {
+      return window.getComputedStyle(el).zIndex;
     });
 
     const canvasZIndex = await heroAnimation.evaluate((el) => window.getComputedStyle(el).zIndex);
 
-    // Hero section should have higher z-index than canvas
-    expect(parseInt(buttonZIndex || '0')).toBeGreaterThan(parseInt(canvasZIndex || '0'));
+    // Hero section should have higher z-index than its child animation container
+    expect(parseInt(heroSectionZIndex || '0')).toBeGreaterThan(parseInt(canvasZIndex || '0'));
   });
 
   test('should maintain button readability over 3D background', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const statusIndicator = page.locator('.status-indicator');
+    const comingSoonIndicator = page.locator('.coming-soon-indicator');
 
-    await expect(statusIndicator).toBeVisible();
+    await expect(comingSoonIndicator).toBeVisible();
 
     // With P003 workaround implemented, update screenshot baseline
     // Remove this test temporarily since it was mainly for visual regression detection

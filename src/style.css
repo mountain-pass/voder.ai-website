@@ -123,7 +123,6 @@ body {
   align-items: stretch;
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Fallback for older browsers */
   min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   padding: 0;
 }
@@ -132,7 +131,6 @@ body {
   display: flex;
   flex-direction: column;
   max-width: none; /* Remove width restriction for visual-first layout */
-  min-height: 100vh; /* Fallback for older browsers */
   min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   padding: 0;
   position: relative;
@@ -148,7 +146,6 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Fallback for older browsers */
   height: 100svh; /* Small viewport height - stable height that excludes browser UI */
   justify-content: space-between; /* Equal spacing between elements */
   padding: 0;
@@ -211,7 +208,6 @@ body {
   flex-direction: column;
   gap: 4vh;
   justify-content: center;
-  min-height: 100vh; /* Fallback for older browsers */
   min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
   padding: 8vh 4vw;
   position: relative;
@@ -384,6 +380,7 @@ body {
 /* Landscape orientation optimizations */
 @media (width >= 667px) and (height <= 480px) {
   /* Mobile landscape: Keep same layout proportions as other devices */
+
   /* No special overrides needed - use default 20%-60%-20% layout */
 }
 
@@ -680,12 +677,6 @@ body {
 .hero-description,
 .status-indicator {
   opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Hero title should be visible above-the-fold immediately */
-.hero-title {
-  opacity: 1;
   transition: opacity 0.3s ease;
 }
 

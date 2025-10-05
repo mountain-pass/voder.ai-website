@@ -878,7 +878,7 @@ describe('ThreeAnimation', () => {
       const mobileConfig = animation.getResponsiveConfig();
 
       // After unification, all devices use desktop config
-      expect(mobileConfig.fov).toBe(25);
+      expect(mobileConfig.fov).toBe(20);
       expect(mobileConfig.cameraZ).toBe(40);
 
       // Test tablet config
@@ -889,7 +889,7 @@ describe('ThreeAnimation', () => {
       const tabletConfig = animation.getResponsiveConfig();
 
       // After unification, all devices use desktop config
-      expect(tabletConfig.fov).toBe(25);
+      expect(tabletConfig.fov).toBe(20);
       expect(tabletConfig.cameraZ).toBe(40);
 
       // Test desktop config
@@ -899,7 +899,7 @@ describe('ThreeAnimation', () => {
       });
       const desktopConfig = animation.getResponsiveConfig();
 
-      expect(desktopConfig.fov).toBe(25);
+      expect(desktopConfig.fov).toBe(20);
       expect(desktopConfig.cameraZ).toBe(40);
     });
   });

@@ -19,17 +19,18 @@ export function init(): void {
   if (!existingContent) {
     // Only render content if it's not already there (fallback for older builds)
     app.innerHTML = `
-      <header class="brand-header" role="banner">
-        <div class="logo-container">
-          <div class="logo-text" aria-label="Voder">VODER</div>
-        </div>
-      </header>
-      
       <main class="main-content" role="main" id="main-content">
         <div class="container">
           <section class="hero-section">
+            <header class="brand-header" role="banner">
+              <div class="logo-container">
+                <div class="logo-text" aria-label="Voder">VODER</div>
+              </div>
+            </header>
             <div class="hero-animation" id="hero-animation"></div>
-            <h1 class="hero-title">Keep Shipping Fast</h1>
+            <div class="hero-title-area">
+              <h1 class="hero-title">AI Coding without the Slop</h1>
+            </div>
             <p class="hero-description">
               Stop AI from turning your codebase into an unmaintainable mess.
               AI development that stays clean and scales with your team.

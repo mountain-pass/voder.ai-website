@@ -47,7 +47,7 @@ export class ThreeAnimation {
 
     // Use desktop configuration for all devices
 
-    const fov = 25; // Narrow FOV for proper cube framing
+    const fov = 20; // Moderate zoom for cube framing
 
     const cameraZ = 40; // Desktop position for all devices
 
@@ -150,7 +150,15 @@ export class ThreeAnimation {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.container.appendChild(this.renderer.domElement);
+
+    // Create a wrapper div
+    const canvasWrapper = document.createElement('div');
+
+    canvasWrapper.style.height = '100%';
+    canvasWrapper.style.position = 'relative';
+    canvasWrapper.style.width = '100%';
+    canvasWrapper.appendChild(this.renderer.domElement);
+    this.container.appendChild(canvasWrapper);
 
     // NO AMBIENT LIGHT - only directional lights for testing
     // const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);

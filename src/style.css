@@ -87,15 +87,17 @@ body {
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Brand header with viewport-relative sizing */
+/* Brand header positioned at top of hero section */
 .brand-header {
   align-items: center;
   display: flex;
-  height: 15vh; /* Desktop: 15% of viewport height for logo */
+  flex: 0 0 20%; /* Take up 20% of hero-section height */
+  height: 20%;
   justify-content: center;
-  padding: 2vh 4vw;
+  padding: 0 4vw;
   pointer-events: none; /* Allow clicks to pass through to content below */
-  position: relative;
+  position: relative; /* Change from absolute to relative for flex layout */
+  width: 100%;
   z-index: 10; /* Ensure header appears above 3D animation */
 }
 
@@ -139,39 +141,44 @@ body {
 
 /* Hero section */
 
-/* Hero Section - MINIMAL above-the-fold content with cube as primary element */
+/* Hero Section - Full viewport above-the-fold container */
 .hero-section {
   align-items: center;
-  background-color: transparent;
   display: flex;
   flex-direction: column;
-  gap: 2vh;
-  height: 100vh; /* Full viewport for visual-first layout */
-  justify-content: center;
+  height: 100vh; /* Exactly one full viewport */
+  justify-content: space-between; /* Equal spacing between elements */
   padding: 0;
   position: relative;
   text-align: center;
   z-index: 2;
 }
 
-/* Minimal tagline above the fold - brief brand statement */
-.hero-title {
+/* Hero title area positioned at bottom third of hero section */
+.hero-title-area {
   align-items: center;
-  bottom: 10vh; /* Position at bottom 10% of viewport */
-  color: var(--soft-teal-glow);
   display: flex;
-  font-size: var(--font-size-2xl); /* Much smaller - minimal above fold */
-  font-weight: 600;
+  flex: 0 0 20%; /* Take up 20% of hero-section height */
+  height: 20%;
   justify-content: center;
-  left: 50%;
+  padding: 0 4vw;
+  position: relative;
+  width: 100%;
+  z-index: 20;
+}
+
+/* Tagline within the bottom third */
+.hero-title {
+  color: var(--soft-teal-glow);
+  font-size: var(--font-size-5xl); /* Largest size - 3rem for maximum visibility */
+  font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.2;
   margin: 0;
-  opacity: 1; /* Make visible above-the-fold */
-  position: absolute;
-  transform: translateX(-50%);
+  opacity: 1; /* Visible above-the-fold */
+  text-align: center;
   transition: opacity 0.3s ease;
-  width: auto;
+  z-index: 20; /* Above the colored debug sections */
 }
 
 /* Move full description below the fold */
@@ -319,10 +326,10 @@ body {
 
 /* Responsive design */
 @media (width >= 1200px) {
-  /* Desktop: Visual-first layout - 60% cube dominance */
+  /* Desktop: Visual-first layout - improved proportions */
   .brand-header {
-    height: 10vh; /* Logo: top 10% of viewport as specified */
-    padding: 2vh 4vw;
+    height: 8vh; /* Reduced gap above cube */
+    padding: 1.5vh 4vw;
   }
 
   .hero-section {
@@ -332,19 +339,8 @@ body {
   }
 
   .hero-title {
-    bottom: 10vh; /* Bottom 10% of viewport */
-    font-size: var(--font-size-lg); /* Minimal tagline text */
-  }
-
-  /* Desktop: 60% of viewport height for cube as primary element */
-  .hero-animation {
-    height: 60vh;
-    width: 60vh;
-  }
-
-  .hero-animation canvas {
-    height: 60vh;
-    width: 60vh;
+    bottom: 8vh; /* Increased spacing from bottom */
+    font-size: var(--font-size-2xl); /* Larger tagline for better visibility */
   }
 
   .below-fold-content {
@@ -367,17 +363,6 @@ body {
   .hero-title {
     bottom: 12vh; /* Bottom 12% of viewport */
     font-size: var(--font-size-base); /* Smaller minimal tagline */
-  }
-
-  /* Tablet: 55% of viewport height for cube maintaining visual focus */
-  .hero-animation {
-    height: 55vh;
-    width: 55vh;
-  }
-
-  .hero-animation canvas {
-    height: 55vh;
-    width: 55vh;
   }
 
   .below-fold-content {
@@ -406,17 +391,6 @@ body {
     font-size: var(--font-size-sm); /* Minimal tagline for mobile */
   }
 
-  /* Mobile: 50% of viewport height for cube maintaining visual impact */
-  .hero-animation {
-    height: 50vh;
-    width: 50vh;
-  }
-
-  .hero-animation canvas {
-    height: 50vh;
-    width: 50vh;
-  }
-
   .below-fold-content {
     padding: 6vh 2.4vw;
   }
@@ -438,47 +412,12 @@ body {
 
 /* Landscape orientation optimizations */
 @media (width >= 667px) and (height <= 480px) {
-  /* Mobile landscape: Horizontal optimization */
-  .container {
-    align-items: center;
-    flex-direction: row;
-  }
-
-  .brand-header {
-    height: 20vh; /* Adjusted for landscape constraints */
-  }
-
-  .hero-animation {
-    flex-shrink: 0;
-    height: 60vh;
-    top: 15vh; /* Position in upper portion for landscape */
-    width: 30vw;
-  }
-
-  .hero-animation canvas {
-    height: 60vh;
-    width: 30vw;
-  }
-
-  .hero-section {
-    flex: 1;
-    height: 80vh;
-    margin-left: 4vw;
-  }
+  /* Mobile landscape: Keep same layout proportions as other devices */
+  /* No special overrides needed - use default 20%-60%-20% layout */
 }
 
 @media (width >= 1024px) and (height <= 768px) {
-  /* Tablet landscape: Horizontal layout optimization */
-  .hero-animation {
-    height: 50vh;
-    top: 15vh; /* Position in upper portion for tablet landscape */
-    width: 25vw;
-  }
-
-  .hero-animation canvas {
-    height: 50vh;
-    width: 25vw;
-  }
+  /* Tablet landscape: No overrides needed - use default layout */
 }
 
 /* Focus styles for accessibility */
@@ -626,29 +565,28 @@ body {
 
 /* 3D Animation Styles - PRIMARY HERO ELEMENT */
 .hero-animation {
-  height: 60vh; /* Desktop: Dominant 60% of viewport as specified */
-  left: 50%;
+  height: 60%; /* Take up 60% of hero-section height - consistent across all devices */
+  left: 0;
   max-width: 100vw;
   overflow: visible; /* Allow full visibility */
   padding: 0;
   pointer-events: none; /* Allow clicks to pass through */
-  position: absolute; /* Position within hero section */
-  top: 50%;
-  transform: translate(-50%, -50%); /* Center perfectly in viewport */
-  width: 60vh; /* Maintain aspect ratio */
+  position: absolute; /* Position absolutely to overlay green background */
+  top: 20%; /* Start after 20% header */
+  width: 100vw; /* Full viewport width */
   z-index: 1; /* Primary visual element, below text */
 }
 
 .hero-animation canvas {
   display: block;
-  height: 60vh; /* Match container height */
+  height: 100%; /* Take full height of hero-animation container */
   left: 50%;
   max-width: 100%;
   pointer-events: none;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 60vh; /* Match container width */
+  width: 100vw; /* Full viewport width */
 }
 
 /* Canvas is now full viewport - no responsive sizing needed */

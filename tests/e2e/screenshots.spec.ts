@@ -41,7 +41,7 @@ test.describe('Business Area Screenshot Validation', () => {
   test('Production site verification', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle', timeout: 30000 });
     await expect(page.locator('.logo-text')).toContainText('VODER');
-    await expect(page.locator('.hero-title')).toContainText('AI Coding without the Slop');
+    await expect(page.locator('.hero-title')).toContainText('AI Coding Without the Slop');
   });
 
   viewports.forEach(({ name, width, height }) => {

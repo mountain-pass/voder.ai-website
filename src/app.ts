@@ -29,7 +29,7 @@ export function init(): void {
             </header>
             <div class="hero-animation" id="hero-animation"></div>
             <div class="hero-title-area">
-              <h1 class="hero-title">AI Coding without the Slop</h1>
+              <h1 class="hero-title">AI Coding Without the Slop</h1>
             </div>
             <p class="hero-description">
               Stop AI from turning your codebase into an unmaintainable mess.

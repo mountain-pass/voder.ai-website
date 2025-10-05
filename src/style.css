@@ -149,9 +149,10 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh; /* Fallback for older browsers */
-  height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
+  height: 100svh; /* Small viewport height - stable height that excludes browser UI */
   justify-content: space-between; /* Equal spacing between elements */
   padding: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0); /* Account for iPhone home indicator */
   position: relative;
   text-align: center;
   z-index: 2;
@@ -359,19 +360,6 @@ body {
   /* Mobile: Maintain flexbox layout - no absolute positioning */
   .hero-title {
     font-size: var(--font-size-sm); /* Minimal tagline for mobile */
-  }
-
-  /* Ensure hero section accounts for mobile browser UI */
-  .hero-section {
-    height: 100vh; /* Fallback */
-    height: 100dvh; /* Dynamic viewport height */
-    padding-bottom: env(safe-area-inset-bottom, 0); /* Account for iPhone home indicator */
-  }
-
-  /* Add extra bottom margin to ensure tagline visibility above navigation */
-  .hero-title-area {
-    margin-bottom: max(env(safe-area-inset-bottom, 0), 20px); /* Ensure visibility above nav bar */
-    padding-bottom: 20px; /* Additional padding for browser navigation UI */
   }
 
   .below-fold-content {

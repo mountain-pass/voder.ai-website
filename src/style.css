@@ -326,20 +326,8 @@ body {
 
 /* Responsive design */
 @media (width >= 1200px) {
-  /* Desktop: Visual-first layout - improved proportions */
-  .brand-header {
-    height: 8vh; /* Reduced gap above cube */
-    padding: 1.5vh 4vw;
-  }
-
-  .hero-section {
-    gap: 0; /* No gap needed for minimal content */
-    height: 100vh; /* Full viewport for visual-first layout */
-    padding: 0;
-  }
-
+  /* Desktop: Maintain flexbox layout - no absolute positioning */
   .hero-title {
-    bottom: 8vh; /* Increased spacing from bottom */
     font-size: var(--font-size-2xl); /* Larger tagline for better visibility */
   }
 
@@ -349,19 +337,8 @@ body {
 }
 
 @media (width >= 769px) and (width <= 1199px) {
-  /* Tablet: Visual balance - 55% cube dominance */
-  .brand-header {
-    height: 8vh; /* Tablet: top 8% of viewport as specified */
-    padding: 1.5vh 3vw;
-  }
-
-  .hero-section {
-    height: 100vh; /* Full viewport for visual-first layout */
-    padding: 0;
-  }
-
+  /* Tablet: Maintain flexbox layout - no absolute positioning */
   .hero-title {
-    bottom: 12vh; /* Bottom 12% of viewport */
     font-size: var(--font-size-base); /* Smaller minimal tagline */
   }
 
@@ -375,19 +352,8 @@ body {
 }
 
 @media (width <= 768px) {
-  /* Mobile: Visual impact - 50% cube maintaining compelling focal point */
-  .brand-header {
-    height: 12vh; /* Mobile: top 12% of viewport as specified */
-    padding: 1.2vh 2.4vw;
-  }
-
-  .hero-section {
-    height: 100vh; /* Full viewport for visual-first layout */
-    padding: 0;
-  }
-
+  /* Mobile: Maintain flexbox layout - no absolute positioning */
   .hero-title {
-    bottom: 15vh; /* Bottom 15% of viewport */
     font-size: var(--font-size-sm); /* Minimal tagline for mobile */
   }
 
@@ -565,14 +531,16 @@ body {
 
 /* 3D Animation Styles - PRIMARY HERO ELEMENT */
 .hero-animation {
-  height: 60%; /* Take up 60% of hero-section height - consistent across all devices */
-  left: 0;
+  align-items: center;
+  display: flex;
+  flex: 0 0 60%; /* Take up 60% of hero-section height - consistent across all devices */
+  height: 60%;
+  justify-content: center;
   max-width: 100vw;
   overflow: visible; /* Allow full visibility */
   padding: 0;
   pointer-events: none; /* Allow clicks to pass through */
-  position: absolute; /* Position absolutely to overlay green background */
-  top: 20%; /* Start after 20% header */
+  position: relative; /* Use relative positioning for flex layout */
   width: 100vw; /* Full viewport width */
   z-index: 1; /* Primary visual element, below text */
 }

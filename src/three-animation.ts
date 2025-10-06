@@ -224,14 +224,14 @@ export class ThreeAnimation {
     // Create proper rounded cube using the correct RoundedBoxGeometry implementation
     const geometry = this.createRoundedBoxGeometry(6, 6, 6, 2, 0.3);
 
-    // Very dark teal with high opacity for maximum visual impact
+    // Very dark glass - almost black for dramatic depth
     const material = new THREE.MeshStandardMaterial({
-      color: 0x114444, // Very dark teal for dramatic depth
+      color: 0x0a1015, // Near-black with hint of blue
       transparent: true,
-      opacity: 0.6, // High opacity for strong presence while keeping transparency
-      roughness: 0.05, // Keep the reflectivity that worked
+      opacity: 0.75, // Allow caustics to show through
+      roughness: 0.02, // Very smooth for crisp reflections
       metalness: 0.0,
-      side: THREE.DoubleSide, // Keep both sides visible for transparency
+      side: THREE.DoubleSide,
     });
 
     this.cube = new THREE.Mesh(geometry, material);
@@ -240,6 +240,173 @@ export class ThreeAnimation {
 
     // Simple orientation: cube sits on bottom face, rotated 45° to show corner-to-camera
     this.cube.rotation.y = Math.PI / 4; // 45 degrees - shows two faces at corner angle
+
+    // Add volumetric caustics
+    this.createVolumeLightCaustics();
+  }
+  /* c8 ignore stop */
+
+  /* c8 ignore start -- @preserve: WebGL2 volumetric raymarching shader for light caustics effect */
+  private createVolumeLightCaustics(): void {
+    if (!this.cube || !this.scene) return;
+
+    // Create shader material for volumetric rendering
+    const volumeMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uColor: { value: new THREE.Color(0x88ccff) }, // Bright cyan
+        uDensity: { value: 0.25 }, // Higher base density for visibility
+        uSteps: { value: 40 }, // More steps for smoother sampling
+      },
+      vertexShader: `
+        varying vec3 vObjectPos;
+        varying vec3 vLocalCameraPos;
+        
+        void main() {
+          vObjectPos = position;
+          // Transform camera position to object space
+          vLocalCameraPos = (inverse(modelMatrix) * vec4(cameraPosition, 1.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform vec3 uColor;
+        uniform float uDensity;
+        uniform int uSteps;
+        
+        varying vec3 vObjectPos;
+        varying vec3 vLocalCameraPos;
+        
+        // Simple hash for noise
+        float hash(float n) {
+          return fract(sin(n) * 43758.5453);
+        }
+        
+        // 3D noise
+        float noise(vec3 x) {
+          vec3 p = floor(x);
+          vec3 f = fract(x);
+          f = f * f * (3.0 - 2.0 * f);
+          
+          float n = p.x + p.y * 57.0 + 113.0 * p.z;
+          return mix(
+            mix(mix(hash(n + 0.0), hash(n + 1.0), f.x),
+                mix(hash(n + 57.0), hash(n + 58.0), f.x), f.y),
+            mix(mix(hash(n + 113.0), hash(n + 114.0), f.x),
+                mix(hash(n + 170.0), hash(n + 171.0), f.x), f.y), f.z);
+        }
+        
+        // Caustics pattern using turbulence with sharp ridges
+        float causticPattern(vec3 p) {
+          // Create flowing turbulence
+          float n = 0.0;
+          float amplitude = 1.0;
+          float frequency = 1.0;
+          
+          for(int i = 0; i < 4; i++) {
+            float ridge = abs(noise(p * frequency) * 2.0 - 1.0); // Ridge noise
+            n += ridge * amplitude;
+            amplitude *= 0.5;
+            frequency *= 2.0;
+          }
+          
+          // Create sharp caustic streaks
+          return pow(n, 2.5) * 1.5;
+        }
+        
+        // Ray-box intersection
+        vec2 intersectBox(vec3 orig, vec3 dir, vec3 boxMin, vec3 boxMax) {
+          vec3 invDir = 1.0 / dir;
+          vec3 tMin = (boxMin - orig) * invDir;
+          vec3 tMax = (boxMax - orig) * invDir;
+          vec3 t1 = min(tMin, tMax);
+          vec3 t2 = max(tMin, tMax);
+          float tNear = max(max(t1.x, t1.y), t1.z);
+          float tFar = min(min(t2.x, t2.y), t2.z);
+          return vec2(tNear, tFar);
+        }
+        
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+        }
+        
+        void main() {
+          // Raymarching in object space
+          vec3 rayOrigin = vLocalCameraPos;
+          vec3 rayDir = normalize(vObjectPos - vLocalCameraPos);
+          
+          // Box bounds slightly smaller than 5.8 geometry
+          vec3 boxMin = vec3(-2.9);
+          vec3 boxMax = vec3(2.9);
+          
+          vec2 tHit = intersectBox(rayOrigin, rayDir, boxMin, boxMax);
+          
+          // Discard if ray doesn't hit box
+          if(tHit.x > tHit.y || tHit.y < 0.0) {
+            discard;
+          }
+          
+          // Raymarching setup
+          float tStart = max(tHit.x, 0.0);
+          float tEnd = tHit.y;
+          float marchDist = tEnd - tStart;
+          float stepSize = marchDist / float(uSteps);
+          
+          // Jitter for smoother sampling
+          float jitter = hash(gl_FragCoord.xy);
+          float t = tStart + jitter * stepSize;
+          
+          // Accumulate light
+          vec3 light = vec3(0.0);
+          float transmittance = 1.0;
+          
+          for(int i = 0; i < 256; i++) {
+            if(i >= uSteps) break;
+            if(transmittance < 0.01) break;
+            
+            vec3 pos = rayOrigin + rayDir * t;
+            
+            // Sample caustics pattern at multiple scales
+            float density = causticPattern(pos * 0.8);
+            density *= uDensity;
+            
+            // Accumulate light with exponential falloff
+            float alpha = density * stepSize * 2.5;
+            light += uColor * density * transmittance * alpha * 4.0;
+            transmittance *= 1.0 - alpha * 0.4;
+            
+            t += stepSize;
+          }
+          
+          gl_FragColor = vec4(light, 1.0 - transmittance);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      depthTest: false, // KEY FIX: Render on top of everything, ignore depth buffer
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    });
+
+    // Create volume geometry (slightly smaller than cube)
+    const volumeGeometry = new THREE.BoxGeometry(5.8, 5.8, 5.8);
+
+    const volumeMesh = new THREE.Mesh(volumeGeometry, volumeMaterial);
+
+    // Match cube's position and rotation
+    volumeMesh.position.copy(this.cube.position);
+    volumeMesh.rotation.copy(this.cube.rotation);
+
+    // CRITICAL: Render AFTER the glass cube to appear on top
+    volumeMesh.renderOrder = 999;
+
+    // Add to scene
+    this.scene.add(volumeMesh);
+
+    // Store references
+    this.cube.userData.volumeMaterial = volumeMaterial;
+    this.cube.userData.volumeMesh = volumeMesh;
   }
   /* c8 ignore stop */
 
@@ -479,6 +646,13 @@ export class ThreeAnimation {
     if (!this.scene || !this.camera || !this.renderer) return;
 
     this.animationFrameId = requestAnimationFrame(() => this.animate());
+
+    // Sync volume mesh rotation with cube
+    if (this.cube?.userData.volumeMesh) {
+      const volumeMesh = this.cube.userData.volumeMesh as THREE.Mesh;
+
+      volumeMesh.rotation.copy(this.cube.rotation);
+    }
 
     // Static cube - no animation, just render
     this.renderer.render(this.scene, this.camera);

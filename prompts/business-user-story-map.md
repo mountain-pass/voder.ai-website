@@ -25,8 +25,8 @@
 | ---------------------------------------------------------- | -------------------------- | --------------------------- | ----------------------------- | -------------------- | ------------------ |
 | **Must-haves**                                             | 3D animation (025.0)       | Visual chaos representation | "Software starts with intent" | "Better way" teaser  | "See the code" CTA |
 |                                                            | Scroll interaction (025.2) | -                           | -                             | -                    | -                  |
-|                                                            | -                          | -                           | -                             | -                    | -                  |
-|                                                            | -                          | -                           | -                             | -                    | -                  |
+|                                                            | Glass material (025.4)     | -                           | -                             | -                    | -                  |
+|                                                            | Light caustics (025.7)     | -                           | -                             | -                    | -                  |
 
 | **Release 2 (Solution Validation)** | **Intrigue** | **Feel Pain**           | **Connect**         | **Love Alternative** | **Want It**        |
 | ----------------------------------- | ------------ | ----------------------- | ------------------- | -------------------- | ------------------ |
@@ -68,17 +68,18 @@
 
 **Total**: 27 stories covering complete foundation through basic business value delivery
 
-### Release 1: MVP Problem Validation (2-3 weeks)
+### Release 1.0: MVP Problem Validation (Current Release)
 
-**Goal**: Test AI slop message resonance with multiple framings
-**Success Metric**: >70% of founders say "This is exactly my problem"
-**Pages**: 3-4 simple pages focusing on problem articulation
+**Goal**: Create sophisticated 3D visual experience that demonstrates technical capability and validates the AI slop problem message
+**Success Metric**: Interactive 3D cube with scroll-based animations, enhanced visual design, and comprehensive problem management system
+**Scope**: Complete development foundation, process management, brand entry, problem space validation, analytics foundation, deployment automation
 
 **Stories by Category:**
 
-- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement), 025.4-BIZ-GLASS-MATERIAL (enhanced glass effects), 025.5-BIZ-VIEWPORT-LAYOUT (above-the-fold layout optimization)
+- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement), 025.4-BIZ-GLASS-MATERIAL (enhanced glass effects), 025.5-BIZ-VIEWPORT-LAYOUT (above-the-fold layout optimization), 025.6-BIZ-FUNCTIONAL-LAYOUT-TESTING (layout validation), 025.7-BIZ-LIGHT-CAUSTICS (internal light effects)
+- **Problem Management**: 025.3-PO-PROBLEM-MANAGEMENT (systematic issue tracking)
 
-**Total**: 5 stories focusing on sophisticated visual presentation and user engagement
+**Total**: 8 stories focusing on sophisticated visual presentation, user engagement, and problem management
 
 ### Release 2: Solution Validation (3-4 weeks)
 

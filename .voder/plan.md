@@ -1,78 +1,152 @@
-# Implementation Plan    ## NOW
+# Implementation Plan# Implementation Plan    ## NOW
 
 
 
-## NOWFix the blocking markdown linting errors in `docs/decisions/0020-supply-chain-audit-registry-mirror-policy.accepted.md` to unblock the assessment process. This is preventing any new development work from proceeding and must be resolved immediately.
+## NOW
 
 
 
-**Address Critical Priority 9 Issue: Fix E2E Test Runtime Failures (Problem 011)**Specific tasks:
+**CRITICAL DEPENDENCY UPDATES - BLOCKING ALL DEVELOPMENT**## NOWFix the blocking markdown linting errors in `docs/decisions/0020-supply-chain-audit-registry-mirror-policy.accepted.md` to unblock the assessment process. This is preventing any new development work from proceeding and must be resolved immediately.
 
-1. Fix all 7 markdown linting errors in the ADR file:
 
-Since the production site is now accessible (confirmed with HTTP 200 response), the immediate focus is to resolve the E2E test failures that were blocking the assessment. This is the highest impact issue preventing proper deployment validation.   - Remove duplicate top-level headings (MD025)
 
-   - Resolve duplicate heading content issues (MD024) - 6 instances
+Update the 5 truly outdated dependencies that are blocking new story development. These packages are significantly behind (7.5 to 15.5 months old) and must be updated immediately.
 
-**Actions**:2. Run `npm run lint:md` to verify all errors are resolved
 
-1. **Run E2E tests against production** to verify if the accessibility fix resolved the test failures3. Commit the fixes
 
-2. **If tests still fail**: Implement targeted workaround by temporarily disabling failing E2E tests while keeping passing ones
+**Actions**:**Address Critical Priority 9 Issue: Fix E2E Test Runtime Failures (Problem 011)**Specific tasks:
 
-3. **Integrate working E2E tests into CI pipeline** in `.github/workflows/deploy.yml`:## NEXT
+1. **Update truly outdated dependencies**:
 
-   - Add E2E test execution to `quality-gates` job before deployment
+   ```bash1. Fix all 7 markdown linting errors in the ADR file:
 
-   - Add safe subset of E2E tests as post-deployment validationAddress the critical 3D cube performance issues (Problem 009) that have priority 9 (critical) and affect 100% of users:
+   npm update @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint stylelint stylelint-config-standard
 
-   - Configure automatic rollback triggers for E2E test failures
+   ```Since the production site is now accessible (confirmed with HTTP 200 response), the immediate focus is to resolve the E2E test failures that were blocking the assessment. This is the highest impact issue preventing proper deployment validation.   - Remove duplicate top-level headings (MD025)
+
+
+
+2. **Verify compatibility and resolve any breaking changes**:   - Resolve duplicate heading content issues (MD024) - 6 instances
+
+   - Check for ESLint configuration changes needed
+
+   - Verify TypeScript ESLint rules compatibility**Actions**:2. Run `npm run lint:md` to verify all errors are resolved
+
+   - Test Stylelint configuration updates
+
+   - Fix any rule conflicts or deprecated options1. **Run E2E tests against production** to verify if the accessibility fix resolved the test failures3. Commit the fixes
+
+
+
+3. **Test quality gates thoroughly**:2. **If tests still fail**: Implement targeted workaround by temporarily disabling failing E2E tests while keeping passing ones
+
+   - Run `npm run lint` to verify ESLint works
+
+   - Run `npm run lint:css` to verify Stylelint works3. **Integrate working E2E tests into CI pipeline** in `.github/workflows/deploy.yml`:## NEXT
+
+   - Run `npm run build` to ensure no build issues
+
+   - Run `npm run test` to verify all tests pass   - Add E2E test execution to `quality-gates` job before deployment
+
+
+
+4. **Commit dependency updates with clear documentation**:   - Add safe subset of E2E tests as post-deployment validationAddress the critical 3D cube performance issues (Problem 009) that have priority 9 (critical) and affect 100% of users:
+
+   - Document any configuration changes made
+
+   - Note any breaking changes encountered   - Configure automatic rollback triggers for E2E test failures
+
+   - Update any related documentation
 
 1. Implement immediate performance optimizations for the 3D cube animation
 
+## NEXT
+
 **Implementation Steps**:2. Focus on mobile performance improvements and scroll lag reduction
+
+**Re-run Complete Assessment**
 
 - Execute `npm run e2e:ci:prod` to verify current test status3. Apply frame rate limiting and rendering optimizations
 
+Once dependencies are updated, re-execute the full assessment to validate all phases and identify any remaining issues.
+
 - If failures persist, create temporary workaround by skipping failing tests4. Test performance improvements across device types
 
-- Update CI workflow to include `npm run e2e:ci` in quality gates5. Update problem status to known-error once workarounds are implemented
+**Actions**:
 
-- Add post-deployment E2E validation with rollback capability
+1. **Execute assessment workflow** to validate all 10 phases- Update CI workflow to include `npm run e2e:ci` in quality gates5. Update problem status to known-error once workarounds are implemented
 
-- Update problem 011 status to "known-error" when workaround implemented## LATER
+2. **Address any newly discovered issues** from phases 2-10 that were skipped
 
-
-
-## NEXTAddress the incomplete quality gates issue (Problem 010) by implementing comprehensive linting coverage:
+3. **Ensure all quality gates pass** before proceeding with feature development- Add post-deployment E2E validation with rollback capability
 
 
 
-**Address Critical Priority 9 Issue: 3D Cube Performance Optimization (Problem 009)**1. Update the `verify` script in package.json to include all available linting checks
+**Fix Critical Markdown Linting Errors**- Update problem 011 status to "known-error" when workaround implemented## LATER
+
+
+
+After dependencies are updated, resolve the markdown linting errors in ADR files that were preventing quality gates from passing.
+
+
+
+**Actions**:## NEXTAddress the incomplete quality gates issue (Problem 010) by implementing comprehensive linting coverage:
+
+1. **Fix markdown linting errors** in `docs/decisions/0020-supply-chain-audit-registry-mirror-policy.accepted.md`:
+
+   - Remove duplicate top-level headings (MD025)
+
+   - Resolve duplicate heading content issues (MD024) - 6 instances
+
+2. **Run `npm run lint:md`** to verify all errors are resolved**Address Critical Priority 9 Issue: 3D Cube Performance Optimization (Problem 009)**1. Update the `verify` script in package.json to include all available linting checks
+
+3. **Commit the fixes**
 
 2. Update pre-commit hooks to include critical linting checks (markdown, CSS, HTML)
 
+## LATER
+
 Implement performance optimizations for the 3D cube animation system that affects 100% of users.3. Create validation tests to ensure quality gates remain comprehensive
 
-4. Document the new comprehensive quality gate process
-**Actions**:
-1. **Root cause analysis**: Profile the Three.js rendering performance using browser dev tools
-2. **Implement targeted performance workarounds**:
-   - Reduce animation complexity on mobile devices
-   - Implement requestAnimationFrame throttling
-   - Add performance-based fallback options
-3. **Create failing performance tests** that demonstrate the issue
-4. **Transition problem 009 to known-error status**
+**Address Priority 9 Issues (Only After Dependencies and Assessment Pass)**
 
-**Priority 6 Issue: Complete Quality Gates (Problem 010)**
+4. Document the new comprehensive quality gate process
+
+These critical issues can only be addressed after the dependency blocking issues are resolved:**Actions**:
+
+1. **Root cause analysis**: Profile the Three.js rendering performance using browser dev tools
+
+**E2E Test Runtime Failures (Problem 011)**:2. **Implement targeted performance workarounds**:
+
+- Run E2E tests against production to verify accessibility fix   - Reduce animation complexity on mobile devices
+
+- Implement targeted workaround for any remaining failures   - Implement requestAnimationFrame throttling
+
+- Integrate working E2E tests into CI pipeline   - Add performance-based fallback options
+
+3. **Create failing performance tests** that demonstrate the issue
+
+**3D Cube Performance Issues (Problem 009)**:4. **Transition problem 009 to known-error status**
+
+- Implement performance optimizations for mobile devices
+
+- Add frame rate limiting and rendering optimizations**Priority 6 Issue: Complete Quality Gates (Problem 010)**
+
+- Test performance improvements across device types
 
 Fix missing linting checks in the verification pipeline.
 
-**Actions**:
-1. **Update `verify` script** in package.json to include all linting checks:
-   - Add `npm run lint:css`
+**Complete Quality Gates (Problem 010)**:
+
+- Update verification scripts to include all linting checks**Actions**:
+
+- Update pre-commit hooks with comprehensive coverage1. **Update `verify` script** in package.json to include all linting checks:
+
+- Validate complete quality gate process   - Add `npm run lint:css`
+
    - Add `npm run lint:html` 
-   - Add `npm run lint:md`
+
+**Note**: All "LATER" work is contingent on successfully resolving the dependency blocking issues and passing the complete assessment in phases NOW and NEXT.   - Add `npm run lint:md`
 2. **Update pre-commit hooks** to include complete linting coverage
 3. **Fix existing markdown linting errors** in ADR files
 4. **Update problem 010 status to known-error**

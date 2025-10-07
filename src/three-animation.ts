@@ -157,6 +157,14 @@ export class ThreeAnimation {
     canvasWrapper.style.height = '100%';
     canvasWrapper.style.position = 'relative';
     canvasWrapper.style.width = '100%';
+
+    // Apply mix-blend-mode to the canvas for enhanced visual effects
+    if (this.renderer.domElement && this.renderer.domElement.style) {
+      this.renderer.domElement.style.mixBlendMode = 'overlay';
+      this.renderer.domElement.style.position = 'relative';
+      this.renderer.domElement.style.zIndex = '1';
+    }
+
     canvasWrapper.appendChild(this.renderer.domElement);
     this.container.appendChild(canvasWrapper);
 

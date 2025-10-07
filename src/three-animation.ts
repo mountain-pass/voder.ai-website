@@ -254,8 +254,8 @@ export class ThreeAnimation {
     const volumeMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color(0x4488bb) }, // Much darker blue for subtlety
-        uDensity: { value: 0.08 }, // Much lower density for thin ribbons
+        uColor: { value: new THREE.Color(0x5599ee) }, // Medium blue for balanced visibility
+        uDensity: { value: 0.22 }, // Moderate density
         uSteps: { value: 40 },
       },
       vertexShader: `
@@ -297,22 +297,68 @@ export class ThreeAnimation {
                 mix(hash(n + 170.0), hash(n + 171.0), f.x), f.y), f.z);
         }
         
-        // Caustics pattern using turbulence with sharp ridges
+        // Flowing light ribbons pattern with organic curves
         float causticPattern(vec3 p) {
-          // Create flowing turbulence
-          float n = 0.0;
-          float amplitude = 1.0;
-          float frequency = 1.0;
+          vec3 pos = p * 1.2;
+          float time = uTime * 0.4;
           
-          for(int i = 0; i < 4; i++) {
-            float ridge = abs(noise(p * frequency) * 2.0 - 1.0); // Ridge noise
-            n += ridge * amplitude;
-            amplitude *= 0.5;
-            frequency *= 2.0;
-          }
+          // Create noise-driven flow fields for organic ribbon paths
+          vec3 flow1 = vec3(
+            noise(pos + vec3(time * 0.8, 0.0, 0.0)) * 2.0 - 1.0,
+            noise(pos + vec3(0.0, time * 0.6, 0.0)) * 2.0 - 1.0,
+            noise(pos + vec3(0.0, 0.0, time * 0.7)) * 2.0 - 1.0
+          );
           
-          // Create sharp caustic streaks - higher power for thinner ribbons
-          return pow(n, 4.0) * 1.2;
+          vec3 flow2 = vec3(
+            noise(pos * 0.8 + vec3(time * 0.9, 5.0, 0.0)) * 2.0 - 1.0,
+            noise(pos * 0.8 + vec3(0.0, time * 0.5, 7.0)) * 2.0 - 1.0,
+            noise(pos * 0.8 + vec3(3.0, 0.0, time * 0.8)) * 2.0 - 1.0
+          );
+          
+          // Create curved ribbon paths using the flow fields
+          vec3 ribbon_pos1 = pos + flow1 * 0.6;
+          vec3 ribbon_pos2 = pos + flow2 * 0.5;
+          
+          // Generate organic ribbon shapes along the flow paths
+          float ribbon1 = sin(ribbon_pos1.y * 2.0 + time * 1.5) * 
+                         cos(ribbon_pos1.x * 1.3 + sin(ribbon_pos1.z * 1.8 + time) * 0.7);
+          
+          float ribbon2 = cos(ribbon_pos2.y * 2.3 + time * 1.2) * 
+                         sin(ribbon_pos2.z * 1.6 + cos(ribbon_pos2.x * 1.1 + time * 1.3) * 0.8);
+          
+          float ribbon3 = sin(pos.y * 1.8 + noise(pos * 1.5 + time) * 1.2 + time * 1.8) *
+                         cos(pos.x * 1.4 + noise(pos.zyx * 1.2 + time * 0.7) * 0.9);
+          
+          // Convert to ribbon distances with organic thickness variation
+          float thickness1 = 0.7 + noise(ribbon_pos1 * 3.0 + time) * 0.4;
+          float thickness2 = 0.8 + noise(ribbon_pos2 * 2.8 + time * 1.1) * 0.3;
+          float thickness3 = 0.6 + noise(pos * 3.2 + time * 0.9) * 0.5;
+          
+          ribbon1 = 1.0 - smoothstep(0.0, thickness1, abs(ribbon1));
+          ribbon2 = 1.0 - smoothstep(0.0, thickness2, abs(ribbon2));
+          ribbon3 = 1.0 - smoothstep(0.0, thickness3, abs(ribbon3));
+          
+          // Add flowing energy along the ribbons
+          float energy1 = sin(length(ribbon_pos1.xy) * 2.5 + time * 2.0) * 0.5 + 0.5;
+          float energy2 = cos(length(ribbon_pos2.xz) * 2.2 + time * 1.7) * 0.4 + 0.6;
+          float energy3 = sin(length(pos.yz) * 2.8 + time * 2.3) * 0.3 + 0.7;
+          
+          ribbon1 *= energy1;
+          ribbon2 *= energy2;
+          ribbon3 *= energy3;
+          
+          // Combine ribbons with organic blending
+          float result = max(max(ribbon1 * 0.9, ribbon2 * 0.8), ribbon3 * 0.7);
+          
+          // Add turbulence for more organic feel
+          float turbulence = noise(pos * 5.0 + time * 0.8) * 0.3;
+          result *= (0.8 + turbulence);
+          
+          // Smooth falloff toward edges
+          float edge_falloff = 1.0 - length(pos) * 0.15;
+          result *= max(0.0, edge_falloff);
+          
+          return result * 1.8;
         }
         
         // Ray-box intersection
@@ -371,10 +417,10 @@ export class ThreeAnimation {
             float density = causticPattern(pos * 0.8);
             density *= uDensity;
             
-            // Accumulate light with much lower emission for subtlety
-            float alpha = density * stepSize * 1.5;
-            light += uColor * density * transmittance * alpha * 2.0;
-            transmittance *= 1.0 - alpha * 0.3;
+            // Accumulate light with moderate intensity for balanced ribbons
+            float alpha = density * stepSize * 2.5;
+            light += uColor * density * transmittance * alpha * 3.2;
+            transmittance *= 1.0 - alpha * 0.25;
             
             t += stepSize;
           }
@@ -646,6 +692,13 @@ export class ThreeAnimation {
     if (!this.scene || !this.camera || !this.renderer) return;
 
     this.animationFrameId = requestAnimationFrame(() => this.animate());
+
+    // Update time uniform for flowing ribbons
+    if (this.cube?.userData.volumeMaterial) {
+      const volumeMaterial = this.cube.userData.volumeMaterial as THREE.ShaderMaterial;
+
+      volumeMaterial.uniforms.uTime.value = performance.now() / 1000; // Convert to seconds
+    }
 
     // Sync volume mesh rotation with cube
     if (this.cube?.userData.volumeMesh) {

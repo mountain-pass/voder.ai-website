@@ -25,6 +25,10 @@ jobs:
       - run: npm ci
       - name: Quality Gates
         run: npm run verify
+      - name: Install Playwright Dependencies
+        run: npx playwright install --with-deps
+      - name: E2E Tests (Pre-deployment)
+        run: npm run e2e:ci
 
   deploy:
     needs: quality-gates
@@ -173,10 +177,30 @@ jobs:
             echo "⚠️  Some health checks failed ($FAILED_CHECKS/12) but within tolerance"
           fi
 
-      - name: Automatic Rollback
-        if: failure() && steps.verify.outputs.rollback_needed == 'true' && env.SKIP_AUTO_ROLLBACK != 'true'
+      - name: E2E Tests (Post-deployment Validation)
+        id: e2e-validation
+        if: success()
+        env:
+          SKIP_AUTO_ROLLBACK: ${{ inputs.skip_rollback || vars.SKIP_AUTO_ROLLBACK || 'false' }}
         run: |
-          echo "🚨 Health checks failed - initiating automatic rollback..."
+          echo "🧪 Running E2E tests against production deployment..."
+
+          # Install Playwright if not already installed
+          npx playwright install --with-deps
+
+          # Run E2E tests against production
+          if PREVIEW_URL=https://voder.ai npm run e2e:ci:prod; then
+            echo "✅ E2E tests passed! Production deployment validated."
+          else
+            echo "❌ E2E tests failed - production deployment has issues"
+            echo "rollback_needed=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Automatic Rollback
+        if: failure() && (steps.verify.outputs.rollback_needed == 'true' || steps.e2e-validation.outputs.rollback_needed == 'true') && env.SKIP_AUTO_ROLLBACK != 'true'
+        run: |
+          echo "🚨 Deployment validation failed - initiating automatic rollback..."
           echo "⏰ Starting rollback process (target: <60 seconds)"
 
           START_TIME=$(date +%s)
@@ -226,7 +250,7 @@ jobs:
           fi
 
       - name: Rollback Skipped Notice
-        if: failure() && steps.verify.outputs.rollback_needed == 'true' && env.SKIP_AUTO_ROLLBACK == 'true'
+        if: failure() && (steps.verify.outputs.rollback_needed == 'true' || steps.e2e-validation.outputs.rollback_needed == 'true') && env.SKIP_AUTO_ROLLBACK == 'true'
         run: |
           echo "⚠️  Deployment verification failed, but automatic rollback is disabled"
           echo "🔧 SKIP_AUTO_ROLLBACK is set to: $SKIP_AUTO_ROLLBACK"

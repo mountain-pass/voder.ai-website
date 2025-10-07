@@ -2,7 +2,7 @@
 
 **Date**: 2025-10-08  
 **Updated**: 2025-10-08  
-**Status**: 🔴 OPEN  
+**Status**: � KNOWN ERROR  
 **Severity**: Medium  
 **Impact**: Medium (2) - 100% of developers affected when quality issues slip through automated checks  
 **Likelihood**: High (3) - Consistent occurrence as current setup misses markdown, CSS, and HTML linting  

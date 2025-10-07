@@ -27,6 +27,7 @@
 |                                                            | Scroll interaction (025.2) | -                           | -                             | -                    | -                  |
 |                                                            | Glass material (025.4)     | -                           | -                             | -                    | -                  |
 |                                                            | Light caustics (025.7)     | -                           | -                             | -                    | -                  |
+|                                                            | Flowing ribbons (025.8)    | -                           | -                             | -                    | -                  |
 
 | **Release 2 (Solution Validation)** | **Intrigue** | **Feel Pain**           | **Connect**         | **Love Alternative** | **Want It**        |
 | ----------------------------------- | ------------ | ----------------------- | ------------------- | -------------------- | ------------------ |
@@ -76,10 +77,10 @@
 
 **Stories by Category:**
 
-- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement), 025.4-BIZ-GLASS-MATERIAL (enhanced glass effects), 025.5-BIZ-VIEWPORT-LAYOUT (above-the-fold layout optimization), 025.6-BIZ-FUNCTIONAL-LAYOUT-TESTING (layout validation), 025.7-BIZ-LIGHT-CAUSTICS (internal light effects)
+- **Visual Engagement**: 025.0-BIZ-3D-ANIMATION (glass cube foundation), 025.1-BIZ-FOUC-PREVENTION (loading experience), 025.2-BIZ-SCROLL-ROTATION (interactive engagement), 025.4-BIZ-GLASS-MATERIAL (enhanced glass effects), 025.5-BIZ-VIEWPORT-LAYOUT (above-the-fold layout optimization), 025.6-BIZ-FUNCTIONAL-LAYOUT-TESTING (layout validation), 025.7-BIZ-LIGHT-CAUSTICS (volumetric light effects), 025.8-BIZ-CAUSTICS-FLOW (flowing light ribbons)
 - **Problem Management**: 025.3-PO-PROBLEM-MANAGEMENT (systematic issue tracking)
 
-**Total**: 8 stories focusing on sophisticated visual presentation, user engagement, and problem management
+**Total**: 9 stories focusing on sophisticated visual presentation, user engagement, and problem management
 
 ### Release 2: Solution Validation (3-4 weeks)
 

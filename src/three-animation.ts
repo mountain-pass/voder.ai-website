@@ -254,9 +254,9 @@ export class ThreeAnimation {
     const volumeMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color(0x88ccff) }, // Bright cyan
-        uDensity: { value: 0.25 }, // Higher base density for visibility
-        uSteps: { value: 40 }, // More steps for smoother sampling
+        uColor: { value: new THREE.Color(0x4488bb) }, // Much darker blue for subtlety
+        uDensity: { value: 0.08 }, // Much lower density for thin ribbons
+        uSteps: { value: 40 },
       },
       vertexShader: `
         varying vec3 vObjectPos;
@@ -311,8 +311,8 @@ export class ThreeAnimation {
             frequency *= 2.0;
           }
           
-          // Create sharp caustic streaks
-          return pow(n, 2.5) * 1.5;
+          // Create sharp caustic streaks - higher power for thinner ribbons
+          return pow(n, 4.0) * 1.2;
         }
         
         // Ray-box intersection
@@ -371,10 +371,10 @@ export class ThreeAnimation {
             float density = causticPattern(pos * 0.8);
             density *= uDensity;
             
-            // Accumulate light with exponential falloff
-            float alpha = density * stepSize * 2.5;
-            light += uColor * density * transmittance * alpha * 4.0;
-            transmittance *= 1.0 - alpha * 0.4;
+            // Accumulate light with much lower emission for subtlety
+            float alpha = density * stepSize * 1.5;
+            light += uColor * density * transmittance * alpha * 2.0;
+            transmittance *= 1.0 - alpha * 0.3;
             
             t += stepSize;
           }

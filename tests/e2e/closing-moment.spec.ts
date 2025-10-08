@@ -79,7 +79,7 @@ test.describe('Closing Moment - Email Capture Form', () => {
   test('validates email input correctly', async ({ page }) => {
     const emailInput = page.locator('#email');
 
-    const submitButton = page.locator('button[type="submit"]');
+    const submitButton = page.locator('.signup-button');
 
     const formStatus = page.locator('#form-status');
 
@@ -93,6 +93,7 @@ test.describe('Closing Moment - Email Capture Form', () => {
 
     // Test empty email validation
     await submitButton.click();
+    await page.waitForTimeout(100); // Allow time for validation to complete
     await expect(formStatus).toBeVisible();
     await expect(formStatus).toHaveClass('form-status error');
     await expect(formStatus).toContainText('Please enter your email address.');
@@ -100,6 +101,7 @@ test.describe('Closing Moment - Email Capture Form', () => {
     // Test invalid email validation
     await emailInput.fill('invalid-email');
     await submitButton.click();
+    await page.waitForTimeout(100); // Allow time for validation to complete
     await expect(formStatus).toBeVisible();
     await expect(formStatus).toHaveClass('form-status error');
     await expect(formStatus).toContainText('Please enter a valid email address.');

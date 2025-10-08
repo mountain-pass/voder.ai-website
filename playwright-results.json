@@ -9,7 +9,7 @@
     "globalTimeout": 0,
     "grep": {},
     "grepInvert": null,
-    "maxFailures": 1,
+    "maxFailures": 0,
     "metadata": {
       "actualWorkers": 1
     },
@@ -48,7 +48,7 @@
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 0
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
@@ -62,7 +62,7 @@
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 0
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
@@ -76,7 +76,7 @@
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 0
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
@@ -90,14 +90,14 @@
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 0
+        "timeout": 30000
       }
     ],
     "shard": null,
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
     "version": "1.55.1",
-    "workers": 1,
+    "workers": 4,
     "webServer": {
       "command": "npm run build && npm run preview -- --host 127.0.0.1",
       "url": "http://127.0.0.1:4173",
@@ -109,44 +109,68 @@
   },
   "suites": [
     {
-      "title": "screenshots.spec.ts",
-      "file": "screenshots.spec.ts",
+      "title": "closing-moment.spec.ts",
+      "file": "closing-moment.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Business Area Screenshot Validation",
-          "file": "screenshots.spec.ts",
-          "line": 14,
+          "title": "Closing Moment - Email Capture Form",
+          "file": "closing-moment.spec.ts",
+          "line": 10,
           "column": 6,
           "specs": [
             {
-              "title": "Brand Entry - desktop (1920x1080)",
+              "title": "displays coming soon message and email capture form",
               "ok": true,
               "tags": [],
               "tests": [
                 {
-                  "timeout": 0,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
                   "results": [
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 31669,
+                      "duration": 9163,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "Cleaned up 4 existing screenshot files\n"
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] [.WebGL-0x12401628100]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n"
+                        },
+                        {
+                          "text": "[warning] [.WebGL-0x12401629600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n"
+                        },
+                        {
+                          "text": "[warning] [.WebGL-0x12401629600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels\n"
+                        },
+                        {
+                          "text": "[warning] [.WebGL-0x12401629600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897392385_3r8dwysj9z6, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897392385_3r8dwysj9z6, visitorType: new, trafficSource: direct}\n"
                         }
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-10-03T14:16:44.087Z",
+                      "startTime": "2025-10-08T04:23:10.334Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -154,10 +178,352 @@
                   "status": "expected"
                 }
               ],
-              "id": "677a4938ef65bfc6a6e5-3e8d0b81abb0bc7cb336",
-              "file": "screenshots.spec.ts",
-              "line": 48,
-              "column": 5
+              "id": "ed92c28bcaa7f25b53a5-6f33f5f37c2c8979e287",
+              "file": "closing-moment.spec.ts",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "validates email input correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12764,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897401552_izqehs8wt0n, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897401552_izqehs8wt0n, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 3877}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T04:23:19.655Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-dfa52060c259a9c72148",
+              "file": "closing-moment.spec.ts",
+              "line": 79,
+              "column": 3
+            },
+            {
+              "title": "handles form submission states correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9317,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897414532_d7rjj182d4a, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897414532_d7rjj182d4a, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 2104}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T04:23:32.453Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-1ddac0286f3db467a889",
+              "file": "closing-moment.spec.ts",
+              "line": 110,
+              "column": 3
+            },
+            {
+              "title": "handles form submission errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9377,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897423801_axsr4eusdob, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897423801_axsr4eusdob, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 2266}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T04:23:41.783Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-c45bbb865e3088f3da26",
+              "file": "closing-moment.spec.ts",
+              "line": 144,
+              "column": 3
+            },
+            {
+              "title": "tracks analytics events on form submission",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13110,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897433133_glweh8gao3p, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897433133_glweh8gao3p, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Session ended: {sessionId: session_1759897433133_glweh8gao3p, duration: 1457, durationMinutes: 0.0}\n"
+                        },
+                        {
+                          "text": "[warning] Bounce tracked: {bounceType: quick, duration: 1457, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Session ended: {sessionId: session_1759897433133_glweh8gao3p, duration: 1664, durationMinutes: 0.0}\n"
+                        },
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897436559_06azldforv1m, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897436559_06azldforv1m, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 2564}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T04:23:51.186Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-68e692707434d00645bf",
+              "file": "closing-moment.spec.ts",
+              "line": 171,
+              "column": 3
+            },
+            {
+              "title": "form accessibility requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9995,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897446288_xnxrqj6arih, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897446288_xnxrqj6arih, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 2002}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T04:24:04.318Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-6b55f3a914749bfa11cb",
+              "file": "closing-moment.spec.ts",
+              "line": 251,
+              "column": 3
+            },
+            {
+              "title": "preserves form data during validation errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8931,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "[warning] Voder website starting...\n"
+                        },
+                        {
+                          "text": "[warning] Analytics initialized with Clarity project: t5zu4kays7\n"
+                        },
+                        {
+                          "text": "[warning] Traffic source tracked: {category: direct, source: direct, medium: undefined, campaign: undefined, isLinkedIn: false}\n"
+                        },
+                        {
+                          "text": "[warning] Session tracking initialized: {sessionId: session_1759897456323_e67j64xdmx9, visitorType: new, visitCount: 1, frequencyCategory: new, deviceType: mobile}\n"
+                        },
+                        {
+                          "text": "[warning] Analytics fully initialized: {sessionId: session_1759897456323_e67j64xdmx9, visitorType: new, trafficSource: direct}\n"
+                        },
+                        {
+                          "text": "[warning] Engagement tracked: {type: scroll, data: Object, sessionDuration: 2137}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T04:24:14.327Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-2f6ef3c574774ca9fc73",
+              "file": "closing-moment.spec.ts",
+              "line": 291,
+              "column": 3
             }
           ]
         }
@@ -166,9 +532,9 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-03T14:16:43.703Z",
-    "duration": 33346.765999999996,
-    "expected": 1,
+    "startTime": "2025-10-08T04:23:05.007Z",
+    "duration": 78322.665,
+    "expected": 7,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

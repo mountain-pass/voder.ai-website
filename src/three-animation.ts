@@ -258,6 +258,15 @@ export class ThreeAnimation {
   private createVolumeLightCaustics(): void {
     if (!this.cube || !this.scene) return;
 
+    // Feature flag: Disable raymarching caustics for performance
+    const ENABLE_RAYMARCHING_CAUSTICS = false; // TODO: Set to true once performance is optimized
+
+    if (!ENABLE_RAYMARCHING_CAUSTICS) {
+      console.warn('Raymarching caustics disabled via feature flag for performance');
+
+      return;
+    }
+
     // Create shader material for volumetric rendering
     const volumeMaterial = new THREE.ShaderMaterial({
       uniforms: {

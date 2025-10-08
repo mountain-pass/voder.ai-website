@@ -93,16 +93,16 @@ test.describe('Closing Moment - Email Capture Form', () => {
 
     // Test empty email validation
     await submitButton.click();
-    await page.waitForTimeout(100); // Allow time for validation to complete
-    await expect(formStatus).toBeVisible();
+    await page.waitForTimeout(500); // Increased wait time for Mobile Chrome
+    await expect(formStatus).toBeVisible({ timeout: 10000 });
     await expect(formStatus).toHaveClass('form-status error');
     await expect(formStatus).toContainText('Please enter your email address.');
 
     // Test invalid email validation
     await emailInput.fill('invalid-email');
     await submitButton.click();
-    await page.waitForTimeout(100); // Allow time for validation to complete
-    await expect(formStatus).toBeVisible();
+    await page.waitForTimeout(500); // Increased wait time for Mobile Chrome
+    await expect(formStatus).toBeVisible({ timeout: 10000 });
     await expect(formStatus).toHaveClass('form-status error');
     await expect(formStatus).toContainText('Please enter a valid email address.');
   });

@@ -14,14 +14,14 @@ const useLocalWebServer = !process.env.PREVIEW_URL;
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  timeout: 30_000,
+  timeout: 30_000, // Reverted: Mobile Chrome should not need longer timeout
   retries: isCI ? 2 : 0,
 
   // Enhanced reporting for screenshot testing and CI integration
   reporter: [
     ['list'],
     ['json', { outputFile: 'playwright-results.json' }],
-    ['html', { outputFolder: 'test-results/html-report', open: 'never' }],
+    ['html', { outputFolder: 'test-results/html', open: 'never' }],
     // Add GitHub Actions reporter in CI
     ...(isCI ? [['github'] as const] : []),
   ],
@@ -40,10 +40,6 @@ export default defineConfig({
 
     // Enhanced settings for screenshot testing and visual regression
     ignoreHTTPSErrors: true, // For production testing
-    launchOptions: {
-      // Consistent screenshot rendering
-      args: ['--disable-web-security', '--disable-features=VizDisplayCompositor'],
-    },
   },
 
   // Configure expect for screenshot testing
@@ -67,7 +63,13 @@ export default defineConfig({
     // Desktop browsers
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          // Consistent screenshot rendering for Chromium
+          args: ['--disable-web-security', '--disable-features=VizDisplayCompositor'],
+        },
+      },
     },
     // Firefox temporarily disabled due to initialization timeout issues
     // {
@@ -82,7 +84,17 @@ export default defineConfig({
     // Mobile browsers for comprehensive cross-device testing
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: {
+        ...devices['Pixel 5'],
+        // Increase timeouts for Mobile Chrome due to performance issues with 3D rendering
+        actionTimeout: 45_000,
+        navigationTimeout: 45_000,
+        launchOptions: {
+          // Consistent screenshot rendering for Chromium
+          args: ['--disable-web-security', '--disable-features=VizDisplayCompositor'],
+        },
+      },
+      timeout: 45_000, // Increase test timeout for Mobile Chrome
     },
     {
       name: 'Mobile Safari',

@@ -902,5 +902,93 @@ describe('ThreeAnimation', () => {
       expect(desktopConfig.fov).toBe(20);
       expect(desktopConfig.cameraZ).toBe(40);
     });
+
+    it('should provide device-specific performance configuration', () => {
+      const animation = new ThreeAnimation({ container });
+
+      // Test mobile performance config
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+      const mobileConfig = animation.getPerformanceConfig();
+
+      expect(mobileConfig.deviceType).toBe('mobile');
+      expect(mobileConfig.enableCaustics).toBe(true);
+      expect(mobileConfig.rayMarchingSteps).toBe(10);
+      expect(mobileConfig.causticsDensity).toBe(0.15);
+
+      // Test tablet performance config
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPad; CPU OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+      const tabletConfig = animation.getPerformanceConfig();
+
+      expect(tabletConfig.deviceType).toBe('tablet');
+      expect(tabletConfig.enableCaustics).toBe(true);
+      expect(tabletConfig.rayMarchingSteps).toBe(20);
+      expect(tabletConfig.causticsDensity).toBe(0.18);
+
+      // Test desktop performance config
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        writable: true,
+      });
+      const desktopConfig = animation.getPerformanceConfig();
+
+      expect(desktopConfig.deviceType).toBe('desktop');
+      expect(desktopConfig.enableCaustics).toBe(true);
+      expect(desktopConfig.rayMarchingSteps).toBe(40);
+      expect(desktopConfig.causticsDensity).toBe(0.22);
+    });
+
+    it('should handle URL performance parameter override', () => {
+      const animation = new ThreeAnimation({ container });
+
+      // Mock window.location.search for performance=false
+      const originalLocation = window.location;
+
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...originalLocation,
+          search: '?performance=false',
+        },
+        writable: true,
+      });
+
+      const config = animation.getPerformanceConfig();
+
+      expect(config.enableCaustics).toBe(false);
+      expect(config.rayMarchingSteps).toBe(0);
+      expect(config.causticsDensity).toBe(0);
+
+      // Mock window.location.search for performance=true
+      Object.defineProperty(window, 'location', {
+        value: {
+          ...originalLocation,
+          search: '?performance=true',
+        },
+        writable: true,
+      });
+
+      // Set mobile device to test override
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)',
+        writable: true,
+      });
+
+      const overrideConfig = animation.getPerformanceConfig();
+
+      expect(overrideConfig.enableCaustics).toBe(true);
+      expect(overrideConfig.deviceType).toBe('mobile');
+      expect(overrideConfig.rayMarchingSteps).toBe(10); // Still mobile optimization
+
+      // Restore original location
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+      });
+    });
   });
 });

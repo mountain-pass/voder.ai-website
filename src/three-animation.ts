@@ -41,17 +41,183 @@ export class ThreeAnimation {
 
   // Public method for testing responsive calculations
   public getResponsiveConfig(): { fov: number; cameraZ: number } {
+    const deviceType = this.getDeviceType();
+
     if (typeof window === 'undefined') {
       return { fov: 65, cameraZ: 5 };
     }
 
-    // Use desktop configuration for all devices
+    // Device-specific responsive configuration
+    switch (deviceType) {
+      case 'mobile':
+        return { fov: 20, cameraZ: 40 }; // Mobile-optimized framing
+      case 'tablet':
+        return { fov: 20, cameraZ: 40 }; // Tablet-optimized framing
+      case 'desktop':
+      default:
+        return { fov: 20, cameraZ: 40 }; // Desktop framing
+    }
+  }
 
-    const fov = 20; // Moderate zoom for cube framing
+  // Parse URL parameters for performance override
+  private parsePerformanceOverride(): boolean | null {
+    if (typeof window === 'undefined') return null;
 
-    const cameraZ = 40; // Desktop position for all devices
+    const urlParams = new URLSearchParams(window.location.search);
 
-    return { fov, cameraZ };
+    const performanceParam = urlParams.get('performance');
+
+    if (performanceParam === 'true') return true;
+    if (performanceParam === 'false') return false;
+
+    return null; // No override specified, use automatic detection
+  }
+
+  // Get device-specific performance configuration
+  public getPerformanceConfig(): {
+    enableCaustics: boolean;
+    rayMarchingSteps: number;
+    causticsDensity: number;
+    deviceType: 'mobile' | 'tablet' | 'desktop';
+  } {
+    const deviceType = this.getDeviceType();
+
+    const performanceOverride = this.parsePerformanceOverride();
+
+    // Handle manual override first
+    if (performanceOverride === false) {
+      return {
+        enableCaustics: false,
+        rayMarchingSteps: 0,
+        causticsDensity: 0,
+        deviceType,
+      };
+    }
+
+    // Device-specific performance optimization
+    switch (deviceType) {
+      case 'mobile':
+        return {
+          enableCaustics: performanceOverride ?? true, // Enable with optimization
+          rayMarchingSteps: 10,
+          causticsDensity: 0.15, // Reduced density for mobile
+          deviceType,
+        };
+      case 'tablet':
+        return {
+          enableCaustics: performanceOverride ?? true, // Enable with moderate optimization
+          rayMarchingSteps: 20,
+          causticsDensity: 0.18, // Moderate density for tablet
+          deviceType,
+        };
+      case 'desktop':
+      default:
+        return {
+          enableCaustics: performanceOverride ?? true, // Enable full quality
+          rayMarchingSteps: 40,
+          causticsDensity: 0.22, // Full density for desktop
+          deviceType,
+        };
+    }
+  }
+
+  // Assess GPU capabilities for advanced performance detection
+  public getGPUCapabilities(): {
+    webgl2Support: boolean;
+    maxTextureSize: number;
+    maxFragmentUniforms: number;
+    renderer: string;
+    vendor: string;
+    supportsFloatTextures: boolean;
+  } {
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      return {
+        webgl2Support: false,
+        maxTextureSize: 0,
+        maxFragmentUniforms: 0,
+        renderer: 'unknown',
+        vendor: 'unknown',
+        supportsFloatTextures: false,
+      };
+    }
+
+    try {
+      const canvas = document.createElement('canvas');
+
+      const gl = canvas.getContext('webgl2') || canvas.getContext('webgl');
+
+      if (!gl) {
+        return {
+          webgl2Support: false,
+          maxTextureSize: 0,
+          maxFragmentUniforms: 0,
+          renderer: 'no-webgl',
+          vendor: 'no-webgl',
+          supportsFloatTextures: false,
+        };
+      }
+
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+      const floatTexturesExt = gl.getExtension('OES_texture_float');
+
+      return {
+        webgl2Support: !!canvas.getContext('webgl2'),
+        maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+        maxFragmentUniforms: gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS),
+        renderer: debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'unknown',
+        vendor: debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'unknown',
+        supportsFloatTextures: !!floatTexturesExt,
+      };
+    } catch (error) {
+      console.warn('GPU capability detection failed:', error);
+
+      return {
+        webgl2Support: false,
+        maxTextureSize: 0,
+        maxFragmentUniforms: 0,
+        renderer: 'error',
+        vendor: 'error',
+        supportsFloatTextures: false,
+      };
+    }
+  }
+
+  // Determine if device should fall back to 2D animation
+  public shouldUseFallback(): boolean {
+    const gpuCapabilities = this.getGPUCapabilities();
+
+    const deviceType = this.getDeviceType();
+
+    // Force fallback if WebGL is not supported
+    if (!gpuCapabilities.webgl2Support && !this.supportsWebGL) {
+      return true;
+    }
+
+    // Force fallback for very low-end mobile devices
+    if (deviceType === 'mobile') {
+      // Check for indicators of very low-end hardware
+      if (gpuCapabilities.maxTextureSize < 2048) {
+        return true;
+      }
+
+      if (gpuCapabilities.maxFragmentUniforms < 16) {
+        return true;
+      }
+
+      // Check for known low-performance renderers
+      const renderer = gpuCapabilities.renderer.toLowerCase();
+
+      if (
+        renderer.includes('adreno 3') ||
+        renderer.includes('mali-4') ||
+        renderer.includes('powervr sgx')
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private checkWebGLSupport(): void {
@@ -76,8 +242,13 @@ export class ThreeAnimation {
   public async init(): Promise<void> {
     if (this.isInitialized) return;
 
-    // If WebGL is not supported, fall back to 2D content
-    if (!this.supportsWebGL) {
+    // Check for graceful degradation conditions
+    if (!this.supportsWebGL || this.shouldUseFallback()) {
+      const fallbackReason = !this.supportsWebGL
+        ? 'WebGL not supported'
+        : 'Low GPU capabilities detected';
+
+      console.warn(`3D animation falling back to 2D: ${fallbackReason}`);
       this.initFallback();
 
       return;
@@ -258,22 +429,31 @@ export class ThreeAnimation {
   private createVolumeLightCaustics(): void {
     if (!this.cube || !this.scene) return;
 
-    // Feature flag: Disable raymarching caustics for performance
-    const ENABLE_RAYMARCHING_CAUSTICS = false; // TODO: Set to true once performance is optimized
+    // Get device-specific performance configuration
+    const performanceConfig = this.getPerformanceConfig();
 
-    if (!ENABLE_RAYMARCHING_CAUSTICS) {
-      console.warn('Raymarching caustics disabled via feature flag for performance');
+    if (!performanceConfig.enableCaustics) {
+      console.warn(
+        `Raymarching caustics disabled for ${performanceConfig.deviceType} device (performance optimization)`,
+      );
 
       return;
     }
 
-    // Create shader material for volumetric rendering
+    // Log performance mode selection for monitoring
+    console.warn(`3D Performance Mode: ${performanceConfig.deviceType} device detected`, {
+      rayMarchingSteps: performanceConfig.rayMarchingSteps,
+      causticsDensity: performanceConfig.causticsDensity,
+      deviceType: performanceConfig.deviceType,
+    });
+
+    // Create shader material for volumetric rendering with device-specific configuration
     const volumeMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
         uColor: { value: new THREE.Color(0x5599ee) }, // Medium blue for balanced visibility
-        uDensity: { value: 0.22 }, // Moderate density
-        uSteps: { value: 40 },
+        uDensity: { value: performanceConfig.causticsDensity }, // Device-specific density
+        uSteps: { value: performanceConfig.rayMarchingSteps }, // Device-specific steps
       },
       vertexShader: `
         varying vec3 vObjectPos;

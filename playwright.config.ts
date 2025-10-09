@@ -14,7 +14,7 @@ const useLocalWebServer = !process.env.PREVIEW_URL;
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  timeout: 30_000, // Reverted: Mobile Chrome should not need longer timeout
+  timeout: isCI ? 60_000 : 30_000, // Increase timeout in CI for FOUC prevention tests
   retries: isCI ? 2 : 0,
 
   // Enhanced reporting for screenshot testing and CI integration

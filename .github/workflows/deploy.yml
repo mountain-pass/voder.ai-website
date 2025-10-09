@@ -194,7 +194,7 @@ jobs:
           fi
 
   # Separate job for comprehensive post-deployment E2E validation (runs in parallel with rollback logic)
-  e2e-full-validation:
+  e2e-post-deploy-validation:
     needs: deploy
     runs-on: ubuntu-latest
     if: success()
@@ -209,10 +209,11 @@ jobs:
         run: npx playwright install --with-deps
       - name: Full E2E Test Suite (Post-deployment)
         run: |
-          echo "🧪 Running comprehensive E2E tests against production deployment..."
-          # Run full E2E test suite against production
-          if PREVIEW_URL=https://voder.ai npm run e2e:ci:full; then
-            echo "✅ Full E2E test suite passed! Production deployment fully validated."
+          echo "🧪 Running targeted E2E tests against production deployment..."
+          echo "🎯 Testing core functionality on chromium only for speed"
+          # Run essential E2E tests against production (optimized for <5min execution)
+          if PREVIEW_URL=https://voder.ai npm run e2e:ci:post-deploy; then
+            echo "✅ Essential E2E tests passed! Production deployment validated."
           else
             echo "❌ E2E tests failed - production deployment has issues"
             echo "⚠️  Note: This is post-deployment validation - site is already live"

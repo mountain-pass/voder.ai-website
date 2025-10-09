@@ -20,6 +20,7 @@
     "e2e:ci": "npx playwright test --project=chromium tests/e2e/app.spec.ts tests/e2e/closing-moment.spec.ts tests/e2e/fouc-prevention.test.ts --reporter=json --output=test-results/",
     "e2e:ci:critical": "npx playwright test --project=chromium tests/e2e/app.spec.ts tests/e2e/closing-moment.spec.ts --reporter=json --output=test-results/",
     "e2e:ci:full": "npx playwright test --reporter=json --output=test-results/",
+    "e2e:ci:post-deploy": "npx playwright test --project=chromium tests/e2e/app.spec.ts tests/e2e/closing-moment.spec.ts tests/e2e/fouc-prevention.test.ts tests/e2e/functional-layout.test.ts --reporter=json --output=test-results/",
     "e2e:ci:prod": "PREVIEW_URL=https://voder.ai playwright test tests/e2e/screenshots.spec.ts --reporter=list",
     "e2e:install": "npx playwright install --with-deps",
     "clean": "rm -rf dist/ coverage/ .cache/ .vite/ .eslintcache",

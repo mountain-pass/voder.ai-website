@@ -21,8 +21,11 @@ test.describe('Closing Moment - Email Capture Form', () => {
     // Wait for app to load
     await page.waitForSelector('#app', { state: 'visible', timeout: 10000 });
 
-    // Wait for analytics initialization
-    await page.waitForTimeout(500);
+    // Wait for analytics initialization - simplified approach
+    await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {
+      // Fallback: ensure DOM is ready
+      return page.waitForLoadState('domcontentloaded');
+    });
   });
 
   test('displays coming soon message and email capture form', async ({ page }) => {
@@ -93,16 +96,16 @@ test.describe('Closing Moment - Email Capture Form', () => {
 
     // Test empty email validation
     await submitButton.click();
-    await page.waitForTimeout(500); // Increased wait time for Mobile Chrome
-    await expect(formStatus).toBeVisible({ timeout: 10000 });
+    // Wait for form status to appear instead of arbitrary timeout
+    await expect(formStatus).toBeVisible({ timeout: 5000 });
     await expect(formStatus).toHaveClass('form-status error');
     await expect(formStatus).toContainText('Please enter your email address.');
 
     // Test invalid email validation
     await emailInput.fill('invalid-email');
     await submitButton.click();
-    await page.waitForTimeout(500); // Increased wait time for Mobile Chrome
-    await expect(formStatus).toBeVisible({ timeout: 10000 });
+    // Wait for form status to update instead of arbitrary timeout
+    await expect(formStatus).toBeVisible({ timeout: 5000 });
     await expect(formStatus).toHaveClass('form-status error');
     await expect(formStatus).toContainText('Please enter a valid email address.');
   });
@@ -177,8 +180,11 @@ test.describe('Closing Moment - Email Capture Form', () => {
     await page.reload();
     await page.waitForSelector('#app', { state: 'visible' });
 
-    // Wait for analytics initialization to complete - increased wait time
-    await page.waitForTimeout(2000);
+    // Wait for analytics initialization - simplified approach
+    await page.waitForLoadState('networkidle', { timeout: 3000 }).catch(() => {
+      // Fallback: ensure DOM is complete
+      return page.waitForLoadState('domcontentloaded');
+    });
 
     // Override clarity function after analytics has fully loaded
     await page.evaluate(() => {
@@ -203,8 +209,8 @@ test.describe('Closing Moment - Email Capture Form', () => {
     // Mock successful form submission with delay to simulate real network
     await page.route('/', async (route) => {
       if (route.request().method() === 'POST') {
-        // Add small delay to simulate network request
-        await page.waitForTimeout(100);
+        // Add small delay to simulate network request - minimal for testing
+        await new Promise((resolve) => setTimeout(resolve, 50));
         await route.fulfill({ status: 200, body: 'OK' });
       } else {
         await route.continue();
@@ -217,8 +223,20 @@ test.describe('Closing Moment - Email Capture Form', () => {
     // Wait for form submission to complete and analytics to be tracked
     await page.waitForSelector('.form-status.success', { timeout: 10000 });
 
-    // Additional wait for analytics events to be processed
-    await page.waitForTimeout(1000);
+    // Wait for analytics events to be processed - simplified approach
+    await page
+      .waitForFunction(
+        () => {
+          const events = (window as any).__clarityEvents || [];
+
+          return events.length > 0;
+        },
+        { timeout: 2000 },
+      )
+      .catch(() => {
+        // Fallback: minimal wait if no events captured
+        return new Promise((resolve) => setTimeout(resolve, 50));
+      });
 
     // Get all events captured
     const events = await page.evaluate(() => {

@@ -2,14 +2,29 @@
 
 ## NOW
 
-Fix the failing E2E test in closing-moment.spec.ts that's causing the CI pipeline to fail. The test expects `data-waiting="true"` attribute on the `#interest-form` element, but it's receiving an empty string. This is causing the post-deployment validation to fail in the CI pipeline.
+Implement **Targeted Post-Deployment** validation to achieve the "Post-deployment validation uses single browser (Chromium) with minimal essential tests only" acceptance criteria.
 
-**Root Cause Analysis**: The test failure indicates there's an expectation for a `data-waiting` attribute that should be set to "true" on the interest form, but the form doesn't have this attribute or it's not being set correctly.
+**Current Issue**: Post-deployment validation is running a comprehensive E2E suite (10m10s runtime) instead of minimal smoke tests.
 
-**Immediate Action**: 
-1. Investigate the actual HTML structure of the form on the live site
-2. Either fix the form to include the expected attribute, or update the test to match the current implementation
-3. This follows ITIL problem management - identify root cause before implementing fix
+**Action Required**: 
+1. Create a separate, minimal smoke test suite for post-deployment validation
+2. Focus on essential functionality only: page loads, form exists, no JavaScript errors
+3. Run on Chromium only (no cross-browser testing in post-deployment)
+4. Target <2 minute execution time vs current 10+ minutes
+
+## NEXT
+
+Optimize E2E test efficiency:
+1. **Replace waitForTimeout calls** - Remove inefficient `page.waitForTimeout(500)` calls throughout E2E suite and replace with proper element waits
+2. **Review test scope** - Ensure pre-deployment E2E tests focus on essential functionality for a landing page with contact form
+3. **Implement parallel cross-browser testing** - Run focused E2E tests across browsers in parallel during main pipeline
+
+## LATER
+
+**Performance Optimization**:
+- Implement intelligent test parallelization to reduce overall CI time
+- Add test result caching for unchanged components
+- Optimize E2E test selector strategies for faster execution
 
 ## NEXT
 

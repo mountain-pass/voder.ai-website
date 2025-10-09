@@ -27,8 +27,13 @@ test('bounce tracking is initialized correctly', async ({ page }) => {
   // Wait for the app to load
   await page.waitForSelector('#app', { state: 'visible', timeout: 10000 });
 
-  // Wait a bit for analytics to initialize
-  await page.waitForTimeout(500);
+  // Wait for analytics to initialize by checking console messages
+  await page.waitForFunction(
+    () => {
+      return document.readyState === 'complete';
+    },
+    { timeout: 3000 },
+  );
 
   // Check that analytics and bounce tracking were initialized
   expect(consoleMessages.some((msg) => msg.includes('Analytics initialized'))).toBe(true);
@@ -58,14 +63,14 @@ test('engagement tracking works on user interaction', async ({ page }) => {
   await page.goto('/');
   await page.waitForSelector('#app', { state: 'visible', timeout: 10000 });
 
-  // Wait for analytics to initialize
-  await page.waitForTimeout(500);
+  // Wait for analytics to initialize by checking DOM ready state
+  await page.waitForLoadState('domcontentloaded');
 
   // Simulate user engagement by clicking
   await page.click('h1');
 
-  // Wait a bit for engagement tracking
-  await page.waitForTimeout(200);
+  // Wait for any immediate DOM updates after click
+  await page.waitForFunction(() => document.readyState === 'complete', { timeout: 1000 });
 
   // Check for engagement tracking (will appear in logs during development)
   // In production, this would be sent to Clarity

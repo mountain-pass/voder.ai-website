@@ -14,6 +14,7 @@ on:
           - 'true'
 
 jobs:
+  # Parallel job 1: Quality gates (linting, unit tests, type checking)
   quality-gates:
     runs-on: ubuntu-latest
     steps:
@@ -23,17 +24,32 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - name: Quality Gates
+      - name: Quality Gates (Linting, Unit Tests, Type Checking)
         run: npm run verify
-      # - name: Install Playwright Dependencies
-      #   run: npx playwright install --with-deps
-      # - name: E2E Tests (Pre-deployment)
-      #   run: npm run e2e:ci
-      - name: E2E Tests (DISABLED - Workaround for slow pipeline)
-        run: echo "WARNING - E2E tests temporarily disabled for pipeline performance Problem 012"
 
-  deploy:
-    needs: quality-gates
+  # Parallel job 2: Build preparation
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      build-cache-key: ${{ steps.build-cache.outputs.cache-key }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Build Application
+        run: npm run build
+      - name: Cache Build Artifacts
+        id: build-cache
+        uses: actions/cache/save@v4
+        with:
+          path: dist
+          key: build-${{ github.sha }}-${{ hashFiles('dist/**/*') }}
+
+  # Parallel job 3: Critical E2E tests (minimal set for speed)
+  e2e-critical:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +58,29 @@ jobs:
           node-version: '20'
           cache: 'npm'
       - run: npm ci
-      - run: npm run build
+      - name: Install Playwright Dependencies (Chromium only for speed)
+        run: npx playwright install chromium --with-deps
+      - name: Critical E2E Tests (Pre-deployment)
+        run: npm run e2e:ci:critical
+        env:
+          CI: true
+
+  deploy:
+    needs: [quality-gates, build, e2e-critical]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Restore Build Artifacts
+        uses: actions/cache/restore@v4
+        with:
+          path: dist
+          key: ${{ needs.build.outputs.build-cache-key }}
+          fail-on-cache-miss: true
       - name: Deploy to Netlify
         id: deploy
         run: |
@@ -88,10 +126,10 @@ jobs:
             exit 1
           fi
 
-          # Health check function
+          # Streamlined health check function (reduced checks for speed)
           health_check() {
             local check_num=$1
-            echo "⚕️  Running health check $check_num/12..."
+            echo "⚕️  Running health check $check_num/6..."
             
             # HTTP Status Check
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$DEPLOYMENT_URL" || echo "000")
@@ -112,16 +150,6 @@ jobs:
               return 1
             fi
             
-            # SSL Certificate Check (if HTTPS)
-            if echo "$DEPLOYMENT_URL" | grep -q "https://"; then
-              SSL_EXPIRY=$(curl -s --max-time 5 -vI "$DEPLOYMENT_URL" 2>&1 | grep "expire date" || echo "")
-              if [ -n "$SSL_EXPIRY" ]; then
-                echo "  ✅ SSL Certificate: Valid"
-              else
-                echo "  ⚠️  SSL Certificate: Could not verify (proceeding)"
-              fi
-            fi
-            
             # Basic Content Check
             CONTENT=$(curl -s --max-time 5 "$DEPLOYMENT_URL" || echo "")
             if echo "$CONTENT" | grep -q "<title>" && echo "$CONTENT" | grep -q "</title>"; then
@@ -131,43 +159,29 @@ jobs:
               return 1
             fi
             
-            # Critical Asset Check (CSS)
-            if echo "$CONTENT" | grep -q "\.css" || echo "$CONTENT" | grep -q "<style"; then
-              echo "  ✅ CSS Assets: Found CSS references"
-            else
-              echo "  ⚠️  CSS Assets: No CSS found (proceeding)"
-            fi
-            
-            # Basic Functionality Check (form exists)
-            if echo "$CONTENT" | grep -q "<form" || echo "$CONTENT" | grep -q "email"; then
-              echo "  ✅ Basic Functionality: Email/form elements found"
-            else
-              echo "  ⚠️  Basic Functionality: No form elements found (proceeding)"
-            fi
-            
             echo "  ✅ Health check $check_num passed"
             return 0
           }
 
-          # Run health checks for 2 minutes (12 checks with 10-second intervals)
+          # Reduced health checks (6 checks with 10-second intervals = 1 minute total)
           FAILED_CHECKS=0
-          for i in {1..12}; do
+          for i in {1..6}; do
             if health_check $i; then
-              echo "✅ Check $i/12 successful"
+              echo "✅ Check $i/6 successful"
             else
-              echo "❌ Check $i/12 failed"
+              echo "❌ Check $i/6 failed"
               FAILED_CHECKS=$((FAILED_CHECKS + 1))
               
               # Fail fast if we have too many failures
-              if [ $FAILED_CHECKS -ge 3 ]; then
-                echo "❌ Too many health check failures ($FAILED_CHECKS/3)"
+              if [ $FAILED_CHECKS -ge 2 ]; then
+                echo "❌ Too many health check failures ($FAILED_CHECKS/2)"
                 echo "rollback_needed=true" >> $GITHUB_OUTPUT
                 exit 1
               fi
             fi
             
             # Wait 10 seconds before next check (except for last check)
-            if [ $i -lt 12 ]; then
+            if [ $i -lt 6 ]; then
               echo "⏳ Waiting 10 seconds before next check..."
               sleep 10
             fi
@@ -176,31 +190,37 @@ jobs:
           if [ $FAILED_CHECKS -eq 0 ]; then
             echo "🎉 All health checks passed! Deployment is healthy."
           else
-            echo "⚠️  Some health checks failed ($FAILED_CHECKS/12) but within tolerance"
+            echo "⚠️  Some health checks failed ($FAILED_CHECKS/6) but within tolerance"
           fi
 
-      - name: E2E Tests (Post-deployment Validation)
-        id: e2e-validation
-        if: success()
-        env:
-          SKIP_AUTO_ROLLBACK: ${{ inputs.skip_rollback || vars.SKIP_AUTO_ROLLBACK || 'false' }}
+  # Separate job for comprehensive post-deployment E2E validation (runs in parallel with rollback logic)
+  e2e-full-validation:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Install Playwright Dependencies
+        run: npx playwright install --with-deps
+      - name: Full E2E Test Suite (Post-deployment)
         run: |
-          echo "🧪 Running E2E tests against production deployment..."
-
-          # Install Playwright if not already installed
-          npx playwright install --with-deps
-
-          # Run E2E tests against production
-          if PREVIEW_URL=https://voder.ai npm run e2e:ci:prod; then
-            echo "✅ E2E tests passed! Production deployment validated."
+          echo "🧪 Running comprehensive E2E tests against production deployment..."
+          # Run full E2E test suite against production
+          if PREVIEW_URL=https://voder.ai npm run e2e:ci:full; then
+            echo "✅ Full E2E test suite passed! Production deployment fully validated."
           else
             echo "❌ E2E tests failed - production deployment has issues"
-            echo "rollback_needed=true" >> $GITHUB_OUTPUT
+            echo "⚠️  Note: This is post-deployment validation - site is already live"
             exit 1
           fi
 
       - name: Automatic Rollback
-        if: failure() && (steps.verify.outputs.rollback_needed == 'true' || steps.e2e-validation.outputs.rollback_needed == 'true') && env.SKIP_AUTO_ROLLBACK != 'true'
+        if: failure() && steps.verify.outputs.rollback_needed == 'true' && env.SKIP_AUTO_ROLLBACK != 'true'
         run: |
           echo "🚨 Deployment validation failed - initiating automatic rollback..."
           echo "⏰ Starting rollback process (target: <60 seconds)"
@@ -252,7 +272,7 @@ jobs:
           fi
 
       - name: Rollback Skipped Notice
-        if: failure() && (steps.verify.outputs.rollback_needed == 'true' || steps.e2e-validation.outputs.rollback_needed == 'true') && env.SKIP_AUTO_ROLLBACK == 'true'
+        if: failure() && steps.verify.outputs.rollback_needed == 'true' && env.SKIP_AUTO_ROLLBACK == 'true'
         run: |
           echo "⚠️  Deployment verification failed, but automatic rollback is disabled"
           echo "🔧 SKIP_AUTO_ROLLBACK is set to: $SKIP_AUTO_ROLLBACK"

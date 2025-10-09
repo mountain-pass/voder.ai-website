@@ -16,7 +16,11 @@ test.describe('Mobile 3D Cube Size Jump Prevention', () => {
 
     // Wait for page to load and 3D animation to initialize
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000); // Allow more time for 3D initialization on mobile
+    // Wait for animation system to initialize (canvas or fallback)
+    await page.waitForSelector('.hero-animation canvas, .animation-fallback', {
+      state: 'visible',
+      timeout: 5000,
+    });
 
     // Check if 3D animation was disabled due to performance
     const animationDisabled = await page.evaluate(() => {
@@ -63,12 +67,12 @@ test.describe('Mobile 3D Cube Size Jump Prevention', () => {
     await page.evaluate(() => {
       window.scrollTo(0, 100);
     });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => window.scrollY === 100);
 
     await page.evaluate(() => {
       window.scrollTo(0, 200);
     });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => window.scrollY === 200);
 
     // Use a more robust scroll method for Mobile Chrome
     await page.evaluate(() => {
@@ -78,7 +82,7 @@ test.describe('Mobile 3D Cube Size Jump Prevention', () => {
         setTimeout(resolve, 50);
       });
     });
-    await page.waitForTimeout(100);
+    await page.waitForFunction(() => window.scrollY === 0);
 
     // Get final canvas size
     const finalBox = await canvas.boundingBox();
@@ -104,8 +108,11 @@ test.describe('Mobile 3D Cube Size Jump Prevention', () => {
     // Navigate to page
     await page.goto('/');
 
-    // Wait for 3D initialization
-    await page.waitForTimeout(1000);
+    // Wait for animation system to initialize (canvas or fallback)
+    await page.waitForSelector('.hero-animation canvas, .animation-fallback', {
+      state: 'visible',
+      timeout: 5000,
+    });
 
     // Test that resize handler skips mobile
     const resizeSkipped = await page.evaluate(() => {

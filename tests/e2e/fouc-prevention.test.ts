@@ -73,7 +73,11 @@ test.describe('FOUC Prevention', () => {
     expect(cls).toBeLessThan(0.1); // Good CLS score
 
     // Verify content doesn't shift after JavaScript loads
-    await page.waitForTimeout(1000); // Give time for any potential shifts
+    // Wait for animation system to stabilize
+    await page.waitForSelector('.hero-animation canvas, .animation-fallback', {
+      state: 'visible',
+      timeout: 5000,
+    });
 
     const finalCLS = await page.evaluate(() => (window as any).getCLS());
 

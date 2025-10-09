@@ -50,23 +50,65 @@ test.describe('Business Area Screenshot Validation', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      // Check if 3D animation is available or disabled due to performance
-      const canvasVisible = await page.evaluate(() => {
-        const canvas = document.querySelector('.hero-animation canvas');
+      // Wait longer for the animation to finish initializing and performance monitoring to complete
+      // The 3D animation system monitors performance for 3 seconds before deciding to disable
+      await page.waitForTimeout(4000);
 
-        const fallback = document.querySelector('.animation-fallback');
+      // Check animation state multiple times to ensure it's stable
+      let animationState;
 
-        return canvas && !fallback;
-      });
+      let stable = false;
 
-      if (canvasVisible) {
-        // Wait for 3D animation to be fully loaded and visible
-        await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 10000 });
-      } else {
-        // On mobile devices, 3D animation may be disabled for performance
-        // Wait for hero animation container instead
-        await expect(page.locator('.hero-animation')).toBeVisible({ timeout: 10000 });
+      let attempts = 0;
+
+      while (!stable && attempts < 3) {
+        animationState = await page.evaluate(() => {
+          const canvas = document.querySelector('.hero-animation canvas') as HTMLCanvasElement;
+
+          const fallback = document.querySelector('.animation-fallback');
+
+          const container = document.querySelector('.hero-animation');
+
+          // Debug info
+          const heroAnimationHtml = container?.innerHTML || 'NO_CONTAINER';
+
+          return {
+            hasCanvas: !!canvas,
+            hasFallback: !!fallback,
+            hasContainer: !!container,
+            canvasVisible: canvas ? !canvas.hidden && canvas.offsetParent !== null : false,
+            heroAnimationContent: heroAnimationHtml.substring(0, 200), // First 200 chars for debugging
+          };
+        });
+
+        // Wait a bit and check again to see if state is stable
+        await page.waitForTimeout(500);
+        const animationState2 = await page.evaluate(() => {
+          const canvas = document.querySelector('.hero-animation canvas') as HTMLCanvasElement;
+
+          const fallback = document.querySelector('.animation-fallback');
+
+          return {
+            hasCanvas: !!canvas,
+            hasFallback: !!fallback,
+            canvasVisible: canvas ? !canvas.hidden && canvas.offsetParent !== null : false,
+          };
+        });
+
+        // Check if state is stable between checks
+        stable =
+          animationState.hasCanvas === animationState2.hasCanvas &&
+          animationState.hasFallback === animationState2.hasFallback &&
+          animationState.canvasVisible === animationState2.canvasVisible;
+
+        attempts++;
+        if (!stable) {
+          console.log(`Animation state unstable for ${name}, attempt ${attempts}, waiting more...`);
+          await page.waitForTimeout(1000);
+        }
       }
+
+      console.log(`Final animation state for ${name}: ${JSON.stringify(animationState, null, 2)}`);
 
       // Ensure we're at the top of the page
       await page.evaluate(() => window.scrollTo(0, 0));
@@ -81,12 +123,24 @@ test.describe('Business Area Screenshot Validation', () => {
       await expect(page.locator('.logo-text')).toBeVisible();
       await expect(page.locator('.hero-title')).toBeVisible();
 
-      // Only check canvas visibility if 3D animation is enabled
-      if (canvasVisible) {
-        await expect(page.locator('.hero-animation canvas')).toBeVisible();
+      // Always ensure the hero animation container is present
+      await expect(page.locator('.hero-animation')).toBeVisible();
+
+      // Check for either canvas (3D) or fallback (2D) animation with more lenient expectations
+      const hasCanvas = (await page.locator('.hero-animation canvas').count()) > 0;
+
+      const hasFallback = (await page.locator('.animation-fallback').count()) > 0;
+
+      if (hasCanvas) {
+        // 3D animation is active
+        await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 5000 });
+      } else if (hasFallback) {
+        // 2D fallback animation is active
+        await expect(page.locator('.animation-fallback')).toBeVisible();
       } else {
-        // Verify the hero animation container is present (may contain fallback)
-        await expect(page.locator('.hero-animation')).toBeVisible();
+        // Animation container exists but content might not be determined yet
+        // This is acceptable for screenshot tests as long as the container is present
+        console.log(`No specific animation content detected for ${name}, but container is present`);
       }
     });
 

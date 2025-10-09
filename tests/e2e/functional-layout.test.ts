@@ -155,7 +155,12 @@ test.describe('Functional Layout Validation', () => {
         (document.body.style as any).zoom = '150%';
       });
 
-      await page.waitForTimeout(500); // Allow layout to settle
+      // Wait for layout to stabilize after zoom change
+      await page.waitForFunction(() => {
+        const body = document.body;
+
+        return body.offsetWidth > 0 && body.offsetHeight > 0;
+      });
 
       const overflow = await checkViewportOverflow(page);
 
@@ -272,7 +277,8 @@ test.describe('Functional Layout Validation', () => {
 
       // Resize to mobile
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.waitForTimeout(500); // Allow responsive transitions
+      // Wait for responsive design changes to complete
+      await page.waitForFunction(() => window.innerWidth === 375);
 
       const mobileOverflow = await checkViewportOverflow(page);
 
@@ -293,7 +299,8 @@ test.describe('Functional Layout Validation', () => {
 
       // Resize to desktop
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await page.waitForTimeout(500); // Allow responsive transitions
+      // Wait for responsive design changes to complete
+      await page.waitForFunction(() => window.innerWidth === 1920);
 
       const desktopOverflow = await checkViewportOverflow(page);
 
@@ -311,7 +318,8 @@ test.describe('Functional Layout Validation', () => {
 
       for (const width of breakpoints) {
         await page.setViewportSize({ width, height: 1080 });
-        await page.waitForTimeout(300); // Allow layout to settle
+        // Wait for viewport resize to complete
+        await page.waitForFunction((expectedWidth) => window.innerWidth === expectedWidth, width);
 
         const overflow = await checkViewportOverflow(page);
 
@@ -421,12 +429,12 @@ test.describe('Functional Layout Validation', () => {
 
       // Check that main sections respond to viewport changes
       await page.setViewportSize({ width: 1920, height: 1080 });
-      await page.waitForTimeout(300);
+      await page.waitForFunction(() => window.innerWidth === 1920);
 
       const wideOverflow = await checkViewportOverflow(page);
 
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.waitForTimeout(300);
+      await page.waitForFunction(() => window.innerWidth === 375);
 
       const narrowOverflow = await checkViewportOverflow(page);
 

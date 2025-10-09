@@ -38,10 +38,13 @@ test.describe('Canvas Pointer Events', () => {
   test('canvas should remain visually functional while allowing interactions', async ({ page }) => {
     await page.goto('/');
 
-    // Wait for animation to initialize
-    await page.waitForTimeout(2000);
+    // Wait for animation to initialize by checking for canvas element
+    await page.waitForSelector('canvas[data-engine="three.js r180"], .animation-fallback', {
+      state: 'visible',
+      timeout: 5000,
+    });
 
-    // Verify canvas is present and rendering
+    // Verify canvas is present and rendering (or fallback is shown)
     const canvas = page.locator('canvas[data-engine="three.js r180"]');
 
     await expect(canvas).toBeVisible();

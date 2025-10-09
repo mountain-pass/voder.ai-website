@@ -193,7 +193,7 @@ jobs:
             echo "⚠️  Some health checks failed ($FAILED_CHECKS/6) but within tolerance"
           fi
 
-  # Separate job for comprehensive post-deployment E2E validation (runs in parallel with rollback logic)
+  # Targeted post-deployment smoke tests for production validation (fast execution)
   e2e-post-deploy-validation:
     needs: deploy
     runs-on: ubuntu-latest
@@ -207,15 +207,15 @@ jobs:
       - run: npm ci
       - name: Install Playwright Dependencies
         run: npx playwright install --with-deps
-      - name: Full E2E Test Suite (Post-deployment)
+      - name: Post-Deployment Smoke Tests
         run: |
-          echo "🧪 Running targeted E2E tests against production deployment..."
-          echo "🎯 Testing core functionality on chromium only for speed"
-          # Run essential E2E tests against production (optimized for <5min execution)
+          echo "🧪 Running essential smoke tests against production deployment..."
+          echo "🎯 Testing core functionality on Chromium only for speed"
+          # Run minimal smoke tests against production (optimized for <2min execution)
           if PREVIEW_URL=https://voder.ai npm run e2e:ci:post-deploy; then
-            echo "✅ Essential E2E tests passed! Production deployment validated."
+            echo "✅ Essential smoke tests passed! Production deployment validated."
           else
-            echo "❌ E2E tests failed - production deployment has issues"
+            echo "❌ Smoke tests failed - production deployment has issues"
             echo "⚠️  Note: This is post-deployment validation - site is already live"
             exit 1
           fi

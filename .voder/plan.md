@@ -1,50 +1,32 @@
-# Implementation Plan - COMPLETED SUCCESSFULLY ✅
+# Implementation Plan
 
-## STATUS: CI PIPELINE OPTIMIZATION COMPLETE
+## NOW
 
-### ✅ ACHIEVEMENT SUMMARY
-**Story 026.0-DEV-CI-PIPELINE-OPTIMIZATION has been successfully completed with all objectives achieved:**
+Fix the failing E2E test in closing-moment.spec.ts that's causing the CI pipeline to fail. The test expects `data-waiting="true"` attribute on the `#interest-form` element, but it's receiving an empty string. This is causing the post-deployment validation to fail in the CI pipeline.
 
-- **Performance Target**: ✅ ACHIEVED - 6.5 minute critical path (well under 15-minute target)
-- **Parallel Architecture**: ✅ IMPLEMENTED - 3 concurrent jobs (quality-gates, build, e2e-critical)  
-- **Build Caching**: ✅ WORKING - Artifact sharing between build and deploy jobs
-- **Quality Gates**: ✅ RESTORED - All linting, formatting, type-checking, unit testing operational
-- **E2E Testing**: ✅ RESTORED - Critical pre-deployment + comprehensive post-deployment validation
-- **Cache Key Issue**: ✅ RESOLVED - Fixed build-deploy cache coordination
+**Root Cause Analysis**: The test failure indicates there's an expectation for a `data-waiting` attribute that should be set to "true" on the interest form, but the form doesn't have this attribute or it's not being set correctly.
 
-### ✅ VERIFIED PRODUCTION PERFORMANCE METRICS
-**Pipeline Run ID: 18368928455 (Production Validation)**
-- **quality-gates**: 1m8s (all quality checks passing)
-- **build**: 41s (with successful dist folder caching)  
-- **e2e-critical**: 4m49s (critical tests validating deployment readiness)
-- **deploy**: 1m45s (with successful cache artifact restoration)
-- **Critical Path Total**: ~6.5 minutes (target: <15 minutes) ✅
+**Immediate Action**: 
+1. Investigate the actual HTML structure of the form on the live site
+2. Either fix the form to include the expected attribute, or update the test to match the current implementation
+3. This follows ITIL problem management - identify root cause before implementing fix
 
-### 🎯 OBJECTIVE COMPLETION STATUS
-1. **Target <15 minute pipeline execution**: ✅ ACHIEVED (6.5 minutes actual)
-2. **Restore full quality gates**: ✅ ACHIEVED (all checks operational)  
-3. **Restore E2E testing**: ✅ ACHIEVED (critical + full validation)
-4. **Maintain deployment reliability**: ✅ ACHIEVED (all deployments successful)
-5. **Implement build caching**: ✅ ACHIEVED (working cache artifact sharing)
+## NEXT
 
----
+After fixing the immediate test failure:
 
-## NOW - MAINTENANCE MODE
+1. **Optimize E2E Test Performance**: The post-deployment tests are still taking 9+ minutes which is excessive for a simple landing page validation. The current approach runs too many comprehensive tests for post-deployment validation.
 
-**All implementation objectives have been successfully completed.** The CI pipeline optimization is now in production and performing as designed. No further implementation work is required for this story.
+2. **Replace waitForTimeout Calls**: Remove inefficient `page.waitForTimeout(500)` calls throughout the E2E test suite and replace with proper element waits to improve test reliability and speed.
 
-## NEXT - MONITORING
+3. **Implement Proper Test Scope**: Ensure post-deployment tests only validate critical functionality (page loads, form exists, no major JavaScript errors) rather than comprehensive cross-browser testing.
 
-Continue monitoring pipeline performance to ensure sustained benefits:
-- Performance metrics remain under 15 minutes
-- Quality gates continue to pass consistently
-- E2E testing provides reliable deployment validation
-- Build caching continues to work effectively
+## LATER
 
-## LATER - FUTURE OPTIMIZATIONS (Optional)
+Long-term improvements:
 
-If future performance improvements are desired:
-- Consider additional parallel job optimizations
-- Evaluate test execution time improvements
-- Assess deployment process optimizations
-- Monitor for any new performance bottlenecks
+1. **Separate Comprehensive Testing**: Move comprehensive cross-browser testing to a separate workflow that runs on a schedule rather than blocking deployments.
+
+2. **Performance Monitoring**: Implement monitoring to ensure the optimized pipeline stays under 10 minutes total execution time.
+
+3. **Test Architecture Review**: Review the overall E2E testing strategy to ensure tests are appropriately scoped for different pipeline stages (pre-deployment critical tests vs post-deployment smoke tests vs comprehensive validation).

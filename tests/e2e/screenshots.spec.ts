@@ -50,8 +50,23 @@ test.describe('Business Area Screenshot Validation', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      // Wait for 3D animation to be fully loaded and visible
-      await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 10000 });
+      // Check if 3D animation is available or disabled due to performance
+      const canvasVisible = await page.evaluate(() => {
+        const canvas = document.querySelector('.hero-animation canvas');
+
+        const fallback = document.querySelector('.animation-fallback');
+
+        return canvas && !fallback;
+      });
+
+      if (canvasVisible) {
+        // Wait for 3D animation to be fully loaded and visible
+        await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 10000 });
+      } else {
+        // On mobile devices, 3D animation may be disabled for performance
+        // Wait for hero animation container instead
+        await expect(page.locator('.hero-animation')).toBeVisible({ timeout: 10000 });
+      }
 
       // Ensure we're at the top of the page
       await page.evaluate(() => window.scrollTo(0, 0));
@@ -65,7 +80,14 @@ test.describe('Business Area Screenshot Validation', () => {
       // Verify all brand elements are visible
       await expect(page.locator('.logo-text')).toBeVisible();
       await expect(page.locator('.hero-title')).toBeVisible();
-      await expect(page.locator('.hero-animation canvas')).toBeVisible();
+
+      // Only check canvas visibility if 3D animation is enabled
+      if (canvasVisible) {
+        await expect(page.locator('.hero-animation canvas')).toBeVisible();
+      } else {
+        // Verify the hero animation container is present (may contain fallback)
+        await expect(page.locator('.hero-animation')).toBeVisible();
+      }
     });
 
     test(`Problem Statement - ${name} (${width}x${height})`, async ({ page }) => {

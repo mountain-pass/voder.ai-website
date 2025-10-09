@@ -27,13 +27,29 @@ test('bounce tracking is initialized correctly', async ({ page }) => {
   // Wait for the app to load
   await page.waitForSelector('#app', { state: 'visible', timeout: 10000 });
 
-  // Wait for analytics to initialize by checking console messages
+  // Wait for analytics to initialize by checking console messages with retry logic
   await page.waitForFunction(
     () => {
       return document.readyState === 'complete';
     },
-    { timeout: 3000 },
+    { timeout: 5000 },
   );
+
+  // Additional wait for analytics messages to appear (WebKit/Safari may be slower)
+  let retryCount = 0;
+
+  const maxRetries = 10;
+
+  const retryDelay = 500;
+
+  while (
+    retryCount < maxRetries &&
+    (!consoleMessages.some((msg) => msg.includes('Analytics initialized')) ||
+      !consoleMessages.some((msg) => msg.includes('Traffic source tracked')))
+  ) {
+    await page.waitForTimeout(retryDelay);
+    retryCount++;
+  }
 
   // Check that analytics and bounce tracking were initialized
   expect(consoleMessages.some((msg) => msg.includes('Analytics initialized'))).toBe(true);

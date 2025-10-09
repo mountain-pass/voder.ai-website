@@ -15,6 +15,27 @@ export class ThreeAnimation {
   private isInitialized = false;
   private supportsWebGL = false;
 
+  // Performance monitoring properties
+  private performanceMonitor: {
+    enabled: boolean;
+    frameCount: number;
+    lastFrameTime: number;
+    frameRates: number[];
+    averageFrameRate: number;
+    isPerformancePoor: boolean;
+    disableThreshold: number; // FPS below which to disable animation
+    monitoringDuration: number; // How long to monitor before deciding
+  } = {
+    enabled: true,
+    frameCount: 0,
+    lastFrameTime: 0,
+    frameRates: [],
+    averageFrameRate: 60,
+    isPerformancePoor: false,
+    disableThreshold: 15, // Disable if FPS drops below 15
+    monitoringDuration: 3000, // Monitor for 3 seconds
+  };
+
   constructor(options: ThreeAnimationOptions) {
     this.container = options.container;
 
@@ -224,6 +245,104 @@ export class ThreeAnimation {
     }
 
     return false;
+  }
+
+  // Performance monitoring methods
+  private updatePerformanceMonitor(): void {
+    if (!this.performanceMonitor.enabled) return;
+
+    const currentTime = performance.now();
+
+    if (this.performanceMonitor.lastFrameTime > 0) {
+      const deltaTime = currentTime - this.performanceMonitor.lastFrameTime;
+
+      const fps = 1000 / deltaTime;
+
+      this.performanceMonitor.frameRates.push(fps);
+      this.performanceMonitor.frameCount++;
+
+      // Keep only recent frame rates for rolling average
+      if (this.performanceMonitor.frameRates.length > 60) {
+        this.performanceMonitor.frameRates.shift();
+      }
+
+      // Calculate average frame rate
+      this.performanceMonitor.averageFrameRate =
+        this.performanceMonitor.frameRates.reduce((a, b) => a + b, 0) /
+        this.performanceMonitor.frameRates.length;
+
+      // Check if we should disable animation due to poor performance
+      if (
+        this.performanceMonitor.frameCount > 30 && // Allow some frames for warmup
+        this.performanceMonitor.averageFrameRate < this.performanceMonitor.disableThreshold
+      ) {
+        this.performanceMonitor.isPerformancePoor = true;
+        console.warn('3D Animation disabled due to poor performance:', {
+          averageFPS: this.performanceMonitor.averageFrameRate,
+          threshold: this.performanceMonitor.disableThreshold,
+        });
+        this.disableAnimationDueToPerformance();
+      }
+    }
+
+    this.performanceMonitor.lastFrameTime = currentTime;
+  }
+
+  private disableAnimationDueToPerformance(): void {
+    console.warn('Disabling 3D animation due to performance concerns');
+
+    // Stop the animation
+    this.destroy();
+
+    // Show a simplified fallback
+    this.showPerformanceFallback();
+  }
+
+  private showPerformanceFallback(): void {
+    const fallbackElement = document.createElement('div');
+
+    fallbackElement.className = 'animation-fallback performance-fallback';
+    fallbackElement.innerHTML = `
+      <div class="fallback-content">
+        <div class="fallback-icon">⚡</div>
+        <p>Optimized for your device</p>
+      </div>
+    `;
+
+    // Add some basic styling
+    fallbackElement.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 300px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+      border-radius: 12px;
+      text-align: center;
+      color: #6b7280;
+      font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+    `;
+
+    // Clear container and add fallback
+    this.container.innerHTML = '';
+    this.container.appendChild(fallbackElement);
+  }
+
+  public getPerformanceStats(): {
+    enabled: boolean;
+    frameCount: number;
+    averageFrameRate: number;
+    isPerformancePoor: boolean;
+  } {
+    return {
+      enabled: this.performanceMonitor.enabled,
+      frameCount: this.performanceMonitor.frameCount,
+      averageFrameRate: this.performanceMonitor.averageFrameRate,
+      isPerformancePoor: this.performanceMonitor.isPerformancePoor,
+    };
+  }
+
+  public disablePerformanceMonitoring(): void {
+    this.performanceMonitor.enabled = false;
   }
 
   private checkWebGLSupport(): void {
@@ -893,6 +1012,14 @@ export class ThreeAnimation {
   /* c8 ignore start -- @preserve: WebGL rendering loop with requestAnimationFrame cannot be tested in JSDOM environment */
   private animate(): void {
     if (!this.scene || !this.camera || !this.renderer) return;
+
+    // Performance monitoring
+    this.updatePerformanceMonitor();
+
+    // Stop animation if performance is poor
+    if (this.performanceMonitor.isPerformancePoor) {
+      return;
+    }
 
     this.animationFrameId = requestAnimationFrame(() => this.animate());
 

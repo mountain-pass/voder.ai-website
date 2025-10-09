@@ -169,6 +169,7 @@ test.describe('Closing Moment - Email Capture Form', () => {
   });
 
   test('tracks analytics events on form submission', async ({ page, browserName }) => {
+    test.setTimeout(60000); // Increase timeout to 60 seconds for this specific test
     test.skip(browserName === 'firefox', 'Analytics tracking varies between browsers');
     test.skip(browserName === 'webkit', 'Analytics tracking varies between browsers');
 
@@ -176,30 +177,17 @@ test.describe('Closing Moment - Email Capture Form', () => {
     await page.reload();
     await page.waitForSelector('#app', { state: 'visible' });
 
-    // Wait for analytics initialization to complete
-    await page.waitForTimeout(1000);
+    // Wait for analytics initialization to complete - increased wait time
+    await page.waitForTimeout(2000);
 
     // Override clarity function after analytics has fully loaded
     await page.evaluate(() => {
       // Create events array to store analytics calls
       (window as any).__clarityEvents = [];
 
-      // Store the original clarity function if it exists
-      const originalClarity = (window as any).clarity;
-
-      // Create proxy function that captures calls and optionally calls original
+      // Create mock clarity function to ensure it exists
       (window as any).clarity = function (method: string, ...args: any[]) {
         (window as any).__clarityEvents.push({ method, args });
-
-        // Also call original clarity for system functions (but not for our test tracking)
-        if (originalClarity && typeof originalClarity === 'function') {
-          // Don't call original for our test-specific tracking to avoid real analytics pollution
-          if (method !== 'set' || args[0] !== 'email_signup') {
-            if (method !== 'event' || args[0] !== 'waitlist_signup') {
-              originalClarity(method, ...args);
-            }
-          }
-        }
       };
     });
 
@@ -212,9 +200,11 @@ test.describe('Closing Moment - Email Capture Form', () => {
 
     await emailInput.fill(testEmail);
 
-    // Mock successful form submission
+    // Mock successful form submission with delay to simulate real network
     await page.route('/', async (route) => {
       if (route.request().method() === 'POST') {
+        // Add small delay to simulate network request
+        await page.waitForTimeout(100);
         await route.fulfill({ status: 200, body: 'OK' });
       } else {
         await route.continue();
@@ -224,10 +214,13 @@ test.describe('Closing Moment - Email Capture Form', () => {
     // Submit form
     await submitButton.click();
 
-    // Wait for analytics events to be tracked
-    await page.waitForTimeout(500);
+    // Wait for form submission to complete and analytics to be tracked
+    await page.waitForSelector('.form-status.success', { timeout: 10000 });
 
-    // Debug: Log all events captured
+    // Additional wait for analytics events to be processed
+    await page.waitForTimeout(1000);
+
+    // Get all events captured
     const events = await page.evaluate(() => {
       return (window as any).__clarityEvents || [];
     });

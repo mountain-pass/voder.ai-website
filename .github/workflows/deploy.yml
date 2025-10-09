@@ -30,7 +30,7 @@ jobs:
       # - name: E2E Tests (Pre-deployment)
       #   run: npm run e2e:ci
       - name: E2E Tests (DISABLED - Workaround for slow pipeline)
-        run: echo "WARNING - E2E tests temporarily disabled for pipeline performance (Problem #012)"
+        run: echo "WARNING - E2E tests temporarily disabled for pipeline performance Problem 012"
 
   deploy:
     needs: quality-gates

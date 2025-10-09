@@ -31,7 +31,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      build-cache-key: ${{ steps.build-cache.outputs.cache-key }}
+      build-cache-key: build-${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: dist
-          key: build-${{ github.sha }}-${{ hashFiles('dist/**/*') }}
+          key: build-${{ github.sha }}
 
   # Parallel job 3: Critical E2E tests (minimal set for speed)
   e2e-critical:

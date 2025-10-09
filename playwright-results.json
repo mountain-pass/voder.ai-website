@@ -10,9 +10,7 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 4
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "reporter": [
       ["list", null],
@@ -40,57 +38,49 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 60000
+        "timeout": 30000
       },
       {
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 60000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "Mobile Safari",
         "name": "Mobile Safari",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
         "testIgnore": [],
         "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
-        "timeout": 60000
+        "timeout": 30000
       }
     ],
     "shard": null,
@@ -108,6 +98,231 @@
     }
   },
   "suites": [
+    {
+      "title": "app.spec.ts",
+      "file": "app.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "home page renders and title is correct",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-5108ab85dc97d427f233",
+          "file": "app.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "bounce tracking is initialized correctly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-1ca8e5d285edfea30e95",
+          "file": "app.spec.ts",
+          "line": 15,
+          "column": 1
+        },
+        {
+          "title": "engagement tracking works on user interaction",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "c31ff144dc4fee3acd0a-c9090ec1a928f9be1e6b",
+          "file": "app.spec.ts",
+          "line": 49,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "closing-moment.spec.ts",
+      "file": "closing-moment.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Closing Moment - Email Capture Form",
+          "file": "closing-moment.spec.ts",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "displays coming soon message and email capture form",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-0e94685ba44f55513e5d",
+              "file": "closing-moment.spec.ts",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "validates email input correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-9ab2ac09fac55c05214b",
+              "file": "closing-moment.spec.ts",
+              "line": 79,
+              "column": 3
+            },
+            {
+              "title": "handles form submission states correctly",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-8d0adc54a7dff7b47985",
+              "file": "closing-moment.spec.ts",
+              "line": 110,
+              "column": 3
+            },
+            {
+              "title": "handles form submission errors gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-125ab3af056506d5a845",
+              "file": "closing-moment.spec.ts",
+              "line": 144,
+              "column": 3
+            },
+            {
+              "title": "tracks analytics events on form submission",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-85055b6c3251cde1eaae",
+              "file": "closing-moment.spec.ts",
+              "line": 171,
+              "column": 3
+            },
+            {
+              "title": "form accessibility requirements",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-7e530de858bb658f0c2a",
+              "file": "closing-moment.spec.ts",
+              "line": 244,
+              "column": 3
+            },
+            {
+              "title": "preserves form data during validation errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "ed92c28bcaa7f25b53a5-86c84d2e4ea577197595",
+              "file": "closing-moment.spec.ts",
+              "line": 284,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
     {
       "title": "fouc-prevention.test.ts",
       "file": "fouc-prevention.test.ts",
@@ -127,27 +342,13 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5229,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:20.069Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "e7e29d74802d5fbd7c94-e1189d973c961f5d64ba",
@@ -161,31 +362,13 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 151,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Content without JavaScript: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:25.675Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "e7e29d74802d5fbd7c94-6a8c407a09c2911ff7fd",
@@ -199,31 +382,13 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3211,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "First Contentful Paint: 44ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:25.832Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "e7e29d74802d5fbd7c94-d0b47d2d6057103f157b",
@@ -237,27 +402,13 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2103,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:29.050Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "e7e29d74802d5fbd7c94-6acbf041f390740ee9e8",
@@ -271,27 +422,13 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7890,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:31.169Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "e7e29d74802d5fbd7c94-02d56551edc2efecb45d",
@@ -305,682 +442,16 @@
               "tags": [],
               "tests": [
                 {
-                  "timeout": 60000,
+                  "timeout": 30000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3253,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "App content before JS loads: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:39.066Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
+                  "results": [],
+                  "status": "skipped"
                 }
               ],
               "id": "e7e29d74802d5fbd7c94-e11d87ad1002a0f5a508",
-              "file": "fouc-prevention.test.ts",
-              "line": 185,
-              "column": 3
-            },
-            {
-              "title": "should not show visual flicker during page load",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 6098,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:20.073Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-cfeb92bb8b69acd63f25",
-              "file": "fouc-prevention.test.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should show proper content structure without JavaScript",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 249,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Content without JavaScript: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:27.207Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-8c2399c97d10b4316743",
-              "file": "fouc-prevention.test.ts",
-              "line": 83,
-              "column": 3
-            },
-            {
-              "title": "should measure First Contentful Paint timing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 2477,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "First Contentful Paint: 51.00000000000001ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:27.466Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-2a8f1234b02d61caf858",
-              "file": "fouc-prevention.test.ts",
-              "line": 112,
-              "column": 3
-            },
-            {
-              "title": "should not show empty white screen during slow loading",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 616,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:29.952Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-54611e2c0228a531418d",
-              "file": "fouc-prevention.test.ts",
-              "line": 137,
-              "column": 3
-            },
-            {
-              "title": "should maintain visual consistency across browser refresh",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 3969,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:30.575Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-ff1910ca9fe4a6c6b8c4",
-              "file": "fouc-prevention.test.ts",
-              "line": 157,
-              "column": 3
-            },
-            {
-              "title": "should detect blank page before JavaScript loads",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "webkit",
-                  "projectName": "webkit",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 2330,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "App content before JS loads: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:34.552Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-f5a670d0a9d9305c0743",
-              "file": "fouc-prevention.test.ts",
-              "line": 185,
-              "column": 3
-            },
-            {
-              "title": "should not show visual flicker during page load",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 5807,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:20.070Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-1839951b0f9e2fba81da",
-              "file": "fouc-prevention.test.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should show proper content structure without JavaScript",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 159,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Content without JavaScript: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:26.255Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-b358bef85068fc5d7601",
-              "file": "fouc-prevention.test.ts",
-              "line": 83,
-              "column": 3
-            },
-            {
-              "title": "should measure First Contentful Paint timing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 3376,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "First Contentful Paint: 36ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:26.420Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-c74407027d09c8b43731",
-              "file": "fouc-prevention.test.ts",
-              "line": 112,
-              "column": 3
-            },
-            {
-              "title": "should not show empty white screen during slow loading",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 2440,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:29.802Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-5a5c3a36d6a098f7e91b",
-              "file": "fouc-prevention.test.ts",
-              "line": 137,
-              "column": 3
-            },
-            {
-              "title": "should maintain visual consistency across browser refresh",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 8485,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:32.251Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-d7053b60f5adf8b78375",
-              "file": "fouc-prevention.test.ts",
-              "line": 157,
-              "column": 3
-            },
-            {
-              "title": "should detect blank page before JavaScript loads",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Chrome",
-                  "projectName": "Mobile Chrome",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "passed",
-                      "duration": 3154,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "App content before JS loads: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:40.743Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-901ac791f76c7481ad9d",
-              "file": "fouc-prevention.test.ts",
-              "line": 185,
-              "column": 3
-            },
-            {
-              "title": "should not show visual flicker during page load",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 4756,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:20.069Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-d3f030c451d1a2a9f815",
-              "file": "fouc-prevention.test.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should show proper content structure without JavaScript",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 340,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Content without JavaScript: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:25.867Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-9b7bf2b969a9d930c41e",
-              "file": "fouc-prevention.test.ts",
-              "line": 83,
-              "column": 3
-            },
-            {
-              "title": "should measure First Contentful Paint timing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 3793,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "First Contentful Paint: 48ms\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:26.217Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-9d78609201c383d96bbd",
-              "file": "fouc-prevention.test.ts",
-              "line": 112,
-              "column": 3
-            },
-            {
-              "title": "should not show empty white screen during slow loading",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 571,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:30.014Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-b07fcbb672ca76461bb0",
-              "file": "fouc-prevention.test.ts",
-              "line": 137,
-              "column": 3
-            },
-            {
-              "title": "should maintain visual consistency across browser refresh",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 3656,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:30.591Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-3aeeb66007ea38e1b1f1",
-              "file": "fouc-prevention.test.ts",
-              "line": 157,
-              "column": 3
-            },
-            {
-              "title": "should detect blank page before JavaScript loads",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "Mobile Safari",
-                  "projectName": "Mobile Safari",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 2325,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "App content before JS loads: \n      \n        \n          \n          \n            \n              \n                VODER\n              \n            \n            \n            \n            \n            \n              AI Coding Without the Slop\n            \n          \n\n          \n          \n            \n              Stop AI from turning your codebase into an unmaintainable mess. AI development that\n              stays clean and scales with your team.\n            \n            \n              Coming Soon\n            \n          \n\n          \n            Sound Familiar?\n            \n              \n                You started using AI to ship faster, but now your codebase looks like it was written\n                by a caffeinated intern having a breakdown.\n              \n              \n                \n                  📁\n                  Empty .md files everywhere because AI \"documented\" your features\n                \n                \n                  🔧\n                  Scripts that work once, then break mysteriously in production\n                \n                \n                  🏗️\n                  Architecture that made sense to GPT but confuses every human\n                \n                \n                  ⏰\n                  Debugging takes longer than writing the original code\n                \n              \n              \n                Does this resonate with your experience?\n              \n            \n          \n\n          \n            Get notified when we launch\n            \n              \n              \n\n              \n              \n                Don't fill this out if you're human: \n              \n\n              \n                Email address\n                \n                We'll notify you when Voder launches\n              \n              Join the Waitlist\n              \n            \n          \n        \n      \n    \n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-10-09T01:40:34.256Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-ce19b7ac270cde6b9579",
               "file": "fouc-prevention.test.ts",
               "line": 185,
               "column": 3
@@ -992,10 +463,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-09T01:40:14.775Z",
-    "duration": 35260.339,
-    "expected": 24,
-    "skipped": 0,
+    "startTime": "2025-10-09T03:59:48.495Z",
+    "duration": 33.45800000000003,
+    "expected": 0,
+    "skipped": 16,
     "unexpected": 0,
     "flaky": 0
   }

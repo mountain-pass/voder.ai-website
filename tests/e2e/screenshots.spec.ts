@@ -52,7 +52,8 @@ test.describe('Business Area Screenshot Validation', () => {
 
       // Wait longer for the animation to finish initializing and performance monitoring to complete
       // The 3D animation system monitors performance for 3 seconds before deciding to disable
-      await page.waitForTimeout(4000);
+      // Increased from 4000ms to 6000ms to provide more buffer for performance monitoring
+      await page.waitForTimeout(6000);
 
       // Check animation state multiple times to ensure it's stable
       let animationState;
@@ -127,20 +128,47 @@ test.describe('Business Area Screenshot Validation', () => {
       await expect(page.locator('.hero-animation')).toBeVisible();
 
       // Check for either canvas (3D) or fallback (2D) animation with more lenient expectations
-      const hasCanvas = (await page.locator('.hero-animation canvas').count()) > 0;
+      // Use a more robust approach that handles performance monitoring race conditions
+      const hasVisibleCanvas = await page
+        .locator('.hero-animation canvas')
+        .isVisible()
+        .catch(() => false);
 
-      const hasFallback = (await page.locator('.animation-fallback').count()) > 0;
+      const hasVisibleFallback = await page
+        .locator('.animation-fallback')
+        .isVisible()
+        .catch(() => false);
 
-      if (hasCanvas) {
-        // 3D animation is active
-        await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 5000 });
-      } else if (hasFallback) {
+      if (hasVisibleCanvas) {
+        // 3D animation is active and visible
+        await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 1000 });
+      } else if (hasVisibleFallback) {
         // 2D fallback animation is active
         await expect(page.locator('.animation-fallback')).toBeVisible();
       } else {
-        // Animation container exists but content might not be determined yet
-        // This is acceptable for screenshot tests as long as the container is present
-        console.log(`No specific animation content detected for ${name}, but container is present`);
+        // Wait a bit more for performance monitoring to complete, then check again
+        await page.waitForTimeout(2000);
+        const finalHasCanvas = await page
+          .locator('.hero-animation canvas')
+          .isVisible()
+          .catch(() => false);
+
+        const finalHasFallback = await page
+          .locator('.animation-fallback')
+          .isVisible()
+          .catch(() => false);
+
+        if (finalHasCanvas) {
+          await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 1000 });
+        } else if (finalHasFallback) {
+          await expect(page.locator('.animation-fallback')).toBeVisible();
+        } else {
+          // Animation container exists but content might not be determined yet
+          // This is acceptable for screenshot tests as long as the container is present
+          console.log(
+            `No specific animation content detected for ${name}, but container is present`,
+          );
+        }
       }
     });
 

@@ -41,14 +41,14 @@ The deployment workflow:
 ### Deployment Commands
 
 ```bash
-# Check deployment readiness (full verification + screenshots)
-npm run deploy:check
+# Full verification before deployment
+npm run verify
 
 # Preview production build locally
-npm run deploy:preview
+npm run preview
 
-# Check current deployment status
-npm run deploy:status
+# Validate production deployment (after deploy)
+npm run e2e:ci:prod
 ```
 
 ### Automatic Deployment
@@ -59,13 +59,13 @@ npm run deploy:status
 - **Process**: Vercel automatically detects changes and deploys
 - **Configuration**: Defined in `vercel.json`
 - **Monitoring**: GitHub Actions workflow provides build validation
-- **Status**: Check deployment status via `npm run deploy:status`
+- **Status**: Check via Vercel dashboard or GitHub Actions
 
 **No manual deployment required** - Vercel handles everything automatically when code is pushed to the main branch.
 
 ### Pre-deployment Verification
 
-The `deploy:check` script runs:
+The `verify` script runs:
 
 - Security audit (`npm audit`)
 - Linting (ESLint, Stylelint, HTMLHint, Markdownlint)
@@ -87,19 +87,33 @@ The `deploy:check` script runs:
 
 ### Pre-deployment Verification (Optional)
 
+````bash
 ```bash
 # Verify everything is ready for deployment locally
-npm run deploy:check
+npm run verify
 
-# Check current deployment status
-npm run deploy:status
-```
-
+# Check current deployment status via Vercel dashboard
 ````
 
 ### Pre-deployment Verification
 
-The `deploy:check` script runs:
+The `verify` script runs:
+
+- Security audit (`npm audit`)
+- Linting (ESLint, Stylelint, HTMLHint, Markdownlint)
+- Type checking (TypeScript)
+- Formatting verification (Prettier)
+- Production build
+- Unit tests with coverage
+- Screenshot tests across all viewports
+
+```
+
+```
+
+### Pre-deployment Verification
+
+The `verify` script runs:
 
 - Security audit (`npm audit`)
 - Linting (ESLint, Stylelint, HTMLHint, Markdownlint)
@@ -122,14 +136,11 @@ The `deploy:check` script runs:
 
 ```bash
 # Verify everything is ready for deployment
-npm run deploy:check
-
-# Check current deployment status
-npm run deploy:status
+npm run verify
 
 # Test production build locally
-npm run deploy:preview
-````
+npm run preview
+```
 
 ## Custom Domain Configuration
 
@@ -153,8 +164,7 @@ A     voder.ai     -> 76.76.19.61 (Vercel IP)
 ### Deployment Status
 
 ```bash
-# Check deployment status
-npm run deploy:status
+# Check deployment status via Vercel dashboard
 ```
 
 Provides information about:
@@ -200,7 +210,7 @@ npm run build
 npm run verify
 
 # Check for issues
-npm run deploy:check
+npm run verify
 ```
 
 ### Common Issues
@@ -227,7 +237,7 @@ Vercel provides automatic rollback capabilities:
 - [ ] Build successful (`npm run build`)
 - [ ] No linting errors (`npm run lint:check`)
 - [ ] Security audit clean (`npm audit`)
-- [ ] Ready for deployment (`npm run deploy:check`)
+- [ ] Ready for deployment (`npm run verify`)
 
 ### Branch Protection
 

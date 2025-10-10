@@ -1,47 +1,123 @@
-## NOW# Implementation Plan# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan## NOW# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
-Fix the Mobile Chrome E2E test failure for "Brand Entry - desktop (1920x1080)" caused by race condition in 3D animation initialization.
+Based on the assessment report findings, this plan addresses critical documentation inconsistencies that block reliable development environment setup.
 
 
 
-**Root Cause Analysis**: ## NOW
-
-- The test expects a canvas element to be visible when `hasCanvas` is true
-
-- However, Mobile Chrome's performance monitoring is inconsistently disabling 3D animation
-
-- The animation system decides between canvas (3D) and fallback (2D) based on performance metrics
-
-- Race condition exists between performance monitoring completion and test assertion**Fix Problem 011 Status Inconsistency**: Update the status of problem `011-missing-e2e-tests-in-ci-pipeline.open.md` from "OPEN" to "CLOSED" since the resolution section clearly documents that E2E tests are already properly integrated in the CI pipeline. The problem was based on an incorrect assumption and the investigation findings show:## NOW## NOW
+## NOW## NOW
 
 
+
+**Fix Node.js version documentation inconsistencies across all documentation files**
+
+
+
+The assessment identified that package.json requires Node.js >=20.0.0 but multiple documentation files incorrectly state >=22.17.0, creating a blocking condition for new developers. This was caused by an October 3, 2025 commit that lowered the requirement for CI compatibility but didn't update documentation.**Fix Documentation Mismatch - README.md Script Reference**Fix the Mobile Chrome E2E test failure for "Brand Entry - desktop (1920x1080)" caused by race condition in 3D animation initialization.
+
+
+
+**Required changes**:
+
+1. Update README.md: Change "Node.js >= 22.17.0" to "Node.js >= 20.0.0"
+
+2. Update docs/DEVELOPER-SETUP.md: Change prerequisites from >=22.17.0 to >=20.0.0The assessment identified a critical documentation issue: README.md references a non-existent `npm run health-check` script that was removed from package.json in recent updates.
+
+3. Update prompts/release-0.5/in-scope/002.0-DEV-ENV-NODE.md: Change REQ-NODE-VERSION from >=22.17.0 to >=20.0.0
+
+4. Verify that ADR-0004 (TypeScript config decision) aligns with Node.js 20.0.0 requirement
+
+
+
+This resolves the critical documentation validation failure and enables reliable developer onboarding.**Implementation Steps:****Root Cause Analysis**: ## NOW
+
+
+
+## NEXT1. Review the referenced script in README.md line 57
+
+
+
+**Verify documentation consistency and complete remaining assessment phases**2. Determine if the script should be:- The test expects a canvas element to be visible when `hasCanvas` is true
+
+
+
+After fixing the Node.js version documentation:   - Removed from documentation (if no longer needed)
+
+1. Re-run documentation validation to ensure all inconsistencies are resolved
+
+2. Continue with assessment Phases 5-10 (Testing, Runtime, Version Control, Pipeline, Problems, Traceability)   - Added back to package.json (if functionality is still required)- However, Mobile Chrome's performance monitoring is inconsistently disabling 3D animation
+
+3. Generate final assessment report confirming project readiness
+
+3. Update README.md to remove the invalid reference
+
+## LATER
+
+4. Verify all other npm script references in README.md match package.json- The animation system decides between canvas (3D) and fallback (2D) based on performance metrics
+
+**Monitor for future documentation drift**
+
+5. Check DEVELOPER-SETUP.md for any similar outdated references
+
+1. Add documentation consistency checks to pre-commit hooks
+
+2. Consider automated validation of version requirements across documentation files- Race condition exists between performance monitoring completion and test assertion**Fix Problem 011 Status Inconsistency**: Update the status of problem `011-missing-e2e-tests-in-ci-pipeline.open.md` from "OPEN" to "CLOSED" since the resolution section clearly documents that E2E tests are already properly integrated in the CI pipeline. The problem was based on an incorrect assumption and the investigation findings show:## NOW## NOW
+
+3. Review CI/CD pipeline to ensure Node.js version alignment between runtime and documentation
+**Rationale:** Documentation accuracy is essential for contributor onboarding and maintains trust in project setup instructions. This is blocking new story development per assessment criteria.
+
+
+
+## NEXT
 
 **Immediate Fix**: Update the test logic in `tests/e2e/screenshots.spec.ts` to handle the case where performance monitoring disables the 3D animation after canvas creation but before visibility check. The test should accept either canvas OR fallback as valid states, not enforce canvas visibility when `hasCanvas` is true but performance monitoring has kicked in.
 
+**Verify Complete Documentation Currency**
 
+
+
+After fixing the immediate health-check script issue:
 
 **Implementation**:1. Pre-deployment E2E validation exists (`npm run e2e:ci` in quality gates job)
 
-1. Modify the assertion logic in the Brand Entry test to be more flexible
+1. Cross-reference all npm scripts mentioned in documentation with actual package.json
 
-2. Change from strict canvas visibility requirement to accepting either animation state2. CI configuration includes Playwright dependencies installation
+2. Update any other stale documentation references discovered1. Modify the assertion logic in the Brand Entry test to be more flexible
 
-3. Add proper timing buffer for performance monitoring to complete before checking animation state
+3. Ensure setup instructions remain accurate for new contributors
 
-4. Update test to validate animation container exists rather than specific canvas visibility3. Post-deployment validation is implemented (`npm run e2e:ci:prod`)Fix the 3 critical E2E test failures that are blocking development:Implement **Targeted Post-Deployment** validation to achieve the "Post-deployment validation uses single browser (Chromium) with minimal essential tests only" acceptance criteria.
-
-
-
-## NEXT4. E2E test failures properly block deployment through job dependencies
+4. Verify that the verify script mentioned in README actually works as documented2. Change from strict canvas visibility requirement to accepting either animation state2. CI configuration includes Playwright dependencies installation
 
 
 
-Add performance monitoring stabilization to prevent future test flakiness:
+**Note:** This addresses the documentation validation failure that triggered the assessment fail-fast condition.3. Add proper timing buffer for performance monitoring to complete before checking animation state
+
+
+
+## LATER4. Update test to validate animation container exists rather than specific canvas visibility3. Post-deployment validation is implemented (`npm run e2e:ci:prod`)Fix the 3 critical E2E test failures that are blocking development:Implement **Targeted Post-Deployment** validation to achieve the "Post-deployment validation uses single browser (Chromium) with minimal essential tests only" acceptance criteria.
+
+
+
+**Establish Documentation Maintenance Process**
+
+
+
+Future work to prevent documentation drift:## NEXT4. E2E test failures properly block deployment through job dependencies
+
+
+
+1. Add documentation review to pre-commit hooks or CI pipeline
+
+2. Create automated checks that validate npm script references in markdown files
+
+3. Establish regular documentation review cycles aligned with dependency updatesAdd performance monitoring stabilization to prevent future test flakiness:
+
+4. Consider adding documentation update requirements to story completion criteria
 
 1. Increase the stabilization wait time in screenshot tests from 4000ms to 6000ms
 
+**Note:** These are process improvements to prevent future documentation staleness issues.
 2. Add performance override parameter to force 3D mode in tests when neededThis is a simple status update to align the file status with the documented resolution, removing a false blocking issue from the project.
 
 3. Create helper function to wait for animation state to stabilize before assertions

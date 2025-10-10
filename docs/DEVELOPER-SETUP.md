@@ -6,7 +6,7 @@ This document describes the minimal, non-interactive steps a contributor or CI j
 
 ## Prerequisites
 
-- Node.js >= 22.17.0 (the project enforces this via package.json `engines`). Using a version manager (nvm, asdf, Volta) is recommended.
+- Node.js >= 20.0.0 (the project enforces this via package.json `engines`). Using a version manager (nvm, asdf, Volta) is recommended.
 - npm (comes with Node.js)
 
 ## Install dependencies (non-interactive)
@@ -88,9 +88,9 @@ We provide a small parser script used by CI to summarize npm audit findings. To 
 
    node .github/scripts/parse-audit.js audit.json
 
-The repository also exposes a convenience npm script that chains both steps:
+The repository uses npm audit to check for security vulnerabilities. Run:
 
-npm run security:local
+npm audit
 
 If the parser detects high or critical vulnerabilities it will exit with a non-zero status and print a concise summary. Commit the resulting audit.json and a short audit summary (audit-summary.md) if you intend to open a remediation PR so reviewers can triage the findings quickly.
 
@@ -118,12 +118,6 @@ If the parser detects high or critical vulnerabilities it will exit with a non-z
 5. Implement remediation or formal risk acceptance
 
 ## Developer utilities
-
-- Health check
-
-  npm run health-check
-
-  Runs a sequence of local checks (node engine, environment assumptions, tooling availability). Useful when preparing a release or debugging CI failures.
 
 - Prepare libraries
 

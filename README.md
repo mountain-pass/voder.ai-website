@@ -6,7 +6,7 @@ A small static pre-launch site showcasing the Voder project. This repository con
 
 Prerequisites
 
-- Node.js >= 22.17.0 (the project enforces this via package.json `engines`). We recommend using a Node version manager such as nvm, asdf, or Volta.
+- Node.js >= 20.0.0 (the project enforces this via package.json `engines`). We recommend using a Node version manager such as nvm, asdf, or Volta.
 
 Install dependencies (non-interactive)
 
@@ -54,8 +54,6 @@ Health and maintenance scripts
 
 - npm run prepare
   Runs `scripts/prepare-libraries.js` (used by the development environment).
-- npm run health-check
-  Runs `scripts/health-check.js` to validate local environment assumptions.
 
 Git hooks
 

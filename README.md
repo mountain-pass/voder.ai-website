@@ -86,7 +86,7 @@ Notes for contributors
 
 Troubleshooting
 
-- If `npm ci` fails due to node engine mismatch, switch your Node version to a compatible one (>=22.17.0).
+- If `npm ci` fails due to node engine mismatch, switch your Node version to a compatible one (>=20.0.0).
 - If lint or format fails, run `npm run lint:fix` or `npm run format` and re-run verification.
 - If tests fail locally but pass in CI, ensure you have installed dependencies with `npm ci` (CI uses a lockfile to install reproducible versions).
 

@@ -576,7 +576,7 @@ export class ThreeAnimation {
     const volumeMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTime: { value: 0 },
-        uColor: { value: new THREE.Color(0x5599ee) }, // Medium blue for balanced visibility
+        uColor: { value: new THREE.Color(0x24d1d5) }, // Brand soft teal glow color for consistency
         uDensity: { value: performanceConfig.causticsDensity }, // Device-specific density
         uSteps: { value: performanceConfig.rayMarchingSteps }, // Device-specific steps
       },

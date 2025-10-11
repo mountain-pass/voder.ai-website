@@ -355,7 +355,7 @@ body {
 @media (width <= 768px) {
   /* Mobile: Maintain flexbox layout - no absolute positioning */
   .hero-title {
-    font-size: var(--font-size-sm); /* Minimal tagline for mobile */
+    font-size: var(--font-size-lg); /* Improved tagline visibility - was var(--font-size-sm) */
   }
 
   .below-fold-content {

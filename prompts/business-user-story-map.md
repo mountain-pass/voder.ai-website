@@ -23,17 +23,17 @@
 
 | **Release 1.0 (MVP Problem Validation)** (Current Release) | **Intrigue**               | **Feel Pain**               | **Connect**                   | **Love Alternative** | **Want It**        |
 | ---------------------------------------------------------- | -------------------------- | --------------------------- | ----------------------------- | -------------------- | ------------------ |
-| **Must-haves**                                             | 3D animation (025.0)       | Visual chaos representation | "Software starts with intent" | "Better way" teaser  | "See the code" CTA |
-|                                                            | Scroll interaction (025.2) | -                           | -                             | -                    | -                  |
-|                                                            | Glass material (025.4)     | -                           | -                             | -                    | -                  |
-|                                                            | Light caustics (025.7)     | -                           | -                             | -                    | -                  |
+| **Must-haves**                                             | 3D animation (025.0)       | Problem recognition (026.0) | "Software starts with intent" | "Better way" teaser  | "See the code" CTA |
+|                                                            | Scroll interaction (025.2) | Emotional storytelling      | -                             | -                    | -                  |
+|                                                            | Glass material (025.4)     | Validated LinkedIn language | -                             | -                    | -                  |
+|                                                            | Light caustics (025.7)     | Relatable scenarios         | -                             | -                    | -                  |
 |                                                            | Flowing ribbons (025.8)    | -                           | -                             | -                    | -                  |
 
 | **Release 2 (Solution Validation)** | **Intrigue** | **Feel Pain**           | **Connect**         | **Love Alternative** | **Want It**        |
 | ----------------------------------- | ------------ | ----------------------- | ------------------- | -------------------- | ------------------ |
-| **Enhancements**                    | Brand story  | Interactive chaos demo  | Typing animation    | GPS metaphor         | Benefit highlights |
+| **Enhancements**                    | Brand story  | Interactive scenarios   | Typing animation    | GPS metaphor         | Benefit highlights |
 |                                     | Brand story  | Problem cost calculator | Strategic messaging | Vision flow diagram  | ROI preview        |
-|                                     | -            | -                       | -                   | Code adaptation demo | -                  |
+|                                     | -            | Evolution animations    | -                   | Code adaptation demo | -                  |
 
 | **Release 3 (Full Experience)** | **Intrigue**    | **Feel Pain**           | **Connect**                 | **Love Alternative** | **Want It**            |
 | ------------------------------- | --------------- | ----------------------- | --------------------------- | -------------------- | ---------------------- |

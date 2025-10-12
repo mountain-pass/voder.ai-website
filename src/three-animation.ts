@@ -126,23 +126,23 @@ export class ThreeAnimation {
       case 'mobile':
         return {
           enableCaustics: performanceOverride ?? !isTestEnvironment, // Disable caustics in test env
-          rayMarchingSteps: isTestEnvironment ? 3 : 10, // Ultra-reduced for tests
-          causticsDensity: 0.15, // Reduced density for mobile
+          rayMarchingSteps: isTestEnvironment ? 3 : 5, // Ultra-reduced for tests
+          causticsDensity: 0.22, // Unified density across all devices
           deviceType,
         };
       case 'tablet':
         return {
           enableCaustics: performanceOverride ?? !isTestEnvironment, // Disable caustics in test env
           rayMarchingSteps: isTestEnvironment ? 5 : 20, // Reduced for tests
-          causticsDensity: 0.18, // Moderate density for tablet
+          causticsDensity: 0.22, // Unified density across all devices
           deviceType,
         };
       case 'desktop':
       default:
         return {
           enableCaustics: performanceOverride ?? !isTestEnvironment, // Disable caustics in test env
-          rayMarchingSteps: isTestEnvironment ? 8 : 40, // Reduced for tests
-          causticsDensity: 0.22, // Full density for desktop
+          rayMarchingSteps: isTestEnvironment ? 8 : 20, // Reduced for tests
+          causticsDensity: 0.22, // Unified density across all devices
           deviceType,
         };
     }
@@ -579,6 +579,7 @@ export class ThreeAnimation {
         uColor: { value: new THREE.Color(0x24d1d5) }, // Brand soft teal glow color for consistency
         uDensity: { value: performanceConfig.causticsDensity }, // Device-specific density
         uSteps: { value: performanceConfig.rayMarchingSteps }, // Device-specific steps
+        uMobileDevice: { value: this.getDeviceType() === 'mobile' }, // Disable jittering on mobile
       },
       vertexShader: `
         varying vec3 vObjectPos;
@@ -596,6 +597,7 @@ export class ThreeAnimation {
         uniform vec3 uColor;
         uniform float uDensity;
         uniform int uSteps;
+        uniform bool uMobileDevice;
         
         varying vec3 vObjectPos;
         varying vec3 vLocalCameraPos;
@@ -721,8 +723,8 @@ export class ThreeAnimation {
           float marchDist = tEnd - tStart;
           float stepSize = marchDist / float(uSteps);
           
-          // Jitter for smoother sampling
-          float jitter = hash(gl_FragCoord.xy);
+          // Jitter for smoother sampling - disabled on mobile to prevent speckle artifacts
+          float jitter = uMobileDevice ? 0.0 : hash(gl_FragCoord.xy);
           float t = tStart + jitter * stepSize;
           
           // Accumulate light

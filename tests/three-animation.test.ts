@@ -915,8 +915,8 @@ describe('ThreeAnimation', () => {
 
       expect(mobileConfig.deviceType).toBe('mobile');
       expect(mobileConfig.enableCaustics).toBe(true);
-      expect(mobileConfig.rayMarchingSteps).toBe(10);
-      expect(mobileConfig.causticsDensity).toBe(0.15);
+      expect(mobileConfig.rayMarchingSteps).toBe(5);
+      expect(mobileConfig.causticsDensity).toBe(0.22);
 
       // Test tablet performance config
       Object.defineProperty(navigator, 'userAgent', {
@@ -928,7 +928,7 @@ describe('ThreeAnimation', () => {
       expect(tabletConfig.deviceType).toBe('tablet');
       expect(tabletConfig.enableCaustics).toBe(true);
       expect(tabletConfig.rayMarchingSteps).toBe(20);
-      expect(tabletConfig.causticsDensity).toBe(0.18);
+      expect(tabletConfig.causticsDensity).toBe(0.22);
 
       // Test desktop performance config
       Object.defineProperty(navigator, 'userAgent', {
@@ -939,7 +939,7 @@ describe('ThreeAnimation', () => {
 
       expect(desktopConfig.deviceType).toBe('desktop');
       expect(desktopConfig.enableCaustics).toBe(true);
-      expect(desktopConfig.rayMarchingSteps).toBe(40);
+      expect(desktopConfig.rayMarchingSteps).toBe(20);
       expect(desktopConfig.causticsDensity).toBe(0.22);
     });
 
@@ -982,7 +982,7 @@ describe('ThreeAnimation', () => {
 
       expect(overrideConfig.enableCaustics).toBe(true);
       expect(overrideConfig.deviceType).toBe('mobile');
-      expect(overrideConfig.rayMarchingSteps).toBe(10); // Still mobile optimization
+      expect(overrideConfig.rayMarchingSteps).toBe(5); // Updated mobile optimization
 
       // Restore original location
       Object.defineProperty(window, 'location', {

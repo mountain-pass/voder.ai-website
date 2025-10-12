@@ -21,7 +21,7 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['json', { outputFile: 'playwright-results.json' }],
-    ['html', { outputFolder: 'test-results/html', open: 'never' }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
     // Add GitHub Actions reporter in CI
     ...(isCI ? [['github'] as const] : []),
   ],

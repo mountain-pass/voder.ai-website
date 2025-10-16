@@ -70,6 +70,61 @@ export function init(): void {
             </div>
           </section>
 
+          <section class="narrative-content" role="region" aria-labelledby="narrative-title">
+            <h2 id="narrative-title" class="sr-only">Your AI Coding Journey</h2>
+            
+            <!-- Act 1: Magic Phase -->
+            <div class="narrative-segment" data-act="1" data-segment="1">
+              <p>
+                Remember when AI coding felt like <span class="magic-word">magic</span>?
+              </p>
+            </div>
+            <div class="narrative-segment" data-act="1" data-segment="2">
+              <p>
+                When shipping features was <span class="speed-word">fast and exciting</span>?
+              </p>
+            </div>
+
+            <!-- Act 2: Peak Momentum -->
+            <div class="narrative-segment" data-act="2" data-segment="3">
+              <p>You showed it to your team. You posted about it.</p>
+            </div>
+            <div class="narrative-segment" data-act="2" data-segment="4">
+              <p>
+                Features <span class="flew-word">flew</span> into production. You felt
+                <span class="unstoppable-word">unstoppable</span>.
+              </p>
+            </div>
+
+            <!-- Act 3: The Turn -->
+            <div class="narrative-segment" data-act="3" data-segment="5">
+              <p>Then it <span class="happened-phrase">happened</span>...</p>
+            </div>
+
+            <!-- Act 4: Chaos -->
+            <div class="narrative-segment" data-act="4" data-segment="6">
+              <p>
+                Your codebase became a <span class="nightmare-word">nightmare</span>.
+                Nothing works, everything's <span class="broken-word">broken</span>.
+              </p>
+            </div>
+
+            <!-- Act 5: Reality -->
+            <div class="narrative-segment" data-act="5" data-segment="7">
+              <p>
+                The excitement turned to <span class="dread-word">dread</span>. Magic
+                became <span class="quicksand-word">quicksand</span>.
+              </p>
+            </div>
+            <div class="narrative-segment" data-act="5" data-segment="8">
+              <p>
+                Now you're
+                <span class="stuck-phrase">stuck cleaning up the mess</span> while your
+                competitors actually ship features.
+              </p>
+            </div>
+          </section>
+
           <section class="interest-capture">
             <h2 class="signup-title">Get notified when we launch</h2>
             <form class="signup-form" id="interest-form" aria-label="Email signup form" data-netlify="true" name="waitlist-signup" method="POST">

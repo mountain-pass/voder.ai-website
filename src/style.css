@@ -325,6 +325,82 @@ body {
   margin: 0;
 }
 
+/* Narrative content section */
+.narrative-content {
+  align-items: center;
+
+  /* Center content vertically within the viewport */
+  display: flex;
+  flex-direction: column;
+
+  /* Full viewport height container for scroll foundation */
+  height: 100vh;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 800px;
+  padding: var(--space-8);
+
+  /* Ensure content is above 3D animation */
+  position: relative;
+  z-index: 10;
+}
+
+.narrative-segment {
+  margin-bottom: var(--space-6);
+  max-width: 600px;
+  text-align: center;
+}
+
+.narrative-segment p {
+  color: var(--paper-white);
+  font-size: var(--font-size-xl);
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Emotional keywords for future enhancement */
+.magic-word,
+.speed-word,
+.flew-word,
+.unstoppable-word,
+.happened-phrase,
+.nightmare-word,
+.broken-word,
+.dread-word,
+.quicksand-word,
+.stuck-phrase {
+  color: var(--soft-teal-glow);
+  font-weight: 600;
+}
+
+/* Progressive emphasis for different emotional states */
+.magic-word,
+.speed-word,
+.flew-word,
+.unstoppable-word {
+  /* Positive emotions - bright teal */
+  color: var(--soft-teal-glow);
+}
+
+.happened-phrase {
+  /* Turn moment - maintain teal but add emphasis */
+  color: var(--soft-teal-glow);
+  font-style: italic;
+}
+
+.nightmare-word,
+.broken-word,
+.dread-word,
+.quicksand-word,
+.stuck-phrase {
+  /* Negative emotions - slightly muted but still teal for brand consistency */
+  color: var(--soft-teal-glow);
+  opacity: 0.8;
+}
+
+/* Focus styles for accessibility */
+
 /* Responsive design */
 @media (width >= 1200px) {
   /* Desktop: Maintain flexbox layout - no absolute positioning */
@@ -334,6 +410,14 @@ body {
 
   .below-fold-content {
     padding: 8vh 4vw;
+  }
+
+  .narrative-content {
+    padding: var(--space-12);
+  }
+
+  .narrative-segment p {
+    font-size: var(--font-size-2xl);
   }
 }
 
@@ -350,6 +434,14 @@ body {
   .value-proposition-title {
     font-size: var(--font-size-4xl);
   }
+
+  .narrative-content {
+    padding: var(--space-8);
+  }
+
+  .narrative-segment p {
+    font-size: var(--font-size-xl);
+  }
 }
 
 @media (width <= 768px) {
@@ -364,6 +456,18 @@ body {
 
   .value-proposition-title {
     font-size: var(--font-size-3xl);
+  }
+
+  .narrative-content {
+    padding: var(--space-6);
+  }
+
+  .narrative-segment {
+    margin-bottom: var(--space-4);
+  }
+
+  .narrative-segment p {
+    font-size: var(--font-size-lg);
   }
 
   .value-proposition-description {
@@ -528,6 +632,14 @@ body {
   .signup-button {
     font-size: var(--font-size-sm);
     padding: var(--space-2) var(--space-3);
+  }
+
+  .narrative-content {
+    padding: var(--space-4);
+  }
+
+  .narrative-segment p {
+    font-size: var(--font-size-base);
   }
 }
 

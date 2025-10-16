@@ -1,33 +1,34 @@
 # Implementation Plan
 
-Based on the assessment findings, we need to resolve dependency issues to complete the project implementation.
+Based on the assessment finding that story 026.00-BIZ-NARRATIVE-CONTENT-FOUNDATION is incomplete, we need to implement the "Remember when..." narrative content.
 
 ## NOW
 
-Upgrade @playwright/test from 1.55.1 to 1.56.0 as this is a mature package (9 days old) that passed the Smart Version Selection Algorithm. This is the only critical dependency upgrade identified that meets our upgrade criteria.
+Implement the complete "Remember when..." narrative content section in `src/app.ts` between the problem section and email signup form, following the story requirements:
 
-- Run `npm update @playwright/test` to upgrade to version 1.56.0
-- Verify the upgrade completed successfully by checking package.json and package-lock.json
-- Run the test suite to ensure compatibility with the new version
-- Update any test files if needed for the new version
+1. Add the narrative content section with 100vh container height
+2. Include all 5 acts of the narrative (Magic → Peak → Turn → Chaos → Reality) 
+3. Use proper semantic HTML structure with meaningful CSS classes
+4. Apply professional typography that matches the site's teal theme
+5. Ensure content is readable across all viewport sizes
+6. Use the exact narrative text specified in the story requirements
+7. Include all emotional keywords with appropriate styling for future enhancement
+8. Ensure no debugging CSS (green borders, etc.)
 
 ## NEXT
 
-Analyze the remaining outdated dependencies using the Smart Version Selection Algorithm:
+After implementing the narrative content:
 
-- Check release dates for @types/node (24.6.2 → 24.7.2)
-- Check release dates for @typescript-eslint/eslint-plugin (8.46.0 → 8.46.1)
-- Check release dates for @typescript-eslint/parser (8.46.0 → 8.46.1)  
-- Check release dates for axe-core (4.10.3 → 4.11.0)
-- Apply the 7-day maturity threshold rule to determine which upgrades are safe
-- Implement upgrades for any packages that meet the mature criteria
-- Run full test suite after all approved dependency upgrades
+1. Run visual assessment to ensure content quality and styling meets requirements
+2. Verify the content displays correctly in natural document flow
+3. Test responsive behavior across different viewport sizes
+4. Ensure the 100vh container works properly for scroll foundation
 
 ## LATER
 
-Monitor and maintain dependency health:
+Future enhancements to the narrative section:
 
-- Set up automated dependency monitoring for future updates
-- Continue applying Smart Version Selection Algorithm for future upgrade decisions
-- Monitor security advisories for any critical vulnerabilities that might override the 7-day rule
-- Consider implementing automated dependency update workflows with proper testing gates
+1. Add scroll-driven animation effects (separate story)
+2. Implement cinematic overlay system (separate story)  
+3. Add viewport-fixed timeline effects (separate story)
+4. Enhance emotional keyword styling with dynamic effects (separate story)

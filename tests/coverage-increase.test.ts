@@ -45,7 +45,7 @@ afterEach(() => {
 });
 
 describe('src/app', () => {
-  it('renders the brand identity when #app exists', async () => {
+  it('initializes application when #app exists', async () => {
     document.body.innerHTML = '<div id="app"></div>';
 
     const { init } = await import('../src/app.js');
@@ -55,8 +55,8 @@ describe('src/app', () => {
     const app = document.querySelector('#app');
 
     expect(app).toBeTruthy();
-    expect(app?.textContent).toContain('AI Coding Without the Slop');
-    expect(app?.textContent).toContain('Coming Soon');
+    // Content is now in static HTML, not dynamically generated in #app
+    expect(app?.innerHTML).toBe('');
   });
 
   it('does not throw and logs an error when #app is missing', async () => {

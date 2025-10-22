@@ -32,7 +32,7 @@
     "lint:check": "eslint . --max-warnings 0",
     "lint:css": "stylelint \"**/*.css\" --ignore-pattern \"**/coverage/**\" --ignore-pattern \"**/dist/**\" --ignore-pattern \"**/build/**\" --ignore-pattern \"**/node_modules/**\" --ignore-pattern \"**/packages/**\" --ignore-pattern \"**/apps/**\"",
     "lint:css:fix": "stylelint \"**/*.css\" --fix --ignore-pattern \"**/coverage/**\" --ignore-pattern \"**/dist/**\" --ignore-pattern \"**/build/**\" --ignore-pattern \"**/node_modules/**\" --ignore-pattern \"**/packages/**\" --ignore-pattern \"**/apps/**\"",
-    "lint:html": "htmlhint \"**/*.html\" --ignore \"**/coverage/**,**/dist/**,**/build/**,**/node_modules/**,**/packages/**,**/apps/**\"",
+    "lint:html": "htmlhint \"**/*.html\" --ignore \"**/coverage/**,**/dist/**,**/build/**,**/node_modules/**,**/packages/**,**/apps/**,**/playwright-report/**\"",
     "lint:md": "markdownlint-cli2 --config .markdownlint.json README.md docs/decisions/**/*.md docs/E2E-REPRO.md docs/DEVELOPER-SETUP.md specs/**/*.md",
     "lint:md:fix": "markdownlint-cli2 --fix --config .markdownlint.json README.md docs/decisions/**/*.md docs/E2E-REPRO.md docs/DEVELOPER-SETUP.md specs/**/*.md",
     "verify": "npm run audit:fix && npm run lint:fix && npm run lint:css:fix && npm run lint:md:fix && npm run lint:check && npm run lint:css && npm run lint:html && npm run lint:md && npm run format:check && npm run build && npm run test:ci",
@@ -100,6 +100,9 @@
     "tmp": "^0.2.5",
     "fast-redact": "^3.5.0",
     "netlify-cli": {
+      "fast-redact": "^3.5.0"
+    },
+    "@netlify/build": {
       "fast-redact": "^3.5.0"
     }
   },

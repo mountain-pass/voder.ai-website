@@ -2,15 +2,10 @@ import { defineConfig, devices } from '@playwright/test';
 
 const isCI = !!process.env.CI;
 
-// Resolve base URL from environment: PREVIEW_URL, otherwise build from PREVIEW_HOST/PREVIEW_PORT with defaults
-const PREVIEW_HOST = process.env.PREVIEW_HOST || '127.0.0.1';
+// Always use dev server on port 3100 for latest code
+const DEV_PORT = '3100';
 
-const PREVIEW_PORT = process.env.PREVIEW_PORT || process.env.VITE_PORT || '4173';
-
-const BASE_URL = process.env.PREVIEW_URL || `http://${PREVIEW_HOST}:${PREVIEW_PORT}`;
-
-// Only start local webServer if PREVIEW_URL is not set (i.e., not testing production)
-const useLocalWebServer = !process.env.PREVIEW_URL;
+const BASE_URL = `http://127.0.0.1:${DEV_PORT}`;
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -48,17 +43,15 @@ export default defineConfig({
     timeout: 10_000,
   },
 
-  // Automatically start preview server before tests and stop after (only for local testing)
-  ...(useLocalWebServer && {
-    webServer: {
-      command: 'npm run build && npm run preview -- --host 127.0.0.1',
-      url: `http://127.0.0.1:${PREVIEW_PORT}`,
-      reuseExistingServer: !isCI,
-      stdout: 'pipe',
-      stderr: 'pipe',
-      timeout: 120_000,
-    },
-  }),
+  // Always use dev server for latest code
+  webServer: {
+    command: 'npm run dev -- --port 3100 --host 127.0.0.1 --strictPort',
+    url: BASE_URL,
+    reuseExistingServer: false, // Always start fresh
+    stdout: 'pipe',
+    stderr: 'pipe',
+    timeout: 120_000,
+  },
   projects: [
     // Desktop browsers
     {

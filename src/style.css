@@ -1,28 +1,43 @@
-/* CSS Variables for brand colors */
+/* CSS Variables for brand colors and type system */
 :root {
-  --voder-black: #0a0a0a;
+  --voder-black: #0c0c0d;
   --deep-navy: #0f1a2e;
-  --soft-teal-glow: #24d1d5;
+  --soft-teal-glow: #22c7be;
   --paper-white: #fff;
   --cool-grey: #c6cbd4;
   --accent-green: #9aef00;
 
-  /* Typography scale */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
+  /* Fluid type scale */
+  --step-minus-1: clamp(11px, 1.1vw, 14px);
+  --step-0: clamp(12px, 1.3vw, 18px);
+  --step-1: clamp(13px, 1.6vw, 22px);
+  --step-2: clamp(16px, 2.2vw, 28px);
+  --step-3: clamp(20px, 3.2vw, 40px);
+  --step-4: clamp(28px, 5vw, 64px);
+  --step-5: clamp(48px, 7.4vw, 92px);
 
-  /* Spacing scale */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
+  /* Viewport-height rhythm system for 80vh container */
+  --space-1: clamp(6px, 0.8vh, 10px);
+  --space-2: calc(var(--space-1) * 2);
+  --space-3: calc(var(--space-1) * 3);
+  --space-4: calc(var(--space-1) * 4);
+  --space-5: calc(var(--space-1) * 5);
+
+  /* Legacy spacing for compatibility */
+  --g1: var(--space-1);
+  --g2: var(--space-2);
+  --g3: var(--space-3);
+  --g4: var(--space-4);
+  --g5: var(--space-5);
+
+  /* Color system */
+  --accent: #22c7be;
+  --ink-weak: #d9d9d9;
+  --ink-body: #eaeaea;
+
+  /* Legacy rem-based spacing for non-narrative sections */
+  --space-rem-1: 0.25rem;
+  --space-rem-2: 0.5rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
   --space-12: 3rem;
@@ -39,8 +54,14 @@
 
 body {
   background-color: var(--voder-black);
-  color: var(--paper-white);
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color: var(--ink-body);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-synthesis: none;
@@ -111,7 +132,7 @@ body {
   background-clip: text;
   color: var(--paper-white);
   font-family: Inter, system-ui, sans-serif;
-  font-size: var(--font-size-2xl);
+  font-size: var(--step-2);
   font-weight: 700;
   letter-spacing: 0.1em;
   -webkit-text-fill-color: transparent;
@@ -146,8 +167,8 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 100svh; /* Small viewport height - stable height that excludes browser UI */
-  justify-content: space-between; /* Equal spacing between elements */
+  height: 100svh;
+  justify-content: space-between;
   padding: 0;
   padding-bottom: env(safe-area-inset-bottom, 0); /* Account for iPhone home indicator */
   position: relative;
@@ -171,7 +192,7 @@ body {
 /* Tagline within the bottom third */
 .hero-title {
   color: var(--soft-teal-glow);
-  font-size: var(--font-size-5xl); /* Largest size - 3rem for maximum visibility */
+  font-size: var(--step-3);
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.2;
@@ -179,22 +200,22 @@ body {
   opacity: 1; /* Visible above-the-fold */
   text-align: center;
   transition: opacity 0.3s ease;
-  z-index: 20; /* Above the colored debug sections */
+  z-index: 20;
 }
 
 /* Move full description below the fold */
 .hero-description {
-  display: none; /* Hidden above the fold - move to below-fold section */
+  display: none;
 }
 
 /* Hide status indicator above the fold */
 .status-indicator {
-  display: none; /* Hidden above the fold - move to below-fold section */
+  display: none;
 }
 
 .status-text {
   color: var(--soft-teal-glow);
-  font-size: var(--font-size-lg); /* Use consistent typography scale */
+  font-size: var(--step-1);
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -208,7 +229,7 @@ body {
   flex-direction: column;
   gap: 4vh;
   justify-content: center;
-  min-height: 100dvh; /* Dynamic viewport height - accounts for mobile browser UI */
+  min-height: 100dvh;
   padding: 8vh 4vw;
   position: relative;
   text-align: center;
@@ -217,7 +238,7 @@ body {
 
 .value-proposition-title {
   color: var(--soft-teal-glow);
-  font-size: var(--font-size-5xl);
+  font-size: var(--step-3);
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.2;
@@ -226,7 +247,7 @@ body {
 
 .value-proposition-description {
   color: var(--paper-white);
-  font-size: var(--font-size-xl);
+  font-size: var(--step-2);
   line-height: 1.6;
   margin: 0;
   max-width: 800px;
@@ -247,7 +268,7 @@ body {
 
 .coming-soon-text {
   color: var(--soft-teal-glow);
-  font-size: var(--font-size-lg);
+  font-size: var(--step-1);
   font-weight: 500;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -255,7 +276,7 @@ body {
 
 /* Problem space section */
 .problem-space {
-  margin-top: var(--space-16);
+  margin-top: 0;
   padding: var(--space-8) 0;
   position: relative;
   z-index: 10; /* Ensure problem content is above 3D animation */
@@ -263,7 +284,7 @@ body {
 
 .problem-title {
   color: var(--paper-white);
-  font-size: var(--font-size-3xl);
+  font-size: var(--step-4);
   font-weight: 600;
   margin-bottom: var(--space-6);
   text-align: center;
@@ -276,7 +297,7 @@ body {
 
 .problem-description {
   color: var(--paper-white);
-  font-size: var(--font-size-xl);
+  font-size: var(--step-2);
   line-height: 1.6;
   margin-bottom: var(--space-8);
   opacity: 0.9;
@@ -301,14 +322,14 @@ body {
 }
 
 .problem-icon {
-  font-size: var(--font-size-xl);
+  font-size: var(--step-2);
   line-height: 1;
   margin-top: 2px;
 }
 
 .problem-item p {
   color: var(--paper-white);
-  font-size: var(--font-size-base);
+  font-size: var(--step-0);
   line-height: 1.5;
   margin: 0;
   opacity: 0.8;
@@ -320,158 +341,324 @@ body {
 
 .resonance-check {
   color: var(--soft-teal-glow);
-  font-size: var(--font-size-lg);
+  font-size: var(--step-1);
   font-weight: 500;
   margin: 0;
 }
 
-/* Narrative content section */
-.narrative-content {
-  align-items: center;
-
-  /* Center content vertically within the viewport */
-  display: flex;
-  flex-direction: column;
-
-  /* Full viewport height container for scroll foundation */
-  height: 100vh;
-  justify-content: center;
-  margin: 0 auto;
-  max-width: 800px;
-  padding: var(--space-8);
-
-  /* Ensure content is above 3D animation */
+/* Narrative panel system */
+.panel {
+  height: 80vh;
+  margin: 10vh auto -2vh;
+  padding-block: 0;
+  padding-inline: clamp(16px, 4vw, 48px);
   position: relative;
   z-index: 10;
 }
 
-.narrative-segment {
-  margin-bottom: var(--space-6);
-  max-width: 600px;
+.panel-content {
+  align-items: center;
+  box-sizing: border-box;
+  color: #ededed;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  justify-content: space-between;
+  margin: 0;
+  min-height: 80vh;
+  padding: 0;
+}
+
+/* Shared typography styles for all orientations */
+.preamble {
+  color: var(--ink-weak);
+  display: grid;
+  font-size: 2.4vh;
+  font-weight: 500;
+  gap: 0.4vh;
+  line-height: 1.4;
+  margin: 0;
+  margin-inline: auto;
+  max-width: none;
   text-align: center;
 }
 
-.narrative-segment p {
-  color: var(--paper-white);
-  font-size: var(--font-size-xl);
-  line-height: 1.6;
+.fallout {
+  display: grid;
+  font-size: 2.8vh;
+  font-weight: 500;
+  gap: 0.4vh;
+  line-height: 1.4;
   margin: 0;
-  opacity: 0.9;
+  margin-inline: auto;
+  max-width: 38ch;
+  text-align: center;
+  text-wrap: pretty;
 }
 
-/* Emotional keywords for future enhancement */
-.magic-word,
-.speed-word,
-.flew-word,
-.unstoppable-word,
-.happened-phrase,
-.nightmare-word,
-.broken-word,
-.dread-word,
-.quicksand-word,
-.stuck-phrase {
+/* Typography styles - responsive by aspect ratio */
+
+/* Landscape orientation (width > height) - Single-line design */
+@media (aspect-ratio >= 4/3), (width >= 1440px) {
+  .kicker {
+    color: var(--ink-weak);
+    font-size: 2.4vh;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    margin: 0;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  .headline {
+    color: var(--paper-white);
+    font-size: 8.3vh;
+    font-weight: 800;
+    letter-spacing: -0.012em;
+    line-height: 1.3;
+    margin: 0;
+    margin-inline: auto;
+    max-width: 20ch;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .hinge {
+    color: var(--paper-white);
+    font-size: 6.8vh;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .then {
+    color: var(--soft-teal-glow);
+    font-size: 4.2vh;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0;
+    opacity: 1;
+    text-align: center;
+  }
+
+  .bottom {
+    font-size: 5.4vh;
+    font-weight: 600;
+    line-height: 1.45;
+    margin: 0;
+    margin-inline: auto;
+    max-width: 42ch;
+    text-align: center;
+    text-wrap: balance;
+  }
+}
+
+/* Portrait orientation (height > width) - Multi-line design with scaled typography */
+@media (aspect-ratio < 4/3) {
+  .kicker {
+    color: var(--ink-weak);
+    font-size: 1.4vh;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    margin: 0;
+    opacity: 0.7;
+    text-transform: uppercase;
+  }
+
+  .headline {
+    color: var(--paper-white);
+    font-size: 6.8vh;
+    font-weight: 800;
+    letter-spacing: -0.012em;
+    line-height: 1.18;
+    margin: 0;
+    margin-inline: auto;
+    max-width: 12ch;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  .hinge {
+    color: var(--paper-white);
+    font-size: 4.2vh;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .then {
+    color: var(--soft-teal-glow);
+    font-size: 2.4vh;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0;
+    opacity: 1;
+    text-align: center;
+  }
+
+  .bottom {
+    font-size: 3.8vh;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+    margin-inline: auto;
+    max-width: 18ch;
+    text-align: center;
+    text-wrap: balance;
+  }
+}
+
+/* Ultra-narrow portrait devices (iPhone Pro and similar) */
+@media (aspect-ratio < 4/3) and (width <= 390px) {
+  .kicker {
+    font-size: 1.2vh;
+  }
+
+  .headline {
+    font-size: 6.4vh;
+    line-height: 1.1;
+    max-width: 14ch;
+  }
+
+  .hinge {
+    font-size: 4.6vh;
+    line-height: 1.1;
+  }
+
+  .then {
+    font-size: 2.2vh;
+    line-height: 1.2;
+  }
+
+  .bottom {
+    font-size: 3.6vh;
+    line-height: 1.3;
+    max-width: 18ch;
+  }
+
+  /* Reduce shared elements more aggressively */
+  .preamble {
+    font-size: 2.4vh;
+    gap: 0.2vh;
+    line-height: 1.2;
+  }
+
+  .fallout {
+    font-size: 2.4vh;
+    gap: 0.2vh;
+    line-height: 1.2;
+  }
+}
+
+/* Typography element styles */
+.headline em {
+  color: var(--accent);
+  font-style: italic;
+  font-weight: 900;
+}
+
+.preamble p {
+  margin: 0;
+}
+
+.preamble b {
+  color: var(--soft-teal-glow);
+  font-weight: 700;
+}
+
+.fallout p {
+  margin: 0;
+}
+
+.fallout b {
+  color: var(--paper-white);
+  font-weight: 700;
+}
+
+.fallout em {
+  color: var(--soft-teal-glow);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.bottom b {
+  color: var(--paper-white);
+  font-weight: 900 !important;
+  letter-spacing: -0.005em;
+  text-shadow: 0 0 2px rgb(255 255 255 / 30%);
+}
+
+/* Transition text styling */
+.transition-text {
+  color: var(--soft-teal-glow) !important;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Emotional keywords highlighting */
+.magic-word {
+  color: var(--soft-teal-glow);
+  font-style: italic;
+  font-weight: 800;
+}
+
+.flew-word {
   color: var(--soft-teal-glow);
   font-weight: 600;
 }
 
-/* Progressive emphasis for different emotional states */
-.magic-word,
-.speed-word,
-.flew-word,
-.unstoppable-word {
-  /* Positive emotions - bright teal */
-  color: var(--soft-teal-glow);
-}
-
-.happened-phrase {
-  /* Turn moment - maintain teal but add emphasis */
-  color: var(--soft-teal-glow);
-  font-style: italic;
-}
-
+/* Body emphasis words */
 .nightmare-word,
 .broken-word,
 .dread-word,
-.quicksand-word,
-.stuck-phrase {
-  /* Negative emotions - slightly muted but still teal for brand consistency */
-  color: var(--soft-teal-glow);
-  opacity: 0.8;
+.quicksand-word {
+  color: var(--paper-white);
+  font-weight: 800;
 }
 
-/* Focus styles for accessibility */
+/* Bottom punchline emphasis */
+.stuck-phrase,
+.competitors-phrase {
+  color: var(--paper-white);
+  font-weight: 700;
+}
 
 /* Responsive design */
 @media (width >= 1200px) {
-  /* Desktop: Maintain flexbox layout - no absolute positioning */
-  .hero-title {
-    font-size: var(--font-size-2xl); /* Larger tagline for better visibility */
-  }
-
   .below-fold-content {
     padding: 8vh 4vw;
-  }
-
-  .narrative-content {
-    padding: var(--space-12);
-  }
-
-  .narrative-segment p {
-    font-size: var(--font-size-2xl);
   }
 }
 
 @media (width >= 769px) and (width <= 1199px) {
-  /* Tablet: Maintain flexbox layout - no absolute positioning */
-  .hero-title {
-    font-size: var(--font-size-base); /* Smaller minimal tagline */
-  }
-
   .below-fold-content {
     padding: 6vh 3vw;
-  }
-
-  .value-proposition-title {
-    font-size: var(--font-size-4xl);
-  }
-
-  .narrative-content {
-    padding: var(--space-8);
-  }
-
-  .narrative-segment p {
-    font-size: var(--font-size-xl);
   }
 }
 
 @media (width <= 768px) {
-  /* Mobile: Maintain flexbox layout - no absolute positioning */
-  .hero-title {
-    font-size: var(--font-size-lg); /* Improved tagline visibility - was var(--font-size-sm) */
-  }
-
   .below-fold-content {
     padding: 6vh 2.4vw;
   }
 
-  .value-proposition-title {
-    font-size: var(--font-size-3xl);
-  }
-
-  .narrative-content {
-    padding: var(--space-6);
-  }
-
-  .narrative-segment {
-    margin-bottom: var(--space-4);
-  }
-
-  .narrative-segment p {
-    font-size: var(--font-size-lg);
-  }
-
   .value-proposition-description {
-    font-size: var(--font-size-lg);
     max-width: 90%;
   }
 
@@ -479,17 +666,6 @@ body {
     min-height: 48px;
     padding: var(--space-3) var(--space-6);
   }
-}
-
-/* Landscape orientation optimizations */
-@media (width >= 667px) and (height <= 480px) {
-  /* Mobile landscape: Keep same layout proportions as other devices */
-
-  /* No special overrides needed - use default 20%-60%-20% layout */
-}
-
-@media (width >= 1024px) and (height <= 768px) {
-  /* Tablet landscape: No overrides needed - use default layout */
 }
 
 /* Focus styles for accessibility */
@@ -508,12 +684,12 @@ body {
   max-width: 420px;
   position: relative;
   width: 100%;
-  z-index: 100; /* Ensure form section is above 3D animation */
+  z-index: 100;
 }
 
 .signup-title {
   color: var(--paper-white);
-  font-size: var(--font-size-lg);
+  font-size: var(--step-1);
   font-weight: 500;
 }
 
@@ -523,7 +699,7 @@ body {
   gap: var(--space-3);
   position: relative;
   width: 100%;
-  z-index: 101; /* Ensure form is above 3D animation */
+  z-index: 101;
 }
 
 .form-group {
@@ -536,12 +712,12 @@ body {
   border: 1px solid rgb(36 209 213 / 30%);
   border-radius: 8px;
   color: var(--paper-white);
-  font-size: var(--font-size-base);
+  font-size: var(--step-0);
   padding: var(--space-3) var(--space-4);
   position: relative;
   transition: border-color 0.2s ease;
   width: 100%;
-  z-index: 102; /* Highest z-index for direct interaction */
+  z-index: 102;
 }
 
 .email-input:focus {
@@ -561,12 +737,12 @@ body {
   border-radius: 6px;
   color: var(--voder-black);
   cursor: pointer;
-  font-size: var(--font-size-base);
+  font-size: var(--step-0);
   font-weight: 500;
   padding: var(--space-3) var(--space-6);
   position: relative;
   transition: all 0.2s ease-in-out;
-  z-index: 102; /* Ensure button is clickable above 3D animation */
+  z-index: 102;
 }
 
 .signup-button:hover {
@@ -584,7 +760,7 @@ body {
 }
 
 .form-status {
-  font-size: var(--font-size-sm);
+  font-size: var(--step-minus-1);
   margin-top: var(--space-2);
   min-height: 1.5rem;
   opacity: 0;
@@ -624,22 +800,9 @@ body {
     margin-top: var(--space-6);
   }
 
-  .signup-title {
-    font-size: var(--font-size-base);
-  }
-
   .email-input,
   .signup-button {
-    font-size: var(--font-size-sm);
     padding: var(--space-2) var(--space-3);
-  }
-
-  .narrative-content {
-    padding: var(--space-4);
-  }
-
-  .narrative-segment p {
-    font-size: var(--font-size-base);
   }
 }
 
@@ -647,7 +810,7 @@ body {
 .hero-animation {
   align-items: center;
   display: flex;
-  flex: 0 0 60%; /* Take up 60% of hero-section height - consistent across all devices */
+  flex: 0 0 60%;
   height: 60%;
   justify-content: center;
   max-width: 100vw;
@@ -670,8 +833,6 @@ body {
   transform: translate(-50%, -50%);
   width: 100vw; /* Full viewport width */
 }
-
-/* Canvas is now full viewport - no responsive sizing needed */
 
 /* 2D Fallback Animation */
 .animation-fallback {
@@ -797,10 +958,8 @@ body {
 }
 
 .js-loaded .hero-description {
-  opacity: 0.9; /* Preserve original opacity */
+  opacity: 0.9;
 }
-
-/* Smooth form transitions */
 
 .form-status.success,
 .form-status.error,

@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       ["list", null],
@@ -23,7 +25,7 @@
       [
         "html",
         {
-          "outputFolder": "test-results/html",
+          "outputFolder": "playwright-report",
           "open": "never"
         }
       ]
@@ -38,7 +40,9 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "chromium",
         "name": "chromium",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -50,7 +54,9 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "webkit",
         "name": "webkit",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -62,7 +68,9 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -74,7 +82,9 @@
         "outputDir": "/Users/tomhoward/Projects/voder.ai-website/test-results",
         "repeatEach": 1,
         "retries": 0,
-        "metadata": {},
+        "metadata": {
+          "actualWorkers": 1
+        },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
         "testDir": "/Users/tomhoward/Projects/voder.ai-website/tests/e2e",
@@ -86,7 +96,7 @@
     "shard": null,
     "updateSnapshots": "missing",
     "updateSourceMethod": "patch",
-    "version": "1.55.1",
+    "version": "1.56.0",
     "workers": 4,
     "webServer": {
       "command": "npm run build && npm run preview -- --host 127.0.0.1",
@@ -99,88 +109,20 @@
   },
   "suites": [
     {
-      "title": "app.spec.ts",
-      "file": "app.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "home page renders and title is correct",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "c31ff144dc4fee3acd0a-5108ab85dc97d427f233",
-          "file": "app.spec.ts",
-          "line": 3,
-          "column": 1
-        },
-        {
-          "title": "bounce tracking is initialized correctly",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "c31ff144dc4fee3acd0a-1ca8e5d285edfea30e95",
-          "file": "app.spec.ts",
-          "line": 15,
-          "column": 1
-        },
-        {
-          "title": "engagement tracking works on user interaction",
-          "ok": true,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 30000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "chromium",
-              "projectName": "chromium",
-              "results": [],
-              "status": "skipped"
-            }
-          ],
-          "id": "c31ff144dc4fee3acd0a-c9090ec1a928f9be1e6b",
-          "file": "app.spec.ts",
-          "line": 49,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "closing-moment.spec.ts",
-      "file": "closing-moment.spec.ts",
+      "title": "screenshots.spec.ts",
+      "file": "screenshots.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Closing Moment - Email Capture Form",
-          "file": "closing-moment.spec.ts",
-          "line": 10,
+          "title": "Business Area Screenshot Validation",
+          "file": "screenshots.spec.ts",
+          "line": 191,
           "column": 6,
           "specs": [
             {
-              "title": "displays coming soon message and email capture form",
+              "title": "Problem Statement - mobile-landscape (667x375)",
               "ok": true,
               "tags": [],
               "tests": [
@@ -190,271 +132,53 @@
                   "expectedStatus": "passed",
                   "projectId": "chromium",
                   "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6516,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Cleaned up 1 existing screenshot files\n"
+                        },
+                        {
+                          "text": "Successfully scrolled to .panel\n"
+                        },
+                        {
+                          "text": "Successfully scrolled to .panel\n"
+                        },
+                        {
+                          "text": "🔍 Attempting to measure heights for mobile-landscape (667x375)\n"
+                        },
+                        {
+                          "text": "📏 Starting height measurement for mobile-landscape (667x375)\n"
+                        },
+                        {
+                          "text": "📏 Received measurements for mobile-landscape (667x375): \u001b[1mnull\u001b[22m\n"
+                        },
+                        {
+                          "text": "❌ No measurements available for mobile-landscape (667x375)\n"
+                        },
+                        {
+                          "text": "✓ Problem Statement screenshot taken for mobile-landscape (667x375)\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-20T19:53:21.538Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
                 }
               ],
-              "id": "ed92c28bcaa7f25b53a5-0e94685ba44f55513e5d",
-              "file": "closing-moment.spec.ts",
-              "line": 28,
-              "column": 3
-            },
-            {
-              "title": "validates email input correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-9ab2ac09fac55c05214b",
-              "file": "closing-moment.spec.ts",
-              "line": 79,
-              "column": 3
-            },
-            {
-              "title": "handles form submission states correctly",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-8d0adc54a7dff7b47985",
-              "file": "closing-moment.spec.ts",
-              "line": 110,
-              "column": 3
-            },
-            {
-              "title": "handles form submission errors gracefully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-125ab3af056506d5a845",
-              "file": "closing-moment.spec.ts",
-              "line": 144,
-              "column": 3
-            },
-            {
-              "title": "tracks analytics events on form submission",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-85055b6c3251cde1eaae",
-              "file": "closing-moment.spec.ts",
-              "line": 171,
-              "column": 3
-            },
-            {
-              "title": "form accessibility requirements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-7e530de858bb658f0c2a",
-              "file": "closing-moment.spec.ts",
-              "line": 244,
-              "column": 3
-            },
-            {
-              "title": "preserves form data during validation errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "ed92c28bcaa7f25b53a5-86c84d2e4ea577197595",
-              "file": "closing-moment.spec.ts",
-              "line": 284,
-              "column": 3
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "fouc-prevention.test.ts",
-      "file": "fouc-prevention.test.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "FOUC Prevention",
-          "file": "fouc-prevention.test.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "should not show visual flicker during page load",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-e1189d973c961f5d64ba",
-              "file": "fouc-prevention.test.ts",
-              "line": 4,
-              "column": 3
-            },
-            {
-              "title": "should show proper content structure without JavaScript",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-6a8c407a09c2911ff7fd",
-              "file": "fouc-prevention.test.ts",
-              "line": 83,
-              "column": 3
-            },
-            {
-              "title": "should measure First Contentful Paint timing",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-d0b47d2d6057103f157b",
-              "file": "fouc-prevention.test.ts",
-              "line": 112,
-              "column": 3
-            },
-            {
-              "title": "should not show empty white screen during slow loading",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-6acbf041f390740ee9e8",
-              "file": "fouc-prevention.test.ts",
-              "line": 137,
-              "column": 3
-            },
-            {
-              "title": "should maintain visual consistency across browser refresh",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-02d56551edc2efecb45d",
-              "file": "fouc-prevention.test.ts",
-              "line": 157,
-              "column": 3
-            },
-            {
-              "title": "should detect blank page before JavaScript loads",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e7e29d74802d5fbd7c94-e11d87ad1002a0f5a508",
-              "file": "fouc-prevention.test.ts",
-              "line": 185,
-              "column": 3
+              "id": "677a4938ef65bfc6a6e5-cf76f9a171b2ea5879a8",
+              "file": "screenshots.spec.ts",
+              "line": 237,
+              "column": 5
             }
           ]
         }
@@ -463,10 +187,10 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-10-09T03:59:48.495Z",
-    "duration": 33.45800000000003,
-    "expected": 0,
-    "skipped": 16,
+    "startTime": "2025-10-20T19:53:21.041Z",
+    "duration": 8304.829,
+    "expected": 1,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }

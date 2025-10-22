@@ -139,6 +139,26 @@ export const complete: Linter.Config[] = [
       'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
     },
   },
+  // Debug scripts: Browser + Node globals for Playwright
+  {
+    files: ['debug-dom.js', 'measure-heights.spec.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        console: 'readonly',
+        process: 'readonly',
+        expect: 'readonly',
+        test: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off', // Allow all console methods in debug scripts
+      '@typescript-eslint/no-unused-vars': 'off', // Allow unused imports in debug scripts
+      'simple-import-sort/imports': 'off', // Relax import sorting in debug scripts
+      'padding-line-between-statements': 'off', // Relax spacing rules in debug scripts
+    },
+  },
 ];
 
 export default complete;

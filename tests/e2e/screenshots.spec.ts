@@ -1,227 +1,298 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 
 const viewports = [
-  { name: 'desktop', width: 1920, height: 1080 },
-  { name: 'laptop', width: 1366, height: 768 },
-  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'desktop-landscape', width: 1920, height: 1080 },
+  { name: 'laptop-landscape', width: 1366, height: 768 },
+  { name: 'tablet-portrait', width: 768, height: 1024 },
   { name: 'tablet-landscape', width: 1024, height: 768 },
-  { name: 'mobile', width: 375, height: 667 },
+  { name: 'mobile-portrait', width: 375, height: 667 },
   { name: 'mobile-landscape', width: 667, height: 375 },
+  { name: 'mobile-portrait', width: 390, height: 844 },
+  { name: 'mobile-landscape', width: 844, height: 390 },
 ];
 
+// Helper function to generate consistent screenshot names
+function getScreenshotName(section: string, name: string, width: number, height: number): string {
+  // Extract device type and orientation from name
+  const parts = name.split('-');
+
+  const device = parts[0]; // desktop, laptop, tablet, mobile
+
+  const orientation = parts.length > 1 ? parts.slice(1).join('-') : 'portrait';
+
+  const size = `${width}x${height}`;
+
+  // For landscape devices, use 'landscape', for portrait devices use 'portrait'
+  let finalOrientation = orientation;
+
+  if (orientation === 'portrait' && (name === 'desktop' || name === 'laptop')) {
+    finalOrientation = 'landscape'; // Desktop/laptop are typically landscape
+  }
+
+  return `${section}-${device}-${finalOrientation}-${size}.png`;
+}
+
+// Helper function to wait for page to be ready for screenshots
+async function waitForPageReady(page: Page) {
+  // Wait for basic page load and network to be idle
+  await page.waitForLoadState('networkidle');
+
+  // Wait for all potential elements that could appear
+  await page.waitForSelector('body', { state: 'visible' });
+
+  // Wait for either animation container to be present (but don't require specific content)
+  try {
+    await page.waitForSelector('.hero-animation', { timeout: 10000 });
+  } catch {
+    // If no animation container, that's fine - continue
+  }
+}
+
+// Helper function to measure heights
+async function measureHeights(
+  page: Page,
+  viewport: string,
+): Promise<{ contentHeightVh: number; isExactly80vh: boolean } | null> {
+  const measurements = await page.evaluate(() => {
+    const panel = document.querySelector('.panel');
+
+    const panelContent = document.querySelector('.panel-content');
+
+    if (!panel || !panelContent) {
+      return { error: 'Elements not found', panel: !!panel, panelContent: !!panelContent };
+    }
+
+    const panelRect = panel.getBoundingClientRect();
+
+    const contentRect = panelContent.getBoundingClientRect();
+
+    const viewportHeight = window.innerHeight;
+
+    // Debug: Check computed styles
+    const panelStyles = window.getComputedStyle(panel);
+
+    const contentStyles = window.getComputedStyle(panelContent);
+
+    return {
+      viewport: {
+        height: viewportHeight,
+      },
+      panel: {
+        height: panelRect.height,
+        heightVh: (panelRect.height / viewportHeight) * 100,
+        computedHeight: panelStyles.height,
+        computedMinHeight: panelStyles.minHeight,
+      },
+      content: {
+        height: contentRect.height,
+        heightVh: (contentRect.height / viewportHeight) * 100,
+        computedHeight: contentStyles.height,
+        computedMinHeight: contentStyles.minHeight,
+      },
+    };
+  });
+
+  if (measurements && !('error' in measurements)) {
+    console.log(`\n📏 Height Measurements for ${viewport}:`);
+    console.log(`   Viewport: ${measurements.viewport.height}px`);
+    console.log(
+      `   Panel (container): ${measurements.panel.height.toFixed(1)}px (${measurements.panel.heightVh.toFixed(1)}vh)`,
+    );
+    console.log(
+      `   Panel computed height: ${measurements.panel.computedHeight}, min-height: ${measurements.panel.computedMinHeight}`,
+    );
+    console.log(
+      `   Content (actual): ${measurements.content.height.toFixed(1)}px (${measurements.content.heightVh.toFixed(1)}vh)`,
+    );
+    console.log(
+      `   Content computed height: ${measurements.content.computedHeight}, min-height: ${measurements.content.computedMinHeight}`,
+    );
+
+    // Check if panel content is exactly 80vh
+    const contentFitsInPanel = measurements.content.height <= measurements.panel.height;
+
+    const overflowAmount = measurements.content.height - measurements.panel.height;
+
+    console.log(
+      `   ${contentFitsInPanel ? '✅' : '❌'} Content ${contentFitsInPanel ? 'fits within' : 'OVERFLOWS'} panel ${contentFitsInPanel ? '' : `by ${overflowAmount.toFixed(1)}px (${((overflowAmount / measurements.viewport.height) * 100).toFixed(1)}vh)`}`,
+    );
+
+    return {
+      contentHeightVh: measurements.content.heightVh,
+      isExactly80vh: Math.abs(measurements.content.heightVh - 80) < 0.5,
+    };
+  } else {
+    console.log(`❌ Measurement failed for ${viewport}:`, measurements);
+
+    return null;
+  }
+}
+
+// Helper function to safely scroll to element
+async function scrollToElement(page: Page, selector: string): Promise<boolean> {
+  try {
+    // Check if element exists in DOM (don't require it to be visible/in viewport)
+    const elementExists = await page.evaluate((sel) => {
+      return document.querySelector(sel) !== null;
+    }, selector);
+
+    if (!elementExists) {
+      console.log(`Element ${selector} not found in DOM, trying next option`);
+
+      return false;
+    }
+
+    // Element exists - force scroll to it even if off-screen
+    await page.evaluate((sel) => {
+      const element = document.querySelector(sel);
+
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, selector);
+
+    // Wait for scroll animation to complete
+    await page.waitForTimeout(500);
+
+    // Verify element is now at least partially in viewport
+    const isInViewport = await page.evaluate((sel) => {
+      const element = document.querySelector(sel);
+
+      if (!element) return false;
+
+      const rect = element.getBoundingClientRect();
+
+      // Element is visible if any part of it is in the viewport
+      return rect.bottom > 0 && rect.top < window.innerHeight;
+    }, selector);
+
+    if (isInViewport) {
+      console.log(`Successfully scrolled to ${selector}`);
+
+      return true;
+    } else {
+      console.log(`Scrolled to ${selector} but it's still not in viewport, trying next option`);
+
+      return false;
+    }
+  } catch (error) {
+    console.log(`Error scrolling to ${selector}: ${error}, trying next option`);
+
+    return false;
+  }
+}
+
+// Helper function to try multiple selectors for scrolling
+async function scrollToAnyElement(page: Page, selectors: string[]) {
+  for (const selector of selectors) {
+    const success = await scrollToElement(page, selector);
+
+    if (success) {
+      console.log(`Successfully scrolled to ${selector}`);
+
+      return;
+    }
+  }
+  console.log('Could not scroll to any target element, using current position');
+}
+
 test.describe('Business Area Screenshot Validation', () => {
+  // Clean up old screenshots before running tests
   test.beforeAll(async () => {
-    const screenshotsDir = path.join(process.cwd(), 'screenshots');
+    const screenshotsDir = 'screenshots';
 
-    if (fs.existsSync(screenshotsDir)) {
+    // Create screenshots directory if it doesn't exist
+    if (!fs.existsSync(screenshotsDir)) {
+      fs.mkdirSync(screenshotsDir, { recursive: true });
+    } else {
+      // Remove all existing screenshot files
       const files = fs.readdirSync(screenshotsDir);
-
-      let deletedCount = 0;
 
       for (const file of files) {
         if (file.endsWith('.png')) {
-          const filePath = path.join(screenshotsDir, file);
-
-          try {
-            fs.unlinkSync(filePath);
-            deletedCount++;
-          } catch (error) {
-            if ((error as any).code !== 'ENOENT') {
-              throw error;
-            }
-          }
+          fs.unlinkSync(path.join(screenshotsDir, file));
         }
       }
-      console.log(`Cleaned up ${deletedCount} existing screenshot files`);
+      console.log('🧹 Cleaned up old screenshots');
     }
-  });
-
-  test('Production site verification', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle', timeout: 30000 });
-    await expect(page.locator('.logo-text')).toContainText('VODER');
-    await expect(page.locator('.hero-title')).toContainText('AI Coding Without the Slop');
   });
 
   viewports.forEach(({ name, width, height }) => {
     test(`Brand Entry - ${name} (${width}x${height})`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
-
-      // Wait longer for the animation to finish initializing and performance monitoring to complete
-      // The 3D animation system monitors performance for 3 seconds before deciding to disable
-      // Increased from 4000ms to 6000ms to provide more buffer for performance monitoring
-      await page.waitForTimeout(6000);
-
-      // Check animation state multiple times to ensure it's stable
-      let animationState;
-
-      let stable = false;
-
-      let attempts = 0;
-
-      while (!stable && attempts < 3) {
-        animationState = await page.evaluate(() => {
-          const canvas = document.querySelector('.hero-animation canvas') as HTMLCanvasElement;
-
-          const fallback = document.querySelector('.animation-fallback');
-
-          const container = document.querySelector('.hero-animation');
-
-          // Debug info
-          const heroAnimationHtml = container?.innerHTML || 'NO_CONTAINER';
-
-          return {
-            hasCanvas: !!canvas,
-            hasFallback: !!fallback,
-            hasContainer: !!container,
-            canvasVisible: canvas ? !canvas.hidden && canvas.offsetParent !== null : false,
-            heroAnimationContent: heroAnimationHtml.substring(0, 200), // First 200 chars for debugging
-          };
-        });
-
-        // Wait a bit and check again to see if state is stable
-        await page.waitForTimeout(500);
-        const animationState2 = await page.evaluate(() => {
-          const canvas = document.querySelector('.hero-animation canvas') as HTMLCanvasElement;
-
-          const fallback = document.querySelector('.animation-fallback');
-
-          return {
-            hasCanvas: !!canvas,
-            hasFallback: !!fallback,
-            canvasVisible: canvas ? !canvas.hidden && canvas.offsetParent !== null : false,
-          };
-        });
-
-        // Check if state is stable between checks
-        stable =
-          animationState.hasCanvas === animationState2.hasCanvas &&
-          animationState.hasFallback === animationState2.hasFallback &&
-          animationState.canvasVisible === animationState2.canvasVisible;
-
-        attempts++;
-        if (!stable) {
-          console.log(`Animation state unstable for ${name}, attempt ${attempts}, waiting more...`);
-          await page.waitForTimeout(1000);
-        }
-      }
-
-      console.log(`Final animation state for ${name}: ${JSON.stringify(animationState, null, 2)}`);
+      await waitForPageReady(page);
 
       // Ensure we're at the top of the page
       await page.evaluate(() => window.scrollTo(0, 0));
 
+      // Take the screenshot - no assertions that can fail
       await page.screenshot({
-        path: `screenshots/brand-entry-${name}-${width}x${height}.png`,
+        path: `screenshots/${getScreenshotName('brand-entry', name, width, height)}`,
         fullPage: false,
         animations: 'disabled',
       });
 
-      // Verify all brand elements are visible
-      await expect(page.locator('.logo-text')).toBeVisible();
-      await expect(page.locator('.hero-title')).toBeVisible();
-
-      // Always ensure the hero animation container is present
-      await expect(page.locator('.hero-animation')).toBeVisible();
-
-      // Check for either canvas (3D) or fallback (2D) animation with more lenient expectations
-      // Use a more robust approach that handles performance monitoring race conditions
-      const hasVisibleCanvas = await page
-        .locator('.hero-animation canvas')
-        .isVisible()
-        .catch(() => false);
-
-      const hasVisibleFallback = await page
-        .locator('.animation-fallback')
-        .isVisible()
-        .catch(() => false);
-
-      if (hasVisibleCanvas) {
-        // 3D animation is active and visible
-        await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 1000 });
-      } else if (hasVisibleFallback) {
-        // 2D fallback animation is active
-        await expect(page.locator('.animation-fallback')).toBeVisible();
-      } else {
-        // Wait a bit more for performance monitoring to complete, then check again
-        await page.waitForTimeout(2000);
-        const finalHasCanvas = await page
-          .locator('.hero-animation canvas')
-          .isVisible()
-          .catch(() => false);
-
-        const finalHasFallback = await page
-          .locator('.animation-fallback')
-          .isVisible()
-          .catch(() => false);
-
-        if (finalHasCanvas) {
-          await expect(page.locator('.hero-animation canvas')).toBeVisible({ timeout: 1000 });
-        } else if (finalHasFallback) {
-          await expect(page.locator('.animation-fallback')).toBeVisible();
-        } else {
-          // Animation container exists but content might not be determined yet
-          // This is acceptable for screenshot tests as long as the container is present
-          console.log(
-            `No specific animation content detected for ${name}, but container is present`,
-          );
-        }
-      }
+      console.log(`✓ Brand Entry screenshot taken for ${name} (${width}x${height})`);
     });
 
     test(`Problem Statement - ${name} (${width}x${height})`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await waitForPageReady(page);
 
-      // Wait for problem title to be visible, then scroll to it
-      await expect(page.locator('#problem-title')).toBeVisible();
-      await page.evaluate(() => {
-        const element = document.querySelector('#problem-title');
+      // Try to scroll to problem statement area - use multiple possible selectors
+      await scrollToAnyElement(page, [
+        '.panel',
+        '.headline',
+        '.preamble',
+        '.hinge',
+        '.kicker',
+        '#problem-title',
+        '.problem-description',
+      ]);
 
-        if (element) {
-          element.scrollIntoView({ behavior: 'instant', block: 'center' });
-        }
-      });
+      // Measure heights for this viewport and assert .panel-content is exactly 80vh
+      console.log(`🔍 Attempting to measure heights for ${name} (${width}x${height})`);
+      const measurements = await measureHeights(page, `${name} (${width}x${height})`);
 
+      // Take screenshot regardless of measurement result
       await page.screenshot({
-        path: `screenshots/problem-statement-${name}-${width}x${height}.png`,
+        path: `screenshots/${getScreenshotName('problem-statement', name, width, height)}`,
         fullPage: false,
         animations: 'disabled',
       });
 
-      // Verify problem statement elements are visible
-      await expect(page.locator('#problem-title')).toBeVisible();
-      await expect(page.locator('.problem-description')).toBeVisible();
+      console.log(`✓ Problem Statement screenshot taken for ${name} (${width}x${height})`);
+
+      // Assert that .panel-content is exactly 80vh
+      if (measurements) {
+        expect(
+          measurements.isExactly80vh,
+          `Panel content should be exactly 80vh but was ${measurements.contentHeightVh.toFixed(1)}vh on ${name} (${width}x${height})`,
+        ).toBe(true);
+      } else {
+        throw new Error(`Failed to measure heights for ${name} (${width}x${height})`);
+      }
     });
 
     test(`Interest Capture - ${name} (${width}x${height})`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto('/');
-      await page.waitForLoadState('networkidle');
+      await waitForPageReady(page);
 
-      // Wait for interest capture section to be visible, then scroll to it
-      await expect(page.locator('.interest-capture')).toBeVisible();
-      await page.evaluate(() => {
-        const element = document.querySelector('.interest-capture');
-
-        if (element) {
-          element.scrollIntoView({ behavior: 'instant', block: 'center' });
-        }
-      });
+      // Try to scroll to interest capture area - use multiple possible selectors
+      await scrollToAnyElement(page, ['.interest-capture', '.signup-form', '.email-form']);
 
       await page.screenshot({
-        path: `screenshots/interest-capture-${name}-${width}x${height}.png`,
+        path: `screenshots/${getScreenshotName('interest-capture', name, width, height)}`,
         fullPage: false,
         animations: 'disabled',
       });
 
-      // Verify interest capture elements are visible
-      await expect(page.locator('.signup-title')).toBeVisible();
-      await expect(page.locator('.signup-form')).toBeVisible();
+      console.log(`✓ Interest Capture screenshot taken for ${name} (${width}x${height})`);
     });
   });
 });

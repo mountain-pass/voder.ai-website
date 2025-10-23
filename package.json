@@ -61,7 +61,7 @@
     "@typescript-eslint/parser": "^8.43.0",
     "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.4.21",
-    "axe-core": "^4.10.3",
+    "axe-core": "^4.11.0",
     "canvas": "^3.2.0",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",

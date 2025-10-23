@@ -14,6 +14,7 @@ export class ScrollNarrativeDetector {
   private scrollProgress: number = 0;
   private observer: IntersectionObserver | null = null;
   private ticking: boolean = false;
+  private progressCallbacks: Array<(progress: number) => void> = [];
 
   constructor() {
     this.narrativeSection = document.querySelector('.panel');
@@ -26,6 +27,14 @@ export class ScrollNarrativeDetector {
 
     this.setupIntersectionObserver();
     this.setupScrollHandler();
+  }
+
+  /**
+   * Register a callback to be notified of scroll progress updates
+   * This allows other components (like SegmentMapper) to react to scroll changes
+   */
+  public onProgressUpdate(callback: (progress: number) => void): void {
+    this.progressCallbacks.push(callback);
   }
 
   /**
@@ -110,6 +119,9 @@ export class ScrollNarrativeDetector {
 
     // eslint-disable-next-line no-console -- REQ-DEBUG-LOGGING: Console output required per specification
     console.log(`Narrative scroll progress: ${this.scrollProgress.toFixed(1)}%`);
+
+    // Notify registered callbacks
+    this.progressCallbacks.forEach((callback) => callback(this.scrollProgress));
   }
 
   /**

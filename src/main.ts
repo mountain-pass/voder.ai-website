@@ -3,6 +3,7 @@ import './style.css';
 
 import { init } from './app.js';
 import { ScrollNarrativeDetector } from './scroll-narrative-detector.js';
+import { SegmentMapper } from './segment-mapper.js';
 import {
   analyzeTrafficSource,
   initializeBounceTracking,
@@ -60,11 +61,25 @@ initializeAnalytics();
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     init();
-    // Initialize scroll detection after DOM is ready (per story 026.01-BIZ-SCROLL-DETECTION)
-    new ScrollNarrativeDetector();
+    // Initialize scroll detection and segment mapping (per stories 026.01 and 026.02)
+    const scrollDetector = new ScrollNarrativeDetector();
+
+    const segmentMapper = new SegmentMapper();
+
+    // Connect segment mapper to scroll progress updates
+    scrollDetector.onProgressUpdate((progress) => {
+      segmentMapper.updateSegmentStates(progress);
+    });
   });
 } else {
   init();
-  // Initialize scroll detection after DOM is ready (per story 026.01-BIZ-SCROLL-DETECTION)
-  new ScrollNarrativeDetector();
+  // Initialize scroll detection and segment mapping (per stories 026.01 and 026.02)
+  const scrollDetector = new ScrollNarrativeDetector();
+
+  const segmentMapper = new SegmentMapper();
+
+  // Connect segment mapper to scroll progress updates
+  scrollDetector.onProgressUpdate((progress) => {
+    segmentMapper.updateSegmentStates(progress);
+  });
 }

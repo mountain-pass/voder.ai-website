@@ -29,11 +29,11 @@ test.describe('Closing Moment - Email Capture Form', () => {
   });
 
   test('displays coming soon message and email capture form', async ({ page }) => {
-    // Verify "Coming Soon" status message is present
-    const comingSoonText = page.locator('.coming-soon-text');
+    // Verify main hero content is present instead of simple "Coming Soon" message
+    const heroTitle = page.locator('.hero-title');
 
-    await expect(comingSoonText).toBeVisible();
-    await expect(comingSoonText).toContainText('Coming Soon');
+    await expect(heroTitle).toBeVisible();
+    await expect(heroTitle).toContainText('AI Coding Without the Slop');
 
     // Verify email capture section structure
     const interestCapture = page.locator('.interest-capture');

@@ -2,58 +2,51 @@
 
 ## NOW
 
-**Implement Story 026.02-BIZ-SEGMENT-MAPPING (Required Dependency)**
+**Apply the 3 mature dependency upgrades identified in Phase 1 assessment:**
 
-Analysis complete: Story 026.03 depends on 026.02-BIZ-SEGMENT-MAPPING which is not yet implemented. Following proper dependency order, we must implement 026.02 first.
+Execute the upgrade command for the 3 packages that meet the 7-day smart selection criteria:
 
-**Status Check**:
-- ✅ 026.01-BIZ-SCROLL-DETECTION: Implemented (`scroll-narrative-detector.ts`)
-- ❌ 026.02-BIZ-SEGMENT-MAPPING: NOT implemented (required for 026.03)
-- ❌ 026.03-BIZ-COLOR-ATMOSPHERE: Waiting for 026.02
+```bash
+npm install eslint@9.38.0 @eslint/js@9.38.0 @playwright/test@1.56.1
+```
 
-**Action**: Implement the segment mapping system following Gall's Law (simplest working system).
+Then verify the upgrades work correctly:
+- Run `npm run lint` to verify ESLint functionality
+- Run `npm run test:e2e` to verify Playwright functionality  
+- Run `npm test` to run the full test suite
+- Run `npm audit` to recheck security status
 
-**Implementation Steps**:
-1. Create `src/segment-mapper.ts` with SegmentMapper class
-2. Define narrative map configuration (5 acts, 8 segments with scroll ranges)
-3. Implement active segment detection logic based on scroll progress
-4. Add state tracking for current act and active segments
-5. Integrate with existing ScrollNarrativeDetector
-6. Add debug console logging showing segment states
-7. Write tests for segment mapping logic
-8. Verify accurate mapping at all scroll positions
-
-**Why This Matters**: 026.02 provides the timing foundation that 026.03 needs to know which segments should be visible at any scroll position.
+All 3 packages were released on October 17, 2025 (exactly 7 days ago), meeting the maturity threshold.
 
 ## NEXT
 
-**Implement Story 026.03-BIZ-COLOR-ATMOSPHERE (After 026.02 Complete)**
+**Clean up the assessment report file:**
 
-Once segment mapping is implemented and tested:
+The `.voder/assessment-report.md` file contains two reports merged together (an older one from Oct 23 and the new one from Oct 24). Clean this up by keeping only the latest Phase 1 report.
 
-1. Add CSS foundation for opacity transitions (.narrative-segment with .visible/.hidden classes)
-2. Create ProgressiveReveal class to manage segment visibility
-3. Integrate ProgressiveReveal with SegmentMapper
-4. Add data-segment attributes to HTML narrative elements
-5. Wire up scroll handler to trigger visibility updates  
-6. Write tests for scroll-driven visibility behavior
-7. Verify performance (60fps opacity transitions)
-8. Test mobile compatibility  
-9. Add accessibility support (prefers-reduced-motion)
-10. Update traceability JSON files for both 026.02 and 026.03 to PASSED
+**Commit the dependency upgrades:**
+
+After verifying the upgrades work correctly, commit the changes with a descriptive message explaining what was upgraded and why.
 
 ## LATER
 
-**Continue Release 1.0 Story Implementation**
+**Schedule next comprehensive assessment for October 30:**
 
-After story 026.03 is complete and validated:
-- Update traceability JSON to PASSED status
-- Re-run assessment to find next unimplemented story
-- Continue working backwards through Release 1.0 stories
-- Build on this foundation for more sophisticated visual effects
+By October 30, the remaining 10 outdated packages will have matured (≥7 days old):
+- jsdom (matures Oct 25)
+- @typescript-eslint/eslint-plugin and @typescript-eslint/parser (mature Oct 27)
+- @axe-core/playwright, @types/node, happy-dom (mature Oct 28)  
+- netlify-cli, vite, vitest, @vitest/coverage-v8 (mature Oct 30)
 
-**Optional Dependency Maintenance** (Non-Blocking)
+The vitest packages require special attention as they are MAJOR version updates (3.2.4 → 4.0.2) that will need breaking change analysis.
 
-Schedule for next maintenance cycle when packages mature beyond 7-day window:
-- Update 8 outdated packages (eslint, playwright, postcss, stylelint, typescript, vite, vitest)
-- Address 3 low-severity vulnerabilities (micromatch, cross-spawn, path-to-regexp)
+**Plan vitest 3→4 migration:**
+
+When the vitest packages mature on Oct 30, dedicate 2-4 hours to:
+- Review vitest v4.0.0, v4.0.1, v4.0.2 changelogs
+- Read the official vitest v3→v4 migration guide
+- Assess configuration changes required
+- Verify compatibility with Vite
+- Test migration in a separate branch
+- Update test suite if needed
+- Ensure @vitest/coverage-v8 is upgraded in sync with vitest

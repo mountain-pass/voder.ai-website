@@ -2,6 +2,7 @@
 import './style.css';
 
 import { init } from './app.js';
+import { ScrollNarrativeDetector } from './scroll-narrative-detector.js';
 import {
   analyzeTrafficSource,
   initializeBounceTracking,
@@ -57,7 +58,13 @@ initializeAnalytics();
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', () => {
+    init();
+    // Initialize scroll detection after DOM is ready (per story 026.01-BIZ-SCROLL-DETECTION)
+    new ScrollNarrativeDetector();
+  });
 } else {
   init();
+  // Initialize scroll detection after DOM is ready (per story 026.01-BIZ-SCROLL-DETECTION)
+  new ScrollNarrativeDetector();
 }

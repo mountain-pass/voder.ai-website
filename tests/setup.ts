@@ -7,6 +7,13 @@ import { beforeEach, vi } from 'vitest';
 global.requestAnimationFrame = vi.fn(() => 1);
 global.cancelAnimationFrame = vi.fn();
 
+// ResizeObserver mock for scroll-locked-reveal tests
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 // Clear DOM between tests (only when document is available)
 beforeEach(() => {
   if (typeof document !== 'undefined' && document.body) {

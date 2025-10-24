@@ -2,6 +2,7 @@
 import './style.css';
 
 import { init } from './app.js';
+import { ScrollLockedReveal } from './scroll-locked-reveal.js';
 import { ScrollNarrativeDetector } from './scroll-narrative-detector.js';
 import { SegmentMapper } from './segment-mapper.js';
 import {
@@ -66,10 +67,16 @@ if (document.readyState === 'loading') {
 
     const segmentMapper = new SegmentMapper();
 
+    // Initialize scroll-locked reveal (per story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY)
+    const scrollReveal = new ScrollLockedReveal();
+
     // Connect segment mapper to scroll progress updates
     scrollDetector.onProgressUpdate((progress) => {
       segmentMapper.updateSegmentStates(progress);
     });
+
+    // Store references for cleanup if needed
+    (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal };
   });
 } else {
   init();
@@ -78,8 +85,14 @@ if (document.readyState === 'loading') {
 
   const segmentMapper = new SegmentMapper();
 
+  // Initialize scroll-locked reveal (per story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY)
+  const scrollReveal = new ScrollLockedReveal();
+
   // Connect segment mapper to scroll progress updates
   scrollDetector.onProgressUpdate((progress) => {
     segmentMapper.updateSegmentStates(progress);
   });
+
+  // Store references for cleanup if needed
+  (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal };
 }

@@ -47,6 +47,12 @@ export class ScrollLockedReveal {
   private setup(): void {
     if (!this.stage) return;
 
+    // Initialize all elements to hidden state before first update
+    for (const el of this.elements) {
+      el.style.opacity = '0';
+      el.style.transform = `translateY(20px) scale(0.98)`;
+    }
+
     // Scroll listener with rAF throttling
     window.addEventListener('scroll', this.boundOnScroll, { passive: true });
     window.addEventListener('resize', this.boundOnScroll, { passive: true });
@@ -55,8 +61,9 @@ export class ScrollLockedReveal {
     this.resizeObserver = new ResizeObserver(() => this.update());
     this.resizeObserver.observe(this.stage);
 
-    // Initial update
-    this.update();
+    // Initial update - use timeout to ensure layout is fully settled
+    // This prevents webkit from showing elements before scroll calculations are ready
+    setTimeout(() => this.update(), 50);
   }
 
   /**
@@ -104,6 +111,23 @@ export class ScrollLockedReveal {
       const start = parseFloat(el.dataset.revealStart || '0');
 
       const end = parseFloat(el.dataset.revealEnd || '1');
+
+      // Elements before start threshold should be hidden (opacity 0)
+      // Use small threshold (0.01) to avoid floating point precision issues
+      if (progress < start - 0.01) {
+        el.style.opacity = '0';
+        el.style.transform = `translateY(20px) scale(0.98)`;
+
+        continue;
+      }
+
+      // Elements past end threshold should be fully visible (opacity 1)
+      if (progress >= end) {
+        el.style.opacity = '1';
+        el.style.transform = `translateY(0px) scale(1)`;
+
+        continue;
+      }
 
       // Map global progress to element's local 0-1 range
       const range = Math.max(0.0001, end - start);

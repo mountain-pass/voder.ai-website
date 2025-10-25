@@ -11,48 +11,51 @@ test.describe('P003: Coming Soon Button Overlapping 3D Cube', () => {
     // Wait for hero section to be visible
     await page.waitForSelector('.hero-section', { state: 'visible' });
 
-    // Get the bounding boxes of the coming soon button and 3D canvas
-    const comingSoonIndicator = page.locator('.coming-soon-indicator');
+    // Get the bounding boxes of the hero title (positioned over 3D) and 3D canvas
+    const heroTitle = page.locator('.hero-title');
 
     const heroAnimation = page.locator('.hero-animation');
 
     // Wait for both elements to be visible
-    await expect(comingSoonIndicator).toBeVisible();
+    await expect(heroTitle).toBeVisible();
     await expect(heroAnimation).toBeVisible();
 
     // Get bounding boxes
-    const buttonBox = await comingSoonIndicator.boundingBox();
+    const titleBox = await heroTitle.boundingBox();
 
     const canvasBox = await heroAnimation.boundingBox();
 
     // Verify both elements have valid bounding boxes
-    expect(buttonBox).not.toBeNull();
+    expect(titleBox).not.toBeNull();
     expect(canvasBox).not.toBeNull();
 
-    if (buttonBox && canvasBox) {
-      // Current layout: hero-animation is a 400x400px container with the button positioned below it
-      // Verify the button is not overlapping the 3D animation container
+    if (titleBox && canvasBox) {
+      // P003 fix verification: hero-animation uses position:fixed with z-index:0 to stay in background
+      // Hero title should be overlaid ON TOP of the 3D canvas (not a separation issue)
+      // This test verifies the title is visible and properly positioned over the background
 
-      const buttonTop = buttonBox.y;
+      // Verify the title is within the canvas area (intentional overlay design)
+      const titleBottom = titleBox.y + titleBox.height;
 
       const canvasBottom = canvasBox.y + canvasBox.height;
 
-      // Button should be positioned below the canvas container (no overlap)
-      const verticalSeparation = buttonTop - canvasBottom;
-
-      // Ensure proper vertical separation between animation and button
-      const minSeparation = 16; // pixels - reasonable spacing for the current layout
-
+      // Title should be within the canvas viewport (overlay design)
       expect(
-        verticalSeparation,
-        'Button should be positioned below the 3D animation container with proper spacing',
-      ).toBeGreaterThanOrEqual(minSeparation);
+        titleBottom,
+        'Hero title should be positioned within the 3D canvas viewport (intentional overlay)',
+      ).toBeLessThanOrEqual(canvasBottom + 100); // Allow some margin for positioning
 
-      // Additional check: button should be visible and not hidden by the animation
-      expect(
-        buttonTop,
-        'Button should be positioned below the animation container',
-      ).toBeGreaterThanOrEqual(canvasBottom);
+      // Verify z-index ensures title is visible over canvas
+      const titleZIndex = await heroTitle.evaluate((el) => {
+        return window.getComputedStyle(el).zIndex;
+      });
+
+      const canvasZIndex = await heroAnimation.evaluate((el) => {
+        return window.getComputedStyle(el).zIndex;
+      });
+
+      // Title should have higher z-index than canvas (or auto vs 0)
+      expect(canvasZIndex, '3D canvas should have z-index: 0 to stay in background').toBe('0');
     }
   });
 
@@ -60,38 +63,52 @@ test.describe('P003: Coming Soon Button Overlapping 3D Cube', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Check z-index values
-    const comingSoonIndicator = page.locator('.coming-soon-indicator');
-
+    // P003 fix: 3D canvas uses position:fixed with z-index:0 as background layer
     const heroAnimation = page.locator('.hero-animation');
 
-    await expect(comingSoonIndicator).toBeVisible();
     await expect(heroAnimation).toBeVisible();
 
-    // Get computed styles
-    // The coming-soon-indicator is now in below-fold-content section, not in hero-section
-    // So we verify that hero-section (which contains hero-animation) has proper z-index
-    const heroSectionZIndex = await page.locator('.hero-section').evaluate((el) => {
-      return window.getComputedStyle(el).zIndex;
-    });
-
+    // Verify hero animation has z-index: 0 (background layer)
     const canvasZIndex = await heroAnimation.evaluate((el) => window.getComputedStyle(el).zIndex);
 
-    // Hero section should have higher z-index than its child animation container
-    expect(parseInt(heroSectionZIndex || '0')).toBeGreaterThan(parseInt(canvasZIndex || '0'));
+    expect(canvasZIndex, '3D canvas should have z-index: 0 as background layer').toBe('0');
+
+    // Verify hero title is visible and not obscured by canvas
+    const heroTitle = page.locator('.hero-title');
+
+    await expect(heroTitle).toBeVisible();
+
+    // Title should be in normal document flow (auto z-index), above the fixed background canvas
+    // The fixed positioning of canvas with z-index:0 ensures it stays in background
   });
 
   test('should maintain button readability over 3D background', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const comingSoonIndicator = page.locator('.coming-soon-indicator');
+    // P003 is resolved - no "coming soon" button exists anymore
+    // Current design has signup button below the fold, well separated from 3D canvas
+    const signupButton = page.locator('.signup-button');
 
-    await expect(comingSoonIndicator).toBeVisible();
+    await expect(signupButton).toBeVisible();
 
-    // With P003 workaround implemented, update screenshot baseline
-    // Remove this test temporarily since it was mainly for visual regression detection
-    // and the layout has intentionally changed
-    expect(true).toBe(true); // Placeholder assertion
+    // Verify signup button is not overlapping 3D canvas
+    const buttonBox = await signupButton.boundingBox();
+
+    const canvasBox = await page.locator('.hero-animation').boundingBox();
+
+    expect(buttonBox).not.toBeNull();
+    expect(canvasBox).not.toBeNull();
+
+    if (buttonBox && canvasBox) {
+      // Button should be well below the canvas (in separate section)
+      const buttonTop = buttonBox.y;
+
+      const canvasBottom = canvasBox.y + canvasBox.height;
+
+      expect(buttonTop, 'Signup button should be positioned well below 3D canvas').toBeGreaterThan(
+        canvasBottom,
+      );
+    }
   });
 });

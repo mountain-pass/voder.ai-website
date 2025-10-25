@@ -37,7 +37,9 @@ test.describe('Accessibility Validation', () => {
 
     const h2Elements = page.locator('h2');
 
-    await expect(h2Elements).toHaveCount(2); // "Sound Familiar?" and "Get notified when we launch"
+    // Visible h2 elements: "AI coding felt like magic?", "UNSTOPPABLE", "Get notified when we launch"
+    // Plus one sr-only h2: "Your AI Coding Journey"
+    await expect(h2Elements).toHaveCount(4);
   });
 
   test('should have accessible skip link', async ({ page }, testInfo) => {

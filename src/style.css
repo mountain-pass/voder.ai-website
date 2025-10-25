@@ -862,18 +862,16 @@ body {
 .hero-animation {
   align-items: center;
   display: flex;
-  height: 100vh;
+  flex: 0 0 60%;
+  height: 60%;
   justify-content: center;
-  left: 0;
-  margin: 0; /* WORKAROUND P003: Remove negative margin */
   max-width: 100vw;
   overflow: visible; /* Allow full visibility */
   padding: 0;
   pointer-events: none; /* Allow clicks to pass through */
-  position: fixed; /* WORKAROUND P003: True background positioning */
-  top: 0;
+  position: relative; /* Use relative positioning for flex layout */
   width: 100vw; /* Full viewport width */
-  z-index: 0; /* WORKAROUND P003: Ensure canvas stays in background */
+  z-index: 1; /* Primary visual element, below text */
 }
 
 .hero-animation canvas {

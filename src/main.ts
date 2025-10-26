@@ -2,6 +2,7 @@
 import './style.css';
 
 import { init } from './app.js';
+import { MagicPhaseAnimator } from './magic-phase-animator.js';
 import { ScrollLockedReveal } from './scroll-locked-reveal.js';
 import { ScrollNarrativeDetector } from './scroll-narrative-detector.js';
 import { SegmentMapper } from './segment-mapper.js';
@@ -70,13 +71,16 @@ if (document.readyState === 'loading') {
     // Initialize scroll-locked reveal (per story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY)
     const scrollReveal = new ScrollLockedReveal();
 
+    // Initialize magic phase animations (per story 026.03-BIZ-MAGIC-PHASE-ANIMATION)
+    const magicPhaseAnimator = new MagicPhaseAnimator(scrollReveal);
+
     // Connect segment mapper to scroll progress updates
     scrollDetector.onProgressUpdate((progress) => {
       segmentMapper.updateSegmentStates(progress);
     });
 
     // Store references for cleanup if needed
-    (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal };
+    (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal, magicPhaseAnimator };
   });
 } else {
   init();
@@ -88,11 +92,14 @@ if (document.readyState === 'loading') {
   // Initialize scroll-locked reveal (per story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY)
   const scrollReveal = new ScrollLockedReveal();
 
+  // Initialize magic phase animations (per story 026.03-BIZ-MAGIC-PHASE-ANIMATION)
+  const magicPhaseAnimator = new MagicPhaseAnimator(scrollReveal);
+
   // Connect segment mapper to scroll progress updates
   scrollDetector.onProgressUpdate((progress) => {
     segmentMapper.updateSegmentStates(progress);
   });
 
   // Store references for cleanup if needed
-  (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal };
+  (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal, magicPhaseAnimator };
 }

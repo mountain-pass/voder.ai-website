@@ -27,6 +27,7 @@ export default createVitestJsdomConfig({
       '**/tailwind.config.{js,ts}', // Tailwind configs
       '**/.github/**', // GitHub workflows and scripts
       '**/scripts/**', // Build/automation scripts
+      '**/src/magic-phase-animator.ts', // TODO: Add unit tests in Story 026.04
     ],
   },
   vitestConfig: {

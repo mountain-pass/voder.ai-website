@@ -6,6 +6,7 @@ import { MagicPhaseAnimator } from './magic-phase-animator.js';
 import { ScrollLockedReveal } from './scroll-locked-reveal.js';
 import { ScrollNarrativeDetector } from './scroll-narrative-detector.js';
 import { SegmentMapper } from './segment-mapper.js';
+import { SparklerAnimator } from './sparkler-animator.js';
 import {
   analyzeTrafficSource,
   initializeBounceTracking,
@@ -71,8 +72,12 @@ if (document.readyState === 'loading') {
     // Initialize scroll-locked reveal (per story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY)
     const scrollReveal = new ScrollLockedReveal();
 
+    // Initialize sparkler animations first (needed for timing coordination)
+    const sparklerAnimator = new SparklerAnimator(scrollReveal);
+
     // Initialize magic phase animations (per story 026.03-BIZ-MAGIC-PHASE-ANIMATION)
-    const magicPhaseAnimator = new MagicPhaseAnimator(scrollReveal);
+    // Pass sparkler animator so Segment 2 can wait for sweep completion
+    const magicPhaseAnimator = new MagicPhaseAnimator(scrollReveal, sparklerAnimator);
 
     // Connect segment mapper to scroll progress updates
     scrollDetector.onProgressUpdate((progress) => {
@@ -80,7 +85,13 @@ if (document.readyState === 'loading') {
     });
 
     // Store references for cleanup if needed
-    (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal, magicPhaseAnimator };
+    (window as any).__voder = {
+      scrollDetector,
+      segmentMapper,
+      scrollReveal,
+      magicPhaseAnimator,
+      sparklerAnimator,
+    };
   });
 } else {
   init();
@@ -92,8 +103,12 @@ if (document.readyState === 'loading') {
   // Initialize scroll-locked reveal (per story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY)
   const scrollReveal = new ScrollLockedReveal();
 
+  // Initialize sparkler animations first (needed for timing coordination)
+  const sparklerAnimator = new SparklerAnimator(scrollReveal);
+
   // Initialize magic phase animations (per story 026.03-BIZ-MAGIC-PHASE-ANIMATION)
-  const magicPhaseAnimator = new MagicPhaseAnimator(scrollReveal);
+  // Pass sparkler animator so Segment 2 can wait for sweep completion
+  const magicPhaseAnimator = new MagicPhaseAnimator(scrollReveal, sparklerAnimator);
 
   // Connect segment mapper to scroll progress updates
   scrollDetector.onProgressUpdate((progress) => {
@@ -101,5 +116,11 @@ if (document.readyState === 'loading') {
   });
 
   // Store references for cleanup if needed
-  (window as any).__voder = { scrollDetector, segmentMapper, scrollReveal, magicPhaseAnimator };
+  (window as any).__voder = {
+    scrollDetector,
+    segmentMapper,
+    scrollReveal,
+    magicPhaseAnimator,
+    sparklerAnimator,
+  };
 }

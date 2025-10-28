@@ -1,20 +1,197 @@
-# Implementation Plan# Implementation Plan# Implementation Plan
-
-
+# Implementation Plan
 
 ## NOW
 
+**Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
 
+**Date**: 2025-01-28
+**Status**: READY TO IMPLEMENT
 
-**Implement Story 026.03-BIZ-MAGIC-PHASE-ANIMATION: Act 1 Magic Phase Cinematic Effects****Date**: October 25, 2025  **Date**: 2025-12-20  
+### Decision Made
 
+ADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
 
+**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
 
-Following Gall's Law, start with the simplest implementation that works, then iterate.**Status**: BLOCKED BY E2E TEST FAILURES  **Status**: STORY 026.02 COMPLETE  
+### Current Animation Issues
 
+Story 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
+- Segment 2 animation getting stuck on left side
+- Complex state management (6 flags) causing coordination issues
+- 11 test failures due to fragile timing logic
+- Multiple fix attempts increased complexity without solving root cause
 
+**Root Cause**: Ad-hoc animation coordination with scattered state management.
 
-### Step 1: Add HTML Structure and Data Attributes**Assessment**: Phase 6 Runtime Validation failed with 54 E2E test failures**Assessment**: Story 026.02-BIZ-SCROLL-LOCKED-REVEAL implemented successfully
+**Solution**: Build comprehensive animation system per ADR-0037.
+
+### Implementation Plan
+
+**Phase 1: Core Animation System** (Week 1 - Starts Now)
+
+1. **Design Animation Base Interface**
+   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
+   - Create state lifecycle: idle → triggered → active → completed → reset
+   - Design dependency declaration API
+   - Plan queuing mechanism
+
+2. **Implement Core System**
+   - Create `AnimationCoordinator` class
+   - Implement `BaseAnimation` interface/abstract class
+   - Build state management with lifecycle hooks
+   - Add dependency resolution system
+   - Implement animation queue
+
+3. **Add Testing Infrastructure**
+   - Unit tests for state transitions
+   - Tests for dependency resolution
+   - Tests for queuing behavior
+   - Mock utilities for testing animations
+
+4. **Documentation**
+   - API documentation
+   - Usage examples
+   - Migration guide for existing animations
+
+**Phase 2: Migration** (Week 2)
+
+1. **Migrate SparklerAnimator**
+   - Refactor to use new animation system
+   - Maintain existing visual behavior
+   - Update tests
+
+2. **Migrate MagicPhaseAnimator Segment 1**
+   - Refactor bobbing animation to new system
+   - Preserve scroll-scrubbed behavior
+   - Update tests
+
+3. **Migrate MagicPhaseAnimator Segment 2**
+   - Refactor to use new system with sparkler dependency
+   - Fix stuck-on-left bug through proper state management
+   - Update tests to reflect time-based behavior
+
+4. **Remove Old Coordination Code**
+   - Delete ad-hoc state management
+   - Clean up complex opacity logic
+   - Simplify animation classes
+
+**Phase 3: Validation** (Week 3)
+
+1. **End-to-End Testing**
+   - Test all animations together
+   - Verify sparkler → segment 2 coordination
+   - Test edge cases (quick scroll, reverse scroll)
+
+2. **Fix Test Failures**
+   - Address 11 failing tests
+   - Update test expectations for new system
+   - Achieve >90% test coverage target
+
+3. **Performance Testing**
+   - Measure animation performance
+   - Optimize if needed
+   - Verify no jank or stuttering
+
+4. **Documentation Updates**
+   - Update developer guide
+   - Document animation system usage
+   - Add troubleshooting guide
+
+### Success Criteria
+
+Per ADR-0037:
+- ✅ Zero animation timing bugs
+- ✅ >90% test coverage for animation system
+- ✅ <1 hour to add new scroll-triggered animation
+- ✅ All existing animations working correctly
+- ✅ 11 failing tests fixed
+
+### Next Actions
+
+1. **Start Phase 1**: Design and implement core animation system
+2. **Create feature branch**: `feature/comprehensive-animation-system`
+3. **Set up project structure**: Create `src/animations/` directory
+4. **Begin implementation**: Start with AnimationCoordinator class
+
+## NEXT
+
+### If ADR-0037 Accepted: Implement Animation System
+
+**Phase 1: Core Animation System** (Week 1)
+1. Design animation base interface/class
+2. Implement state management (idle, triggered, active, completed, reset)
+3. Create dependency resolution system
+4. Build queuing mechanism
+5. Add comprehensive tests
+
+**Phase 2: Migration** (Week 2)
+1. Refactor SparklerAnimator to use new system
+2. Refactor MagicPhaseAnimator segment 1 to use new system
+3. Refactor MagicPhaseAnimator segment 2 to use new system
+4. Update all animation tests
+5. Verify zero timing bugs
+
+**Phase 3: Validation** (Week 3)
+1. End-to-end testing of all animations
+2. Performance testing
+3. Test coverage validation (target >90%)
+4. Documentation updates
+
+### If ADR-0037 Rejected: Alternative Approaches
+
+1. **External Library Evaluation**
+   - Research GSAP ScrollTrigger
+   - Research Framer Motion
+   - Evaluate bundle size impact
+   - Create POC with one animation
+
+2. **Simplified Coordination**
+   - Remove sparkler dependency from segment 2
+   - Use simpler trigger conditions
+   - Accept some edge case bugs
+
+## LATER
+
+### After Animation System Complete
+
+1. **Continue Story 026.03**
+   - Implement remaining Act 1 segments
+   - Add additional cinematic effects
+   - Expand animation capabilities
+
+2. **Story 026.04 and Beyond**
+   - Implement Act 2 animations
+   - Implement Act 3 animations
+   - Build on established animation system
+
+3. **Test Cleanup**
+   - Fix 10 failing tests in magic-phase-animator.test.ts
+   - Fix 2 failing tests in sparkler-animator.test.ts
+   - Achieve 100% test pass rate
+
+4. **Optional Dependency Updates**
+   - Review and update dependencies per security policy
+   - Monitor for security vulnerabilities
+
+## Notes
+
+**Current Blockers**:
+- Segment 2 animation coordination issues
+- Complex state management causing bugs
+- Need architectural decision on animation system
+
+**Test Status**:
+- 327 passing / 337 total tests (97% pass rate)
+- 10 failures in animation coordination tests
+
+**Decision Required**:
+- Accept ADR-0037 and implement comprehensive system
+- OR choose alternative approach
+- Decision needed to unblock development
+
+**Gall's Law Violation**:
+Current animation implementation has become complex without working reliably. Need to step back to simpler working system, then build up correctly.
+
 
 
 

@@ -116,7 +116,7 @@ describe('MagicPhaseAnimator', () => {
       });
     });
 
-    it('should add glow to magic words when visible', () => {
+    it('should not add glow to magic words (sparkler handles emphasis)', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
       animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
@@ -124,20 +124,8 @@ describe('MagicPhaseAnimator', () => {
       const magicWords = container.querySelectorAll<HTMLElement>('.magic-word');
 
       magicWords.forEach((word) => {
-        // Should have text-shadow when parent is visible (progress > 0.3 of parent range)
-        const parent = word.closest('[data-reveal-start]');
-
-        if (parent) {
-          const revealStart = parseFloat(parent.getAttribute('data-reveal-start') || '0');
-
-          const revealEnd = parseFloat(parent.getAttribute('data-reveal-end') || '0.12');
-
-          const progress = (0.1 - revealStart) / (revealEnd - revealStart);
-
-          if (progress > 0.3) {
-            expect(word.style.textShadow).toContain('rgba(34, 199, 190');
-          }
-        }
+        // Glow is disabled - sparkler effect handles the magic emphasis
+        expect(word.style.textShadow).toBe('none');
       });
     });
 
@@ -203,16 +191,27 @@ describe('MagicPhaseAnimator', () => {
       expect(segment.style.transform).toMatch(/translateX\(-[\d.]+px\)/);
     });
 
-    it('should fully reveal at end of range', () => {
+    it('should fully reveal after time-based animation completes', () => {
+      // Use fake timers for time-based animation
+      vi.useFakeTimers();
+
+      // Start before trigger point
+      vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
+      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+
+      // Scroll into trigger range
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.45);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      // Wait for animation to complete (800ms default duration)
+      vi.advanceTimersByTime(800);
 
       const segment = container.querySelector('[data-segment="2"]') as HTMLElement;
 
       expect(parseFloat(segment.style.opacity)).toBeCloseTo(1, 1);
       // At end, translateX should be close to 0
       expect(segment.style.transform).toMatch(/translateX\([-]?[0-9.]+px\)/);
+
+      vi.useRealTimers();
     });
 
     it('should apply brand teal color to speed words', () => {
@@ -261,9 +260,12 @@ describe('MagicPhaseAnimator', () => {
       });
 
       it('should create momentum overshoot by moving past final position', () => {
-        // Trigger animation by scrolling into range
-        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
+        // Start outside segment 2 range
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
         animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+
+        // Scroll into segment 2 range to trigger animation
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
 
         // Advance time to 75% of 800ms animation (600ms)
         vi.advanceTimersByTime(600);
@@ -284,9 +286,12 @@ describe('MagicPhaseAnimator', () => {
       });
 
       it('should snap sharply to final position after 85% progress', () => {
-        // Trigger animation by scrolling into range
-        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
+        // Start outside segment 2 range
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
         animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+
+        // Scroll into segment 2 range to trigger animation
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
 
         // Advance time to 90% of 800ms animation (720ms) - after 85% threshold
         vi.advanceTimersByTime(720);
@@ -305,11 +310,14 @@ describe('MagicPhaseAnimator', () => {
       });
 
       it('should reach exactly zero translateX at 100% progress', () => {
-        // Trigger animation by scrolling into range
-        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
+        // Start outside segment 2 range
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
         animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
 
-        // Advance time to completion (800ms)
+        // Scroll into segment 2 range to trigger animation
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
+
+        // Advance time to 100% of 800ms animation
         vi.advanceTimersByTime(800);
 
         const segment = container.querySelector('[data-segment="2"]') as HTMLElement;
@@ -325,9 +333,12 @@ describe('MagicPhaseAnimator', () => {
       });
 
       it('should show visible momentum effect during slide-in', () => {
-        // Trigger animation
-        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
+        // Start outside segment 2 range
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
         animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+
+        // Scroll into segment 2 range to trigger animation
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
 
         // Midpoint in time (400ms = 50% of 800ms)
         vi.advanceTimersByTime(400);
@@ -351,9 +362,12 @@ describe('MagicPhaseAnimator', () => {
       });
 
       it('should maintain energetic feel by completing snap quickly', () => {
-        // Trigger animation
-        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
+        // Start outside segment 2 range
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
         animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+
+        // Scroll into segment 2 range to trigger animation
+        vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
 
         // Just before snap threshold (84% = 672ms)
         vi.advanceTimersByTime(672);

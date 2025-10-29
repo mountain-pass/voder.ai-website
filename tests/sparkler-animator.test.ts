@@ -28,6 +28,24 @@ describe('SparklerAnimator', () => {
     `;
     document.body.appendChild(container);
 
+    // Mock getBoundingClientRect for magic-word element to return non-zero dimensions
+    // (required for buildEmitters to work in JSDOM test environment)
+    const magicWord = container.querySelector('.magic-word') as HTMLElement;
+
+    if (magicWord) {
+      magicWord.getBoundingClientRect = vi.fn(() => ({
+        width: 100,
+        height: 30,
+        top: 0,
+        left: 0,
+        right: 100,
+        bottom: 30,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      }));
+    }
+
     // Mock progressive reveal
     mockProgressiveReveal = {
       getCurrentProgress: vi.fn(() => 0),

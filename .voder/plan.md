@@ -1,266 +1,530 @@
-# Implementation Plan
+# Implementation Plan# Implementation Plan
 
-## NOW
 
-**Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
 
-**Date**: 2025-01-28
+## NOW## NOW
+
+
+
+**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
+
+
+
+**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
+
 **Status**: READY TO IMPLEMENT
+
+### Background
 
 ### Decision Made
 
+Security incident `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md` has a scheduled resolution date of **October 29, 2025** which has now **PASSED** (current date: October 30, 2025).
+
 ADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
 
-**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
+The incident documents:
 
-### Current Animation Issues
+- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
 
-Story 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
+- Planned update: netlify-cli 23.9.4 → 23.9.5
+
+- Update reached 7-day maturity on October 29, 2025### Current Animation Issues
+
+- Scheduled for execution on October 29, 2025
+
+- **Status**: OVERDUE by 1 dayStory 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
+
 - Segment 2 animation getting stuck on left side
-- Complex state management (6 flags) causing coordination issues
-- 11 test failures due to fragile timing logic
-- Multiple fix attempts increased complexity without solving root cause
 
-**Root Cause**: Ad-hoc animation coordination with scattered state management.
+### Implementation Steps- Complex state management (6 flags) causing coordination issues
+
+- 11 test failures due to fragile timing logic
+
+1. **Execute Security Update**- Multiple fix attempts increased complexity without solving root cause
+
+   ```bash
+
+   npm update netlify-cli**Root Cause**: Ad-hoc animation coordination with scattered state management.
+
+   ```
 
 **Solution**: Build comprehensive animation system per ADR-0037.
 
-### Implementation Plan
+2. **Verify Update Applied**
 
-**Phase 1: Core Animation System** (Week 1 - Starts Now)
+   ```bash### Implementation Plan
+
+   npm list netlify-cli
+
+   # Should show: netlify-cli@23.9.5**Phase 1: Core Animation System** (Week 1 - Starts Now)
+
+   ```
 
 1. **Design Animation Base Interface**
-   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
-   - Create state lifecycle: idle → triggered → active → completed → reset
-   - Design dependency declaration API
-   - Plan queuing mechanism
+
+3. **Verify Vulnerabilities Resolved**   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
+
+   ```bash   - Create state lifecycle: idle → triggered → active → completed → reset
+
+   npm audit   - Design dependency declaration API
+
+   # Should show: 0 vulnerabilities (or reduced from 2)   - Plan queuing mechanism
+
+   ```
 
 2. **Implement Core System**
-   - Create `AnimationCoordinator` class
-   - Implement `BaseAnimation` interface/abstract class
-   - Build state management with lifecycle hooks
-   - Add dependency resolution system
-   - Implement animation queue
 
-3. **Add Testing Infrastructure**
-   - Unit tests for state transitions
-   - Tests for dependency resolution
-   - Tests for queuing behavior
-   - Mock utilities for testing animations
+4. **Test Functionality**   - Create `AnimationCoordinator` class
 
-4. **Documentation**
-   - API documentation
-   - Usage examples
-   - Migration guide for existing animations
+   ```bash   - Implement `BaseAnimation` interface/abstract class
 
-**Phase 2: Migration** (Week 2)
+   # Run linting   - Build state management with lifecycle hooks
 
-1. **Migrate SparklerAnimator**
-   - Refactor to use new animation system
-   - Maintain existing visual behavior
-   - Update tests
+   npm run lint   - Add dependency resolution system
 
-2. **Migrate MagicPhaseAnimator Segment 1**
-   - Refactor bobbing animation to new system
-   - Preserve scroll-scrubbed behavior
-   - Update tests
+      - Implement animation queue
 
-3. **Migrate MagicPhaseAnimator Segment 2**
+   # Run unit tests
+
+   npm test3. **Add Testing Infrastructure**
+
+      - Unit tests for state transitions
+
+   # Verify netlify CLI works   - Tests for dependency resolution
+
+   netlify --version   - Tests for queuing behavior
+
+   ```   - Mock utilities for testing animations
+
+
+
+5. **Update Security Incident Status**4. **Documentation**
+
+   - Rename: `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md`   - API documentation
+
+   - To: `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.resolved.md`   - Usage examples
+
+   - Update status from PROPOSED to RESOLVED   - Migration guide for existing animations
+
+   - Document resolution date: October 30, 2025
+
+   - Add post-resolution verification notes**Phase 2: Migration** (Week 2)
+
+
+
+6. **Commit Changes**1. **Migrate SparklerAnimator**
+
+   ```bash   - Refactor to use new animation system
+
+   git add package.json package-lock.json docs/security-incidents/   - Maintain existing visual behavior
+
+   git commit -m "security: resolve netlify-cli vulnerabilities (fast-redact/pino)   - Update tests
+
+
+
+   - Update netlify-cli from 23.9.4 to 23.9.52. **Migrate MagicPhaseAnimator Segment 1**
+
+   - Resolves CVE: fast-redact prototype pollution (LOW)   - Refactor bobbing animation to new system
+
+   - Resolves CVE: pino transitive vulnerability (LOW)   - Preserve scroll-scrubbed behavior
+
+   - Closes security incident: SECURITY-INCIDENT-2025-10-23   - Update tests
+
+   - Resolution was scheduled for Oct 29, executed Oct 30"
+
+   ```3. **Migrate MagicPhaseAnimator Segment 2**
+
    - Refactor to use new system with sparkler dependency
-   - Fix stuck-on-left bug through proper state management
+
+### Success Criteria   - Fix stuck-on-left bug through proper state management
+
    - Update tests to reflect time-based behavior
 
-4. **Remove Old Coordination Code**
-   - Delete ad-hoc state management
-   - Clean up complex opacity logic
-   - Simplify animation classes
+- ✅ netlify-cli updated to 23.9.5
+
+- ✅ npm audit shows vulnerabilities reduced (0 or fewer than 2)4. **Remove Old Coordination Code**
+
+- ✅ All tests passing (no breaking changes)   - Delete ad-hoc state management
+
+- ✅ netlify CLI functional   - Clean up complex opacity logic
+
+- ✅ Security incident status updated to RESOLVED   - Simplify animation classes
+
+- ✅ Changes committed to git
 
 **Phase 3: Validation** (Week 3)
 
-1. **End-to-End Testing**
-   - Test all animations together
-   - Verify sparkler → segment 2 coordination
-   - Test edge cases (quick scroll, reverse scroll)
+### Expected Outcome
 
-2. **Fix Test Failures**
+1. **End-to-End Testing**
+
+After this update:   - Test all animations together
+
+- Security vulnerabilities resolved (2 LOW → 0)   - Verify sparkler → segment 2 coordination
+
+- Security incident properly closed   - Test edge cases (quick scroll, reverse scroll)
+
+- Development can proceed without security blocking condition
+
+- Assessment can continue from Phase 3 (Code Quality Validation)2. **Fix Test Failures**
+
    - Address 11 failing tests
-   - Update test expectations for new system
+
+## NEXT   - Update test expectations for new system
+
    - Achieve >90% test coverage target
 
-3. **Performance Testing**
-   - Measure animation performance
-   - Optimize if needed
-   - Verify no jank or stuttering
+**Execute Mature Package Updates (After Security Fix)**
 
-4. **Documentation Updates**
-   - Update developer guide
-   - Document animation system usage
-   - Add troubleshooting guide
+3. **Performance Testing**
+
+After completing the security update in NOW section, proceed with these mature package updates that meet the 7-day maturity threshold:   - Measure animation performance
+
+   - Optimize if needed
+
+### Phase 1: Mature Minor/Patch Updates (Ready Now)   - Verify no jank or stuttering
+
+
+
+**@axe-core/playwright: 4.10.2 → 4.11.0** (9 days old - SAFE)4. **Documentation Updates**
+
+```bash   - Update developer guide
+
+npm install @axe-core/playwright@4.11.0 --save-dev   - Document animation system usage
+
+npm test   - Add troubleshooting guide
+
+```
 
 ### Success Criteria
 
-Per ADR-0037:
-- ✅ Zero animation timing bugs
-- ✅ >90% test coverage for animation system
-- ✅ <1 hour to add new scroll-triggered animation
-- ✅ All existing animations working correctly
+**@typescript-eslint packages: 8.46.1 → 8.46.2** (10 days old - SAFE)
+
+```bashPer ADR-0037:
+
+npm install @typescript-eslint/eslint-plugin@8.46.2 @typescript-eslint/parser@8.46.2 --save-dev- ✅ Zero animation timing bugs
+
+npm run lint- ✅ >90% test coverage for animation system
+
+npm test- ✅ <1 hour to add new scroll-triggered animation
+
+```- ✅ All existing animations working correctly
+
 - ✅ 11 failing tests fixed
 
-### Next Actions
+**Success Criteria**:
 
-1. **Start Phase 1**: Design and implement core animation system
-2. **Create feature branch**: `feature/comprehensive-animation-system`
+- All updates applied without errors### Next Actions
+
+- All 257 tests still passing
+
+- Linting clean1. **Start Phase 1**: Design and implement core animation system
+
+- No breaking changes introduced2. **Create feature branch**: `feature/comprehensive-animation-system`
+
 3. **Set up project structure**: Create `src/animations/` directory
-4. **Begin implementation**: Start with AnimationCoordinator class
 
-## NEXT
+### Phase 2: Continue Assessment Process4. **Begin implementation**: Start with AnimationCoordinator class
 
-### If ADR-0037 Accepted: Implement Animation System
 
-**Phase 1: Core Animation System** (Week 1)
-1. Design animation base interface/class
-2. Implement state management (idle, triggered, active, completed, reset)
+
+After dependency updates complete, resume assessment from Phase 3:## NEXT
+
+
+
+1. **Phase 3: Code Quality Validation**### If ADR-0037 Accepted: Implement Animation System
+
+   - Run comprehensive linting (ESLint, Stylelint, HTMLHint, Markdownlint)
+
+   - Verify Prettier formatting**Phase 1: Core Animation System** (Week 1)
+
+   - TypeScript type checking1. Design animation base interface/class
+
+   - Production build verification2. Implement state management (idle, triggered, active, completed, reset)
+
 3. Create dependency resolution system
-4. Build queuing mechanism
-5. Add comprehensive tests
 
-**Phase 2: Migration** (Week 2)
+2. **Phase 4: Documentation Validation**4. Build queuing mechanism
+
+   - Verify 103 markdown files current5. Add comprehensive tests
+
+   - Check for broken links
+
+   - Validate npm scripts exist**Phase 2: Migration** (Week 2)
+
 1. Refactor SparklerAnimator to use new system
-2. Refactor MagicPhaseAnimator segment 1 to use new system
-3. Refactor MagicPhaseAnimator segment 2 to use new system
-4. Update all animation tests
-5. Verify zero timing bugs
 
-**Phase 3: Validation** (Week 3)
-1. End-to-end testing of all animations
+3. **Phase 5: Testing Validation**2. Refactor MagicPhaseAnimator segment 1 to use new system
+
+   - Run full test suite (unit + E2E)3. Refactor MagicPhaseAnimator segment 2 to use new system
+
+   - Verify coverage thresholds4. Update all animation tests
+
+   - Check for test failures5. Verify zero timing bugs
+
+
+
+4. **Phase 6-11: Remaining Assessment Phases****Phase 3: Validation** (Week 3)
+
+   - Runtime, Version Control, Pipeline, Problems, Traceability, Final Report1. End-to-end testing of all animations
+
 2. Performance testing
-3. Test coverage validation (target >90%)
+
+## LATER3. Test coverage validation (target >90%)
+
 4. Documentation updates
+
+**Monitor Fresh Packages for Maturity (Nov 4, 2025)**
 
 ### If ADR-0037 Rejected: Alternative Approaches
 
-1. **External Library Evaluation**
-   - Research GSAP ScrollTrigger
-   - Research Framer Motion
-   - Evaluate bundle size impact
-   - Create POC with one animation
+The following packages are currently too fresh (<7 days old) and should be monitored:
 
-2. **Simplified Coordination**
-   - Remove sparkler dependency from segment 2
-   - Use simpler trigger conditions
+1. **External Library Evaluation**
+
+### Fresh Packages - Wait Until Nov 4   - Research GSAP ScrollTrigger
+
+   - Research Framer Motion
+
+**happy-dom: 20.0.2 → 20.0.10** (2 days old - WAIT)   - Evaluate bundle size impact
+
+- Release Date: 2025-10-28   - Create POC with one animation
+
+- Eligible: November 4, 2025 (needs 5 more days)
+
+- Update Type: Patch (crosses 8 versions: 20.0.2→20.0.10)2. **Simplified Coordination**
+
+- Note: Multiple rapid patch releases suggest active bug fixing   - Remove sparkler dependency from segment 2
+
+- Action: Wait for stability, monitor for 20.0.11+ releases   - Use simpler trigger conditions
+
    - Accept some edge case bugs
 
-## LATER
+**@types/node: 24.7.2 → 24.9.2** (2 days old - WAIT)
 
-### After Animation System Complete
+- Release Date: 2025-10-28## LATER
+
+- Eligible: November 4, 2025 (needs 5 more days)
+
+- Update Type: Patch (crosses multiple versions)### After Animation System Complete
+
+- Action: Wait for maturity before updating
 
 1. **Continue Story 026.03**
-   - Implement remaining Act 1 segments
+
+### Analyze Remaining Packages   - Implement remaining Act 1 segments
+
    - Add additional cinematic effects
-   - Expand animation capabilities
 
-2. **Story 026.04 and Beyond**
-   - Implement Act 2 animations
+**vite: 7.1.11 → 7.1.12** (needs release date check)   - Expand animation capabilities
+
+```bash
+
+npm view vite@7.1.12 time2. **Story 026.04 and Beyond**
+
+```   - Implement Act 2 animations
+
    - Implement Act 3 animations
-   - Build on established animation system
 
-3. **Test Cleanup**
-   - Fix 10 failing tests in magic-phase-animator.test.ts
+**jsdom: 27.0.0 → 27.0.1** (needs release date check)   - Build on established animation system
+
+```bash
+
+npm view jsdom@27.0.1 time3. **Test Cleanup**
+
+```   - Fix 10 failing tests in magic-phase-animator.test.ts
+
    - Fix 2 failing tests in sparkler-animator.test.ts
-   - Achieve 100% test pass rate
 
-4. **Optional Dependency Updates**
-   - Review and update dependencies per security policy
-   - Monitor for security vulnerabilities
+### Major Version Updates - Requires Migration Analysis   - Achieve 100% test pass rate
 
-## Notes
+
+
+**vitest: 3.2.4 → 4.0.5** (MAJOR UPDATE)4. **Optional Dependency Updates**
+
+- Breaking changes expected   - Review and update dependencies per security policy
+
+- Requires changelog review   - Monitor for security vulnerabilities
+
+- May need test updates
+
+- Should update with @vitest/coverage-v8 together## Notes
+
+- Action: Research breaking changes, create migration plan
 
 **Current Blockers**:
-- Segment 2 animation coordination issues
-- Complex state management causing bugs
-- Need architectural decision on animation system
+
+**@vitest/coverage-v8: 3.2.4 → 4.0.5** (MAJOR UPDATE - tied to vitest)- Segment 2 animation coordination issues
+
+- Must be updated together with vitest- Complex state management causing bugs
+
+- Same breaking changes apply- Need architectural decision on animation system
+
+- Action: Update simultaneously with vitest
 
 **Test Status**:
-- 327 passing / 337 total tests (97% pass rate)
-- 10 failures in animation coordination tests
 
-**Decision Required**:
+**eslint-plugin-unicorn: 61.0.2 → 62.0.0** (MAJOR UPDATE)- 327 passing / 337 total tests (97% pass rate)
+
+- May introduce new linting rules- 10 failures in animation coordination tests
+
+- Requires changelog review
+
+- Action: Research breaking changes, verify lint rules**Decision Required**:
+
 - Accept ADR-0037 and implement comprehensive system
-- OR choose alternative approach
+
+### Future Assessment Cycles- OR choose alternative approach
+
 - Decision needed to unblock development
 
-**Gall's Law Violation**:
-Current animation implementation has become complex without working reliably. Need to step back to simpler working system, then build up correctly.
+After all updates complete:
+
+1. Re-run full 11-phase assessment**Gall's Law Violation**:
+
+2. Verify no regressions introducedCurrent animation implementation has become complex without working reliably. Need to step back to simpler working system, then build up correctly.
+
+3. Update security incident tracking
+
+4. Document any new issues discovered
+
+5. Pull next story from backlog for development
 
 
 
-
-Update `index.html` to add the necessary data attributes and classes for Act 1 (Magic Phase) segments:
-
-- Add `data-act="1"` to Act 1 segments (first ~20% of scroll narrative)
-
-- Add `data-segment="1"` and `data-segment="2"` to the first two segments------
-
-- Add `.magic-word` class to the word "magic" 
-
-- Add `.speed-word` class to "fast" and "exciting" words
+## NotesUpdate `index.html` to add the necessary data attributes and classes for Act 1 (Magic Phase) segments:
 
 
 
-### Step 2: Create CSS Foundation## NOW## NOW
+### Current Project Status- Add `data-act="1"` to Act 1 segments (first ~20% of scroll narrative)
 
 
 
-Create CSS styles for the magic phase animations in `src/style.css`:
+**Quality**: ✅ EXCELLENT- Add `data-segment="1"` and `data-segment="2"` to the first two segments------
 
-- Add `.magic-word` styling with text-shadow animation preparation
+- All 257 tests passing (100%)
 
-- Add `.speed-word` styling with transform and color transition preparation**Fix Critical Accessibility Issue - Semantic HTML Structure (8 test failures)****Story 026.02 Complete - Ready for Next Assessment**
+- All code quality checks passing- Add `.magic-word` class to the word "magic" 
 
-- Add performance optimizations (`will-change`, `backface-visibility`)
+- Production build working
 
-- Ensure hardware-accelerated transforms are used
+- Zero critical issues- Add `.speed-word` class to "fast" and "exciting" words
 
 
+
+**Security**: ⚠️ 1 OVERDUE SECURITY UPDATE
+
+- 2 LOW severity vulnerabilities in netlify-cli dependencies
+
+- Security incident resolution date passed (Oct 29 → now Oct 30)### Step 2: Create CSS Foundation## NOW## NOW
+
+- Must execute planned update immediately
+
+
+
+**Dependencies**: 📊 11 OUTDATED PACKAGES
+
+- 1 security update (OVERDUE - execute NOW)Create CSS styles for the magic phase animations in `src/style.css`:
+
+- 3 mature updates (ready for NEXT)
+
+- 2 fresh packages (wait until Nov 4)- Add `.magic-word` styling with text-shadow animation preparation
+
+- 2 need release date analysis
+
+- 3 major version updates (require migration planning)- Add `.speed-word` styling with transform and color transition preparation**Fix Critical Accessibility Issue - Semantic HTML Structure (8 test failures)****Story 026.02 Complete - Ready for Next Assessment**
+
+
+
+### Blocking Conditions- Add performance optimizations (`will-change`, `backface-visibility`)
+
+
+
+**CRITICAL BLOCKER**: Overdue security update- Ensure hardware-accelerated transforms are used
+
+- Blocks: All assessment phases after Phase 2
+
+- Blocks: New story development
+
+- Action: MUST execute security update in NOW section first
 
 ### Step 3: Create MagicPhaseAnimator ClassThe assessment revealed missing semantic HTML elements across all browsers (chromium, webkit, Mobile Chrome, Mobile Safari). This is a WCAG compliance issue affecting screen reader navigation.Story 026.02-BIZ-SCROLL-LOCKED-REVEAL (formerly BIZ-VIEWPORT-FIXED-OVERLAY) has been successfully implemented with position:sticky approach after user correction.
 
+**After Security Fix**: No blockers
+
+- Can proceed with mature package updates
+
+- Can continue assessment from Phase 3
+
+- Can pull new stories from backlogCreate `src/magic-phase-animator.ts` with:
 
 
-Create `src/magic-phase-animator.ts` with:
 
-- Constructor that accepts the ScrollLockedReveal instance
+### Gall's Law Compliance- Constructor that accepts the ScrollLockedReveal instance
 
-- Hook into the progressive reveal system's update cycle### Root Cause**Completed Work**:
 
-- Implement `updateMagicAnimations()` to only animate during 0-20% scroll range
 
-- Implement `animateSegment1()` with floating motion and magic word glowCurrent HTML structure lacks proper semantic elements (`<header>`, `<main>`, `<footer>`, `<nav>`, `<section>`, `<article>`), making the page inaccessible to screen readers and failing accessibility tests.- ✅ ScrollLockedReveal class implemented (150 lines)
+Current approach follows Gall's Law:- Hook into the progressive reveal system's update cycle### Root Cause**Completed Work**:
+
+- Fix security issue first (simple, focused)
+
+- Update mature packages incrementally (proven stability)- Implement `updateMagicAnimations()` to only animate during 0-20% scroll range
+
+- Wait for fresh packages to mature (avoid premature complexity)
+
+- Analyze major updates carefully (understand breaking changes)- Implement `animateSegment1()` with floating motion and magic word glowCurrent HTML structure lacks proper semantic elements (`<header>`, `<main>`, `<footer>`, `<nav>`, `<section>`, `<article>`), making the page inaccessible to screen readers and failing accessibility tests.- ✅ ScrollLockedReveal class implemented (150 lines)
+
+- Test thoroughly after each change (maintain working system)
 
 - Implement `animateSegment2()` with slide-in and speed word energy pulse
 
+### Assessment Process
+
 - Add easing functions: `easeOutQuart()` and `easeOutBack()`- ✅ Scroll-stage + sticky-panel architecture
 
-- Add helper: `mapToSegmentProgress()`
+Following fail-fast methodology:
 
-### Implementation Steps- ✅ Progressive reveal with smoothstep easing
+- Phase 1 identified dependency issues- Add helper: `mapToSegmentProgress()`
+
+- Phase 2 identified overdue security update (BLOCKING)
+
+- Skipped to immediate action (security fix)### Implementation Steps- ✅ Progressive reveal with smoothstep easing
+
+- Will resume from Phase 3 after resolution
 
 ### Step 4: Integrate MagicPhaseAnimator into App
 
+### Security Policy Compliance
+
 - ✅ 20 unit tests + 10 E2E tests (all passing)
 
-Update `src/app.ts` to:
+Per `.github/prompts/processes/SECURITY-POLICY.md`:
 
-- Import MagicPhaseAnimator1. **Audit current HTML structure** (`index.html`)- ✅ All 277 tests passing (excellent test coverage)
+- ✅ Checked status of proposed incidentsUpdate `src/app.ts` to:
+
+- ⚠️ Found overdue resolution date (Oct 29 < Oct 30)
+
+- 🚨 MUST execute planned update immediately- Import MagicPhaseAnimator1. **Audit current HTML structure** (`index.html`)- ✅ All 277 tests passing (excellent test coverage)
+
+- ✅ Following documented update plan from incident
 
 - Initialize it after ScrollLockedReveal is created
 
+### Next Full Assessment
+
 - Pass the ScrollLockedReveal instance to the animator   - Identify all non-semantic containers (divs without semantic meaning)- ✅ All code quality gates passing (linting, formatting, type checking)
 
+After completing NOW + NEXT sections:
 
+- Re-run comprehensive 11-phase assessment
 
-### Step 5: Test and Validate   - Map content areas to appropriate semantic elements- ✅ Story document rewritten to describe WHAT not HOW
+- Verify all dependency updates successful
 
+- Check for any new issues introduced### Step 5: Test and Validate   - Map content areas to appropriate semantic elements- ✅ Story document rewritten to describe WHAT not HOW
+
+- Generate updated assessment report
+
+- Determine if ready for new story development
 
 
 Run tests and manually verify:   - Review WCAG 2.1 requirements for semantic structure- ✅ Committed to git (commit 8a01b3b)

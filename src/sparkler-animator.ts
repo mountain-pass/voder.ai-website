@@ -399,7 +399,7 @@ export class SparklerAnimator {
 
     // Only reset sweep trigger when headline has FULLY faded out (opacity = 0)
     // This allows partial scroll-up without retriggering
-    if (headlineOpacity === 0 && this.sweepCompleted) {
+    if (headlineOpacity === 0) {
       this.sweepTriggered = false;
       this.sweepStartTime = 0;
       this.sweepCompleted = false;

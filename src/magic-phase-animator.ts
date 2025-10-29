@@ -36,6 +36,7 @@ export class MagicPhaseAnimator {
    */
   private startContinuousAnimation(): void {
     const animate = () => {
+      if (!this.isAnimating) return; // Stop loop if destroyed
       this.updateMagicAnimations();
       this.animationFrameId = requestAnimationFrame(animate);
     };
@@ -146,7 +147,7 @@ export class MagicPhaseAnimator {
 
       // Apply transforms with individual opacity and bobbing
       segment.style.opacity = opacity.toString();
-      segment.style.transform = `translate(${bobbingX}px, ${bobbingY}px) scale(${scale})`;
+      segment.style.transform = `translateX(${bobbingX}px) translateY(${bobbingY}px) scale(${scale})`;
     });
 
     // Magic word simple glow - appears when its parent headline is visible
@@ -372,6 +373,7 @@ export class MagicPhaseAnimator {
    * Clean up animation frame if needed
    */
   public destroy(): void {
+    this.isAnimating = false; // Stop the animation loop
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;

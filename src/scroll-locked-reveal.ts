@@ -18,6 +18,8 @@ export class ScrollLockedReveal {
   private ticking: boolean;
   private resizeObserver: ResizeObserver | null;
   private boundOnScroll: () => void;
+  private rafId: number | null;
+  private timeoutId: number | null;
 
   /**
    * Initialize scroll-locked reveal system
@@ -28,6 +30,8 @@ export class ScrollLockedReveal {
     this.ticking = false;
     this.resizeObserver = null;
     this.boundOnScroll = () => this.onScroll();
+    this.rafId = null;
+    this.timeoutId = null;
 
     if (!this.stage) {
       // eslint-disable-next-line no-console -- REQ-DEBUG-LOGGING: Console output for troubleshooting
@@ -63,7 +67,7 @@ export class ScrollLockedReveal {
 
     // Initial update - use timeout to ensure layout is fully settled
     // This prevents webkit from showing elements before scroll calculations are ready
-    setTimeout(() => this.update(), 50);
+    this.timeoutId = window.setTimeout(() => this.update(), 50);
   }
 
   /**
@@ -72,9 +76,10 @@ export class ScrollLockedReveal {
    */
   private onScroll(): void {
     if (!this.ticking) {
-      requestAnimationFrame(() => {
+      this.rafId = requestAnimationFrame(() => {
         this.update();
         this.ticking = false;
+        this.rafId = null;
       });
       this.ticking = true;
     }
@@ -168,6 +173,18 @@ export class ScrollLockedReveal {
    * Clean up event listeners and observers
    */
   public destroy(): void {
+    // Cancel any pending animation frames
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
+    // Cancel any pending timeouts
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
+
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;

@@ -1,32 +1,61 @@
-# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
-## NOW## NOW
+## NOW
 
 
 
-**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
+Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
 
 
 
-**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
+**Issue**: Unhandled error after test teardown - `ReferenceError: window is not defined` at line 93 in `src/scroll-locked-reveal.ts`. The `ScrollLockedReveal` class has a timer that continues running after the test environment is torn down, attempting to access `window` which is no longer available.
+
+
+
+**Root Cause**: The `ScrollLockedReveal` class uses `requestAnimationFrame` to schedule updates, but these animation frames are not properly cancelled when tests complete, causing them to execute after the JSDOM environment has been cleaned up.**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
+
+
+
+**Fix Strategy**:
+
+1. Ensure the `destroy()` method in `ScrollLockedReveal` properly cancels any pending animation frames
+
+2. Update the test file to ensure `destroy()` is called in `afterEach()` for all test instances**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
+
+3. Verify the fix by running the full test suite
 
 **Status**: READY TO IMPLEMENT
 
+**Expected Outcome**: All 377 tests pass with 0 unhandled errors.
+
 ### Background
+
+## NEXT
 
 ### Decision Made
 
-Security incident `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md` has a scheduled resolution date of **October 29, 2025** which has now **PASSED** (current date: October 30, 2025).
+After the test fix is verified:
 
-ADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
+1. Commit the test fix changes with clear descriptionSecurity incident `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md` has a scheduled resolution date of **October 29, 2025** which has now **PASSED** (current date: October 30, 2025).
 
-The incident documents:
+2. Run a full quality check (lint, format, test)
 
-- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
+3. Push the changes to originADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
 
-- Planned update: netlify-cli 23.9.4 → 23.9.5
+
+
+## LATERThe incident documents:
+
+
+
+After test failures are resolved and committed:- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
+
+1. Re-run the full assessment process to complete phases 4-10
+
+2. Continue with any other implementation work identified in subsequent assessments- Planned update: netlify-cli 23.9.4 → 23.9.5
+
 
 - Update reached 7-day maturity on October 29, 2025### Current Animation Issues
 

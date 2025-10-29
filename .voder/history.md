@@ -1,5 +1,54 @@
 # Implementation History
 
+## 2025-10-30: Test Failure Fix - ScrollLockedReveal Timer Cleanup
+
+### Summary
+Fixed critical test failure caused by improper cleanup of timers in `ScrollLockedReveal` class. The class was creating `requestAnimationFrame` and `setTimeout` callbacks that continued running after test teardown, attempting to access `window` after the JSDOM environment was destroyed. This caused an unhandled error that blocked all development.
+
+### Changes Made
+
+#### Timer Cleanup in ScrollLockedReveal (`src/scroll-locked-reveal.ts`)
+
+**Added Timer ID Tracking**:
+- Added `rafId: number | null` property to track `requestAnimationFrame` IDs
+- Added `timeoutId: number | null` property to track `setTimeout` IDs
+- Initialize both to `null` in constructor
+
+**Updated Timer Creation**:
+- Modified `setup()` to store timeout ID: `this.timeoutId = window.setTimeout(...)`
+- Modified `onScroll()` to store RAF ID: `this.rafId = requestAnimationFrame(...)`
+- Clear RAF ID after callback completes: `this.rafId = null`
+
+**Enhanced destroy() Method**:
+- Cancel pending animation frames: `if (this.rafId !== null) { cancelAnimationFrame(this.rafId); }`
+- Cancel pending timeouts: `if (this.timeoutId !== null) { clearTimeout(this.timeoutId); }`
+- Set IDs to `null` after cancellation for proper cleanup tracking
+
+**Test Results**:
+- All 377 tests now pass cleanly
+- Zero unhandled errors
+- Proper cleanup verified in all test scenarios
+
+### Dependencies Updated (Smart Version Selection Algorithm)
+
+Updated packages that met the 7-day stability threshold:
+- `@typescript-eslint/parser@8.46.2` (released Oct 20, 10 days old - mature)
+- `jsdom@27.0.1` (released Oct 18, 12 days old - mature)
+
+Documented but not updated (< 7 days old):
+- `@axe-core/playwright@4.11.0` (3 days)
+- `@types/node@24.9.2` (2 days)
+- `@vitest/coverage-v8@4.0.5` (1 day)
+- `eslint-plugin-unicorn@62.0.0` (4 days)
+- `happy-dom@20.0.10` (2 days)
+- `vite@7.1.12` (1 day)
+- `vitest@4.0.5` (1 day)
+
+### Impact
+- **UNBLOCKED**: All development now unblocked - 100% test pass rate achieved
+- **Assessment Complete**: Assessment process can now continue through remaining phases
+- **Stability**: Proper resource cleanup ensures tests won't interfere with each other
+
 ## 2025-01-28: Phase 1 - Core Animation System Implementation (ADR-0037)
 
 ### Summary

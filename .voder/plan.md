@@ -1,4 +1,4 @@
-# Implementation Plan# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
@@ -6,149 +6,301 @@
 
 
 
-Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
+**Fix E2E Test Failures (21 failures blocking Phase 6 Runtime Validation)**## NOW
 
 
+
+The E2E test suite shows 21 failures across multiple categories that need to be addressed:
+
+
+
+### Priority 1: P003 Button Overlap Issues (6 failures)Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
+
+- 2 chromium failures: button overlapping 3D cube, z-index stacking
+
+- 2 webkit failures: same issues
+
+- 2 Mobile Chrome failures: same issues
 
 **Issue**: Unhandled error after test teardown - `ReferenceError: window is not defined` at line 93 in `src/scroll-locked-reveal.ts`. The `ScrollLockedReveal` class has a timer that continues running after the test environment is torn down, attempting to access `window` which is no longer available.
 
-
-
-**Root Cause**: The `ScrollLockedReveal` class uses `requestAnimationFrame` to schedule updates, but these animation frames are not properly cancelled when tests complete, causing them to execute after the JSDOM environment has been cleaned up.**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
+**Root Cause**: Tests expect canvas z-index: 0, but actual z-index: 1
 
 
 
 **Fix Strategy**:
 
-1. Ensure the `destroy()` method in `ScrollLockedReveal` properly cancels any pending animation frames
+1. Review `src/style.css` for `.hero-animation` canvas z-index**Root Cause**: The `ScrollLockedReveal` class uses `requestAnimationFrame` to schedule updates, but these animation frames are not properly cancelled when tests complete, causing them to execute after the JSDOM environment has been cleaned up.**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
 
-2. Update the test file to ensure `destroy()` is called in `afterEach()` for all test instances**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
+2. Update to `z-index: 0` to ensure canvas stays in background
 
-3. Verify the fix by running the full test suite
+3. Verify button elements have higher z-index (auto or 1+)
 
-**Status**: READY TO IMPLEMENT
+
+
+### Priority 2: Functional Layout Issues (4 failures)**Fix Strategy**:
+
+- Layout integrity failing at 320px breakpoint across browsers
+
+- Horizontal overflow detected at narrow viewport1. Ensure the `destroy()` method in `ScrollLockedReveal` properly cancels any pending animation frames
+
+
+
+**Root Cause**: Responsive CSS not handling very narrow viewports properly2. Update the test file to ensure `destroy()` is called in `afterEach()` for all test instances**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
+
+
+
+**Fix Strategy**:3. Verify the fix by running the full test suite
+
+1. Review media queries for 320px breakpoint handling
+
+2. Add proper overflow constraints for mobile viewports**Status**: READY TO IMPLEMENT
+
+3. Test layout at exact 320px width
 
 **Expected Outcome**: All 377 tests pass with 0 unhandled errors.
 
-### Background
+### Priority 3: FOUC Prevention (1 failure)
 
-## NEXT
+- CLS (Cumulative Layout Shift) score of 1 (expected < 0.1)### Background
 
-### Decision Made
 
-After the test fix is verified:
+
+**Root Cause**: Content shifting during page load## NEXT
+
+
+
+**Fix Strategy**:### Decision Made
+
+1. Review critical CSS loading strategy
+
+2. Consider inlining critical above-the-fold stylesAfter the test fix is verified:
+
+3. Ensure fonts load without causing layout shift
 
 1. Commit the test fix changes with clear descriptionSecurity incident `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md` has a scheduled resolution date of **October 29, 2025** which has now **PASSED** (current date: October 30, 2025).
 
-2. Run a full quality check (lint, format, test)
+### Priority 4: Scroll Narrative Detection (3 failures)
+
+- Tests expecting console logs not being generated2. Run a full quality check (lint, format, test)
+
+- Viewport detection not triggering properly
 
 3. Push the changes to originADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
 
-
-
-## LATERThe incident documents:
+**Root Cause**: Scroll detection logic or test expectations need adjustment
 
 
 
-After test failures are resolved and committed:- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
+**Fix Strategy**:
 
-1. Re-run the full assessment process to complete phases 4-10
+1. Review `src/scroll-narrative-detector.ts` viewport boundaries## LATERThe incident documents:
 
-2. Continue with any other implementation work identified in subsequent assessments- Planned update: netlify-cli 23.9.4 → 23.9.5
+2. Verify IntersectionObserver thresholds
+
+3. Update test expectations if behavior is correct
 
 
-- Update reached 7-day maturity on October 29, 2025### Current Animation Issues
 
-- Scheduled for execution on October 29, 2025
+### Priority 5: Scroll-Locked Reveal (4 failures - webkit/Mobile Safari)After test failures are resolved and committed:- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
 
-- **Status**: OVERDUE by 1 dayStory 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
+- Initial opacity issues (elements showing too early)
 
-- Segment 2 animation getting stuck on left side
+- Progressive reveal timing problems1. Re-run the full assessment process to complete phases 4-10
 
-### Implementation Steps- Complex state management (6 flags) causing coordination issues
 
-- 11 test failures due to fragile timing logic
 
-1. **Execute Security Update**- Multiple fix attempts increased complexity without solving root cause
+**Root Cause**: WebKit-specific timing or opacity calculation differences2. Continue with any other implementation work identified in subsequent assessments- Planned update: netlify-cli 23.9.4 → 23.9.5
+
+
+
+**Fix Strategy**:
+
+1. Review `src/scroll-locked-reveal.ts` opacity calculations- Update reached 7-day maturity on October 29, 2025### Current Animation Issues
+
+2. Add webkit-specific timing adjustments if needed
+
+3. Consider browser-specific test expectations- Scheduled for execution on October 29, 2025
+
+
+
+### Priority 6: Performance Issues (3 failures)- **Status**: OVERDUE by 1 dayStory 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
+
+- Mobile Chrome scroll detection across viewports
+
+- Rapid scrolling performance- Segment 2 animation getting stuck on left side
+
+
+
+**Root Cause**: Performance timing in mobile test environment### Implementation Steps- Complex state management (6 flags) causing coordination issues
+
+
+
+**Fix Strategy**:- 11 test failures due to fragile timing logic
+
+1. Review test timeout thresholds for mobile
+
+2. Optimize scroll event handling if needed1. **Execute Security Update**- Multiple fix attempts increased complexity without solving root cause
+
+3. Consider test environment limitations
 
    ```bash
 
+## NEXT
+
    npm update netlify-cli**Root Cause**: Ad-hoc animation coordination with scattered state management.
 
-   ```
-
-**Solution**: Build comprehensive animation system per ADR-0037.
-
-2. **Verify Update Applied**
-
-   ```bash### Implementation Plan
-
-   npm list netlify-cli
-
-   # Should show: netlify-cli@23.9.5**Phase 1: Core Animation System** (Week 1 - Starts Now)
+After E2E test fixes are complete and all tests passing:
 
    ```
+
+1. **Run full quality checks**:
+
+   ```bash**Solution**: Build comprehensive animation system per ADR-0037.
+
+   npm run lint
+
+   npm run format:check2. **Verify Update Applied**
+
+   npm run type-check
+
+   npm test   ```bash### Implementation Plan
+
+   npm run e2e
+
+   ```   npm list netlify-cli
+
+
+
+2. **Update history.md**:   # Should show: netlify-cli@23.9.5**Phase 1: Core Animation System** (Week 1 - Starts Now)
+
+   - Summarize E2E test fixes
+
+   - Document root causes and solutions   ```
+
+   - Record test pass rates
 
 1. **Design Animation Base Interface**
 
-3. **Verify Vulnerabilities Resolved**   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
+3. **Commit and push changes**:
 
-   ```bash   - Create state lifecycle: idle → triggered → active → completed → reset
+   - Clear commit message describing fixes3. **Verify Vulnerabilities Resolved**   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
 
-   npm audit   - Design dependency declaration API
+   - Reference test failures resolved
 
-   # Should show: 0 vulnerabilities (or reduced from 2)   - Plan queuing mechanism
+   - Verify CI/CD pipeline passes   ```bash   - Create state lifecycle: idle → triggered → active → completed → reset
+
+
+
+4. **Re-run assessment**:   npm audit   - Design dependency declaration API
+
+   - Complete Phase 6 (Runtime Validation)
+
+   - Continue through remaining phases   # Should show: 0 vulnerabilities (or reduced from 2)   - Plan queuing mechanism
+
+   - Generate final assessment report
 
    ```
 
+## LATER
+
 2. **Implement Core System**
+
+After all E2E tests passing and assessment complete:
 
 4. **Test Functionality**   - Create `AnimationCoordinator` class
 
-   ```bash   - Implement `BaseAnimation` interface/abstract class
+1. **Optional Dependency Updates** (when packages mature):
 
-   # Run linting   - Build state management with lifecycle hooks
+   - Monitor package maturity dates   ```bash   - Implement `BaseAnimation` interface/abstract class
 
-   npm run lint   - Add dependency resolution system
+   - Update packages as they cross 7-day threshold
 
-      - Implement animation queue
+   - Follow Smart Version Selection Algorithm   # Run linting   - Build state management with lifecycle hooks
+
+
+
+2. **Performance Optimization**:   npm run lint   - Add dependency resolution system
+
+   - Bundle size optimization
+
+   - Code splitting for Three.js      - Implement animation queue
+
+   - Consider lazy loading strategies
 
    # Run unit tests
 
-   npm test3. **Add Testing Infrastructure**
+3. **Visual Enhancements** (from previous assessments):
+
+   - Mobile typography fine-tuning   npm test3. **Add Testing Infrastructure**
+
+   - Landscape mobile padding optimization
 
       - Unit tests for state transitions
 
-   # Verify netlify CLI works   - Tests for dependency resolution
+4. **Documentation Updates**:
 
-   netlify --version   - Tests for queuing behavior
+   - Update architecture decision records if needed   # Verify netlify CLI works   - Tests for dependency resolution
 
-   ```   - Mock utilities for testing animations
+   - Document test patterns discovered
+
+   - Enhance troubleshooting guides   netlify --version   - Tests for queuing behavior
 
 
 
-5. **Update Security Incident Status**4. **Documentation**
+## Notes   ```   - Mock utilities for testing animations
+
+
+
+**Current Test Status**:
+
+- 404 passed / 460 total (87.8% pass rate)
+
+- 35 skipped (10 development mode, 8 performance optimization, 17 text flash)5. **Update Security Incident Status**4. **Documentation**
+
+- 21 failed (4.6% failure rate)
 
    - Rename: `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md`   - API documentation
 
-   - To: `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.resolved.md`   - Usage examples
+**Test Categories**:
 
-   - Update status from PROPOSED to RESOLVED   - Migration guide for existing animations
+- P003 Button Overlap: 6 failures (critical UX issue)   - To: `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.resolved.md`   - Usage examples
 
-   - Document resolution date: October 30, 2025
+- Functional Layout: 4 failures (responsive design)
+
+- FOUC Prevention: 1 failure (page load experience)   - Update status from PROPOSED to RESOLVED   - Migration guide for existing animations
+
+- Scroll Detection: 3 failures (narrative tracking)
+
+- Scroll-Locked Reveal: 4 failures (webkit-specific)   - Document resolution date: October 30, 2025
+
+- Performance: 3 failures (mobile optimization)
 
    - Add post-resolution verification notes**Phase 2: Migration** (Week 2)
 
+**Quality Gates**:
 
+- ✅ Unit tests: 377/377 passing (100%)
 
-6. **Commit Changes**1. **Migrate SparklerAnimator**
+- ✅ Linting: Clean
+
+- ✅ Type checking: Clean6. **Commit Changes**1. **Migrate SparklerAnimator**
+
+- ⚠️ E2E tests: 21 failures to fix
 
    ```bash   - Refactor to use new animation system
 
-   git add package.json package-lock.json docs/security-incidents/   - Maintain existing visual behavior
+**Gall's Law Compliance**:
 
-   git commit -m "security: resolve netlify-cli vulnerabilities (fast-redact/pino)   - Update tests
+- Fix one test category at a time   git add package.json package-lock.json docs/security-incidents/   - Maintain existing visual behavior
 
+- Start with P003 (clear CSS fix)
+
+- Move to layout issues (responsive CSS)   git commit -m "security: resolve netlify-cli vulnerabilities (fast-redact/pino)   - Update tests
+
+- Test after each fix
+
+- Don't try to fix all issues at once
 
 
    - Update netlify-cli from 23.9.4 to 23.9.52. **Migrate MagicPhaseAnimator Segment 1**

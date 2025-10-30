@@ -889,7 +889,7 @@ body {
   pointer-events: none; /* Allow clicks to pass through */
   position: relative; /* Use relative positioning for flex layout */
   width: 100vw; /* Full viewport width */
-  z-index: 1; /* Primary visual element, below text */
+  z-index: 0; /* Background element, stays behind all content */
 }
 
 .hero-animation canvas {

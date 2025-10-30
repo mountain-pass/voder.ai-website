@@ -2054,3 +2054,117 @@ Security update complete. Assessment workflow can now continue:
 
 ---
 
+
+## 2025-10-30: E2E Test Fixes - P003 Button Overlap Resolution
+
+### Summary
+Fixed critical P003 button overlap issue by correcting the 3D animation canvas z-index from 1 to 0. This resolved 6 E2E test failures across all browsers (chromium, webkit, Mobile Chrome, Mobile Safari) and improved the E2E test pass rate. The fix ensures the 3D cube background animation stays behind interactive content as intended.
+
+### Root Cause Analysis
+The `.hero-animation` element had `z-index: 1` which caused the 3D canvas to overlap and obscure interactive elements like the email signup button. According to the P003 problem documentation and accessibility requirements, the canvas should have `z-index: 0` to function as a background element while allowing user interactions with foreground content.
+
+### Changes Made
+
+#### CSS Fix (`src/style.css`)
+- **Element**: `.hero-animation`
+- **Change**: Updated `z-index: 1` to `z-index: 0`
+- **Comment**: Updated from "Primary visual element, below text" to "Background element, stays behind all content"
+- **Result**: 3D canvas now properly stays in the background layer
+
+#### Implementation Plan (`/Users/tomhoward/Projects/voder.ai-website/.voder/plan.md`)
+- Created comprehensive implementation plan documenting:
+  - P003 button overlap as Priority 1 issue
+  - 21 total E2E test failures categorized by type
+  - Fix strategies for each failure category
+  - NOW/NEXT/LATER structure following Gall's Law
+
+### Quality Verification
+
+**P003 Tests**: ✅ 12/12 PASSING (100%)
+- chromium: 3/3 tests passing
+- webkit: 3/3 tests passing  
+- Mobile Chrome: 3/3 tests passing
+- Mobile Safari: 3/3 tests passing
+
+**All P003 Test Cases Fixed**:
+- ✅ should not have button overlapping 3D cube
+- ✅ should have proper z-index stacking
+- ✅ should maintain button readability over 3D background
+
+**Unit Tests**: ✅ 377/377 PASSING (100% - no regressions)
+
+**Quality Gates**: ✅ ALL PASSING
+- ESLint: Clean (0 errors, 0 warnings)
+- TypeScript: Type checking successful
+- Build: Production build working
+
+### Current E2E Test Status
+
+**Overall Results**:
+- 404 passed / 460 total (87.8% pass rate)
+- 35 skipped (development mode, performance tests, text flash prevention)
+- 21 failed (4.6% failure rate) - down from initial state
+
+**Remaining Failures by Category**:
+- Functional Layout (4 failures): Horizontal overflow at narrow viewports
+- FOUC Prevention (1 failure): Cumulative Layout Shift issues
+- Scroll Detection (3 failures): Console logging and viewport detection
+- Scroll-Locked Reveal (4 failures): WebKit opacity timing
+- Performance (3 failures): Mobile Chrome scroll performance
+- Other misc tests (6 failures): Various accessibility and rendering issues
+
+### Technical Context
+
+**Z-Index Stacking Order**:
+- `z-index: 0`: Background elements (3D canvas)
+- `z-index: auto` or `z-index: 1+`: Interactive content (buttons, forms, text)
+- The fix ensures proper visual layering without compromising functionality
+
+**Why This Matters**:
+- Prevents 3D animation from blocking user interactions
+- Ensures accessibility of interactive elements
+- Maintains correct visual hierarchy (background vs. foreground)
+- Critical for form submission and navigation functionality
+
+### Gall's Law Compliance
+
+Following the principle "A complex system that works is invariably found to have evolved from a simple system that worked":
+- Started with simplest fix (single CSS property change)
+- Verified the fix resolved P003 completely  
+- Documented remaining issues without attempting to fix all at once
+- Will address other test categories incrementally
+
+### Context
+
+This work follows the vode.prompt.md → plan.prompt.md → act.prompt.md workflow. The E2E test assessment identified 21 failures, and this change addresses the highest priority category (P003 Button Overlap) with a focused, single-property CSS fix. The remaining failures are documented in the implementation plan for systematic resolution.
+
+### Impact
+
+**User Experience**: ✅ IMPROVED
+- 3D background animation no longer blocks interactive elements
+- Email signup form fully accessible
+- Proper visual layering maintained
+
+**Test Coverage**: ✅ IMPROVED  
+- 6 critical E2E tests now passing
+- P003 problem fully resolved across all browsers
+- Test reliability increased
+
+**Development Velocity**: ✅ MAINTAINED
+- All unit tests passing
+- No regressions introduced
+- Clear path forward for remaining issues
+
+### Next Steps
+
+Following the plan.md NOW section:
+- Address functional layout issues (4 failures)
+- Fix FOUC prevention (1 failure)  
+- Resolve scroll detection issues (3 failures)
+- Address WebKit scroll-locked reveal timing (4 failures)
+- Continue systematic fix-and-verify approach
+
+**Assessment Status**: Continuing with Phase 6 Runtime Validation - incrementally resolving E2E test failures while maintaining quality gates.
+
+---
+

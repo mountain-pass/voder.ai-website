@@ -41,7 +41,7 @@
     "docs:report": "npm run docs:setup && node setup-package-docs.js --report",
     "prepare": "node scripts/prepare-libraries.js",
     "postinstall": "simple-git-hooks",
-    "audit:fix": "npm audit fix --package-lock-only || npm audit --audit-level=moderate"
+    "audit:fix": "npm audit fix --package-lock-only --force || npm audit --audit-level=moderate"
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.0",

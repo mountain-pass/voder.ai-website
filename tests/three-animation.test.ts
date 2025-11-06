@@ -991,4 +991,96 @@ describe('ThreeAnimation', () => {
       });
     });
   });
+
+  describe('Visibility Observer', () => {
+    it('should pause animation when element leaves viewport', async () => {
+      // Mock IntersectionObserver
+      let observerCallback: IntersectionObserverCallback;
+
+      const mockObserver = {
+        observe: vi.fn(),
+        disconnect: vi.fn(),
+        unobserve: vi.fn(),
+      };
+
+      global.IntersectionObserver = vi.fn((callback) => {
+        observerCallback = callback;
+
+        return mockObserver as any;
+      }) as any;
+
+      const animation = new ThreeAnimation({ container });
+
+      const pauseSpy = vi.spyOn(animation, 'pause');
+
+      const resumeSpy = vi.spyOn(animation, 'resume');
+
+      await animation.init();
+
+      // Verify observer was created and observing
+      expect(global.IntersectionObserver).toHaveBeenCalled();
+      expect(mockObserver.observe).toHaveBeenCalledWith(container);
+
+      // Simulate element leaving viewport
+      observerCallback!(
+        [
+          {
+            isIntersecting: false,
+            target: container,
+          } as unknown as IntersectionObserverEntry,
+        ],
+        mockObserver as any,
+      );
+
+      expect(pauseSpy).toHaveBeenCalled();
+
+      // Simulate element entering viewport
+      observerCallback!(
+        [
+          {
+            isIntersecting: true,
+            target: container,
+          } as unknown as IntersectionObserverEntry,
+        ],
+        mockObserver as any,
+      );
+
+      expect(resumeSpy).toHaveBeenCalled();
+    });
+
+    it('should clean up observer on destroy', async () => {
+      const mockObserver = {
+        observe: vi.fn(),
+        disconnect: vi.fn(),
+        unobserve: vi.fn(),
+      };
+
+      global.IntersectionObserver = vi.fn((callback) => {
+        return mockObserver as any;
+      }) as any;
+
+      const animation = new ThreeAnimation({ container });
+
+      await animation.init();
+
+      animation.destroy();
+
+      expect(mockObserver.disconnect).toHaveBeenCalled();
+    });
+
+    it('should handle environments without IntersectionObserver', () => {
+      // Remove IntersectionObserver
+      const originalObserver = global.IntersectionObserver;
+
+      (global as any).IntersectionObserver = undefined;
+
+      const animation = new ThreeAnimation({ container });
+
+      // Should not throw error
+      expect(() => animation.init()).not.toThrow();
+
+      // Restore
+      global.IntersectionObserver = originalObserver;
+    });
+  });
 });

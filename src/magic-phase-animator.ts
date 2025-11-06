@@ -7,11 +7,9 @@
  */
 
 import type { ScrollLockedReveal } from './scroll-locked-reveal.js';
-import type { SparklerAnimator } from './sparkler-animator.js';
 
 export class MagicPhaseAnimator {
   private progressiveReveal: ScrollLockedReveal;
-  private sparklerAnimator: SparklerAnimator | null = null;
   private animationFrameId: number | null = null;
   private ticking: boolean = false;
   private isAnimating: boolean = false;
@@ -24,9 +22,8 @@ export class MagicPhaseAnimator {
   private segment2Completed: boolean = false;
   private wasInSegment2Range: boolean = false; // Track if we were in range (for proper triggering)
 
-  constructor(progressiveReveal: ScrollLockedReveal, sparklerAnimator?: SparklerAnimator) {
+  constructor(progressiveReveal: ScrollLockedReveal) {
     this.progressiveReveal = progressiveReveal;
-    this.sparklerAnimator = sparklerAnimator || null;
     this.bindScrollListener();
     this.startContinuousAnimation();
   }
@@ -157,7 +154,7 @@ export class MagicPhaseAnimator {
       const parent = magicWord.closest<HTMLElement>('[data-reveal-start]');
 
       if (parent) {
-        // Glow disabled - sparkler effect handles the magic emphasis
+        // No special glow effect for magic word
         magicWord.style.textShadow = 'none';
       }
     });
@@ -167,18 +164,13 @@ export class MagicPhaseAnimator {
    * Animate Segment 2: "When shipping features was fast and exciting?"
    * Features: scroll-triggered slide-in from left with momentum snap
    * Once triggered, animation plays through to completion regardless of scroll
-   * Waits for sparkler animation to complete before triggering
    */
   private animateSegment2(scrollProgress: number): void {
     const segments = document.querySelectorAll<HTMLElement>('[data-segment="2"]');
 
     if (!segments.length) return;
 
-    // Check if sparkler animation has completed (if sparkler animator is available)
-    const sparklerCompleted = !this.sparklerAnimator || this.sparklerAnimator.isSweepCompleted();
-
     // Trigger when segment 2 first comes into view (after magic animation finishes at 0.25)
-    // AND after sparkler sweep completes
     const triggerPoint = 0.45; // Segment 2 reveal start
 
     const inRange = scrollProgress >= triggerPoint && scrollProgress <= 0.75;
@@ -188,22 +180,10 @@ export class MagicPhaseAnimator {
 
     this.wasInSegment2Range = inRange;
 
-    // Debug logging
-    if (justEnteredRange) {
-      // Debug logging (disabled for linting)
-      // console.log('Segment 2 entered range. Sparkler completed:', sparklerCompleted, 'Progress:', scrollProgress);
-    }
-
     // Trigger animation ONLY when:
     // 1. We just entered the range (scrolling down into it)
-    // 2. AND sparkler has completed
-    // 3. AND we haven't triggered yet
-    if (
-      justEnteredRange &&
-      sparklerCompleted &&
-      !this.segment2Triggered &&
-      !this.segment2Completed
-    ) {
+    // 2. AND we haven't triggered yet
+    if (justEnteredRange && !this.segment2Triggered && !this.segment2Completed) {
       // Debug logging (disabled for linting)
       // console.log('Segment 2 TRIGGERED at progress:', scrollProgress);
       this.segment2Triggered = true;
@@ -261,7 +241,6 @@ export class MagicPhaseAnimator {
         opacity = Math.min(1, animationProgress * 10); // Reaches full opacity at 10% of animation
       } else if (scrollBasedProgress > 0) {
         // Before animation triggers, show element at start position with scroll-based opacity
-        // This allows fade-in while waiting for sparkler to complete
         opacity = Math.min(1, scrollBasedProgress * 10);
         segmentProgress = 0; // Keep at start position
       }

@@ -2,12 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MagicPhaseAnimator } from '../src/magic-phase-animator.js';
 import type { ScrollLockedReveal } from '../src/scroll-locked-reveal.js';
-import type { SparklerAnimator } from '../src/sparkler-animator.js';
 
 describe('MagicPhaseAnimator', () => {
   let mockScrollReveal: ScrollLockedReveal;
-
-  let mockSparklerAnimator: SparklerAnimator;
 
   let animator: MagicPhaseAnimator;
 
@@ -22,11 +19,6 @@ describe('MagicPhaseAnimator', () => {
     mockScrollReveal = {
       getCurrentProgress: vi.fn(() => 0),
     } as unknown as ScrollLockedReveal;
-
-    // Mock SparklerAnimator - default to sweep completed
-    mockSparklerAnimator = {
-      isSweepCompleted: vi.fn(() => true),
-    } as unknown as SparklerAnimator;
 
     // Mock requestAnimationFrame
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
@@ -48,7 +40,7 @@ describe('MagicPhaseAnimator', () => {
 
   describe('Initialization', () => {
     it('should initialize and start continuous animation', () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       expect(window.requestAnimationFrame).toHaveBeenCalled();
     });
@@ -56,7 +48,7 @@ describe('MagicPhaseAnimator', () => {
     it('should bind scroll and resize listeners', () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function), {
         passive: true,
@@ -83,7 +75,7 @@ describe('MagicPhaseAnimator', () => {
     it('should animate segment 1 elements at start of range', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const firstSegment = container.querySelector('[data-reveal-start="0"]') as HTMLElement;
 
@@ -96,7 +88,7 @@ describe('MagicPhaseAnimator', () => {
     it('should fully reveal segment 1 elements at end of range', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.15);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const firstSegment = container.querySelector('[data-reveal-start="0"]') as HTMLElement;
 
@@ -107,7 +99,7 @@ describe('MagicPhaseAnimator', () => {
     it('should apply camera bobbing to all segment 1 elements', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segments = container.querySelectorAll<HTMLElement>('[data-segment="1"]');
 
@@ -119,7 +111,7 @@ describe('MagicPhaseAnimator', () => {
     it('should not add glow to magic words (sparkler handles emphasis)', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const magicWords = container.querySelectorAll<HTMLElement>('.magic-word');
 
@@ -132,7 +124,7 @@ describe('MagicPhaseAnimator', () => {
     it('should not add glow to magic words when parent not visible', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.01);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const magicWords = container.querySelectorAll<HTMLElement>('.magic-word');
 
@@ -144,7 +136,7 @@ describe('MagicPhaseAnimator', () => {
     it('should use power curve for slow fade-in from fog', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.075); // Midpoint of 0-0.15
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-reveal-start="0"]') as HTMLElement;
 
@@ -171,7 +163,7 @@ describe('MagicPhaseAnimator', () => {
     it('should animate segment 2 elements with slide-in', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.25);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="2"]') as HTMLElement;
 
@@ -183,7 +175,7 @@ describe('MagicPhaseAnimator', () => {
     it('should slide from -400px to 0', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.25);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="2"]') as HTMLElement;
 
@@ -197,7 +189,7 @@ describe('MagicPhaseAnimator', () => {
 
       // Start before trigger point
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       // Scroll into trigger range
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.45);
@@ -217,7 +209,7 @@ describe('MagicPhaseAnimator', () => {
     it('should apply brand teal color to speed words', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const speedWords = container.querySelectorAll<HTMLElement>('.speed-word');
 
@@ -231,7 +223,7 @@ describe('MagicPhaseAnimator', () => {
     it('should add glow to speed words when visible', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const speedWords = container.querySelectorAll<HTMLElement>('.speed-word');
 
@@ -262,7 +254,7 @@ describe('MagicPhaseAnimator', () => {
       it('should create momentum overshoot by moving past final position', () => {
         // Start outside segment 2 range
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
 
         // Scroll into segment 2 range to trigger animation
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
@@ -288,7 +280,7 @@ describe('MagicPhaseAnimator', () => {
       it('should snap sharply to final position after 85% progress', () => {
         // Start outside segment 2 range
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
 
         // Scroll into segment 2 range to trigger animation
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
@@ -312,7 +304,7 @@ describe('MagicPhaseAnimator', () => {
       it('should reach exactly zero translateX at 100% progress', () => {
         // Start outside segment 2 range
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
 
         // Scroll into segment 2 range to trigger animation
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
@@ -335,7 +327,7 @@ describe('MagicPhaseAnimator', () => {
       it('should show visible momentum effect during slide-in', () => {
         // Start outside segment 2 range
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
 
         // Scroll into segment 2 range to trigger animation
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
@@ -364,7 +356,7 @@ describe('MagicPhaseAnimator', () => {
       it('should maintain energetic feel by completing snap quickly', () => {
         // Start outside segment 2 range
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.4);
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
 
         // Scroll into segment 2 range to trigger animation
         vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.5);
@@ -404,7 +396,7 @@ describe('MagicPhaseAnimator', () => {
     it('should animate when scroll progress is 0%', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment1 = container.querySelector('[data-segment="1"]') as HTMLElement;
 
@@ -414,7 +406,7 @@ describe('MagicPhaseAnimator', () => {
     it('should animate when scroll progress is 75%', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.75);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment2 = container.querySelector('[data-segment="2"]') as HTMLElement;
 
@@ -428,7 +420,7 @@ describe('MagicPhaseAnimator', () => {
 
       const initialOpacity = segment1.style.opacity;
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       // Should not have been modified
       expect(segment1.style.opacity).toBe(initialOpacity);
@@ -441,7 +433,7 @@ describe('MagicPhaseAnimator', () => {
 
       const initialOpacity = segment2.style.opacity;
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       // Should not have been modified
       expect(segment2.style.opacity).toBe(initialOpacity);
@@ -458,7 +450,7 @@ describe('MagicPhaseAnimator', () => {
     it('should correctly map scroll progress to segment progress', () => {
       // At start of segment range
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="1"]') as HTMLElement;
 
@@ -469,7 +461,7 @@ describe('MagicPhaseAnimator', () => {
     it('should clamp progress below segment start to 0', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.05);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="1"]') as HTMLElement;
 
@@ -480,7 +472,7 @@ describe('MagicPhaseAnimator', () => {
     it('should clamp progress above segment end to 1', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.35);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="1"]') as HTMLElement;
 
@@ -497,7 +489,7 @@ describe('MagicPhaseAnimator', () => {
 
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="1"]') as HTMLElement;
 
@@ -512,7 +504,7 @@ describe('MagicPhaseAnimator', () => {
 
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.35);
 
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const segment = container.querySelector('[data-segment="2"]') as HTMLElement;
 
@@ -523,7 +515,7 @@ describe('MagicPhaseAnimator', () => {
 
   describe('Scroll Event Throttling', () => {
     it('should throttle scroll events with requestAnimationFrame', async () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const scrollEvent = new Event('scroll');
 
@@ -540,7 +532,7 @@ describe('MagicPhaseAnimator', () => {
     });
 
     it('should handle resize events', () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       const resizeEvent = new Event('resize');
 
@@ -553,7 +545,7 @@ describe('MagicPhaseAnimator', () => {
 
   describe('Cleanup', () => {
     it('should cancel animation frame on destroy', () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       animator.destroy();
 
@@ -561,7 +553,7 @@ describe('MagicPhaseAnimator', () => {
     });
 
     it('should handle destroy when no animation frame exists', () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
       animator.destroy();
 
       // Second destroy should not throw
@@ -575,7 +567,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
 
@@ -584,7 +576,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
 
@@ -598,7 +590,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
 
@@ -612,7 +604,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
   });
@@ -626,7 +618,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
 
@@ -638,7 +630,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
 
@@ -652,7 +644,7 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.1);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
 
@@ -666,21 +658,21 @@ describe('MagicPhaseAnimator', () => {
       vi.mocked(mockScrollReveal.getCurrentProgress).mockReturnValue(0.3);
 
       expect(() => {
-        animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+        animator = new MagicPhaseAnimator(mockScrollReveal);
       }).not.toThrow();
     });
   });
 
   describe('Continuous Animation', () => {
     it('should continuously update animations via requestAnimationFrame', () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       // Should have called requestAnimationFrame at least once during construction
       expect(window.requestAnimationFrame).toHaveBeenCalled();
     });
 
     it('should stop animation loop when destroyed', () => {
-      animator = new MagicPhaseAnimator(mockScrollReveal, mockSparklerAnimator);
+      animator = new MagicPhaseAnimator(mockScrollReveal);
 
       animator.destroy();
 

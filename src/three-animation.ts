@@ -14,6 +14,8 @@ export class ThreeAnimation {
   private container: HTMLElement;
   private isInitialized = false;
   private supportsWebGL = false;
+  private intersectionObserver?: IntersectionObserver;
+  private isVisible = true; // Track visibility state
 
   // Performance monitoring properties
   private performanceMonitor: {
@@ -384,6 +386,10 @@ export class ThreeAnimation {
       this.initThreeJS();
       /* c8 ignore stop */
       this.isInitialized = true;
+
+      // Set up visibility observer after successful initialization
+      // This works for WebGL mode to improve performance
+      this.setupVisibilityObserver();
     } catch (error) {
       console.warn('3D animation failed to initialize, falling back to 2D:', error);
       this.initFallback();
@@ -405,6 +411,9 @@ export class ThreeAnimation {
         </div>
       </div>`;
     this.isInitialized = true;
+
+    // Set up visibility observer for fallback mode too (CSS animations can benefit from being paused)
+    this.setupVisibilityObserver();
   }
 
   /* c8 ignore start -- @preserve: Three.js scene, camera, and WebGL renderer setup cannot be tested in JSDOM environment */
@@ -1106,6 +1115,12 @@ export class ThreeAnimation {
       this.container.innerHTML = '';
     }
 
+    // Clean up intersection observer
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+      this.intersectionObserver = undefined;
+    }
+
     window.removeEventListener('resize', () => this.handleResize());
     // Note: Individual scroll event listeners are cleaned up automatically when the window is destroyed
     this.isInitialized = false;
@@ -1126,4 +1141,43 @@ export class ThreeAnimation {
     }
   }
   /* c8 ignore stop */
+
+  /**
+   * Set up Intersection Observer to pause/resume animation based on visibility
+   * This improves performance by not rendering when the cube is off-screen
+   */
+  private setupVisibilityObserver(): void {
+    // Only set up if IntersectionObserver is supported
+    if (typeof IntersectionObserver === 'undefined') {
+      return;
+    }
+
+    this.intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const wasVisible = this.isVisible;
+
+          this.isVisible = entry.isIntersecting;
+
+          // Only trigger pause/resume if visibility state changed
+          if (wasVisible && !this.isVisible) {
+            // Element left viewport - pause animation
+            this.pause();
+          } else if (!wasVisible && this.isVisible) {
+            // Element entered viewport - resume animation
+            this.resume();
+          }
+        });
+      },
+      {
+        // Trigger when at least 10% of the element is visible
+        threshold: 0.1,
+        // Add some margin to start/stop animation slightly before/after entering viewport
+        rootMargin: '50px',
+      },
+    );
+
+    // Start observing the container
+    this.intersectionObserver.observe(this.container);
+  }
 }

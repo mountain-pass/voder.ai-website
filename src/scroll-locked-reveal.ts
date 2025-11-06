@@ -113,12 +113,9 @@ export class ScrollLockedReveal {
     const progress = this.getProgress();
 
     for (const el of this.elements) {
-      // Skip Act 1 segments - they're handled by MagicPhaseAnimator
-      if (el.dataset.act === '1') {
-        continue;
-      }
+      const startPercent = parseFloat(el.dataset.revealStart || '0');
 
-      const start = parseFloat(el.dataset.revealStart || '0');
+      const start = startPercent;
 
       const end = parseFloat(el.dataset.revealEnd || '1');
 

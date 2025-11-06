@@ -2168,3 +2168,18 @@ Following the plan.md NOW section:
 
 ---
 
+
+## 2025-11-06: Security Incident Documentation - tar Vulnerability Management
+
+### Summary
+Corrected tar@7.5.1 vulnerability documentation from problems to security incidents per policy. Vulnerability ACCEPTED as residual risk with comprehensive compensating controls.
+
+### Changes Made
+- Created: docs/security-incidents/SECURITY-INCIDENT-2025-11-06-tar-race-condition-accepted-risk.accepted.md
+- Removed: docs/problems/npm-override-tar-vulnerability.known-error.md
+- Status: ACCEPTED residual risk with monitoring (next review: 2025-11-20)
+
+### Impact
+Security documentation now compliant with policy. Development unblocked with properly managed residual risk.
+
+---

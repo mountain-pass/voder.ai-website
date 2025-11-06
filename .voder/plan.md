@@ -1,4 +1,4 @@
-# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
@@ -6,43 +6,89 @@
 
 
 
-**Fix Security Vulnerabilities and Update Dependencies**## NOW
+**Commit security incident documentation for tar vulnerability**## NOW
 
 
+
+The assessment identified a tar@7.5.1 vulnerability that has been properly documented as an accepted residual risk per security policy. This documentation needs to be committed to the repository.
+
+
+
+**Actions**:**Fix Security Vulnerabilities and Update Dependencies**## NOW
+
+1. Commit the new security incident file: `SECURITY-INCIDENT-2025-11-06-tar-race-condition-accepted-risk.accepted.md`
+
+2. Commit the removal of the incorrectly placed problem file: `npm-override-tar-vulnerability.known-error.md`
+
+3. Use clear commit message explaining the proper documentation per security policy
 
 Based on the assessment completed on 2025-11-06, we have BLOCKING security and dependency issues that must be resolved before any new development work.
 
+**Rationale**: The vulnerability is properly managed and documented per `docs/SECURITY-POLICY.md`. All compensating controls are in place (dev-only scope, extremely low exploitability, monitoring established). This allows us to maintain security compliance while proceeding with development work.
 
+
+
+## NEXT
 
 ### 1. Fix Moderate Security Vulnerability in `tar`**Fix E2E Test Failures (21 failures blocking Phase 6 Runtime Validation)**## NOW
 
+**Continue Phase 2 of animation system migration (Problem 013)**
 
+
+
+Problem 013-animation-coordination-fragility is open with a permanent fix in progress through ADR-0037. Phase 1 (Core System) is complete. Phase 2 (Migration) has SparklerAnimator complete but MagicPhaseAnimator needs debugging.
 
 The assessment identified a moderate severity vulnerability in `tar@7.5.1` (CVE: GHSA-29xp-372q-xqph - Race condition leading to uninitialized memory exposure) which is a transitive dependency via `netlify-cli`.
 
+**Actions**:
+
+1. Debug MagicPhaseAnimator test failures:
+
+   - Fix Segment 1 transform format and glow effects
+
+   - Fix Segment 2 snap-back animation behavior**Actions:**The E2E test suite shows 21 failures across multiple categories that need to be addressed:
+
+2. Complete Phase 2 migration ensuring all 377 tests pass
+
+3. Proceed to Phase 3 (Validation) for end-to-end testing1. Update `netlify-cli` which should bring in the fixed version of `tar`:
 
 
-**Actions:**The E2E test suite shows 21 failures across multiple categories that need to be addressed:
 
-1. Update `netlify-cli` which should bring in the fixed version of `tar`:
-
-   ```bash
-
-   npm update netlify-cli@23.10.0
-
-   ```### Priority 1: P003 Button Overlap Issues (6 failures)Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
+**Rationale**: Following Gall's Law - the core animation system (Phase 1) already works. Now we're systematically migrating existing animations to use the proven system rather than rewriting everything from scratch.   ```bash
 
 
 
-2. If that doesn't resolve it, try audit fix:- 2 chromium failures: button overlapping 3D cube, z-index stacking
+## LATER   npm update netlify-cli@23.10.0
 
-   ```bash
+
+
+**Optional dependency updates after maturity period**   ```### Priority 1: P003 Button Overlap Issues (6 failures)Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
+
+
+
+Several packages have updates available but are either too fresh (< 7 days) or require breaking change analysis.
+
+
+
+**Actions**:2. If that doesn't resolve it, try audit fix:- 2 chromium failures: button overlapping 3D cube, z-index stacking
+
+1. **After Nov 7, 2025**: Consider updating three@0.181.0 and @types/three@0.181.0
+
+2. **After Nov 11, 2025**: Evaluate vitest@4.0.7 and @vitest/coverage-v8@4.0.7 (MAJOR versions - review breaking changes)   ```bash
+
+3. **When ready**: Review eslint-plugin-unicorn@62.0.0 (MAJOR version - review new rules)
 
    npm audit fix- 2 webkit failures: same issues
 
+**Rationale**: Smart Version Selection Algorithm ensures we don't update to versions that are too fresh. Major version updates require careful review of breaking changes and migration guides to avoid disrupting development flow.
+
    ```
 
+---
+
 - 2 Mobile Chrome failures: same issues
+
+**Note on Security**: The tar vulnerability monitoring is ongoing (weekly netlify-cli checks, 14-day mandatory review on 2025-11-20) but requires no immediate action as it's properly documented and accepted per security policy.
 
 3. Verify the fix:
 

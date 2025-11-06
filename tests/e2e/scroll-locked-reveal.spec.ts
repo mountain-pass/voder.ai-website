@@ -150,92 +150,10 @@ test.describe('Scroll-Locked Narrative Reveal (Story 026.02)', () => {
     });
   });
 
-  test.describe('Progressive Reveal', () => {
-    test('should initially hide reveal elements', async ({ page }) => {
-      const revealElements = page.locator('[data-reveal-start]');
-
-      const firstEl = revealElements.first();
-
-      // Before scrolling into view, elements should be hidden
-      const initialOpacity = await firstEl.evaluate((el) => getComputedStyle(el).opacity);
-
-      expect(parseFloat(initialOpacity)).toBeLessThanOrEqual(0.1);
-    });
-
-    test('should progressively reveal elements as user scrolls', async ({ page }) => {
-      // Scroll to scroll-stage
-      await page.evaluate(() => {
-        const stage = document.querySelector('.scroll-stage');
-
-        stage?.scrollIntoView({ behavior: 'instant' });
-      });
-
-      const kicker = page.locator('.scroll-stage .kicker');
-
-      await expect(kicker).toBeVisible();
-
-      // Initial opacity should be very low
-      let opacity = await kicker.evaluate((el) => parseFloat(getComputedStyle(el).opacity));
-
-      expect(opacity).toBeLessThanOrEqual(0.2);
-
-      // Scroll within scroll-stage
-      await page.evaluate(() => window.scrollBy(0, 300));
-      await page.waitForTimeout(200);
-
-      // Opacity should increase
-      opacity = await kicker.evaluate((el) => parseFloat(getComputedStyle(el).opacity));
-      expect(opacity).toBeGreaterThan(0.2);
-    });
-
-    test('should fully reveal elements after their timing range', async ({ page }) => {
-      const kicker = page.locator('.scroll-stage .kicker');
-
-      // Scroll past kicker's reveal range (0-0.15)
-      await page.evaluate(() => {
-        const stage = document.querySelector('.scroll-stage');
-
-        if (stage) {
-          const stageTop = stage.getBoundingClientRect().top;
-
-          const scrollDistance = Math.abs(stageTop) + window.innerHeight;
-
-          window.scrollTo(0, scrollDistance);
-        }
-      });
-
-      await page.waitForTimeout(200);
-
-      // Element should be fully visible
-      const opacity = await kicker.evaluate((el) => parseFloat(getComputedStyle(el).opacity));
-
-      expect(opacity).toBeGreaterThanOrEqual(0.9);
-    });
-
-    test('should handle multiple elements with different timing', async ({ page }) => {
-      await page.evaluate(() => {
-        const stage = document.querySelector('.scroll-stage');
-
-        stage?.scrollIntoView({ behavior: 'instant' });
-      });
-
-      const kicker = page.locator('.scroll-stage .kicker'); // 0-0.15
-
-      const headline = page.locator('.scroll-stage .headline'); // 0.05-0.25
-
-      // Early in scroll: kicker visible, headline still hidden
-      await page.evaluate(() => window.scrollBy(0, 200));
-      await page.waitForTimeout(200);
-
-      const kickerOpacity = await kicker.evaluate((el) => parseFloat(getComputedStyle(el).opacity));
-
-      const headlineOpacity = await headline.evaluate((el) =>
-        parseFloat(getComputedStyle(el).opacity),
-      );
-
-      expect(kickerOpacity).toBeGreaterThan(headlineOpacity);
-    });
-  });
+  // Progressive Reveal tests removed - Act 1 elements are handled by MagicPhaseAnimator,
+  // not ScrollLockedReveal. The scroll-locked-reveal.ts implementation explicitly skips
+  // Act 1 elements (lines 118-121), and all elements with data-reveal-start in the HTML
+  // have data-act="1". These tests were validating pre-refactoring behavior.
 
   test.describe('Accessibility', () => {
     test('should maintain semantic HTML structure', async ({ page }) => {

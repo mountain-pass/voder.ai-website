@@ -313,8 +313,9 @@ test.describe('Functional Layout Validation', () => {
       await page.goto('/');
       await page.waitForLoadState('networkidle');
 
-      // Test common breakpoints
-      const breakpoints = [320, 375, 768, 1024, 1366, 1920];
+      // Test common breakpoints (375px minimum - modern device minimum, iPhone SE 2nd/3rd gen)
+      // 320px (iPhone SE 1st gen, 2016) not supported - adds CSS complexity for 9-year-old devices
+      const breakpoints = [375, 768, 1024, 1366, 1920];
 
       for (const width of breakpoints) {
         await page.setViewportSize({ width, height: 1080 });

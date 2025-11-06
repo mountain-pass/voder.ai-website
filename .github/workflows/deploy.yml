@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm ci --force
       - name: Quality Gates (Linting, Unit Tests, Type Checking)
         run: npm run verify
 
@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm ci --force
       - name: Build Application
         run: npm run build
       - name: Cache Build Artifacts
@@ -57,7 +57,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm ci --force
       - name: Install Playwright Dependencies (Chromium only for speed)
         run: npx playwright install chromium --with-deps
       - name: Critical E2E Tests (Pre-deployment)
@@ -74,7 +74,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm ci --force
       - name: Restore Build Artifacts
         uses: actions/cache/restore@v4
         with:
@@ -204,7 +204,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
+      - run: npm ci --force
       - name: Install Playwright Dependencies
         run: npx playwright install --with-deps
       - name: Post-Deployment Smoke Tests

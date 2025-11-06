@@ -1,4 +1,4 @@
-# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
+# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan# Implementation Plan
 
 
 
@@ -6,223 +6,449 @@
 
 
 
-**Fix E2E Test Failures (21 failures blocking Phase 6 Runtime Validation)**## NOW
+**Fix Security Vulnerabilities and Update Dependencies**## NOW
 
 
 
-The E2E test suite shows 21 failures across multiple categories that need to be addressed:
+Based on the assessment completed on 2025-11-06, we have BLOCKING security and dependency issues that must be resolved before any new development work.
 
 
 
-### Priority 1: P003 Button Overlap Issues (6 failures)Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
+### 1. Fix Moderate Security Vulnerability in `tar`**Fix E2E Test Failures (21 failures blocking Phase 6 Runtime Validation)**## NOW
 
-- 2 chromium failures: button overlapping 3D cube, z-index stacking
 
-- 2 webkit failures: same issues
 
-- 2 Mobile Chrome failures: same issues
+The assessment identified a moderate severity vulnerability in `tar@7.5.1` (CVE: GHSA-29xp-372q-xqph - Race condition leading to uninitialized memory exposure) which is a transitive dependency via `netlify-cli`.
 
-**Issue**: Unhandled error after test teardown - `ReferenceError: window is not defined` at line 93 in `src/scroll-locked-reveal.ts`. The `ScrollLockedReveal` class has a timer that continues running after the test environment is torn down, attempting to access `window` which is no longer available.
 
-**Root Cause**: Tests expect canvas z-index: 0, but actual z-index: 1
 
+**Actions:**The E2E test suite shows 21 failures across multiple categories that need to be addressed:
 
-
-**Fix Strategy**:
-
-1. Review `src/style.css` for `.hero-animation` canvas z-index**Root Cause**: The `ScrollLockedReveal` class uses `requestAnimationFrame` to schedule updates, but these animation frames are not properly cancelled when tests complete, causing them to execute after the JSDOM environment has been cleaned up.**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
-
-2. Update to `z-index: 0` to ensure canvas stays in background
-
-3. Verify button elements have higher z-index (auto or 1+)
-
-
-
-### Priority 2: Functional Layout Issues (4 failures)**Fix Strategy**:
-
-- Layout integrity failing at 320px breakpoint across browsers
-
-- Horizontal overflow detected at narrow viewport1. Ensure the `destroy()` method in `ScrollLockedReveal` properly cancels any pending animation frames
-
-
-
-**Root Cause**: Responsive CSS not handling very narrow viewports properly2. Update the test file to ensure `destroy()` is called in `afterEach()` for all test instances**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
-
-
-
-**Fix Strategy**:3. Verify the fix by running the full test suite
-
-1. Review media queries for 320px breakpoint handling
-
-2. Add proper overflow constraints for mobile viewports**Status**: READY TO IMPLEMENT
-
-3. Test layout at exact 320px width
-
-**Expected Outcome**: All 377 tests pass with 0 unhandled errors.
-
-### Priority 3: FOUC Prevention (1 failure)
-
-- CLS (Cumulative Layout Shift) score of 1 (expected < 0.1)### Background
-
-
-
-**Root Cause**: Content shifting during page load## NEXT
-
-
-
-**Fix Strategy**:### Decision Made
-
-1. Review critical CSS loading strategy
-
-2. Consider inlining critical above-the-fold stylesAfter the test fix is verified:
-
-3. Ensure fonts load without causing layout shift
-
-1. Commit the test fix changes with clear descriptionSecurity incident `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md` has a scheduled resolution date of **October 29, 2025** which has now **PASSED** (current date: October 30, 2025).
-
-### Priority 4: Scroll Narrative Detection (3 failures)
-
-- Tests expecting console logs not being generated2. Run a full quality check (lint, format, test)
-
-- Viewport detection not triggering properly
-
-3. Push the changes to originADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
-
-**Root Cause**: Scroll detection logic or test expectations need adjustment
-
-
-
-**Fix Strategy**:
-
-1. Review `src/scroll-narrative-detector.ts` viewport boundaries## LATERThe incident documents:
-
-2. Verify IntersectionObserver thresholds
-
-3. Update test expectations if behavior is correct
-
-
-
-### Priority 5: Scroll-Locked Reveal (4 failures - webkit/Mobile Safari)After test failures are resolved and committed:- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
-
-- Initial opacity issues (elements showing too early)
-
-- Progressive reveal timing problems1. Re-run the full assessment process to complete phases 4-10
-
-
-
-**Root Cause**: WebKit-specific timing or opacity calculation differences2. Continue with any other implementation work identified in subsequent assessments- Planned update: netlify-cli 23.9.4 → 23.9.5
-
-
-
-**Fix Strategy**:
-
-1. Review `src/scroll-locked-reveal.ts` opacity calculations- Update reached 7-day maturity on October 29, 2025### Current Animation Issues
-
-2. Add webkit-specific timing adjustments if needed
-
-3. Consider browser-specific test expectations- Scheduled for execution on October 29, 2025
-
-
-
-### Priority 6: Performance Issues (3 failures)- **Status**: OVERDUE by 1 dayStory 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
-
-- Mobile Chrome scroll detection across viewports
-
-- Rapid scrolling performance- Segment 2 animation getting stuck on left side
-
-
-
-**Root Cause**: Performance timing in mobile test environment### Implementation Steps- Complex state management (6 flags) causing coordination issues
-
-
-
-**Fix Strategy**:- 11 test failures due to fragile timing logic
-
-1. Review test timeout thresholds for mobile
-
-2. Optimize scroll event handling if needed1. **Execute Security Update**- Multiple fix attempts increased complexity without solving root cause
-
-3. Consider test environment limitations
+1. Update `netlify-cli` which should bring in the fixed version of `tar`:
 
    ```bash
 
-## NEXT
+   npm update netlify-cli@23.10.0
 
-   npm update netlify-cli**Root Cause**: Ad-hoc animation coordination with scattered state management.
+   ```### Priority 1: P003 Button Overlap Issues (6 failures)Fix the test failure in `scroll-locked-reveal.test.ts` that is blocking all development.## NOW## NOW
 
-After E2E test fixes are complete and all tests passing:
+
+
+2. If that doesn't resolve it, try audit fix:- 2 chromium failures: button overlapping 3D cube, z-index stacking
+
+   ```bash
+
+   npm audit fix- 2 webkit failures: same issues
 
    ```
 
-1. **Run full quality checks**:
+- 2 Mobile Chrome failures: same issues
 
-   ```bash**Solution**: Build comprehensive animation system per ADR-0037.
+3. Verify the fix:
+
+   ```bash**Issue**: Unhandled error after test teardown - `ReferenceError: window is not defined` at line 93 in `src/scroll-locked-reveal.ts`. The `ScrollLockedReveal` class has a timer that continues running after the test environment is torn down, attempting to access `window` which is no longer available.
+
+   npm audit
+
+   ```**Root Cause**: Tests expect canvas z-index: 0, but actual z-index: 1
+
+   Expected: No moderate or higher severity vulnerabilities
+
+
+
+4. Run quality checks:
+
+   ```bash**Fix Strategy**:
 
    npm run lint
 
-   npm run format:check2. **Verify Update Applied**
+   npm test1. Review `src/style.css` for `.hero-animation` canvas z-index**Root Cause**: The `ScrollLockedReveal` class uses `requestAnimationFrame` to schedule updates, but these animation frames are not properly cancelled when tests complete, causing them to execute after the JSDOM environment has been cleaned up.**Execute Overdue Security Update - netlify-cli (BLOCKING - Security)****Implement Comprehensive Animation System (ADR-0037 ACCEPTED)**
 
-   npm run type-check
+   npm run build
 
-   npm test   ```bash### Implementation Plan
-
-   npm run e2e
-
-   ```   npm list netlify-cli
+   ```2. Update to `z-index: 0` to ensure canvas stays in background
 
 
 
-2. **Update history.md**:   # Should show: netlify-cli@23.9.5**Phase 1: Core Animation System** (Week 1 - Starts Now)
+5. Commit the security fix:3. Verify button elements have higher z-index (auto or 1+)
 
-   - Summarize E2E test fixes
+   ```bash
 
-   - Document root causes and solutions   ```
+   git add package.json package-lock.json
 
-   - Record test pass rates
+   git commit -m "fix: update netlify-cli to resolve tar CVE-2025-XXXXX
 
-1. **Design Animation Base Interface**
+### Priority 2: Functional Layout Issues (4 failures)**Fix Strategy**:
 
-3. **Commit and push changes**:
+- Update netlify-cli@23.10.0 to fix moderate severity CVE
 
-   - Clear commit message describing fixes3. **Verify Vulnerabilities Resolved**   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
+- Resolves tar race condition vulnerability (GHSA-29xp-372q-xqph)- Layout integrity failing at 320px breakpoint across browsers
 
-   - Reference test failures resolved
+- All tests passing after update"
 
-   - Verify CI/CD pipeline passes   ```bash   - Create state lifecycle: idle → triggered → active → completed → reset
-
-
-
-4. **Re-run assessment**:   npm audit   - Design dependency declaration API
-
-   - Complete Phase 6 (Runtime Validation)
-
-   - Continue through remaining phases   # Should show: 0 vulnerabilities (or reduced from 2)   - Plan queuing mechanism
-
-   - Generate final assessment report
+   git push origin main- Horizontal overflow detected at narrow viewport1. Ensure the `destroy()` method in `ScrollLockedReveal` properly cancels any pending animation frames
 
    ```
 
+
+
+### 2. Update Mature Dependencies (>= 7 days old)
+
+**Root Cause**: Responsive CSS not handling very narrow viewports properly2. Update the test file to ensure `destroy()` is called in `afterEach()` for all test instances**Priority**: 🚨 IMMEDIATE (Security incident resolution overdue by 1 day)**Date**: 2025-01-28
+
+Apply the 10 mature package updates identified by the Smart Version Selection Algorithm:
+
+
+
+```bash
+
+npm update @axe-core/playwright@4.11.0**Fix Strategy**:3. Verify the fix by running the full test suite
+
+npm update @types/node@24.10.0
+
+npm update @typescript-eslint/eslint-plugin@8.46.31. Review media queries for 320px breakpoint handling
+
+npm update @typescript-eslint/parser@8.46.3
+
+npm update happy-dom@20.0.102. Add proper overflow constraints for mobile viewports**Status**: READY TO IMPLEMENT
+
+npm update jsdom@27.1.0
+
+npm update three@0.181.03. Test layout at exact 320px width
+
+npm update @types/three@0.181.0
+
+```**Expected Outcome**: All 377 tests pass with 0 unhandled errors.
+
+
+
+**Verification:**### Priority 3: FOUC Prevention (1 failure)
+
+```bash
+
+npm run lint- CLS (Cumulative Layout Shift) score of 1 (expected < 0.1)### Background
+
+npm test
+
+npm run build
+
+npm run test:e2e
+
+```**Root Cause**: Content shifting during page load## NEXT
+
+
+
+**Commit:**
+
+```bash
+
+git add package.json package-lock.json**Fix Strategy**:### Decision Made
+
+git commit -m "chore: update mature dependencies
+
+1. Review critical CSS loading strategy
+
+- Update @axe-core/playwright@4.11.0 (accessibility testing)
+
+- Update @types/node@24.10.0 (type definitions)2. Consider inlining critical above-the-fold stylesAfter the test fix is verified:
+
+- Update @typescript-eslint/* @8.46.3 (linting)
+
+- Update happy-dom@20.0.10 (test environment)3. Ensure fonts load without causing layout shift
+
+- Update jsdom@27.1.0 (test environment)
+
+- Update three@0.181.0 and @types/three@0.181.0 (3D library)1. Commit the test fix changes with clear descriptionSecurity incident `SECURITY-INCIDENT-2025-10-23-netlify-cli-pino-fast-redact.proposed.md` has a scheduled resolution date of **October 29, 2025** which has now **PASSED** (current date: October 30, 2025).
+
+
+
+All packages >= 7 days old per Smart Version Selection Algorithm### Priority 4: Scroll Narrative Detection (3 failures)
+
+All tests passing after updates"
+
+git push origin main- Tests expecting console logs not being generated2. Run a full quality check (lint, format, test)
+
+```
+
+- Viewport detection not triggering properly
+
+### 3. Verify Clean State
+
+3. Push the changes to originADR-0037 has been **ACCEPTED**. We will implement a comprehensive animation system to solve the systemic issues with ad-hoc animation coordination.
+
+After all updates:
+
+```bash**Root Cause**: Scroll detection logic or test expectations need adjustment
+
+npm audit          # Should show 0 moderate+ vulnerabilities
+
+npm outdated       # Check remaining outdated packages
+
+npm test           # All tests must pass
+
+npm run test:e2e   # E2E tests must pass**Fix Strategy**:
+
+```
+
+1. Review `src/scroll-narrative-detector.ts` viewport boundaries## LATERThe incident documents:
+
+## NEXT
+
+2. Verify IntersectionObserver thresholds
+
+**Monitor Fresh Packages and Plan Major Upgrades**
+
+3. Update test expectations if behavior is correct
+
+After resolving the blocking security and dependency issues, the following work can be scheduled:
+
+
+
+### 1. Monitor Fresh Packages (< 7 days old)
+
+### Priority 5: Scroll-Locked Reveal (4 failures - webkit/Mobile Safari)After test failures are resolved and committed:- 2 LOW severity vulnerabilities (fast-redact prototype pollution, pino transitive)**File**: `docs/decisions/0037-comprehensive-animation-system.accepted.md`
+
+Set calendar reminders to revisit these packages after they reach maturity (7 days):
+
+- Initial opacity issues (elements showing too early)
+
+- **November 13, 2025**: Re-assess `eslint@9.39.1` and `@eslint/js@9.39.1` (released Nov 3)
+
+- **November 13, 2025**: Re-assess `vite@7.2.0` (released Nov 5)- Progressive reveal timing problems1. Re-run the full assessment process to complete phases 4-10
+
+
+
+When these become mature, update them following the same process:
+
+```bash
+
+npm update eslint@9.39.1**Root Cause**: WebKit-specific timing or opacity calculation differences2. Continue with any other implementation work identified in subsequent assessments- Planned update: netlify-cli 23.9.4 → 23.9.5
+
+npm update @eslint/js@9.39.1
+
+npm update vite@7.2.0
+
+# Run full quality checks
+
+# Commit and push**Fix Strategy**:
+
+```
+
+1. Review `src/scroll-locked-reveal.ts` opacity calculations- Update reached 7-day maturity on October 29, 2025### Current Animation Issues
+
+### 2. Plan Major Version Upgrades
+
+2. Add webkit-specific timing adjustments if needed
+
+Three packages have major version updates available that require careful analysis:
+
+3. Consider browser-specific test expectations- Scheduled for execution on October 29, 2025
+
+**A. vitest and @vitest/coverage-v8: 3.2.4 → 4.0.7**
+
+
+
+1. Review the vitest 4.0 changelog for breaking changes:
+
+   - Check migration guide### Priority 6: Performance Issues (3 failures)- **Status**: OVERDUE by 1 dayStory 026.03-BIZ-MAGIC-PHASE-ANIMATION has these problems:
+
+   - Identify API changes affecting our test suite
+
+   - Review coverage reporting changes- Mobile Chrome scroll detection across viewports
+
+
+
+2. Create feature branch for upgrade:- Rapid scrolling performance- Segment 2 animation getting stuck on left side
+
+   ```bash
+
+   git checkout -b chore/upgrade-vitest-4
+
+   ```
+
+**Root Cause**: Performance timing in mobile test environment### Implementation Steps- Complex state management (6 flags) causing coordination issues
+
+3. Update packages:
+
+   ```bash
+
+   npm install --save-dev vitest@4.0.7 @vitest/coverage-v8@4.0.7
+
+   ```**Fix Strategy**:- 11 test failures due to fragile timing logic
+
+
+
+4. Fix any breaking changes in test files1. Review test timeout thresholds for mobile
+
+
+
+5. Verify all tests and coverage:2. Optimize scroll event handling if needed1. **Execute Security Update**- Multiple fix attempts increased complexity without solving root cause
+
+   ```bash
+
+   npm test3. Consider test environment limitations
+
+   npm run test:coverage
+
+   ```   ```bash
+
+
+
+6. Commit, push, and merge if successful## NEXT
+
+
+
+**B. eslint-plugin-unicorn: 61.0.2 → 62.0.0**   npm update netlify-cli**Root Cause**: Ad-hoc animation coordination with scattered state management.
+
+
+
+1. Review changelog for new rules and breaking changesAfter E2E test fixes are complete and all tests passing:
+
+2. Update package and run linting to see what fails
+
+3. Fix any new linting errors or disable problematic rules   ```
+
+4. Commit changes
+
+1. **Run full quality checks**:
+
+**C. @types/three: 0.180.0 → 0.181.0**
+
+   ```bash**Solution**: Build comprehensive animation system per ADR-0037.
+
+1. Coordinate with `three@0.181.0` update (already in mature list)
+
+2. Review type definition changes   npm run lint
+
+3. Fix any TypeScript errors
+
+4. Verify 3D animation still works correctly   npm run format:check2. **Verify Update Applied**
+
+
+
+### 3. Address Test Cleanup Issue (Non-blocking)   npm run type-check
+
+
+
+The assessment noted an unhandled error in `scroll-locked-reveal.test.ts`:   npm test   ```bash### Implementation Plan
+
+```
+
+ReferenceError: window is not defined   npm run e2e
+
+  at ScrollLockedReveal.getProgress src/scroll-locked-reveal.ts:93:45
+
+```   ```   npm list netlify-cli
+
+
+
+This is a test quality issue where timers aren't being cleaned up properly:
+
+
+
+1. Review `src/scroll-locked-reveal.ts` - ensure all timers/intervals are cleared in `destroy()` method2. **Update history.md**:   # Should show: netlify-cli@23.9.5**Phase 1: Core Animation System** (Week 1 - Starts Now)
+
+2. Review `tests/scroll-locked-reveal.test.ts` - ensure proper cleanup in `afterEach()` hooks
+
+3. Add explicit `destroy()` calls for all test instances   - Summarize E2E test fixes
+
+4. Verify fix: `npm test` should show no unhandled errors
+
+   - Document root causes and solutions   ```
+
 ## LATER
 
-2. **Implement Core System**
+   - Record test pass rates
 
-After all E2E tests passing and assessment complete:
+**Future Dependency Maintenance and Monitoring**
 
-4. **Test Functionality**   - Create `AnimationCoordinator` class
+1. **Design Animation Base Interface**
 
-1. **Optional Dependency Updates** (when packages mature):
+### 1. Establish Dependency Update Cadence
+
+3. **Commit and push changes**:
+
+Create a regular schedule for dependency maintenance:
+
+- **Weekly**: Check `npm outdated` for new updates   - Clear commit message describing fixes3. **Verify Vulnerabilities Resolved**   - Define animation types: scroll-scrubbed, scroll-triggered, time-based
+
+- **Monthly**: Review and apply mature updates
+
+- **Quarterly**: Evaluate major version upgrades   - Reference test failures resolved
+
+
+
+### 2. Security Monitoring   - Verify CI/CD pipeline passes   ```bash   - Create state lifecycle: idle → triggered → active → completed → reset
+
+
+
+Set up automated security monitoring:
+
+- Enable GitHub Dependabot alerts
+
+- Review `npm audit` results weekly4. **Re-run assessment**:   npm audit   - Design dependency declaration API
+
+- Track security incident resolution timelines
+
+- Document all security updates in `docs/security-incidents/`   - Complete Phase 6 (Runtime Validation)
+
+
+
+### 3. Smart Version Selection Documentation   - Continue through remaining phases   # Should show: 0 vulnerabilities (or reduced from 2)   - Plan queuing mechanism
+
+
+
+Document the Smart Version Selection Algorithm application:   - Generate final assessment report
+
+- Create decision log for when packages were upgraded vs. deferred
+
+- Track false positives from security scanners   ```
+
+- Maintain maturity timeline for fresh packages
+
+- Document major version upgrade decisions## LATER
+
+
+
+### 4. Dependency Health Metrics2. **Implement Core System**
+
+
+
+Track dependency health over time:After all E2E tests passing and assessment complete:
+
+- Number of outdated packages
+
+- Average age of dependencies4. **Test Functionality**   - Create `AnimationCoordinator` class
+
+- Security vulnerability count
+
+- Time to apply security updates1. **Optional Dependency Updates** (when packages mature):
+
+- Major version upgrade frequency
 
    - Monitor package maturity dates   ```bash   - Implement `BaseAnimation` interface/abstract class
 
+### 5. Future Major Upgrades
+
    - Update packages as they cross 7-day threshold
 
-   - Follow Smart Version Selection Algorithm   # Run linting   - Build state management with lifecycle hooks
+Monitor for upcoming major versions:
 
+- Keep watching for stable releases   - Follow Smart Version Selection Algorithm   # Run linting   - Build state management with lifecycle hooks
 
+- Review community feedback before upgrading
+
+- Test in separate branch before merging
+
+- Document migration experiences for team knowledge
 
 2. **Performance Optimization**:   npm run lint   - Add dependency resolution system
 
+---
+
    - Bundle size optimization
+
+**Note**: This plan follows the principle of resolving blocking issues first (security + dependencies) before proceeding with any new feature development or story implementation. The assessment identified that we are "NOT READY FOR NEW STORY DEVELOPMENT" until these dependency issues are resolved.
 
    - Code splitting for Three.js      - Implement animation queue
 

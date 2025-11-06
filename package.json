@@ -98,12 +98,25 @@
   },
   "overrides": {
     "tmp": "^0.2.5",
+    "tar": "7.5.2",
     "fast-redact": "^3.5.0",
     "netlify-cli": {
       "fast-redact": "^3.5.0"
     },
     "@netlify/build": {
       "fast-redact": "^3.5.0"
+    },
+    "@netlify/edge-bundler": {
+      "tar": "7.5.2"
+    },
+    "@netlify/zip-it-and-ship-it": {
+      "tar": "7.5.2"
+    },
+    "@vercel/nft": {
+      "tar": "7.5.2"
+    },
+    "@mapbox/node-pre-gyp": {
+      "tar": "7.5.2"
     }
   },
   "license": "UNLICENSED"

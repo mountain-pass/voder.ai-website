@@ -346,6 +346,13 @@ body {
   margin: 0;
 }
 
+.meet-voder {
+  color: var(--soft-teal-glow);
+  font-size: var(--step-3);
+  font-weight: 700;
+  margin: var(--space-m) 0 0 0;
+}
+
 /* Scroll-locked reveal system - Story 026.02-BIZ-VIEWPORT-FIXED-OVERLAY */
 
 /* Scroll stage: creates scroll distance for progressive reveal */

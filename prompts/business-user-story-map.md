@@ -2,16 +2,20 @@
 
 ## Journey Phases (Columns)
 
-| **Intrigue**                        | **Feel Pain**                             | **Connect**                           | **Love Alternative**                    | **Want It**                     |
-| ----------------------------------- | ----------------------------------------- | ------------------------------------- | --------------------------------------- | ------------------------------- |
-| _Create curiosity and draw them in_ | _Problem resonates with their experience_ | _They love our philosophy and vision_ | _They believe in our solution approach_ | _They're convinced and excited_ |
-| **Brand Entry**                     | **Problem Space**                         | **The Why**                           | **Metaphor + Vision Flow + Iteration**  | **Outcome Focus + Closing**     |
+| **Intrigue**                        | **Feel Pain**                             | **Connect**                           | **Love Alternative**                       | **Want It**                     |
+| ----------------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------ | ------------------------------- |
+| _Create curiosity and draw them in_ | _Problem resonates with their experience_ | _They love our philosophy and vision_ | _They believe in our solution approach_    | _They're convinced and excited_ |
+| **Brand Entry**                     | **Problem Space: Vibe Coding Crisis**     | **The Why: Spec-Driven Intent**       | **Metaphor + Vision: Autonomous Delivery** | **Outcome Focus + Closing**     |
+
+**Journey Narrative:**
+Visitors enter curious ("Why does AI coding feel like magic at first but become a mess?") → Recognize their pain (vibe coding without specs leads to fragile codebases and burnout) → Understand the philosophy (software starts with structured intent) → See the alternative (prompt-as-source autonomous delivery) → Want to sign up for beta
 
 ## Personas
 
-- 🎯 **PRIMARY**: Venture Capitalists (Hidden Audience) - _Evaluating investment opportunity_
-- 👑 **Founders & Product Leaders** (Stated Target) - _Strategic decision makers_
-- 🔧 **CTOs & Engineering Managers** - _Technical validators_
+- 🎯 **PRIMARY**: Venture Capitalists (Hidden Audience) - _Evaluating investment opportunity in spec-driven developer tooling_
+- 👑 **Founders & Product Leaders** (Stated Target) - _Strategic decision makers seeking sustainable AI-assisted development_
+- 🔧 **CTOs & Engineering Managers** - _Technical validators concerned about AI-generated technical debt and team burnout_
+- 🏢 **Platform Engineering Leaders** (Secondary) - _Looking to scale AI-assisted development across multiple teams sustainably_
 
 ---
 
@@ -29,11 +33,11 @@
 |                                                            | Light caustics (025.7)     | Relatable scenarios         | -                             | -                    | -                  |
 |                                                            | Flowing ribbons (025.8)    | -                           | -                             | -                    | -                  |
 
-| **Release 2 (Solution Validation)** | **Intrigue** | **Feel Pain**           | **Connect**         | **Love Alternative** | **Want It**        |
-| ----------------------------------- | ------------ | ----------------------- | ------------------- | -------------------- | ------------------ |
-| **Enhancements**                    | Brand story  | Interactive scenarios   | Typing animation    | GPS metaphor         | Benefit highlights |
-|                                     | Brand story  | Problem cost calculator | Strategic messaging | Vision flow diagram  | ROI preview        |
-|                                     | -            | Evolution animations    | -                   | Code adaptation demo | -                  |
+| **Release 2 (Solution Validation)** | **Intrigue** | **Feel Pain**                    | **Connect**            | **Love Alternative**         | **Want It**                     |
+| ----------------------------------- | ------------ | -------------------------------- | ---------------------- | ---------------------------- | ------------------------------- |
+| **Enhancements**                    | Brand story  | Interactive scenarios            | Typing animation       | GPS vs directions metaphor   | Benefit highlights              |
+|                                     | Brand story  | Problem cost calculator          | Strategic messaging    | Prompt-as-source vision flow | ROI preview                     |
+|                                     | -            | Vibe coding evolution animations | Spec-driven philosophy | Autonomous compilation demo  | Competitive velocity comparison |
 
 | **Release 3 (Full Experience)** | **Intrigue**    | **Feel Pain**           | **Connect**                 | **Love Alternative** | **Want It**            |
 | ------------------------------- | --------------- | ----------------------- | --------------------------- | -------------------- | ---------------------- |

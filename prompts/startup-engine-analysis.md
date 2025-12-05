@@ -8,11 +8,21 @@
 
 ### 😣 Problem Hypothesis
 
-**"AI slop (degrading codebases from AI coding tools) is a widespread, painful, and expensive problem that both Founders and VCs recognize"**
+**"AI slop (degrading codebases from AI coding tools) stems from vibe coding without structured specs—uncontrolled velocity creates fragile codebases that lead to developer burnout and lost competitive advantage"**
+
+Key insight: Teams fall into vibe-coding loops where AI generates code based on vague descriptions, producing massive PRs that burn out reviewers and create unmaintainable codebases. Without structured specifications, velocity becomes a liability rather than an asset.
 
 ### ✨ Solution Hypothesis
 
-**"Voder's 'prompts as source code' approach prevents AI slop and creates sustainable competitive advantages"**
+**"Voder's prompt-as-source development approach—structured specifications compiled autonomously into code and tests—prevents AI slop and enables reliable, repeatable builds that maintain velocity while preserving quality"**
+
+Core concept: Like GPS vs. turn-by-turn directions, Voder uses structured `*.md` prompt files to describe behavior declaratively. The LLM pipeline compiles these specs into code, tests, and artifacts autonomously. This separation of intent from implementation enables platform portability, traceability, and reproducibility while preventing the fragility of vibe coding.
+
+### 🚀 Competitive Hypothesis
+
+**"Teams adopting spec-driven autonomous delivery will outpace competitors stuck in vibe-coding loops—structured intent enables rapid, sustainable iteration while vibe coding creates technical debt that eventually kills velocity"**
+
+The competitive advantage: Edit a prompt, rebuild the app. Competitors waste cycles on massive code reviews, tech debt cleanup, and firefighting fragile AI-generated code. Spec-driven teams maintain agility through platform changes while building a knowledge base of validated patterns.
 
 ---
 
@@ -68,6 +78,12 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 **Post 6 - Competitive Focus:**
 "Hearing this from multiple founders: 'While competitors ship new features, we're stuck refactoring AI-generated code that's six months old. The early advantage became a lasting disadvantage.' Sound familiar to anyone?"
 
+**Post 7 - Vibe Coding Cost:**
+"Ever seen a 5,000-line AI-generated PR? Your team spends a week reviewing it, catches half the issues, ships it, then spends two weeks fixing the fallout. Meanwhile, the velocity metrics look great. This is the vibe-coding trap: unstructured AI assistance creates massive PRs that burn out reviewers and fragment understanding. Spec-driven tooling flips this: small, focused changes tied to clear requirements. Same AI power, sustainable velocity."
+
+**Post 8 - Autonomous Delivery Unlock:**
+"What if changing your product didn't require code changes—just editing a spec? Voder's bet: prompt-as-source development (GPS vs turn-by-turn directions). Define behavior in structured markdown, let the pipeline compile code, tests, and docs. The business unlock isn't just velocity—it's platform agility. Swap frameworks without rewriting product logic. Maintain traceability from intent to implementation. Build once, deploy anywhere. Spec-driven autonomy isn't about replacing developers; it's about letting them focus on intent instead of implementation details."
+
 **Success Metrics per Post:**
 
 - Comments: "This is exactly my experience!"
@@ -81,9 +97,17 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 
 **Focus: "Love Alternative" phase stories**
 
-**Test**: Add solution explanation and demonstration
-**Success Criteria**: Audience believes Voder prevents AI slop
-**Pivot Trigger**: Solution seems irrelevant or unbelievable → Change solution hypothesis
+**Test**: Add solution explanation and demonstration emphasizing prompt-as-source, autonomous compilation, and GPS metaphor
+**Success Criteria**: Audience believes spec-driven autonomy prevents AI slop and enables sustainable velocity
+**Pivot Trigger**: Solution seems irrelevant or unbelievable → Refine metaphor and demonstration approach
+
+### Phase 3: Validate Competitive Advantage
+
+**Focus: Competitive positioning and business velocity**
+
+**Test**: Add competitive analysis showing spec-driven teams outpacing vibe-coding teams
+**Success Criteria**: >70% see competitive advantage, founders want early access
+**Pivot Trigger**: Competitive angle doesn't resonate → Focus on internal quality benefits
 
 ### Phase 3: Validate Full Journey
 
@@ -108,11 +132,12 @@ _Note: Problem existence is already validated by market evidence - LinkedIn spec
 
 ### Release 2: Solution Validation
 
-- Add Metaphor section
-- Add Vision Flow
-- Add basic Iteration demonstration
+- Add Metaphor section (GPS vs directions)
+- Add Vision Flow (prompt → compile → validate)
+- Add Iteration demonstration (edit prompt, rebuild app)
+- Add competitive positioning (spec-driven vs vibe-coding velocity)
 
-**Goal**: Validate assumptions 5-7
+**Goal**: Validate assumptions 5-7 plus competitive hypothesis
 
 ### Release 3: Full Experience
 

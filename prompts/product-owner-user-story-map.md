@@ -2,43 +2,47 @@
 
 ## Journey Phases (Columns)
 
-| **Strategize**                               | **Plan**                                   | **Experiment**                          | **Monitor**                      | **Improve**                 |
-| -------------------------------------------- | ------------------------------------------ | --------------------------------------- | -------------------------------- | --------------------------- |
-| _Startup engine analysis, market validation_ | _Define user stories, prioritize features_ | _Test hypotheses, validate assumptions_ | _Track results, measure success_ | _Learn and iterate_         |
-| **Market Research & Validation**             | **Story Management & Prioritization**      | **Hypothesis Testing & A/B Tests**      | **Analytics & Performance**      | **Learning & Optimization** |
+| **Strategize**                               | **Define Specs**                              | **Experiment**                            | **Monitor**                      | **Improve**                        |
+| -------------------------------------------- | --------------------------------------------- | ----------------------------------------- | -------------------------------- | ---------------------------------- |
+| _Startup engine analysis, market validation_ | _Capture intent in structured specifications_ | _Compile, test, and validate assumptions_ | _Track results, measure success_ | _Edit specs and iterate_           |
+| **Market Research & Intent Capture**         | **Spec Definition & Alignment**               | **Autonomous Execution & Testing**        | **Analytics & Performance**      | **Spec Refinement & Optimization** |
+
+**Strategic Workflow:**
+Product owners capture strategic intent in structured specifications without touching code. The autonomous compilation pipeline executes against these specs, enabling rapid experimentation and iteration. This separation of intent from implementation enables cross-team alignment, platform portability, and measurable business outcomes while maintaining traceability from strategy to execution.
 
 ## Personas
 
-- 🎯 **PRIMARY**: Product Owner - _Making strategic product decisions and managing the product lifecycle_
-- 📊 **Business Analyst** - _Analyzing market opportunities and business metrics_
-- 💼 **Stakeholders** - _Understanding business progress and ROI_
+- 🎯 **PRIMARY**: Product Owner - _Making strategic product decisions through intent capture and spec-driven iteration_
+- 📊 **Business Analyst** - _Analyzing market opportunities and validating business hypotheses through experimentation_
+- 💼 **Stakeholders** - _Understanding business progress through spec traceability and measurable outcomes_
+- 🏢 **Portfolio Managers** (Secondary) - _Scaling spec-driven product development across multiple teams_
 
 ---
 
 # Product Owner Process Map with Releases
 
-| **Release 0.5 (Foundation)** (Completed) | **Strategize**          | **Plan**            | **Experiment** | **Monitor**           | **Improve** |
-| ---------------------------------------- | ----------------------- | ------------------- | -------------- | --------------------- | ----------- |
-| **Strategic Foundation**                 | Startup engine analysis | User story mapping  | -              | Analytics pageviews   | -           |
-|                                          | -                       | Story management    | -              | Analytics traffic     | -           |
-|                                          | -                       | Decision management | -              | Analytics sessions    | -           |
-|                                          | -                       | -                   | -              | Analytics bounce rate | -           |
-|                                          | -                       | -                   | -              | Analytics engagement  | -           |
+| **Release 0.5 (Foundation)** (Completed) | **Strategize**          | **Define Specs**                          | **Experiment** | **Monitor**           | **Improve** |
+| ---------------------------------------- | ----------------------- | ----------------------------------------- | -------------- | --------------------- | ----------- |
+| **Strategic Foundation**                 | Startup engine analysis | User story mapping                        | -              | Analytics pageviews   | -           |
+|                                          | -                       | Story management (intent capture)         | -              | Analytics traffic     | -           |
+|                                          | -                       | Decision management (architectural specs) | -              | Analytics sessions    | -           |
+|                                          | -                       | -                                         | -              | Analytics bounce rate | -           |
+|                                          | -                       | -                                         | -              | Analytics engagement  | -           |
 
-| **Release 1.0 (Message Validation)** (Current Release) | **Strategize** | **Plan**                   | **Experiment**    | **Monitor**        | **Improve**         |
+| **Release 1.0 (Message Validation)** (Current Release) | **Strategize** | **Define Specs**           | **Experiment**    | **Monitor**        | **Improve**         |
 | ------------------------------------------------------ | -------------- | -------------------------- | ----------------- | ------------------ | ------------------- |
 | **3D Experience & Problem Management**                 | -              | Problem Management (025.3) | 3D Visual Testing | Enhanced Analytics | Process Improvement |
 |                                                        | -              | -                          | -                 | -                  | -                   |
 |                                                        | -              | -                          | -                 | -                  | -                   |
 
-| **Release 2 (Solution Validation)** | **Strategize**        | **Plan**             | **Experiment**         | **Monitor**         | **Improve**          |
-| ----------------------------------- | --------------------- | -------------------- | ---------------------- | ------------------- | -------------------- |
-| **Solution Approach Testing**       | Competitive analysis  | Feature roadmapping  | A/B test setup         | User engagement     | Message optimization |
-|                                     | User persona research | Technical validation | User journey testing   | Business metrics    | Content refinement   |
-|                                     | Market positioning    | Resource planning    | Message resonance test | Investment interest | Strategy iteration   |
-|                                     | Solution positioning  | -                    | Solution demos         | -                   | Product iteration    |
-|                                     | Investment strategy   | -                    | Metaphor effectiveness | -                   | Growth optimization  |
-|                                     | Scaling preparation   | -                    | Vision flow testing    | -                   | Market expansion     |
+| **Release 2 (Autonomous Delivery)** | **Strategize**        | **Define Specs**              | **Experiment**                  | **Monitor**               | **Improve**         |
+| ----------------------------------- | --------------------- | ----------------------------- | ------------------------------- | ------------------------- | ------------------- |
+| **Spec-Driven Iteration**           | Competitive analysis  | Spec templates & tooling      | Autonomous compilation testing  | User engagement           | Spec optimization   |
+|                                     | User persona research | Technical spec validation     | Spec-to-code traceability       | Business velocity metrics | Intent refinement   |
+|                                     | Market positioning    | Alignment frameworks planning | Message resonance test          | Investment interest       | Strategy iteration  |
+|                                     | Solution positioning  | -                             | Platform portability demos      | -                         | Product iteration   |
+|                                     | Investment strategy   | -                             | GPS metaphor effectiveness      | -                         | Growth optimization |
+|                                     | Scaling preparation   | -                             | Spec iteration workflow testing | -                         | Market expansion    |
 
 ---
 

@@ -2,48 +2,50 @@
 
 ## Journey Phases (Columns)
 
-| **Setup**                  | **Write Code**                 | **Validate Quality**  | **Deploy**         | **Maintain**          |
-| -------------------------- | ------------------------------ | --------------------- | ------------------ | --------------------- |
-| _Get environment ready_    | _Develop features efficiently_ | _Catch issues early_  | _Ship confidently_ | _Keep system healthy_ |
-| **Project Initialization** | **Development Experience**     | **Quality Assurance** | **Build & Deploy** | **Operations**        |
+| **Setup**                  | **Write Specs**                         | **Compile**                              | **Validate**            | **Iterate**           | **Maintain**          |
+| -------------------------- | --------------------------------------- | ---------------------------------------- | ----------------------- | --------------------- | --------------------- |
+| _Get environment ready_    | _Define behavior in structured prompts_ | _Autonomous compilation to code & tests_ | _Verify implementation_ | _Edit specs, rebuild_ | _Keep system healthy_ |
+| **Project Initialization** | **Spec-Driven Development**             | **LLM Pipeline Execution**               | **Quality Assurance**   | **Rapid Refinement**  | **Operations**        |
+
+**Developer Workflow:**
+Developers use structured prompt files (`feature.md`) to describe intended behavior declaratively. The LLM pipeline compiles these specs into code, tests, and documentation. This approach avoids vibe coding (massive AI PRs that burn out reviewers) by maintaining small, focused changes tied to clear specifications. Benefits include traceability, reproducibility, and platform portability.
 
 ## Personas
 
-- 🎯 **PRIMARY**: Frontend Developers - _Building the website experience_
-- 🔧 **DevOps Engineers** - _Managing build/deploy pipeline_
-- 👥 **Contributing Developers** - _External contributors and team members_
+- 🎯 **PRIMARY**: Frontend Developers - _Building features via structured specs rather than vibe coding_
+- 🔧 **DevOps Engineers** - _Managing autonomous build/compile pipeline_
+- 👥 **Contributing Developers** - _External contributors working with spec-driven workflow_
+- 🏗️ **Platform Engineers** (Secondary) - _Scaling spec-driven development across teams_
 
 ---
 
 # Developer Story Map with Releases
 
-| **Release 0.5 (Essential Dev Experience)** (Completed) | **Setup**           | **Write Code**        | **Validate Quality**     | **Deploy**              | **Maintain** |
-| ------------------------------------------------------ | ------------------- | --------------------- | ------------------------ | ----------------------- | ------------ |
-| **Foundation & Quality**                               | Node.js setup (002) | TypeScript (004)      | JavaScript linting (010) | Vite build (005)        | -            |
-|                                                        | Dependencies (003)  | Code formatting (006) | CSS linting (007)        | Quality gates (023)     | -            |
-|                                                        | -                   | Vite dev server (005) | HTML linting (008)       | Verify & rollback (024) | -            |
-|                                                        | -                   | -                     | Markdown linting (009)   | -                       | -            |
-|                                                        | -                   | -                     | Unit testing (011)       | -                       | -            |
-|                                                        | -                   | -                     | Test coverage (012.0)    | -                       | -            |
-|                                                        | -                   | -                     | Git hooks (012.1)        | -                       | -            |
-|                                                        | -                   | -                     | Prepare script (012.2)   | -                       | -            |
-|                                                        | -                   | -                     | E2E screenshots (012.4)  | -                       | -            |
-|                                                        | -                   | -                     | Simple deployment (022)  | -                       | -            |
+| **Release 0.5 (Essential Dev Experience)** (Completed) | **Setup**           | **Write Specs**       | **Compile**      | **Validate**             | **Iterate** | **Maintain** |
+| ------------------------------------------------------ | ------------------- | --------------------- | ---------------- | ------------------------ | ----------- | ------------ |
+| **Foundation & Quality**                               | Node.js setup (002) | TypeScript (004)      | Vite build (005) | JavaScript linting (010) | -           | -            |
+|                                                        | Dependencies (003)  | Spec formatting (006) | -                | CSS linting (007)        | -           | -            |
+|                                                        | -                   | Vite dev server (005) | -                | HTML linting (008)       | -           | -            |
+|                                                        | -                   | -                     | -                | Markdown linting (009)   | -           | -            |
+|                                                        | -                   | -                     | -                | Unit testing (011)       | -           | -            |
+|                                                        | -                   | -                     | -                | Test coverage (012.0)    | -           | -            |
+|                                                        | -                   | -                     | -                | Git hooks (012.1)        | -           | -            |
+|                                                        | -                   | -                     | -                | Prepare script (012.2)   | -           | -            |
+|                                                        | -                   | -                     | -                | E2E screenshots (012.4)  | -           | -            |
+|                                                        | -                   | -                     | -                | Simple deployment (022)  | -           | -            |
 
-| **Release 1.0 (Enhanced Quality)** (Current Release) | **Setup** | **Write Code**       | **Validate Quality**    | **Deploy** | **Maintain**               |
-| ---------------------------------------------------- | --------- | -------------------- | ----------------------- | ---------- | -------------------------- |
-| **3D Experience & Problem Management**               | -         | 3D Animation (025.0) | FOUC Prevention (025.1) | -          | Problem Management (025.3) |
-|                                                      | -         | -                    | -                       | -          | -                          |
-|                                                      | -         | -                    | -                       | -          | -                          |
-|                                                      | -         | -                    | -                       | -          | -                          |
+| **Release 1.0 (Enhanced Quality)** (Current Release) | **Setup** | **Write Specs**           | **Compile** | **Validate**            | **Iterate** | **Maintain**               |
+| ---------------------------------------------------- | --------- | ------------------------- | ----------- | ----------------------- | ----------- | -------------------------- |
+| **3D Experience & Problem Management**               | -         | 3D Animation spec (025.0) | -           | FOUC Prevention (025.1) | -           | Problem Management (025.3) |
+|                                                      | -         | -                         | -           | -                       | -           | -                          |
 
-| **Release 2 (Advanced Tooling)** | **Setup** | **Write Code**  | **Validate Quality**  | **Deploy**          | **Maintain**       |
-| -------------------------------- | --------- | --------------- | --------------------- | ------------------- | ------------------ |
-| **Advanced dev experience**      | -         | IDE integration | Advanced linting      | Preview deployments | Documentation      |
-|                                  | -         | Component tools | Integration tests     | Automated releases  | Dependency updates |
-|                                  | -         | Debug tools     | Accessibility testing | -                   | Error tracking     |
-|                                  | -         | -               | Advanced security     | -                   | Change logs        |
-|                                  | -         | -               | Security scanning     | -                   | -                  |
+| **Release 2 (Spec-Driven Tooling)** | **Setup** | **Write Specs**      | **Compile**             | **Validate**               | **Iterate**             | **Maintain**       |
+| ----------------------------------- | --------- | -------------------- | ----------------------- | -------------------------- | ----------------------- | ------------------ |
+| **Autonomous delivery experience**  | -         | Spec IDE integration | LLM pipeline automation | Automated acceptance tests | Spec iteration workflow | Spec documentation |
+|                                     | -         | Prompt templates     | Compilation dashboard   | Integration tests          | Edit-compile-test cycle | Dependency updates |
+|                                     | -         | Spec validation      | Traceability tracking   | Accessibility testing      | Small PR workflow       | Error tracking     |
+|                                     | -         | -                    | Platform portability    | Advanced security          | -                       | Change logs        |
+|                                     | -         | -                    | -                       | Security scanning          | -                       | -                  |
 
 ---
 

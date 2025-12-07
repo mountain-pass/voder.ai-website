@@ -1,39 +1,37 @@
-# Development Plan
-
 ## NOW
 
-**No immediate work required** - All quality gates passing, all tests passing (280/280), no active problems.
+Add the spec-driven solution narrative content to `index.html` between the problem-space section and the interest-capture section. This implements Story 027.0-BIZ-SOFTWARE-INTENT by adding:
 
-The project is in a healthy state:
-- All 280 tests passing with 88.51% coverage
-- All linting, formatting, and type checking passing
-- Production build successful
-- CI/CD pipeline healthy (latest run successful)
-- All 12 documented problems resolved or closed
-- No blocking security vulnerabilities (1 accepted risk within policy)
+1. **Vibe Coding Crisis articulation** - Already present in existing scroll narrative
+2. **GPS Metaphor section** - New content explaining specs as destination vs code as route
+3. **Spec-Driven Benefits** - Three core benefits (traceability, reproducibility, portability)
+4. **Autonomous Delivery Preview** - Workflow overview (Write Specs → Compile → Validate)
 
-**Current state**: Ready for new story selection and implementation when product owner prioritizes next feature.
+Implementation approach:
+- Create a new `<section class="solution-bridge">` element
+- Insert it after `.problem-space` and before `.interest-capture`
+- Add semantic HTML with proper ARIA labels for accessibility
+- Follow existing CSS patterns for consistency
+- Use simple, clear content structure that works on mobile and desktop
+
+The content will bridge from the problem recognition in the scroll narrative and problem-space sections to the solution understanding, using the GPS metaphor as the key conceptual framework.
 
 ## NEXT
 
-When a new story is selected from the backlog:
+1. Test the implementation:
+   - Run linting and formatting checks
+   - Run the full test suite
+   - Verify no regressions introduced
+   
+2. Update traceability file for Story 031.0 to mark as PASSED with implementation evidence
 
-1. Review the story specification in `prompts/release-*/in-scope/`
-2. Understand acceptance criteria and dependencies
-3. Write failing tests first (TDD approach)
-4. Implement minimal solution to make tests pass
-5. Refactor for quality and maintainability
-6. Update traceability mapping in `.voder/traceability/`
-7. Ensure all quality gates pass before committing
+3. Commit the changes with appropriate conventional commit message
+
+4. Push to remote and monitor CI/CD pipeline for successful deployment
 
 ## LATER
 
-Future work (when prioritized by product owner):
-
-- Review Release 0.5 stories for next implementation priority
-- Review Release 1.0 stories for future planning
-- Continue monitoring security vulnerabilities and dependency updates
-- Maintain code quality standards and test coverage
-- Address any new problems that arise during development
-
-**Note**: This plan reflects the current healthy state. New work will be driven by product owner story prioritization, not by technical debt or quality issues.
+After this story is complete and deployed:
+- Continue traceability validation for remaining story files
+- Complete any other incomplete stories discovered during validation
+- Pull next new story from backlog once all blockers are resolved

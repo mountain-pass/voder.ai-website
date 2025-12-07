@@ -74,8 +74,8 @@
     "jest-axe": "^10.0.0",
     "jiti": "^2.5.1",
     "jsdom": "^27.0.1",
-    "markdownlint-cli2": "^0.18.1",
-    "netlify-cli": "^23.9.3",
+    "markdownlint-cli2": "^0.19.1",
+    "netlify-cli": "^23.12.3",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "simple-git-hooks": "^2.13.1",
@@ -99,9 +99,13 @@
   "overrides": {
     "tmp": "^0.2.5",
     "tar": "7.5.2",
+    "jws": "^4.0.1",
     "fast-redact": "^3.5.0",
     "netlify-cli": {
       "fast-redact": "^3.5.0"
+    },
+    "jsonwebtoken": {
+      "jws": "^4.0.1"
     },
     "@netlify/build": {
       "fast-redact": "^3.5.0"

@@ -2438,3 +2438,162 @@ Security resolution substantially improved. Ready for:
 **Recommendation**: Re-run assessment workflow to validate all phases now that security blocking condition is partially resolved.
 
 ---
+
+## 2025-12-07: Story 031.0 Implementation - Software Intent Story Rewrite
+
+### Summary
+Completed Story 031.0-BIZ-REWRITE-SOFTWARE-INTENT-STORY by performing a complete rewrite of Story 027.0-BIZ-SOFTWARE-INTENT.md to replace outdated "AI slop problem" messaging with new "vibe coding crisis" and "spec-driven autonomous delivery" positioning.
+
+### Changes Made
+
+#### Story 027.0 Complete Rewrite (`prompts/release-1.0/in-scope/027.0-BIZ-SOFTWARE-INTENT.md`)
+
+**Release Goal Updated**:
+- OLD: "bridges the AI slop problem to our solution approach"
+- NEW: "Bridge from vibe coding crisis to spec-driven autonomous delivery solution"
+
+**User Story Persona Changed**:
+- OLD: "as a venture capitalist assessing investment opportunities"
+- NEW: "as a Founder/Business User experiencing vibe coding crisis"
+
+**Problem Framing Transformed**:
+- OLD: "AI slop problem" (vague, philosophical)
+- NEW: "vibe coding crisis" with specific pain points:
+  - Massive PRs nobody can review
+  - Reviewer burnout
+  - Fragile codebases requiring constant rewrites
+  - Technical debt accumulation
+
+**Solution Bridge Added**:
+- **GPS Metaphor**: Specs provide destination (WHAT to build), compiler determines route (HOW to build)
+- **Three Core Benefits**: Traceability, Reproducibility, Platform Portability
+- **Autonomous Delivery Workflow**: Write Specs → Compile → Validate
+- **Intent Capture**: Structured specs capture business intent without implementation coupling
+
+**Requirements Section Completely Rewritten**:
+- Added REQ-VIBE-CODING-DEFINITION
+- Added REQ-GPS-METAPHOR
+- Added REQ-SPEC-DRIVEN-BENEFITS
+- Added REQ-INTENT-CAPTURE
+- Added REQ-COMPILATION-CONCEPT
+- Added REQ-WORKFLOW-PREVIEW
+- Removed all VC/philosophical positioning requirements
+- Aligned with autonomous-delivery-user-story-map.md
+
+**Implementation Considerations Restructured**:
+- Added "Content Development - Problem Framing" section with vibe coding crisis hook
+- Added "Content Development - Solution Bridge" with GPS metaphor explanation
+- Added "Content Development - Workflow Preview" with autonomous delivery cycle
+- Removed VC/founder/CTO messaging strategy (old multi-audience approach)
+- Added concrete narrative examples and benefit articulation
+
+**Dependencies Updated**:
+- Added 028.0-BIZ-MESSAGING-REPOSITION (new messaging framework)
+- Added 029.0-PO-UPDATE-DEV-STORY-MESSAGING (dev infrastructure context)
+- Added 030.0-PO-UPDATE-ANALYTICS-STORY-MESSAGING (analytics context)
+- Retained 025.0-BIZ-3D-ANIMATION and 026.0-BIZ-VISUAL-CHAOS
+
+#### Traceability Update (`.voder/traceability/prompts-release-1.0-in-scope-031.0-BIZ-REWRITE-SOFTWARE-INTENT-STORY.json`)
+
+**Status Changed**: FAILED → PASSED
+
+**Evidence Documented**:
+- Story 027.0 rewritten with all required changes
+- 7 major changes implemented (Release Goal, User Story, Problem Framing, etc.)
+- 7 acceptance criteria met from Story 031.0
+- All "AI slop" references removed
+- Validated at 2025-12-07T23:40:00Z
+
+### Quality Verification
+
+**Code Quality**: ✅ ALL PASSING
+- **ESLint**: Clean (0 errors, 0 warnings)
+- **Prettier**: All files properly formatted (ran format on 027.0-BIZ-SOFTWARE-INTENT.md)
+- **Markdown**: Story follows INVEST criteria and MADR-style structure
+
+**Story Validation**: ✅ PASSED
+- All acceptance criteria from Story 031.0 met
+- Narrative flows from problem → insight → solution
+- GPS metaphor integrated throughout
+- Three core benefits clearly articulated
+- Consistent with autonomous-delivery-user-story-map.md
+
+### Technical Notes
+
+**Why Complete Rewrite vs Update**:
+Story 031.0 explicitly stated this required a complete narrative rewrite, not find-replace:
+- OLD approach: Philosophical positioning for VCs ("AI slop problem")
+- NEW approach: Problem-solution bridge for founders ("vibe coding crisis" → "spec-driven autonomous delivery")
+- Changed audience: VC investment evaluation → Founder pain recognition
+- Changed narrative structure: Philosophy statement → Problem-solution bridge with GPS metaphor
+
+**GPS Metaphor Significance**:
+The GPS metaphor is central to explaining spec-driven development:
+- **Traditional coding**: Learn every turn-by-turn direction (implementation details)
+- **Spec-driven**: Provide destination and constraints, compiler finds optimal route
+- **Platform portability**: Change destination (framework) without relearning roads (implementation)
+
+**Alignment with Story Map**:
+Story 027.0 now aligns with `prompts/autonomous-delivery-user-story-map.md`:
+- Traceability: Intent → Spec → Implementation → Validation
+- Reproducibility: Deterministic builds from versioned specs
+- Platform Portability: Single spec source, multiple platform targets
+
+### Assessment Impact
+
+**Story Completion**:
+- Story 031.0: ✅ COMPLETE (Story 027.0 rewritten per specification)
+- Traceability status: FAILED → PASSED
+
+**Remaining Work**:
+Per assessment from 2025-12-07 23:35 UTC, Story 031.0 was the ONLY blocking story. With this completion:
+- All technical validation phases: ✅ PASSED (dependencies, security, quality, testing, runtime, etc.)
+- All problems: ✅ CLOSED (zero unresolved problems)
+- All story work: ✅ COMPLETE (Story 031.0 was last remaining)
+
+**Ready for New Story**:
+With Story 031.0 complete, the project is now ready to:
+1. Re-run assessment to validate completion
+2. Pull new story from backlog
+3. Continue development with updated messaging framework
+
+### Context
+
+This work was triggered by the vode.prompt.md workflow which:
+1. Ran comprehensive 10-phase assessment
+2. Found all technical phases passing
+3. Identified Story 031.0 as incomplete in Phase 10 (Traceability)
+4. Created implementation plan targeting story completion
+5. Executed plan to rewrite Story 027.0 with spec-driven positioning
+
+The assessment correctly applied fail-fast methodology for story validation, stopping at the first FAILED story (031.0) and requiring completion before allowing new story development.
+
+### Impact
+
+**Messaging Framework**: ✅ UPDATED
+- All "AI slop problem" references removed from core narrative
+- "Vibe coding crisis" positioning established
+- GPS metaphor introduced as primary explanation mechanism
+- Three core benefits (traceability, reproducibility, portability) emphasized
+
+**Story Quality**: ✅ IMPROVED
+- Clearer problem articulation (specific pain points vs vague complaints)
+- Credible solution bridge (systematic vs philosophical)
+- Actionable narrative (workflow preview vs abstract philosophy)
+- Founder-focused (business users vs VC investors)
+
+**Development Velocity**: ✅ UNBLOCKED
+- Story 031.0 complete removes blocking condition
+- Ready for new story development
+- Messaging framework established for future stories
+- Consistent positioning across all story maps
+
+### Next Steps
+
+1. **Commit Changes**: Commit Story 027.0 rewrite and traceability update
+2. **Push to Repository**: Deploy changes to production
+3. **Monitor Pipeline**: Verify CI/CD pipeline completes successfully
+4. **Re-run Assessment**: Validate Story 031.0 completion and check for remaining work
+5. **Pull New Story**: If assessment shows no remaining work, pull next story from backlog
+
+---

@@ -46,7 +46,7 @@
   "dependencies": {
     "@microsoft/clarity": "^1.0.0",
     "gsap": "^3.13.0",
-    "three": "^0.180.0"
+    "three": "^0.181.2"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -99,13 +99,12 @@
   "overrides": {
     "tmp": "^0.2.5",
     "tar": "7.5.2",
-    "jws": "^4.0.1",
+    "jws": "4.0.1",
+    "jsonwebtoken": "9.0.3",
     "fast-redact": "^3.5.0",
     "netlify-cli": {
-      "fast-redact": "^3.5.0"
-    },
-    "jsonwebtoken": {
-      "jws": "^4.0.1"
+      "fast-redact": "^3.5.0",
+      "jsonwebtoken": "9.0.3"
     },
     "@netlify/build": {
       "fast-redact": "^3.5.0"

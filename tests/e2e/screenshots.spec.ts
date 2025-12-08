@@ -278,40 +278,6 @@ test.describe('Business Area Screenshot Validation', () => {
       }
     });
 
-    test(`Connect - ${name} (${width}x${height})`, async ({ page }) => {
-      await page.setViewportSize({ width, height });
-      await page.goto('/');
-      await waitForPageReady(page);
-
-      // Try to scroll to GPS metaphor section (Connect business area)
-      await scrollToAnyElement(page, ['.gps-metaphor', '.metaphor-explain', '.metaphor-contrast']);
-
-      await page.screenshot({
-        path: `screenshots/${getScreenshotName('connect', name, width, height)}`,
-        fullPage: false,
-        animations: 'disabled',
-      });
-
-      console.log(`✓ Connect screenshot taken for ${name} (${width}x${height})`);
-    });
-
-    test(`Love Alternative - ${name} (${width}x${height})`, async ({ page }) => {
-      await page.setViewportSize({ width, height });
-      await page.goto('/');
-      await waitForPageReady(page);
-
-      // Try to scroll to Three Core Benefits section (Love Alternative business area)
-      await scrollToAnyElement(page, ['.spec-driven-benefits', '.benefits-grid', '.benefit-item']);
-
-      await page.screenshot({
-        path: `screenshots/${getScreenshotName('love-alternative', name, width, height)}`,
-        fullPage: false,
-        animations: 'disabled',
-      });
-
-      console.log(`✓ Love Alternative screenshot taken for ${name} (${width}x${height})`);
-    });
-
     test(`Interest Capture - ${name} (${width}x${height})`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.goto('/');

@@ -805,25 +805,23 @@ export class ThreeAnimation {
     // Create a simple gradient environment
     const data = envMapTexture.image.data;
 
-    if (data) {
-      for (let i = 0; i < envMapSize; i++) {
-        for (let j = 0; j < envMapSize; j++) {
-          const index = (i * envMapSize + j) * 4;
+    for (let i = 0; i < envMapSize; i++) {
+      for (let j = 0; j < envMapSize; j++) {
+        const index = (i * envMapSize + j) * 4;
 
-          const x = (j / envMapSize) * 2 - 1;
+        const x = (j / envMapSize) * 2 - 1;
 
-          const y = (i / envMapSize) * 2 - 1;
+        const y = (i / envMapSize) * 2 - 1;
 
-          const distance = Math.sqrt(x * x + y * y);
+        const distance = Math.sqrt(x * x + y * y);
 
-          // Create a radial gradient with teal tones - much brighter for glass reflections
-          const intensity = Math.max(0.6, (1 - distance) * 1.0); // Much brighter intensity
+        // Create a radial gradient with teal tones - much brighter for glass reflections
+        const intensity = Math.max(0.6, (1 - distance) * 1.0); // Much brighter intensity
 
-          data[index] = Math.floor(0.3 * 255 * intensity); // R - increased warmth
-          data[index + 1] = Math.floor(0.8 * 255 * intensity); // G - brighter teal
-          data[index + 2] = Math.floor(0.9 * 255 * intensity); // B - brighter teal
-          data[index + 3] = 255; // A
-        }
+        data[index] = Math.floor(0.3 * 255 * intensity); // R - increased warmth
+        data[index + 1] = Math.floor(0.8 * 255 * intensity); // G - brighter teal
+        data[index + 2] = Math.floor(0.9 * 255 * intensity); // B - brighter teal
+        data[index + 3] = 255; // A
       }
     }
 

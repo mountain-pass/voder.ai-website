@@ -50,10 +50,6 @@
     },
     // Avoid expensive symlink walks in mono-repos
     "search.followSymlinks": false,
-    "typescript.tsserver.maxTsServerMemory": 4096,
-    "github-actions.workflows.pinned.workflows": [
-        ".github/workflows/deploy.yml"
-    ],
-    
+    "typescript.tsserver.maxTsServerMemory": 4096, 
   
 }
